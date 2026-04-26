@@ -1,0 +1,59 @@
+# Phase 4 Walkthrough: In-App Presentation Display
+
+The Phase 4 features have been fully implemented according to your constraints. The main dashboard now seamlessly hosts a Live Projector view designed optimally for secondary broadcasting using tools like OBS Studio!
+
+## What was built:
+
+1. **State Management (`live_projector_providers.dart`)**
+   - Added a Riverpod `StateProvider` to robustly track the active live slide content across the application.
+
+2. **Live Projector Frame (`live_projector_pane.dart`)**
+   - We cleanly integrated `auto_size_text` into a locked `16:9` Aspect Ratio bounded region.
+   - Text behavior: It starts with an enormous font size. If a verse has many words, first it attempts to text-wrap over multiple lines (up to 6 lines max). If it still exceeds the bounding box, it intelligently **shrinks** the text to fit cleanly inside the 16:9 boundary.
+   - The central presentation board uses high-contrast colors (white text against pure black) creating the perfect foundation for a simple OBS window/region capture.
+
+3. **Dashboard & Preview Connections**
+   - The central "Live Controller" placeholder box in the Dashboard has been swapped for our new `LiveProjectorPane`.
+   - **Mandatory Feature Added**: In the **Preview Pane**, tapping on a sequence in the list instantly projects it to the Live Pane *and* it draws a vivid blue border with an appended "(Live)" tag on the list itself to unmistakably indicate what the congregation is currently viewing.
+
+## Validation Results
+
+- Package dependencies updated (`auto_size_text` and `flutter_colorpicker` installed correctly).
+- The presentation mechanism behaves dynamically according to window layout without losing its 16:9 presentation proportions.
+- Interactive slide clicking updates the projector output in real-time.
+
+# Phase 5 Walkthrough: Presentation Settings
+
+Phase 5 introduces deep customization for song presentations, allowing users to control the visual output of the projector live.
+
+## What was built:
+
+1.  **Persistence Layer (`PresentationSettings` Collection)**
+    *   Created a specific Isar collection to store settings like colors, font-families, and alignment.
+    *   Settings are preserved across app restarts.
+
+2.  **Settings Management (`presentationSettingsProvider`)**
+    *   A Riverpod `StateNotifierProvider` syncs the UI with the Isar database, ensuring that changes made in the settings drawer are immediately reflected on the projector screen.
+
+3.  **Presentation Settings Drawer UI**
+    *   **Drawer Integration**: A new right-side `Drawer` accessible via the gear icon in the dashboard.
+    *   **Title Control**: Choose to show the song title at the top, bottom, or hide it.
+    *   **Lyrics Alignment**: Quick toggle for Left, Center, or Right text alignment.
+    *   **Color Picker**: Integrated `flutter_colorpicker` for both background and font colors.
+    *   **Dynamic Typography**: 
+        *   A searchable `DropdownMenu` for selecting font families.
+        *   A Slider to set the **Maximum Font Size**. The presentation logic will start at this size and shrink only if needed to fit the screen.
+    *   **Layout Spacing**: A Slider to adjust the screen padding, allowing for tight or spacious margins.
+
+4.  **Live Projector Integration**
+    *   The `LiveProjectorPane` now dynamically responds to all settings.
+    *   Supports layered rendering (Title + Lyrics) with individual opacity controls for the title.
+
+## Validation Results
+
+*   All settings (colors, fonts, alignment) update the projector view in real-time.
+*   The searchable font dropdown correctly filters and selects system fonts.
+*   Restarting the app correctly reloads the last saved presentation settings from Isar.
+
+You can now open the settings drawer using the gear icon and customize your presentation exactly how you want it!
+

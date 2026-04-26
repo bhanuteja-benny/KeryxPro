@@ -1,0 +1,37 @@
+# Phase 4 Plan: In-App Presentation Display
+
+This plan targets developing an in-app Presentation View (Live Controller Output) that will reside in the center pane of the Main Dashboard. This will allow the user to project slides natively inside the app, which can then be captured easily by OBS Studio via Window Capure or Region Capture.
+
+## Proposed Changes
+
+### 1. State Management
+#### [NEW] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)
+- `activeSlideProvider` (StateProvider<String?>): Holds the currently projected slide text.
+
+### 2. Live Projector View
+#### [NEW] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Standardize the display within a 16:9 `AspectRatio` boxed container.
+- Establish a minimalist, high-contrast UI (e.g., solid black background, white text) optimized for OBS "Region Capture".
+- Implement responsive typography so text gracefully scales down if the slide contains numerous lines.
+
+### 3. Wiring UI Components
+#### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- Inject the `LiveProjectorPane` into the center layout pane, replacing the current "Live Controller" placeholder.
+
+#### [MODIFY] [preview_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/preview_pane.dart)
+- In the `ListView` item tap handler, update `ref.read(activeSlideProvider.notifier).state = slides[index]` to push the slide to the projector view.
+- (Optional) Highlight the active slide in the `PreviewPane` to show the user which slide is currently live.
+
+## Open Questions
+
+> [!IMPORTANT]
+> - **Aspect Ratio:** Do you want the center projection area to strictly lock to a `16:9` aspect ratio, or should it stretch to fit the available space?
+> - **Text Scaling:** Should the text automatically shrink to fit if it's too long, or use a fixed size and let it wrap?
+
+## Verification Plan
+### Manual Verification
+- Launch the Windows build (`flutter run -d windows`).
+- Select a song from the Library Pane.
+- Click a slide in the Preview Pane.
+- Verify the center projector screen updates immediately and displays the slide clearly.
+- Ensure window resizing does not break the central presentation layout.

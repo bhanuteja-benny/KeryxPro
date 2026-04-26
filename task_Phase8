@@ -1,0 +1,9 @@
+# Phase 8 Tasks
+- `[x]` Update Isar Database Schema in `presentation_settings.dart`
+- `[x]` Regenerate Isar database model using `build_runner`
+- `[x]` Update `presentation_settings_provider.dart` for fallback and clone processing
+- `[x]` Create `AlignmentGridWidget` UI component
+- `[x]` Create `MarginMatrixWidget` UI component
+- `[x]` Apply custom UI components for 'Title' block
+- `[x]` Apply custom UI components for 'Body' block
+- `[x]` Update `live_projector_pane.dart` rendering layout to obey new detailed margin variables

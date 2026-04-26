@@ -1,0 +1,12 @@
+- [x] Scaffold `lib/features/settings/data/presentation_settings.dart` (Isar `@collection`) and update Isar initialization
+- [x] Initialize `presentationSettingsProvider` using Riverpod linked with Isar
+- [x] Create `PresentationSettingsDrawer` UI:
+  - Settings accessible from `MainDashboardPage` via a right-side `Drawer`.
+  - Title Position Dropdown (Top, Bottom, Hidden).
+  - Lyrics Alignment Segmented Control (Left, Center, Right).
+  - `flutter_colorpicker` for Background and Font Colors.
+  - Native embedded searchable `DropdownMenu` for Font Family.
+  - Max Font Size Slider & Padding Slider.
+- [x] Inject state into `LiveProjectorPane`:
+  - Connect text max font size, colors, alignments, paddings, fonts.
+- [x] Verification: Test live updates and data persistence.

@@ -1,0 +1,67 @@
+# Implement Phase 9: Typography and Color Picker Enhancements
+
+This plan addresses Phase 9 of the KeryxPro development, focusing on improving the typography controls and refining the color picker UI within the presentation settings.
+
+## User Review Required
+
+> [!WARNING]
+> **System Fonts vs. Predefined List:** Getting a truly dynamic list of "all available fonts in the system" in a cross-platform Flutter app usually requires writing custom platform channels (e.g., C++ for Windows) or using third-party plugins that might not be fully reliable. 
+> **My Proposal:** Initially, I propose using a comprehensive, hardcoded list of standard web-safe and common system fonts (e.g., Arial, Tahoma, Verdana, Times New Roman, Courier New, Comic Sans MS, etc.). This avoids native code complexity while satisfying most use cases. If you strictly require reading installed fonts dynamically from the Windows OS, please let me know, and we can explore integrating a specific Windows font package.
+
+> [!IMPORTANT]
+> **Typography Properties:** We will add Checkboxes for `Underline`, `Fill`, and `Stroke`. For simplicity in this phase, I will implement a standard thickness for the stroke and underline. If you need adjustable thickness sliders later, we can add them.
+
+## Open Questions
+
+1. Do you agree with using a predefined list of popular/standard fonts for the dropdown, or is dynamic OS font fetching a strict requirement?
+2. Does "Fill" refer to the background color immediately behind the text (like a text highlight), or does it refer to the font color itself? (The current schema already has a Font Color property, so I am assuming Fill = Text Background Highlight).
+
+## Proposed Changes
+
+### Data Layer
+Modifications to the Isar schema to support new typography features.
+
+#### [MODIFY] `lib/features/settings/data/presentation_settings.dart`
+- Add the following properties for `title`, `lyrics`, `chapter`, and `verse`:
+  - `bool [prefix]Underline`
+  - `bool [prefix]HasFill`
+  - `int [prefix]FillColor`
+  - `bool [prefix]HasStroke`
+  - `int [prefix]StrokeColor`
+- Regenerate Isar database code (`presentation_settings.g.dart`) via `build_runner`.
+
+### State Management
+Ensuring changes immediately reflect in the preview but only save when intended.
+
+#### [MODIFY] `lib/features/settings/presentation/presentation_settings_provider.dart`
+- Add fallback checks for the new typography properties in `_processFallbacks`.
+- Add update methods in `EditingPresetNotifier` for underline, fill, and stroke.
+- (Note: The current architecture already isolates changes in `editingPresetProvider` and only commits to the database when `saveSettings()` is called, fulfilling the requirement for immediate preview without auto-saving).
+
+### Presentation Layer
+UI enhancements for the dialogs and preview window.
+
+#### [MODIFY] `lib/features/settings/presentation/widgets/presentation_settings_dialog.dart`
+- **Color Pickers:** Change all color picker trigger boxes from square to slightly rectangular (width of two checkboxes) to prevent confusion.
+- **Typography Box:** Replace the placeholder Typography container with a clickable summary box displaying the selected font and size (e.g., "Arial 20").
+- **Typography Popup:** Create a new dialog (`_showTypographyDialog`) containing:
+  - Font Family text box with a filtered listbox (dropdown).
+  - Font Size text box with a filtered listbox (5 to 100).
+  - Color Picker (rectangular) for Font Color.
+  - Checkbox & Color Picker for `Underline` (color will match font color by default unless otherwise specified).
+  - Checkbox & Color Picker for `Fill` (text background).
+  - Checkbox & Color Picker for `Stroke` (text outline).
+- **Preview Pane:** Update `_buildPreviewContent` to apply the `Underline`, `Fill` (using `backgroundColor` on the `TextStyle`), and `Stroke` (using `Paint` foreground) based on the editing preset.
+
+## Verification Plan
+
+### Automated/Build Tests
+- Run `flutter pub run build_runner build --delete-conflicting-outputs` to ensure Isar schemas generate correctly.
+
+### Manual Verification
+- Open Presentation Settings.
+- Verify color pickers are rectangular.
+- Click on the Typography box; ensure the popup opens and settings (Font Family, Size, Colors, Underline, Fill, Stroke) function correctly.
+- Ensure changes reflect immediately in the live preview.
+- Close the dialog without saving and re-open to verify changes were *not* persisted.
+- Click "Save" and verify the settings are successfully persisted across restarts.

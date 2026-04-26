@@ -1,0 +1,55 @@
+# Implementation Plan - Phase 12: Slide Section Changes
+
+Redesign the slide preview interface to a more professional, "OpenSong-style" layout. This includes a high-density list of slides with metadata and automatic blank slide generation.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The shortcut detection (C for Chorus, V for Verse, etc.) will rely on parsing the lyrics. If no tags like `[Chorus]` or `Chorus:` are found, it will default to sequential verse numbering (V1, V2, etc.). Does this match your expectation?
+
+> [!NOTE]
+> Blank slides will be appended to the end of the song's slide list. When selected, they will project a completely blank screen (Black), effectively clearing both lyrics and title.
+
+## Proposed Changes
+
+### Core Data & Logic
+
+#### [NEW] `lib/features/live_controller/domain/slide.dart`
+Define a `Slide` model to hold metadata for each projection unit.
+- `title`: The song title or Bible reference.
+- `shortcut`: Short tag like 'C', 'V1', 'B'.
+- `content`: The full text to be projected.
+- `isBlank`: Flag for blank slides.
+
+#### [NEW] `lib/features/live_controller/presentation/slide_utils.dart`
+Helper functions to parse lyrics into `Slide` objects.
+- Regex-based detection of stanza types.
+- Logic to add blank slides at the end of a list.
+
+### UI Components
+
+#### [NEW] `lib/features/dashboard/presentation/widgets/slide_item_widget.dart`
+A premium, low-height list item for slides.
+- **Section 1**: Title/Ref (Grey, small font).
+- **Section 2**: Shortcut tag in a small box or highlighted (e.g., `[C]`).
+- **Section 3**: First line of content (Truncated with ellipsis).
+- Hover and Active states with vibrant accents (Blue/Purple).
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- Use the new parsing logic to generate a list of `Slide` objects from the selected song.
+- Replace the old `Card` items with `SlideItemWidget`.
+- Ensure the blank slide is selectable and functional.
+
+## Verification Plan
+
+### Automated Tests
+- Unit tests for `SlideUtils` to ensure various lyrics formats are parsed correctly.
+- Verify that "Blank" slides are correctly inserted.
+
+### Manual Verification
+1. Open KeryxPro and select a song (e.g., "Amazing Grace").
+2. Verify the slides appear in the new 3-part format.
+3. Check that the shortcut column shows 'V1', 'V2', etc. (or 'C' if tags are added).
+4. Scroll to the bottom and verify a blank slide exists.
+5. Click the blank slide and verify the "Monitor" shows a blank screen/background.
+6. Verify that long lines in the preview section are correctly truncated with "...".

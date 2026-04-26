@@ -1,0 +1,25 @@
+# Phase 18 Walkthrough: Advanced UI & Display Refinements
+
+I have implemented the requested UI enhancements to improve the search experience and the quality of the live projection.
+
+## Changes Made
+
+### 1. Smart Font Scaling
+- **Songs**: Now prioritize keeping lines unbroken. The text will shrink first. If it hits a threshold of **40pt**, it will then start wrapping to a second line to maintain readability.
+- **Scripture**: Optimized for full screen utilization. Verses will wrap as much as needed to stay at a large, readable size.
+- **Size Cap**: Verified that `AutoSizeText` does not increase the font size beyond your preset value.
+
+### 2. Scripture Display Improvements
+- **Verse Numbers**: Added the verse number directly into the text (e.g., "1 In the beginning...").
+- **Clean Shortcuts**: Updated slide shortcuts to show only the verse number (e.g., `[5]` or `[5-7]`) instead of the `V1` prefix.
+- **Parser Update**: Enhanced `SlideUtils` to correctly handle alphanumeric and range-based shortcuts from the setlist.
+
+### 3. Bible Tab Layout
+- **Column Widths**: Adjusted the flex ratios of the Bible listboxes.
+    - **Books (OT/NT)**: Now have more horizontal space.
+    - **Chapters/Verses**: Narrowed to fit their numeric content while maintaining a clean vertical scroll.
+
+## Verification
+- Added songs with long lines: confirmed they shrink then wrap.
+- Added Bible passages: confirmed verse numbers appear in text and shortcuts are clean numbers.
+- Checked Bible Tab: verified improved column distribution.

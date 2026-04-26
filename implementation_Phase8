@@ -1,0 +1,43 @@
+# Phase 8: Presentation Layout Controls
+
+This plan outlines the updates to the right-hand section of the presentation settings dialog, replacing placeholders with precise 3x3 alignment grids and 2x2 margin matrices for both the Title and Body layers.
+
+## Proposed Changes
+
+### Database Schema Expansion
+
+To support independent margins and precise 2D alignments for the Title and Chapter, we must expand the Isar schema.
+
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- Replace `titlePosition` and `chapterPosition` with dedicated horizontal and vertical alignment fields (e.g. `titleAlignment`, `titleVerticalAlignment`, `chapterAlignment`, `chapterVerticalAlignment`).
+- Replace the singular `titleMargin` and `chapterMargin` with four independent precise margins (top, bottom, left, right).
+- Regenerate the Isar code using `build_runner`.
+
+### State Management Update
+
+#### [MODIFY] [presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- Update `cloneState` and `_processFallbacks` to handle the new Title and Chapter fields mapping correctly (defaulting Title to bottom-center alignment).
+- Introduce new `updateTitleAlignment` and `updateTitleMargins` (and equivalent Chapter) update functions in the `EditingPresetNotifier`.
+- Re-map existing lyrics and verse setter logic where needed to ensure compatibility with the new UI widgets.
+
+### UI Implementation: Custom Alignment & Margin Grid Widgets
+
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Build a generic dynamic `_buildAlignmentGrid()` function that renders a 3x3 clickable square grid representing standard alignment combinations (top-left ... bottom-right).
+- Build a `_buildMarginMatrix()` function that draws a 2x2 arrangement of stylized boxes (representing edges by highlighting appropriate thick borders) adjoined to "px" text inputs.
+- Restructure `_buildEditPresetView()` right half into two distinct containers:
+  - **Title Section**: Uses the Alignment and Margin Matrix widgets mapped to either Song Title or Scripture Chapter context based on the current active tab.
+  - **Body Section**: Uses the Alignment and Margin Matrix widgets mapped to either Song Lyrics or Scripture Verse context based on the current active tab.
+
+## Open Questions
+- Do you want the Title to completely disappear if a certain toggle is disabled? Or should the user just be allowed to clear the text size / remove margins?
+- Should the margin inputs allow negative numbers, or explicitly restrict numeric entry from `0` upwards?
+
+## Verification Plan
+### Automated Tests
+- Run `flutter pub run build_runner build --delete-conflicting-outputs` to guarantee schema compiles.
+- Execute a `flutter run -d windows` test internally to verify Riverpod binding is successfully feeding the exact layout commands.
+
+### Manual Verification
+- Visual check of the 3x3 alignment grids rendering and switching states correctly.
+- Visual validation that entering precise values into the border-highlighted Margin Matrix directly resizes elements smoothly in the preview pane.

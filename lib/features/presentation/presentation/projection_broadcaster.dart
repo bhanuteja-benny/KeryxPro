@@ -1,0 +1,33 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import '../../live_controller/presentation/live_projector_providers.dart';
+import '../../songs/presentation/song_selection_providers.dart';
+import '../../settings/presentation/projection_provider.dart';
+
+final projectionBroadcasterProvider = Provider<void>((ref) {
+  // Listen for slide changes
+  ref.listen(activeSlideProvider, (previous, next) {
+    _broadcastContent(ref, next);
+  });
+
+  // Listen for title changes
+  ref.listen(activeTitleProvider, (previous, next) {
+    _broadcastContent(ref, ref.read(activeSlideProvider));
+  });
+});
+
+void _broadcastContent(Ref ref, String? text) {
+  final title = ref.read(activeTitleProvider);
+  final isSong = ref.read(isSongActiveProvider);
+  final state = ref.read(projectionProvider);
+  
+  // Only broadcast to Monitor 2 external window (Monitor 1 is inline via Riverpod)
+  if (state.monitor2WindowId != null) {
+    final args = {
+      'text': text,
+      'title': title,
+      'isSong': isSong,
+    };
+    WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
+  }
+}

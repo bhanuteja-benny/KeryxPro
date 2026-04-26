@@ -1,0 +1,62 @@
+# Phase 10: Multi-Monitor Projection Support
+
+Implement a dual-monitor projection system where "Monitor 1" is optimized for streaming/OBS and "Monitor 2" is dedicated to extended display projection. Each monitor will support independent presentation presets.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Monitor Detection**: I will use the `screen_retriever` package to detect connected displays. Monitor 2 will automatically target the first available non-primary display.
+> **Window Communication**: `desktop_multi_window` will be used to sync lyrics and settings from the main dashboard to the projector windows.
+
+## Proposed Changes
+
+### Data & State
+#### [NEW] [projection_config.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/projection_config.dart)
+- Create an Isar collection `ProjectionConfig` to store:
+    - `monitor1PresetId`: ID of the preset assigned to the streaming monitor.
+    - `monitor2PresetId`: ID of the preset assigned to the physical projector.
+
+#### [NEW] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- Riverpod notifier to:
+    - Detect available monitors.
+    - Persist and update preset assignments.
+    - Manage opening/closing of the projector windows.
+
+---
+
+### Dashboard UI
+#### [NEW] [live_monitor_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/live_monitor_page.dart)
+- A new dashboard tab with two sub-tabs: "Monitor 1" and "Monitor 2".
+- Each tab contains:
+    - Status indicator (Connected/Disconnected/Active).
+    - Dropdown to select a Preset from `PresentationSettings`.
+    - Preview of the selected preset's layout.
+    - "Launch Output" button.
+
+#### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- Integrate "Live Monitor" into the side navigation/tab bar.
+
+---
+
+### Projection Windows
+#### [MODIFY] [main.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/main.dart)
+- Update `ProjectorApp` to:
+    - Listen for configuration updates (preset change).
+    - Listen for content updates (current song/lyrics).
+    - Render the content using the assigned preset's settings (fonts, margins, etc.).
+
+#### [NEW] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- A shared widget used by both Monitor 1 and Monitor 2 windows to render the lyrics/scripture.
+
+## Verification Plan
+
+### Automated Tests
+- N/A for UI/Window management (Manual verification preferred).
+
+### Manual Verification
+1. Open the "Live Monitor" tab.
+2. Assign different presets to Monitor 1 and Monitor 2.
+3. Launch Monitor 1 and verify it opens as a window.
+4. Connect a second monitor, launch Monitor 2, and verify it opens fullscreen on the second display.
+5. Verify that changing lyrics in the dashboard updates both monitors instantly.
+6. Verify that "No Monitor Connected" appears if the second display is unplugged.

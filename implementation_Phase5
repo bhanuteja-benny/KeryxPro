@@ -1,0 +1,54 @@
+# Phase 5 Plan: Presentation Settings
+
+This plan addresses building a highly customizable "Presentation Settings" menu. It will allow the user to modify the appearance of the song lyrics on the live projector screen instantly, similar to OpenSong's presentation layout settings. 
+
+## Proposed Changes
+
+### 1. Settings Data Model & State
+#### [NEW] [lib/features/settings/domain/presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/domain/presentation_settings.dart)
+- Create a `PresentationSettings` model holding the following properties:
+  - `titlePosition` (Top, Bottom, Hidden)
+  - `lyricsAlignment` (Left, Center, Right)
+  - `backgroundColor` (integer representation of a Flutter Color, e.g., Black, Navy)
+  - `fontColor` (integer representation of a Flutter Color, e.g., White, Yellow)
+  - `fontFamily` (e.g., Roboto, Arial, Times New Roman)
+  - `fontSizeScale` (double, adjusting the base font size for scaling)
+  - `padding` (double, configuring screen edges)
+- Since you are using **Isar**, we can persist these settings automatically as a singleton record in the Isar database so your preferences remain after app restarts. *For Phase 5, we can focus on getting the Riverpod reactivity working first, or implement the Isar schema right now.*
+
+#### [NEW] [lib/features/settings/presentation/presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- A Riverpod `NotifierProvider` that manages the active `PresentationSettings`. When updated, it forces the `LiveProjectorPane` to rebuild.
+
+### 2. Settings UI
+#### [NEW] [lib/features/settings/presentation/widgets/presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- A dynamic Dialog or Sidebar containing:
+  - Toggle switch/Dropdown for **Title Position**.
+  - Segmented control for **Lyrics Alignment**.
+  - Dropdown or Color Picker for **Background/Font Color**.
+  - Dropdown for **Font Family**.
+  - Sliders for **Font Size** and **Paddings**.
+
+#### [MODIFY] [lib/features/dashboard/presentation/pages/main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- Wire up the `IconButton(icon: Icon(Icons.settings))` in the AppBar to open the `PresentationSettingsDialog`.
+
+### 3. Applying the Settings
+#### [MODIFY] [lib/features/live_controller/presentation/widgets/live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Consume the `presentationSettingsProvider`.
+- Inject the user-defined `backgroundColor`, `padding`, and apply `lyricsAlignment` to the `AutoSizeText` layout.
+- Render the Song Title securely positioned at either the Top or Bottom based on `titlePosition`, or hide it entirely if "None" is selected.
+- Pass the chosen `fontFamily` and `fontColor` to the text `TextStyle`.
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Data Persistence**: Do you want me to write the `Isar` `@collection` for settings so everything is natively saved on the spot, or stick to in-memory Riverpod state for this initial phase and add persistence later?
+> 2. **Settings UI Layout**: When clicking the gear icon, do you prefer a pop-up **Dialog** (like a modal floating on the screen) or should it toggle an options **Drawer** on the right side?
+> 3. **Color Picker vs Preset List**: Do you want a freeform color picker for colors, or just a dropdown of standard presentation presets (e.g. Black, White, Blue, Yellow)?
+
+## Verification Plan
+### Manual Verification
+1. Click the 'Settings' gear icon in the Dashboard AppBar. 
+2. Change the Lyrics alignment from Center to Left.
+3. Verify the `LiveProjectorPane` updates immediately to Left alignment.
+4. Modify the background color and ensure it changes without breaking the 16:9 ratio.
+5. (If persisting) Restart the app and ensure previous layout settings were saved.

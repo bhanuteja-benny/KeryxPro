@@ -1,0 +1,52 @@
+# Phase 6.1: Defects & Premium Header Implementation
+
+This plan addresses the reported defects and elevates the UI by integrating the top menu into a custom VS Code-style title bar.
+
+## Defects to Fix
+
+### 1. "Nothing Displaying" (Likely Transparent Colors)
+- **Root Cause**: When adding new color fields to an existing Isar record, they default to `0` (Transparent). Since `Color(0)` is invisible, the live screen appears blank.
+- **Fix**: Update the `PresentationSettingsNotifier` sanity check to ensure `backgroundColor`, `lyricsFontColor`, and `titleFontColor` have opaque defaults if they are detected as `0`.
+
+### 2. Color Indicator Responsiveness
+- **Root Cause**: The color indicator in the settings dialog might not be rebuilding instantly or the `ColorPicker` state isn't syncing live with the dialog's view.
+- **Fix**: Ensure the `SettingsDialog` correctly watches the settings provider and that `onColorChanged` in the picker triggers immediate state updates.
+
+### 3. Header Menu & Window Controls (VS Code Style)
+- **Change**: Move from a standard menu bar to a **Custom Title Bar**.
+- **Steps**:
+  - Update `main.dart` to use `TitleBarStyle.hidden`.
+  - Create a `CustomHeader` widget containing:
+    - App Icon & Title/Logo.
+    - Integrated `MenuBar` (File, Settings).
+    - Window controls (Minimize, Maximize, Close) using `window_manager`.
+  - Ensure the header area is draggable for window movement.
+
+## Proposed Changes
+
+### [MODIFY] [main.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/main.dart)
+- Set `titleBarStyle: TitleBarStyle.hidden` in `WindowOptions`.
+
+### [MODIFY] [presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- Enhance `_loadFromIsar` to fix transparent colors (`0` -> opaque defaults).
+
+### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- Replace the current `MenuBar` with a `CustomHeader` component.
+- The `CustomHeader` will use `WindowCaption` from `window_manager` or a custom `Row` to handle drag and controls.
+
+### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Ensure the `Color indicator` is rebuilt live as the picker updates.
+
+## Open Questions
+
+> [!IMPORTANT]
+> - **Header Height**: Should the custom header be very slim (like VS Code) or slightly taller to accommodate the menu icons more comfortably?
+> - **Background Color**: Do you want the custom title bar to be the same color as the app background (seamless) or slightly darker/accented?
+
+## Verification Plan
+### Manual Verification
+1. Verify the app starts without a standard Windows title bar.
+2. Verify you can drag the window via the new custom header.
+3. Verify the "File" and "Settings" menus are integrated into this header.
+4. Verify the live screen is visible immediately upon selecting a slide.
+5. Verify that changing a color in the picker updates the box icon in the background dialog instantly.

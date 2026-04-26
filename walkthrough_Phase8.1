@@ -1,0 +1,29 @@
+# Phase 8 & 8.1: Layout, Margins & Position Controls Walkthrough
+
+Phase 8 layout controls and 8.1 user-refinements have been successfully completed! KeryxPro now features independent, comprehensive, 2D layout constraints for both the main presentation content ("Body") and subtitles ("Title").
+
+## What We Changed
+
+### 1. Unified 3x3 Alignment Grids
+We replaced the basic position dropdowns with a **3x3 Alignment Grid**.
+* **Visual Selection**: You can easily visualize where text will anchor to by clicking exactly which zone of the screen is desired.
+* **Smart Defaults**: As requested, the Title defaults to the bottom-center block, while the Body defaults to dead-center.
+
+### 2. Precise Boundary Margins (Square Single-Box Matrix)
+Instead of a single slider defining an ambiguous "Margin", every layer now respects true 4-way independent margins.
+* **Margin Matrix UI**: A sleek matrix of `Top`, `Bottom`, `Left`, and `Right` input squares. They intuitively map to screen edges via blue border highlights on the box itself, and a clean 'px' label sits right beside it.
+* **Complete Flexibility**: You can manually input `px` constraints directly. Need the title to jut exactly 60px away from the left edge? You can type that directly. It also fully supports negative margin inputs as you requested!
+
+### 3. Sleek Bounding Boxes
+* Reverting back to spacious, window-filling areas, the Title and Body components have been given `Expanded` layout bounds.
+* Utilizing `InputDecorator`, the "Title" and "Body" text labels are now cleanly embedded directly *into* the border line (identical to how standard Material inputs handle labels), saving vertical space and looking incredibly cohesive.
+
+### 4. Always-Visible Layout Tools
+* The "Enable Title" checkbox has been relocated to cleanly sit on the same row as the alignment and margin widgets. 
+* Positioning tools remain completely visible and editable even if the title layer is toggled off, so you can prep parameters gracefully!
+
+### 4. Rendering Accuracy
+* **Stack Upgrades**: Underneath everything, the rendering engine was upgraded from rigid linear tracking (`Column`) to isolated mapping (`Stack`). The `live_projector_pane` and `presentation_settings_dialog` exactly mirror these precision anchors dynamically.
+
+> [!TIP]
+> Play around with inputting negative `px` boundaries onto your alignment grid anchors to shift visuals creatively outside their bounding boxes!

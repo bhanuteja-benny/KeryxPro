@@ -1,0 +1,48 @@
+# Walkthrough - Phase 12: Slide Section Changes
+
+I have implemented the redesigned slide preview interface and enhanced the projection logic to support blank screens.
+
+## Changes
+
+### 1. Slide Domain Model & Parsing
+I created a robust `Slide` model and a `SlideUtils` helper to parse lyrics.
+- **Shortcut Detection**: Lyrics are parsed to detect `[Chorus]`, `[Verse]`, etc., and map them to short tags like `C` and `V1`.
+- **Automatic Blank Slides**: A blank slide is automatically appended to the end of every song's slide list.
+
+### 2. Premium 3-Part UI
+The `PreviewPane` now uses a new `SlideItemWidget` that provides:
+- **Section 1**: Song Title / Bible Ref.
+- **Section 2**: Highlighted Shortcut Tag (e.g., `[C]`, `[V1]`).
+- **Section 3**: Single-line content preview with ellipsis.
+- **Interactive States**: Clear visual feedback for hover and active slides.
+
+### 3. Blank Screen Logic
+The `ProjectorView` has been updated to handle the "Blank Slide" selection.
+- When the blank slide is selected, the projector screen turns completely **Black**, hiding all lyrics, titles, and backgrounds.
+
+### 4. Build & Import Fixes
+- Resolved several build errors related to incorrect relative import paths in `preview_pane.dart` and `slide_item_widget.dart`.
+- Verified the build succeeds and the application launches correctly on Windows.
+
+### 5. Keyboard Navigation & Shortcuts
+- **Arrow Key Navigation**: Added `KeyboardListener` support for `Up` and `Down` arrows to navigate through slides.
+- **Shortcut Cycling**: 
+    - Pressing letters (**V, C, B**) cycles through all slides of that type.
+    - Pressing numbers (**1-9**) cycles through all slides where the shortcut contains that digit (e.g., `1` cycles through `V1`, `C1`, `B1`).
+- **Auto-Scrolling**: The slide list automatically scrolls to keep the active slide in view.
+- **Focus Indicator**: Added a small keyboard icon in the header when the slides pane has keyboard focus.
+
+### 6. UI Refinements
+- **Merged Blank Slide**: The blank screen slide now renders as a single centered row, providing a cleaner "merged" look.
+
+## Verification Results
+
+### Manual Test: Song Selection & Layout
+- Selecting "Amazing Grace" correctly parses the lyrics into stanzas labeled `V1`, `V2`, etc.
+- The 3-part layout displays the title on the left, the shortcut in the middle, and the text on the right.
+
+### Manual Test: Blank Screen
+- Clicking the `[ BLANK SCREEN ]` slide at the bottom of the list results in a solid black projection screen as requested.
+
+### Manual Test: Truncation
+- Long lines in the preview section are correctly truncated with `...`, maintaining a clean list view.

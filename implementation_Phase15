@@ -1,0 +1,59 @@
+# Phase 15 Plan: Import Songs
+
+This phase introduces the ability to import songs from the widely used OpenSong format into KeryxPro. 
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Handling Duplicate Titles:** If you import a song with a title that already exists in your KeryxPro database, how should the app handle it? 
+> 1. Skip the import of that specific song (keep the existing one).
+> 2. Overwrite the existing song with the new import.
+> 3. Add it as a new song with a duplicate name (e.g., "Amazing Grace (1)").
+> *I will default to option 1 (Skip existing) unless you prefer otherwise.*
+
+> [!NOTE]
+> **Where to find OpenSong Databases:** 
+> OpenSong is a very popular open-source format. You can find databases and files in several places:
+> - **Direct from OpenSong:** You can download the OpenSong app, which comes with some public domain songs, and copy the files from its `Songs` folder.
+> - **CCLI SongSelect:** If your church has a SongSelect subscription, you can directly export chord sheets/lyrics into OpenSong format.
+> - **Community Forums:** The OpenSong community and OpenLP community forums often share Zip files of public domain worship songs in this format.
+
+## Proposed Changes
+
+### Dashboard & Menu Updates
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/custom_title_bar.dart`
+- Add an `Imports` menu item next to `Settings`.
+- Add a submenu with two items:
+  - `Import Songs`: Triggers the `file_picker` to select multiple files.
+  - `Import Bible`: Disabled/Placeholder for a future phase.
+
+---
+
+### Data & Domain Layer
+
+#### [MODIFY] `lib/features/songs/domain/song_repository.dart`
+- Add `Future<void> addSongs(List<Song> songs)` to handle batch inserts.
+
+#### [MODIFY] `lib/features/songs/data/isar_song_repository.dart`
+- Implement `addSongs()` to insert a list of songs inside a single `db.writeTxn()` for high performance during bulk imports.
+
+#### [MODIFY] `lib/features/songs/presentation/song_providers.dart`
+- Add an `importSongs` method to the `SongListNotifier` that calls the repository's batch insert and then refreshes the song list.
+
+---
+
+### Import Service
+
+#### [NEW] `lib/features/songs/data/song_import_service.dart`
+- Create a dedicated service to handle the file selection and parsing logic.
+- **File Picker:** Use `file_picker` with `allowMultiple: true` and `FileType.any` (OpenSong files often lack the `.xml` extension).
+- **XML Parsing:** Use the `xml` package to read the files.
+- **Data Extraction:** Extract `<title>`, `<author>`, and `<lyrics>`.
+- **Chord Stripping:** OpenSong format indicates chords by starting the line with a period (`.`). The parser will strip out any lines starting with `.` to ensure the KeryxPro database only contains clean lyrics and section tags (like `[V1]`).
+
+## Verification Plan
+1. I will create a mock OpenSong XML file to test the parsing logic.
+2. I will verify that the file picker opens and accepts multiple files.
+3. I will confirm that lines starting with `.` (chords) are excluded from the imported lyrics.
+4. I will verify that the songs appear in the library instantly after import.

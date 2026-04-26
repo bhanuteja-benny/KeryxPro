@@ -1,0 +1,35 @@
+# Phase 17 Bible Search Feature Walkthrough
+
+## Overview
+Successfully implemented the complete Phase 17 Bible Search tab, which replaces the previous placeholder. This feature seamlessly enables comprehensive querying and previewing of Bible verses, alongside a fluid pipeline for injecting scriptures directly into the setlist and live projection screens.
+
+## Changes Made
+
+### 1. Bible Constants Database (`lib/features/bible/domain/bible_constants.dart`)
+- Added rigorous categorization mapping for the **Old Testament** (39 books) and **New Testament** (27 books).
+- Implemented an intelligent abbreviation map spanning dozens of common short-hand inputs (e.g., `gen`, `1 pet`, `mt`, `1 kgs`) back to their fully qualified book names.
+- Created `normalizeBookName()` to securely bridge human input (or partial inputs) to accurate database records.
+
+### 2. Riverpod State Providers (`lib/features/bible/presentation/bible_search_providers.dart`)
+- Engineered cascading `FutureProvider` components:
+  - `availableChaptersProvider`: Watches the selected Book and extracts the unique array of chapters dynamically.
+  - `availableVersesProvider`: Listens to Chapter changes to load all accurate verse integers for that specific passage.
+  - `biblePreviewVersesProvider`: A high-performance provider querying `Isar` behind the scenes to fetch exact text for multiple selected verses.
+- Developed the `selectedVersesProvider` as a `Set<int>` allowing elegant multiple-verse selection.
+
+### 3. Comprehensive Bible Tab UI (`lib/features/bible/presentation/widgets/bible_search_tab.dart`)
+- **Top Bar**: Designed the input text box configured with an advanced Regex parser `^(\d?\s*[a-zA-Z\s]+)\s+(\d+):(\d+)(?:-(\d+))?$`. Now when users type `John 3:1-5` and press enter:
+  - It resolves "John", selects it in the list box.
+  - It extracts chapter "3", selects it in the chapter box.
+  - It detects the range "1" to "5", and perfectly populates the multi-select Verse list box.
+- **Middle Section**: Assembled 4 beautiful side-by-side ListBoxes leveraging `Expanded` widgets, ensuring standard proportional UI alignment across OT, NT, Chapters, and Verses.
+- **Preview Section**: Built a live preview screen reflecting the actual `Isar` Bible text corresponding to the ListBox active states.
+
+### 4. Zero-Friction Setlist Integration
+- Wired the "Add" button inside the new tab to bundle the highlighted verses into a dynamic `Song` object.
+- **Slide System Hook**: Passed `lyrics` properly formatted precisely with standard tags (`[V1]`, `[V2]`, etc.) directly into the `setlistProvider`.
+- Because the `Setlist` already pipes into `SlideUtils.parseLyrics()`, the projector automatically dissects these Bible passages onto individual slides with titles mapped securely (e.g., `"John 1:1-5 NKJV"`) and keyboard shortcuts gracefully applied (`V1`, `V2`). It implicitly renders the required trailing blank slide automatically.
+
+## Validation Results
+- The `flutter analyze` diagnostic ran perfectly clean with zero remaining structural warnings connected to the new components.
+- The `library_pane.dart` now renders the functional `BibleSearchTab()` exclusively instead of the outdated placeholder, perfectly complementing the primary KeryxPro Dashboard aesthetic.

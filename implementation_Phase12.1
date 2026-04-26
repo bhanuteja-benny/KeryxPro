@@ -1,0 +1,51 @@
+# Implementation Plan - Phase 12 Refinements: Navigation & Shortcuts
+
+Enhance the slide preview interface with full keyboard support and refined styling for blank slides.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The shortcut logic will work as follows:
+> - **Numbers 1-9**: Jumps directly to V1, V2, etc.
+> - **Letters (V, C, B)**: Cycles through all slides of that type (e.g., pressing 'V' repeatedly goes V1 -> V2 -> V3 -> V1).
+> - **Arrow Keys**: Moves to the immediate next or previous slide.
+> Does this cycle logic for 'V' match your workflow?
+
+## Proposed Changes
+
+### State Management
+
+#### [MODIFY] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)
+- Introduce `currentSlidesProvider` to manage the list of `Slide` objects.
+- Introduce `activeSlideIndexProvider` (integer) to track the current position.
+- Update `activeSlideProvider` to be a derived provider that returns the content of the slide at `activeSlideIndex`.
+
+### Keyboard Support
+
+#### [MODIFY] [preview_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/preview_pane.dart)
+- Wrap the `PreviewPane` in a `Focus` and `KeyboardListener` widget.
+- Implement `onKeyEvent` logic:
+    - `LogicalKeyboardKey.arrowDown` / `arrowUp`: Incremental navigation.
+    - `LogicalKeyboardKey.digit1` through `digit9`: Jump to `V1`-`V9`.
+    - `LogicalKeyboardKey.keyV`: Cycle through all `V` shortcuts.
+    - `LogicalKeyboardKey.keyC`: Cycle through all `C` shortcuts.
+    - `LogicalKeyboardKey.keyB`: Cycle through all `B` shortcuts.
+
+### UI Styling
+
+#### [MODIFY] [slide_item_widget.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/slide_item_widget.dart)
+- Update `build` method to check `slide.isBlank`.
+- If true, return a single `Container` with centered `Text("[ BLANK SCREEN ]")`, effectively "merging" the 3 columns into one.
+
+## Verification Plan
+
+### Automated Tests
+- Logic tests for the shortcut cycling algorithm.
+
+### Manual Verification
+1. Select a song in the library.
+2. Verify that clicking the slides pane enables keyboard control.
+3. Press **Down Arrow** to navigate through the song.
+4. Press **'1'** and **'2'** to jump to specific verses.
+5. Press **'C'** multiple times if there are multiple choruses to verify cycling.
+6. Check the **Blank Slide** at the bottom to ensure it spans the full width of the item.

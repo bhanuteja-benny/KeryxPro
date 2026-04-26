@@ -1,0 +1,8 @@
+# Phase 11 Tasks
+
+- [x] Fix aspect ratio — parse preset's ratio string and apply dynamically
+- [x] Remove Monitor 1 launch/window logic from `projection_provider.dart`
+- [x] Remove Monitor 1 broadcast from `projection_broadcaster.dart`
+- [x] Redesign Monitor 1 tab as inline projection surface (no Launch button)
+- [x] Keep Monitor 2 tab unchanged (Launch button + external window)
+- [x] Build and verify

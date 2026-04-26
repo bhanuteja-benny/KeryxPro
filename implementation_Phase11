@@ -1,0 +1,73 @@
+# Phase 11: Aspect Ratio Fix & Monitor 1 Inline Projection
+
+## Background
+
+Two issues with the current live projector pane:
+
+1. **Aspect ratio mismatch** — The preset stores aspect ratios like `16:9`, `4:3`, `4:1`, `Custom`, but the live preview always hardcodes `AspectRatio(aspectRatio: 16 / 9)` at [line 134](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart#L134), ignoring the preset's `songAspectRatio` / `scriptureAspectRatio`.
+
+2. **Monitor 1 doesn't need a separate window** — For OBS Studio, users capture a *window region* or *display capture*. Opening a popup window is unnecessary. Instead, Monitor 1's preview should render the `ProjectorView` directly inline at the correct aspect ratio — OBS can then capture the KeryxPro main window and crop to the projection region, or we can make the preview itself serve as the capture surface.
+
+## Proposed Changes
+
+### Fix 1: Dynamic Aspect Ratio from Preset
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+
+- Read `songAspectRatio` (or `scriptureAspectRatio` when showing scripture) from the selected preset settings.
+- Parse the string (`'16:9'` → `16/9`, `'4:3'` → `4/3`, `'4:1'` → `4/1`, `'Custom'` → `customWidth / customHeight`) into a `double`.
+- Pass this computed ratio to the `AspectRatio` widget instead of the hardcoded `16 / 9`.
+
+Helper function:
+```dart
+double _getAspectRatio(PresentationSettings s, bool isSong) {
+  final ratio = isSong ? s.songAspectRatio : s.scriptureAspectRatio;
+  switch (ratio) {
+    case '4:3': return 4 / 3;
+    case '4:1': return 4 / 1;
+    case 'Custom':
+      final w = isSong ? s.songCustomWidth : s.scriptureCustomWidth;
+      final h = isSong ? s.songCustomHeight : s.scriptureCustomHeight;
+      return (w > 0 && h > 0) ? w / h : 16 / 9;
+    case '16:9':
+    default:
+      return 16 / 9;
+  }
+}
+```
+
+---
+
+### Fix 2: Remove Monitor 1 Launch Button — Make Preview the Projection Surface
+
+The idea: Monitor 1's tab becomes a **pure live preview** that renders the `ProjectorView` inline at the correct aspect ratio, centered in the pane. There is no "Launch" button and no popup window. OBS users can simply do a **Window Capture** of the main KeryxPro window and crop to the preview region.
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+
+For **Monitor 1 only**:
+- Remove the `LAUNCH` / `RELAUNCH` button.
+- Remove the `CONNECTED` / `NOT CONNECTED` status indicator (Monitor 1 is always available since it's inline).
+- Keep the preset dropdown so the user can switch presets.
+- The preview area renders `ProjectorView` directly at the selected aspect ratio — this **is** the projection surface.
+
+For **Monitor 2**:
+- Keep the existing behavior (LAUNCH button, connection status, external window) unchanged.
+
+#### [MODIFY] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+
+- Remove `monitor1WindowId` from `ProjectionState` entirely (no window is launched for Monitor 1).
+- Remove `isMonitor1Active` getter.
+- Remove `launchMonitor(1)` code path.
+- Remove `_syncToWindow` calls for Monitor 1 (the preview reads state directly from Riverpod, no IPC needed).
+
+#### [MODIFY] [projection_broadcaster.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/projection_broadcaster.dart)
+
+- Remove the Monitor 1 window broadcast (lines 36-38). Only broadcast to Monitor 2 when active.
+
+## Verification Plan
+
+### Manual Verification
+1. Run `flutter run -d windows`
+2. **Monitor 1 tab**: Should show the live preview inline with no Launch button. Changing the preset dropdown should update the aspect ratio and styling immediately.
+3. **Monitor 2 tab**: Should still show connection status, preset dropdown, and Launch button. With a second monitor, launching should open a fullscreen projector window.
+4. Verify that switching between `16:9`, `4:3`, `4:1` in the preset settings dialog causes the preview shape to change accordingly in the Monitor 1 tab.

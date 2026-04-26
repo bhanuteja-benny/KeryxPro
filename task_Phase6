@@ -1,0 +1,10 @@
+- [ ] Update `PresentationSettings` data model and run `build_runner`
+- [ ] Create `PresentationSettingsDialog` with tabs for Title, Lyrics, and General
+- [ ] Update `MainDashboardPage`:
+  - Add `MenuBar` with `Settings` -> `Presentation Settings`
+  - Remove gear icon and drawer
+- [ ] Refactor `LiveProjectorPane`:
+  - Use `Column` for layout
+  - Implement "shrink first" logic using `maxLines`
+- [ ] Update `PresentationSettingsNotifier` to handle new fields
+- [ ] Verification and Walkthrough

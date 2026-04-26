@@ -1,0 +1,27 @@
+# Phase 7: Presentation Settings Redesign
+
+We have successfully rebuilt the Presentation Settings to decouple the active Projector state from the Settings editor and introduced a **Presets System**.
+
+## What Was Refactored
+
+1. **Database Upgrades (`presentation_settings.dart`)**:
+   - Upgraded the database schema for `PresentationSettings` to remove the hardcoded ID (`1`) constraint.
+   - Replaced it with `Id id = Isar.autoIncrement` while explicitly introducing fields for `presetName`, `isDefault`, `aspectRatio`, and `isTransparent`.
+   - Safely triggered `build_runner` to sync all schemas smoothly.
+
+2. **Decoupled Providers (`presentation_settings_provider.dart`)**:
+   - The original auto-saving singleton logic has been refactored out.
+   - We now have a `presetsListProvider` that actively pulls the list of available presets inside the database.
+   - We isolated the active runtime display logic (`presentationSettingsProvider`) which correctly defaults to the initial `"Default"` preset on boot.
+   - Formulated a new dedicated state `editingPresetProvider` strictly bound to the Settings editor—meaning any changes made in the settings dialog directly influence the UI sandbox but do *not* automatically disrupt your live projection unless saved via the new **"Save Settings"** command mechanisms!
+
+3. **Revamped User Interface (`presentation_settings_dialog.dart`)**:
+   - Designed a robust custom modal supporting two primary view configurations: `ViewMode.choose` (a lobby to manage and select) and `ViewMode.edit` (a playground to customize the preset's details).
+   - **Choose View**: Includes a responsive `Wrap` for the grid of preset buttons and an integrated `TextField` to efficiently spawn duplicates (by inheriting from the Default state).
+   - **Edit View**:
+     - Includes a sleek **segmented control header** seamlessly transitioning between generic `Song` parameters and `Scripture` configurations.
+     - **Left Config Panel**: Integrated a Dropdown for Aspect Ratio explicitly allowing scaling and custom resolutions (`W`/`H`) inputs. Implemented a fully isolated dynamic preview container mimicking structural render characteristics of the projector pane natively inside your dialog screen. 
+     - Reconfigured Background Toggles implementing logically exclusive bounds restricting simultaneous selection of transparent states vs fixed solid bounds.
+     - **Right Config Panel**: Successfully embedded standard layout targets waiting seamlessly for Phase 8 typographic implementations. Included the direct "Save" button to securely snapshot modifications over to the underlying active configuration state.
+
+The updated dialog provides an extremely professional and clean interface logic to experiment on templates safely without disturbing a Live Audience viewing.

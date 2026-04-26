@@ -1,0 +1,82 @@
+# Phase 7: Presentation Settings Redesign and Presets Management
+
+This phase introduces a robust Preset management system and completely overhauls the Presentation Settings UI layout.
+
+## User Review Required
+> [!IMPORTANT]
+> - Since we are adding fundamentally new fields (`presetName`, `aspectRatio`, `isTransparent`) to the `PresentationSettings` data model, this will require running `build_runner` to generate the new Isar database schemas. Existing Isar data may be reset depending on how Isar handles the ID transition from a fixed singleton `id = 1` to `id = Isar.autoIncrement`.
+> - Please confirm the logic for the "Active Preset": Should clicking on a Preset button in the "Choose Preset" list immediately activate it for the Live Projector, or does navigating into the Edit screen just allow you to modify it while an explicit "Set Active" mechanism is provided later? (For this plan, I assume opening a preset to Edit also makes it the previewed/active preset for now).
+
+## Proposed Changes
+
+---
+### Database & Data Models
+
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- Remove `Id id = 1;` and replace with `Id id = Isar.autoIncrement;` to allow storing multiple presets.
+- Add `String presetName = 'Default';`
+- Add `bool isDefault = false;` to explicitly identify the non-deletable base preset.
+- Add fields for Aspect Ratio:
+  - `String aspectRatio = '16:9';`
+  - `double customWidth = 1920.0;`
+  - `double customHeight = 1080.0;`
+- Add field for background transparency logic:
+  - `bool isTransparent = false;`
+- Ensure a default fallback preset is seeded into the Isar database if none exist on startup.
+
+#### [NEW] [presentation_settings.g.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.g.dart)
+- Will automatically be re-generated via `build_runner` due to schema changes.
+
+---
+### State Management
+
+#### [MODIFY] [presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- Update `PresentationSettingsNotifier` logic to fetch a list of presets instead of a strict singleton.
+- Add methods: 
+  - `addPreset(String name)`
+  - `loadPreset(int id)`
+  - `updateCurrentPreset(...)`
+- Establish a mechanism (`activePresetIdProvider` or similar) to dictate which preset the `LiveProjectorPane` is currently reading from.
+
+---
+### Presentation UI
+
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Convert `PresentationSettingsDialog` to support a two-view state machine mechanism (`ViewMode.choose` and `ViewMode.edit`).
+- **Choose Preset View:**
+  - Update Dialog Title to `"Choose Preset"`.
+  - Create a Top Row providing "Default" button alongside a TextField and "Add New Preset" button.
+  - Implement a dynamic `Wrap` widget to display all newly added presets below the top section.
+- **Edit Preset View:**
+  - Build a Custom Title Bar:
+    - `< [Preset Name]` (Clickable to pop view back to Choose Preset)
+    - Tab triggers: `Song`, `Scripture` (controls which subset of settings is primarily displayed/edited).
+  - Body Layout - Row dividing into `Flex: 1` Left half and `Flex: 1` Right half.
+  - **Left Half:**
+    - Top Dropdown for `['16:9', '4:3', '4:1', 'Custom']`.
+    - Reactive text fields for `Width` and `Height` if `Custom` is selected.
+    - Centralized "Preview Screen" pane mapping UI settings accurately locally.
+    - Bottom vertical sequence of toggles:
+      - `Background Color` checkbox + Color Swatch (Triggering existing ColorPicker).
+      - `Transparent` checkbox (Mutually exclusive with Background Color).
+      - `Image` checkbox + "Browse" button for path selection.
+  - **Right Half:**
+    - Insert a `Column` with two visually distinguishable placeholder UI blocks awaiting implementation in Phase 8.
+
+## Open Questions
+> [!WARNING]
+> 1. When a user creates a "New Preset", do we want it to automatically copy the settings from "Default", or completely zero-state settings?
+> 2. Should clicking a preset to enter "Edit View" immediately apply that preset to the live output screen running right now, or should the settings just affect the "Preview" in the left half?
+
+## Verification Plan
+
+### Manual Verification
+1. Open up KeryxPro and navigate to Settings -> Presentation Settings.
+2. Verify that it says "Choose Preset" and "Default" is present.
+3. Test creating a new preset named "Worship Sunday" and verify it renders next to "Default".
+4. Click the newly created preset.
+5. Verify the Dialog switches flawlessly into Edit Mode. The title bar should show `< Worship Sunday`, `Song`, and `Scripture`.
+6. Tweak Aspect Ratio (Select Custom, enter W/H values) and observe preview dimension changes.
+7. Switch between Transparent/Background Color explicitly confirming they act mutually exclusively.
+8. Verify that Left preview container reflects the respective background state actively.
+9. Check the right half simply reflects structurally ready empty blocks for next phase.

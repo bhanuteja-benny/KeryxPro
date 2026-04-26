@@ -1,0 +1,40 @@
+# UI & UX Refinement Plan
+
+This plan addresses three critical issues: automatic preset switching between songs and scripture, improving the Bible verse selection experience, and ensuring text correctly wraps on the projection screen.
+
+## User Review Required
+
+> [!IMPORTANT]
+> For **Word Wrap**, I will increase the `maxLines` constraint and enable word wrapping in `AutoSizeText`. This means if a line is too long for the screen, it will wrap to the next line instead of shrinking until it becomes unreadable.
+
+## Proposed Changes
+
+### 1. Preset Selection Logic
+Currently, the projector doesn't reliably know if it's displaying a song or scripture.
+- **[MODIFY] [slide.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/domain/slide.dart)**: Add `final bool isSong` field to the `Slide` class.
+- **[MODIFY] [slide_utils.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/slide_utils.dart)**: Update `parseLyrics` to accept an `isSong` parameter and pass it to the `Slide` constructor.
+- **[MODIFY] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)**: 
+    - Update `currentSlidesProvider` to determine `isSong` based on the `Song.author == 'Bible'` flag (or similar logic).
+    - Update `isSongActiveProvider` to return `slides[index].isSong`.
+
+### 2. Bible Verse Selection (Shift + Click)
+- **[MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)**:
+    - Track the `lastSelectedIndex` in the Verse listbox.
+    - Implement logic in `onTap` to check for `RawKeyEventDataWindows` (or similar) to detect the Shift key.
+    - If Shift is held, select all verses between `lastSelectedIndex` and `currentIndex`.
+    - If not held, toggle only the current verse.
+
+### 3. Word Wrap in Projection
+- **[MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)**:
+    - Change `wrapWords: false` to `true` (or remove it).
+    - Increase `maxLines` from `lineCount` to `lineCount * 2` (or similar) to allow for wrapped lines while still providing some constraint to avoid massive overflow.
+
+## Verification Plan
+
+### Automated/Code Verification
+- Run `flutter analyze` to ensure no regressions in provider logic.
+
+### Manual Verification
+1. **Preset Switching**: Add a song and a bible passage to the setlist. Switch between them in the Live Screen and verify the background/margins change according to the "Song" vs "Scripture" preset settings.
+2. **Shift Selection**: In the Bible tab, select verse 1, hold Shift, and click verse 5. Verify verses 1 through 5 are all selected.
+3. **Word Wrap**: Find or create a song with a very long line. Verify it wraps to two lines on the projector instead of becoming tiny.

@@ -1,0 +1,136 @@
+# KeryxPro - Phase 1 Implementation Plan
+
+KeryxPro is a modern worship presentation software built for cross-platform desktop usage (Windows & macOS). This plan addresses the foundational Phase 1 goals: Window management, database setup, feature navigation, and control dashbaord setup.
+
+> [!CAUTION]
+> **Workspace Context Warning**
+> You are currently in the `expense_manager` workspace. Before we execute this plan and create KeryxPro, do you want to create a brand new workspace directory for this, or should we nest it inside the current scratch space? It is highly recommended to start this in a completely isolated directory.
+
+## Technology Stack Validation
+Your proposed stack is excellent for this use case. 
+
+- **Framework**: **Flutter Desktop** (Windows/macOS) is optimal for complex multi-window, cross-platform apps. For text rendering, it's very robust and performant. 
+- **Database**: **Isar Database**. I recommend Isar over ObjectBox because it is explicitly built for Flutter, heavily leverages Isolates for completely jank-free UI thread performance, and has incredible full-text search capabilities out of the box (crucial for song lyrics and verses).
+- **State Management**: **Riverpod** is the ideal choice here. Since we have a Multi-Window setup, we will be passing messages between the main Window isolate and the Projector isolate. Riverpod's functional injection model makes dealing with message-channel state updates vastly cleaner than Bloc.
+- **Windowing**: `window_manager` (for the primary bounds/state saving) + `desktop_multi_window` (to spawn the isolated secondary presentation screen).
+
+## Proposed Folder Structure
+A highly modular Clean Architecture, grouped by feature first, and then by layer (Layered Output).
+
+```text
+lib/
+├── core/
+│   ├── database/             # Isar initializations
+│   ├── multi_window/         # Services to manage Primary/Secondary window messaging
+│   ├── theme/                # Global design system & UI tokens
+│   └── usecases/             # Base usecase abstractions
+├── features/
+│   ├── dashboard/            # The main layout and resizable panels
+│   │   ├── presentation/
+│   │   │   ├── pages/        # MainDashboardPage
+│   │   │   └── widgets/      # Resizable layout panels
+│   ├── songs/                # Song library, search, and editing
+│   │   ├── data/             # Song Isar schemas and imports
+│   │   ├── domain/           # Song models & repos
+│   │   └── presentation/     # Song library UI
+│   ├── bible/                # Scripture navigation
+│   │   ├── data/             # Bible Isar schemas and XML parsers
+│   │   ├── domain/           # Bible models & repos
+│   │   └── presentation/     # 3-column scripture navigator
+│   ├── live_controller/      # The middle control pane (managing the active screen)
+│   │   └── presentation/
+│   └── projector/            # The secondary "Go Live" window
+│       └── presentation/     # Fullscreen borderless renderer
+└── main.dart                 # App entry point (Handles window spawning routing)
+```
+
+## Database Schemas (Isar)
+We optimize for read-heavy operations, as live search needs to execute in < 16ms.
+
+### Song Schema
+```dart
+import 'package:isar/isar.dart';
+
+part 'song.g.dart';
+
+@collection
+class Song {
+  Id id = Isar.autoIncrement;
+
+  @Index(type: IndexType.value)
+  late String title;
+
+  String? author;
+
+  // Storing lyrics as a block for full-text search capability.
+  // We can add a JSON or list-based layout format later.
+  @Index(type: IndexType.words)
+  late String lyrics;
+
+  String? backgroundUrl;
+
+  late DateTime lastModified;
+}
+```
+
+### Bible Schema
+```dart
+import 'package:isar/isar.dart';
+
+part 'bible.g.dart';
+
+@collection
+class BibleVersion {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  late String abbreviation; // e.g., "KJV"
+  
+  late String name;         // e.g., "King James Version"
+  late String language;
+}
+
+@collection
+class BibleVerse {
+  Id id = Isar.autoIncrement;
+
+  // Link to the version
+  @Index()
+  late int bibleVersionId;
+
+  @Index(type: IndexType.value)
+  late String bookName;
+
+  @Index()
+  late int chapterNumber;
+
+  @Index()
+  late int verseNumber;
+
+  // Used for rapid scripture searching across the entire bible.
+  @Index(type: IndexType.words)
+  late String text;
+}
+```
+
+## Multi-Window Manager Architecture
+
+Flutter desktop runs single-window by default. To implement the "Go Live" secondary display:
+1. **Entry Point Forking**: In `main.dart`, we read args. If args contain `multi_window`, we boot the `ProjectorApp`, otherwise we boot `DashboardApp`.
+2. **State Synchronization**: We will create a `LiveSessionManager` using Riverpod that communicates over `DesktopMultiWindow.invokeMethod` to send "Change Slide" events directly to the projector.
+3. **Persistence**: Primary window dimensions will be tracked via `window_manager` callbacks, saving `Size` and `Offset` to `shared_preferences`. On boot, the app will restore these bounds.
+
+## View Layout Config
+The "Control Dashboard" will utilize `multi_split_view` (or a similar resizable pane package) to replicate the OpenLP modularity. Panels included:
+*   **Left Pane**: Library (Tabs: Songs, Bible).
+*   **Center Pane**: Live Controller (Shows current actively projecting slide + next slide).
+*   **Right Pane**: Preview & Schedule (Preview song completely before throwing to live).
+
+## User Review Required
+
+Does this Phase 1 Architecture align closely with your expectations? Specifically:
+1. Are you okay to pivot to a fresh workspace directory to initialize this cleanly?
+2. Does the Isar data model layout fit the current import paths you are considering?
+3. We will utilize `desktop_multi_window` for the "Go Live" second window. 
+
+Please review and approve so we can start generating the foundation!

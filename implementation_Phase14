@@ -1,0 +1,41 @@
+# Song Management (Add/Edit/Delete) - Phase 14
+
+Implement full CRUD (Create, Read, Update, Delete) operations for the Isar Song database directly from the KeryxPro dashboard.
+
+## User Review Required
+
+- **Add Button Placement**: I propose placing the "Add Song" button as a small `IconButton` or `TextButton` right next to the search boxes in the Library tab. Does this sound good, or would you prefer a Floating Action Button (FAB) hovering over the list?
+- **Uniqueness Check**: When checking for unique titles, I will make it case-insensitive. If a duplicate is found, the user will see a snackbar error message.
+
+## Proposed Changes
+
+### Domain & Data Layer
+#### [MODIFY] `lib/features/songs/domain/song_repository.dart`
+- Add `Future<void> deleteSong(int id);`
+
+#### [MODIFY] `lib/features/songs/data/isar_song_repository.dart`
+- Implement the `deleteSong(int id)` method to remove a record by its Isar ID.
+- Add a helper `Future<bool> isTitleUnique(String title, {int? excludeId})` to verify uniqueness before saving.
+
+### State Management
+#### [MODIFY] `lib/features/songs/presentation/song_providers.dart`
+- Add `Future<String?> saveSong(Song song)` to `SongListNotifier`: It will check uniqueness. If duplicate, returns an error string. If successful, calls `repository.addSong` and `ref.invalidateSelf()` to refresh the list, returning `null` (success).
+- Add `Future<void> deleteSong(int id)` to `SongListNotifier` that deletes the song and refreshes the list.
+
+### UI Components
+#### [MODIFY] `lib/features/songs/presentation/song_library_tab.dart`
+- **Add Button**: Add an `IconButton(Icons.add_box)` or `TextButton.icon('Add New')` above or beside the search boxes.
+- **Edit/Delete Buttons**: Inside the `previewSong` subsection (where the lyrics are shown), add an `edit` icon and a `delete` icon right next to the existing `close (x)` button.
+- **Song Editor Dialog**: Create a new private stateless widget `_SongEditorDialog` (or method) that returns an `AlertDialog`. It will have:
+  - Title (Required)
+  - Author (Optional)
+  - Lyrics (Large multi-line TextField, like a notepad)
+  - Save / Cancel buttons
+- **Delete Confirmation**: Create a simple `AlertDialog` that asks "Are you sure you want to delete this song?" when the delete button is pressed.
+
+## Verification Plan
+1. Click "Add Song", ensure dialog appears. Try to save with empty title (should block). 
+2. Save a valid song, ensure it appears in the list immediately.
+3. Try to add another song with the exact same title, ensure the uniqueness check catches it.
+4. Click a song, click the Edit button in the lyrics preview, change the lyrics, and save. Verify the update.
+5. Click Delete, accept the confirmation, and verify the song disappears from the library.

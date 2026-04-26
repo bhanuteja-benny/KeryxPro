@@ -1,0 +1,60 @@
+# KeryxPro - Phase 3 Implementation Plan: Song Preview Pane
+
+This phase focuses on cross-pane communication. By leveraging Riverpod's declarative state, we will allow the Left Pane (Library) to broadcast a "Selected Song" event to the Right Pane (Preview). The Preview Pane will then parse the song's lyrics into distinct, clickable projection slides.
+
+## Proposed Changes
+
+---
+
+### 1. State Management Layer (Riverpod)
+
+We need a global state to track which song is currently selected for preview.
+
+#### [NEW] `lib/features/songs/presentation/song_selection_providers.dart`
+- Create `selectedSongProvider` as a `StateProvider<Song?>` initialized to `null`.
+- This ensures that any UI pane can instantly react to song selection changes.
+
+---
+
+### 2. UI Updates: Library Pane Linkage
+
+We will update the existing song list to trigger the new provider.
+
+#### [MODIFY] `lib/features/songs/presentation/song_library_tab.dart`
+- In the `ListView.builder`, update the `onTap` callback for each song to update `selectedSongProvider`.
+- Add a visual highlight (e.g., changes tile background color) if the currently iterated song matches the `selectedSongProvider`.
+
+---
+
+### 3. UI Creation: The Preview Pane
+
+We will replace the static placeholder on the Right Pane with a fully reactive widget that parses lyrics.
+
+#### [NEW] `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- A `ConsumerWidget` that listens to `selectedSongProvider`.
+- **Empty State**: Displays "No song selected" if null.
+- **Data State**: 
+  - Retrieves the selected `Song`.
+  - Parses the `lyrics` string by splitting on double-newlines (`\n\n`) to break it down into "Stanzas" or "Slides".
+  - Displays a `ListView` of beautiful, styled `Card` widgets representing exactly how the text will break down on the active projector.
+
+#### [MODIFY] `lib/features/dashboard/presentation/pages/main_dashboard_page.dart`
+- Extract the hardcoded `Container` in the Right Pane and cleanly replace it with the new `PreviewPane()` widget.
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. Run `flutter run -d windows`.
+2. The Dashboard will launch.
+3. In the Left Pane, click "Import Sample Songs" (if not already cached) and click on "Amazing Grace".
+4. Verify the song highlights in the Left Pane.
+5. Watch the Right Pane cleanly populate with 3-4 distinct clickable cards, correctly breaking down the string "Amazing grace how sweet the sound..." into visual projection slides!
+
+## User Review Required
+
+> [!TIP]
+> This completes the core flow from Database -> Library -> Preparation View.
+> 
+> Does this logic for breaking down lyrics (splitting on double newlines) and displaying them in standard cards align with how you want the Preview Pane designed for now?

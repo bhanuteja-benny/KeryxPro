@@ -1,0 +1,13 @@
+# KeryxPro - Phase 3 Implementation Tasks
+
+- [x] Task 1: State Management (Riverpod)
+  - [x] Create `song_selection_providers.dart` mapping `selectedSongProvider`.
+- [x] Task 2: UI Updates (Library Pane)
+  - [x] Modify `song_library_tab.dart` `onTap` to track selected `Song` context.
+  - [x] Add visual highlights to selected row.
+- [x] Task 3: UI Creation (Preview Pane)
+  - [x] Create `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+  - [x] Implement Regex or Newline split for `lyrics` slides extraction.
+  - [x] Render beautifully styled projection prediction cards.
+- [x] Task 4: Integration
+  - [x] Tie `PreviewPane` to Right Pane in `main_dashboard_page.dart`

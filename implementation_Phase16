@@ -1,0 +1,45 @@
+# Bible Import Implementation Plan
+
+This plan details the implementation of Phase 16: Bible Import, supporting common formats like OpenSong and Zefania XML, and providing users with clear instructions on where to find Bible files in various translations.
+
+## User Review Required
+
+Please review the proposed design for the "Where to find Bibles?" dialog section to ensure the provided instructions and resources meet your expectations for guiding users to download translations like NKJV, KJV, NIV, Telugu, Nepali, NASB, NLT, AMP, ESV, and Hindi.
+
+## Proposed Changes
+
+### Data Layer
+
+#### [NEW] `lib/features/bible/data/bible_import_service.dart`
+- Create `BibleImportService` to handle parsing of `.xml` files.
+- It will detect the XML format (OpenSong vs Zefania) based on root nodes (`<bible>` vs `<XMLBIBLE>`).
+- It will parse the XML tree into a list of `BibleVerse` models and an associated `BibleVersion` model.
+
+#### [NEW] `lib/features/bible/data/bible_repository.dart`
+- Create a repository that uses the `IsarService` to save `BibleVersion` and lists of `BibleVerse` objects efficiently using `isar.writeTxn` and `putAll`.
+- Ensure it handles replacing existing versions if a duplicate abbreviation is found.
+
+### Presentation Layer
+
+#### [NEW] `lib/features/bible/presentation/bible_providers.dart`
+- Create a `BibleNotifier` and `bibleProvider` (using Riverpod) to expose the import functionality and state to the UI.
+
+#### [NEW] `lib/features/bible/presentation/widgets/bible_import_dialog.dart`
+- Create a comprehensive dialog with two main sections:
+  1. **Import Section**: A button to select and upload Bible files (`FilePicker`), along with a progress indicator for parsing and saving.
+  2. **Information Section ("Where to find Bibles?")**: An aesthetically pleasing info card that guides the user:
+     - **Public Domain & Community Sources**: Explain that while KJV is public domain, modern translations (NIV, NKJV, NASB, NLT, AMP, ESV) and regional languages (Telugu, Nepali, Hindi) are often found in user-created OpenSong repositories due to copyright.
+     - **Suggested Links**: Provide references to the OpenSong website (`opensong.org`), OpenLP forums, and GitHub repositories where users can download these `.xml` or `.xmm` files.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/custom_title_bar.dart`
+- Change the `onPressed` handler for the "Import Bible" menu item to open the new `BibleImportDialog` instead of displaying a "coming soon" snackbar.
+
+## Verification Plan
+
+### Automated/Code Verification
+- Attempt to parse sample OpenSong and Zefania XML structures using a unit test or debug logs to ensure accurate extraction of book names, chapters, and verses.
+- Verify `Isar` successfully saves thousands of verses in a reasonable time using bulk inserts.
+
+### Manual Verification
+- Open the application, go to "Imports -> Import Bible", and verify the dialog appears with the helpful instructions.
+- Select a mock XML file and verify that the parsing and insertion completes without freezing the UI.

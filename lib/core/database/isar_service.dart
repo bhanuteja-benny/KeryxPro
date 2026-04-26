@@ -1,0 +1,39 @@
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+import '../../features/songs/data/song.dart';
+import '../../features/bible/data/bible.dart';
+import '../../features/settings/data/presentation_settings.dart';
+import '../../features/settings/data/projection_config.dart';
+
+class IsarService {
+  late Future<Isar> db;
+
+  IsarService() {
+    db = openDB();
+  }
+
+  Future<Isar> openDB() async {
+    if (Isar.instanceNames.isEmpty) {
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final dbDir = Directory('${appDocDir.path}\\KeryxPro');
+      if (!await dbDir.exists()) {
+        await dbDir.create(recursive: true);
+      }
+      
+      return await Isar.open(
+        [
+          SongSchema,
+          BibleVersionSchema,
+          BibleVerseSchema,
+          PresentationSettingsSchema,
+          ProjectionConfigSchema,
+        ],
+        directory: dbDir.path,
+        inspector: true,
+      );
+    }
+    return Future.value(Isar.getInstance());
+  }
+}

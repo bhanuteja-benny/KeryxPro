@@ -1,0 +1,653 @@
+# Phase 11 Walkthrough: Aspect Ratio Fix & Inline Projection
+
+## Changes Made
+
+### 1. Dynamic Aspect Ratio from Preset Settings
+
+**Problem**: The live preview hardcoded `AspectRatio(aspectRatio: 16 / 9)` regardless of the preset's `songAspectRatio` / `scriptureAspectRatio` setting.
+
+**Fix**: Added a `_getAspectRatio()` helper that parses the preset string:
+
+| Preset Value | Result |
+|---|---|
+| `'16:9'` | `16 / 9 = 1.778` |
+| `'4:3'` | `4 / 3 = 1.333` |
+| `'4:1'` | `4 / 1 = 4.0` |
+| `'Custom'` | `customWidth / customHeight` |
+
+Both Monitor 1 and Monitor 2 previews now use this dynamic aspect ratio.
+
+### 2. Monitor 1 → Inline Projection Surface (No Popup)
+
+**Problem**: Monitor 1 had a "Launch" button that opened a separate popup window. For OBS Studio, this was unnecessary — users just need a capturable region.
+
+**Fix**: Monitor 1's tab now renders `ProjectorView` directly inline as the projection surface:
+- **No Launch button** — the preview area *is* the output
+- **No window management** — no IPC, no window IDs, no broadcast needed
+- **Label changed** to "OBS CAPTURE SURFACE" with a camera icon
+- **Preset dropdown retained** — users can still switch presets live
+- OBS users do **Window Capture → KeryxPro** and crop to this region
+
+### Files Modified
+
+```diff:live_projector_pane.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'dart:io';
+import '../live_projector_providers.dart';
+import '../../../songs/presentation/song_selection_providers.dart';
+import '../../../settings/presentation/presentation_settings_provider.dart';
+
+class LiveProjectorPane extends ConsumerWidget {
+  const LiveProjectorPane({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeSlideText = ref.watch(activeSlideProvider);
+    final settings = ref.watch(presentationSettingsProvider);
+    final selectedSong = ref.watch(selectedSongProvider);
+
+    final textAlign = _getAlignment(settings.lyricsAlignment);
+    
+    // Count lines to force "shrink before wrap"
+    final lineCount = activeSlideText?.split('\n').length ?? 1;
+
+    // We loosely assume it's a song if selectedSong is present.
+    final isSong = selectedSong != null;
+
+    // Defensive values to prevent crashes from uninitialized/NaN Isar data
+    final isTransparent = isSong ? settings.isSongTransparent : settings.isScriptureTransparent;
+    final backgroundColorValue = Color(isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor);
+    final isImageEnabled = isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled;
+    final backgroundImage = isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage;
+    // Body Defensive Values
+    final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
+    final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
+    final lyricsFontSizeValue = (settings.lyricsFontSize.isNaN || settings.lyricsFontSize <= 0) ? 80.0 : settings.lyricsFontSize;
+    final lyricsFontColorValue = Color(settings.lyricsFontColor);
+    final lyricsMarginTopValue = isSong ? settings.lyricsMarginTop : settings.verseMarginTop;
+    final lyricsMarginBottomValue = isSong ? settings.lyricsMarginBottom : settings.verseMarginBottom;
+    final lyricsMarginLeftValue = isSong ? settings.lyricsMarginLeft : settings.verseMarginLeft;
+    final lyricsMarginRightValue = isSong ? settings.lyricsMarginRight : settings.verseMarginRight;
+
+    // Title Defensive Values
+    final showTitle = isSong ? settings.showTitle : settings.showChapter;
+    final titleHorizontalStr = isSong ? settings.titleAlignment : settings.chapterAlignment;
+    final titleVerticalStr = isSong ? settings.titleVerticalAlignment : settings.chapterVerticalAlignment;
+    final titleFontSizeValue = (settings.titleFontSize.isNaN || settings.titleFontSize <= 0) ? 24.0 : settings.titleFontSize;
+    final titleFontColorValue = Color(settings.titleFontColor);
+    final titleMarginTopValue = isSong ? settings.titleMarginTop : settings.chapterMarginTop;
+    final titleMarginBottomValue = isSong ? settings.titleMarginBottom : settings.chapterMarginBottom;
+    final titleMarginLeftValue = isSong ? settings.titleMarginLeft : settings.chapterMarginLeft;
+    final titleMarginRightValue = isSong ? settings.titleMarginRight : settings.chapterMarginRight;
+
+    return Container(
+      color: Colors.grey[900], 
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                color: isTransparent ? Colors.transparent : backgroundColorValue,
+                image: isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync()
+                  ? DecorationImage(
+                      image: FileImage(File(backgroundImage)),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+                border: Border.all(color: Colors.white24, width: 1), // Debug border
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Body Layer
+                  Align(
+                    alignment: _getAlignmentGeometry(alignStr, vAlignStr),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(lyricsMarginLeftValue, lyricsMarginTopValue, lyricsMarginRightValue, lyricsMarginBottomValue),
+                      child: activeSlideText == null || activeSlideText.isEmpty
+                          ? AutoSizeText(
+                              'KeryxPro Worship',
+                              style: TextStyle(
+                                color: lyricsFontColorValue.withOpacity(0.2),
+                                fontSize: lyricsFontSizeValue,
+                                fontFamily: settings.lyricsFontFamily,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                            )
+                          : AutoSizeText(
+                              activeSlideText,
+                              style: TextStyle(
+                                color: lyricsFontColorValue,
+                                fontSize: lyricsFontSizeValue,
+                                fontFamily: settings.lyricsFontFamily,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                              textAlign: textAlign,
+                              maxLines: lineCount,
+                              minFontSize: 8,
+                              wrapWords: false,
+                            ),
+                    ),
+                  ),
+
+                  // Title Layer
+                  if (showTitle && selectedSong != null)
+                    Align(
+                      alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(titleMarginLeftValue, titleMarginTopValue, titleMarginRightValue, titleMarginBottomValue),
+                        child: _buildTitle(selectedSong.title, titleFontSizeValue, titleFontColorValue, settings.titleFontFamily, _getAlignment(titleHorizontalStr)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(String title, double fontSize, Color color, String fontFamily, TextAlign align) {
+    return Text(
+      title,
+      textAlign: align,
+      style: TextStyle(
+        color: color,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  TextAlign _getAlignment(String alignment) {
+    switch (alignment) {
+      case 'left':
+        return TextAlign.left;
+      case 'right':
+        return TextAlign.right;
+      case 'center':
+      default:
+        return TextAlign.center;
+    }
+  }
+
+  Alignment _getAlignmentGeometry(String horizontal, String vertical) {
+    double x = 0;
+    double y = 0;
+    switch (horizontal) {
+      case 'left': x = -1; break;
+      case 'right': x = 1; break;
+      case 'center': default: x = 0; break;
+    }
+    switch (vertical) {
+      case 'top': y = -1; break;
+      case 'bottom': y = 1; break;
+      case 'center': default: y = 0; break;
+    }
+    return Alignment(x, y);
+  }
+}
+===
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../live_projector_providers.dart';
+import '../../../songs/presentation/song_selection_providers.dart';
+import '../../../settings/presentation/presentation_settings_provider.dart';
+import '../../../settings/presentation/projection_provider.dart';
+import '../../../settings/data/presentation_settings.dart';
+import '../../../presentation/presentation/widgets/projector_view.dart';
+
+class LiveProjectorPane extends ConsumerWidget {
+  const LiveProjectorPane({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          Container(
+            color: Colors.grey[850],
+            child: const TabBar(
+              tabs: [
+                Tab(text: 'Monitor 1 (Streaming)'),
+                Tab(text: 'Monitor 2 (Extended)'),
+              ],
+              indicatorColor: Colors.blue,
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _Monitor1View(),
+                _Monitor2View(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Monitor 1: Inline projection surface (no popup window) ───
+
+class _Monitor1View extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final projectionState = ref.watch(projectionProvider);
+    final presetsAsync = ref.watch(presetsListProvider);
+    final activeSlideText = ref.watch(activeSlideProvider);
+    final selectedSong = ref.watch(selectedSongProvider);
+
+    final selectedPresetId = projectionState.config.monitor1PresetId;
+
+    return Container(
+      color: Colors.grey[900],
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Header: Preset dropdown only (no Launch button)
+          Row(
+            children: [
+              const Icon(Icons.videocam, color: Colors.blue, size: 16),
+              const SizedBox(width: 8),
+              const Text(
+                'OBS CAPTURE SURFACE',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const Spacer(),
+              const Text('Preset: ', style: TextStyle(color: Colors.grey, fontSize: 12)),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 150,
+                height: 32,
+                child: presetsAsync.when(
+                  data: (presets) {
+                    final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+                    return DropdownButton<int>(
+                      value: currentId,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      dropdownColor: Colors.grey[850],
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      items: presets.map((p) => DropdownMenuItem<int>(
+                        value: p.id,
+                        child: Text(p.presetName),
+                      )).toList(),
+                      onChanged: (val) {
+                        if (val == null) return;
+                        ref.read(projectionProvider.notifier).updateMonitor1Preset(val);
+                      },
+                    );
+                  },
+                  loading: () => const SizedBox(),
+                  error: (_, __) => const SizedBox(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Projection Surface — this IS the capture region for OBS
+          Expanded(
+            child: Center(
+              child: presetsAsync.when(
+                data: (presets) {
+                  final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+                  final settings = presets.firstWhere(
+                    (p) => p.id == currentId,
+                    orElse: () => PresentationSettings(),
+                  );
+                  final isSong = selectedSong != null;
+                  final aspectRatio = _getAspectRatio(settings, isSong);
+
+                  return AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: ProjectorView(
+                        settings: settings,
+                        activeSlideText: activeSlideText,
+                        titleText: selectedSong?.title,
+                        isSong: isSong,
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Error: $e')),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Monitor 2: External projector window (Launch button) ───
+
+class _Monitor2View extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final projectionState = ref.watch(projectionProvider);
+    final presetsAsync = ref.watch(presetsListProvider);
+    final activeSlideText = ref.watch(activeSlideProvider);
+    final selectedSong = ref.watch(selectedSongProvider);
+
+    final selectedPresetId = projectionState.config.monitor2PresetId;
+    final isConnected = projectionState.hasSecondaryDisplay;
+    final isActive = projectionState.isMonitor2Active;
+
+    return Container(
+      color: Colors.grey[900],
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Header: Status, Preset dropdown, Launch button
+          Row(
+            children: [
+              Icon(
+                isConnected ? Icons.circle : Icons.circle_outlined,
+                color: isConnected ? Colors.green : Colors.red,
+                size: 12,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isConnected ? 'CONNECTED' : 'NOT CONNECTED',
+                style: TextStyle(
+                  color: isConnected ? Colors.green : Colors.red,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              const Text('Preset: ', style: TextStyle(color: Colors.grey, fontSize: 12)),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 150,
+                height: 32,
+                child: presetsAsync.when(
+                  data: (presets) {
+                    final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+                    return DropdownButton<int>(
+                      value: currentId,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      dropdownColor: Colors.grey[850],
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      items: presets.map((p) => DropdownMenuItem<int>(
+                        value: p.id,
+                        child: Text(p.presetName),
+                      )).toList(),
+                      onChanged: (val) {
+                        if (val == null) return;
+                        ref.read(projectionProvider.notifier).updateMonitor2Preset(val);
+                      },
+                    );
+                  },
+                  loading: () => const SizedBox(),
+                  error: (_, __) => const SizedBox(),
+                ),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: isConnected ? () => ref.read(projectionProvider.notifier).launchMonitor2() : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isActive ? Colors.blue : Colors.grey[800],
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  minimumSize: const Size(80, 28),
+                ),
+                child: Text(isActive ? 'RELAUNCH' : 'LAUNCH', style: const TextStyle(fontSize: 10)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Preview Area
+          Expanded(
+            child: isConnected
+              ? Center(
+                  child: presetsAsync.when(
+                    data: (presets) {
+                      final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+                      final settings = presets.firstWhere(
+                        (p) => p.id == currentId,
+                        orElse: () => PresentationSettings(),
+                      );
+                      final isSong = selectedSong != null;
+                      final aspectRatio = _getAspectRatio(settings, isSong);
+
+                      return AspectRatio(
+                        aspectRatio: aspectRatio,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white10),
+                          ),
+                          child: ProjectorView(
+                            settings: settings,
+                            activeSlideText: activeSlideText,
+                            titleText: selectedSong?.title,
+                            isSong: isSong,
+                          ),
+                        ),
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(child: Text('Error: $e')),
+                  ),
+                )
+              : Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.desktop_access_disabled, size: 48, color: Colors.white24),
+                      SizedBox(height: 16),
+                      Text('No Monitor Connected', style: TextStyle(color: Colors.white24)),
+                    ],
+                  ),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Helpers ───
+
+double _getAspectRatio(PresentationSettings settings, bool isSong) {
+  final ratio = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+  switch (ratio) {
+    case '4:3':
+      return 4 / 3;
+    case '4:1':
+      return 4 / 1;
+    case 'Custom':
+      final w = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
+      final h = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
+      return (w > 0 && h > 0) ? w / h : 16 / 9;
+    case '16:9':
+    default:
+      return 16 / 9;
+  }
+}
+
+```
+
+```diff:projection_provider.dart
+===
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:screen_retriever/screen_retriever.dart';
+import 'dart:convert';
+
+import '../../../main.dart';
+import '../../../core/database/isar_service.dart';
+import '../data/projection_config.dart';
+
+class ProjectionState {
+  final ProjectionConfig config;
+  final List<Display> displays;
+  final String? monitor2WindowId;
+
+  ProjectionState({
+    required this.config,
+    required this.displays,
+    this.monitor2WindowId,
+  });
+
+  bool get isMonitor2Active => monitor2WindowId != null;
+  bool get hasSecondaryDisplay => displays.length >= 2;
+
+  ProjectionState copyWith({
+    ProjectionConfig? config,
+    List<Display>? displays,
+    String? monitor2WindowId,
+    bool clearMonitor2 = false,
+  }) {
+    return ProjectionState(
+      config: config ?? this.config,
+      displays: displays ?? this.displays,
+      monitor2WindowId: clearMonitor2 ? null : (monitor2WindowId ?? this.monitor2WindowId),
+    );
+  }
+}
+
+class ProjectionNotifier extends StateNotifier<ProjectionState> {
+  final IsarService _isarService;
+
+  ProjectionNotifier(this._isarService) : super(ProjectionState(config: ProjectionConfig(), displays: [])) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final isar = await _isarService.db;
+    
+    ProjectionConfig? config = await isar.projectionConfigs.get(ProjectionConfig.singletonId);
+    if (config == null) {
+      config = ProjectionConfig()..id = ProjectionConfig.singletonId;
+      await isar.writeTxn(() => isar.projectionConfigs.put(config!));
+    }
+
+    List<Display> displays = await ScreenRetriever.instance.getAllDisplays();
+    state = ProjectionState(config: config, displays: displays);
+  }
+
+  Future<void> refreshDisplays() async {
+    List<Display> displays = await ScreenRetriever.instance.getAllDisplays();
+    state = state.copyWith(displays: displays);
+  }
+
+  Future<void> updateMonitor1Preset(int? presetId) async {
+    final isar = await _isarService.db;
+    final newConfig = ProjectionConfig()
+      ..id = state.config.id
+      ..monitor1PresetId = presetId
+      ..monitor2PresetId = state.config.monitor2PresetId;
+    
+    await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
+    state = state.copyWith(config: newConfig);
+    // No window sync needed — Monitor 1 reads state directly via Riverpod
+  }
+
+  Future<void> updateMonitor2Preset(int? presetId) async {
+    final isar = await _isarService.db;
+    final newConfig = ProjectionConfig()
+      ..id = state.config.id
+      ..monitor1PresetId = state.config.monitor1PresetId
+      ..monitor2PresetId = presetId;
+    
+    await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
+    state = state.copyWith(config: newConfig);
+    if (state.monitor2WindowId != null) {
+      _syncToWindow(state.monitor2WindowId!, presetId);
+    }
+  }
+
+  Future<void> launchMonitor2() async {
+    if (state.displays.length < 2) return;
+
+    final args = {
+      'type': 'projector',
+      'monitorIndex': 2,
+      'presetId': state.config.monitor2PresetId,
+    };
+
+    final config = WindowConfiguration(arguments: jsonEncode(args));
+    final window = await WindowController.create(config);
+    await window.show();
+    
+    state = state.copyWith(monitor2WindowId: window.windowId);
+  }
+
+  void _syncToWindow(String windowId, int? presetId) {
+    WindowController.fromWindowId(windowId).invokeMethod('update_preset', {
+      'presetId': presetId,
+    });
+  }
+}
+
+final projectionProvider = StateNotifierProvider<ProjectionNotifier, ProjectionState>((ref) {
+  return ProjectionNotifier(ref.watch(isarServiceProvider));
+});
+
+```
+
+```diff:projection_broadcaster.dart
+===
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import '../../live_controller/presentation/live_projector_providers.dart';
+import '../../songs/presentation/song_selection_providers.dart';
+import '../../settings/presentation/projection_provider.dart';
+
+final projectionBroadcasterProvider = Provider<void>((ref) {
+  // Listen for slide changes
+  ref.listen(activeSlideProvider, (previous, next) {
+    _broadcastContent(ref, next);
+  });
+
+  // Listen for song changes (to update title)
+  ref.listen(selectedSongProvider, (previous, next) {
+    _broadcastContent(ref, ref.read(activeSlideProvider));
+  });
+});
+
+void _broadcastContent(Ref ref, String? text) {
+  final song = ref.read(selectedSongProvider);
+  final state = ref.read(projectionProvider);
+  
+  // Only broadcast to Monitor 2 external window (Monitor 1 is inline via Riverpod)
+  if (state.monitor2WindowId != null) {
+    final args = {
+      'text': text,
+      'title': song?.title,
+      'isSong': song != null,
+    };
+    WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
+  }
+}
+
+```
+
+## What Was Tested
+
+- `flutter build windows` — ✅ Build successful with zero errors

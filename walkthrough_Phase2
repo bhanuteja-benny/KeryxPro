@@ -1,0 +1,40 @@
+# KeryxPro Development Walkthrough
+
+We have successfully established the technical foundation (Phase 1) and implemented the primary interactive Song UI (Phase 2) for KeryxPro!
+
+## Phase 1 Accomplishments
+- **Core Infrastructure**: Enabled Developer Mode, scaffolded a clean architecture pattern (`core/database`, `domain`, `data`, `presentation` layers).
+- **Multi-Window Setup**: Overrode the default `main.dart` to fork into a `DashboardApp` (primary Control Pane) and a `ProjectorApp` (secondary Go-Live display).
+- **Database Architecture**: Implemented fast, optimized `Isar 3.x` data schemas for `Song` (with Lyrics string matching) and `BibleVerse`. 
+
+---
+
+## Phase 2: Song Library & Imports
+
+We've connected KeryxPro's `Left Pane` to a real underlying SQL-like search flow using pure Riverpod declarative state!
+
+### 1. Data & Domain Abstraction
+Implemented an `IsarSongRepository` that directly manages the local Isar database. It includes a custom `.seedMockSongs()` execution that quickly populates standard offline worship songs for rapid testing, resolving a massive pain point for offline workflows.
+
+### 2. Live State Broadcasting (Riverpod)
+Built a highly responsive `SongListNotifier` using `AsyncNotifierProvider`. 
+This controller maintains the active memory cache of your library. Whenever a user types in the search bar, this controller re-queries Isar and forces the UI to reactively re-render in fractions of a millisecond.
+
+### 3. The `LibraryPane` Component
+Replaced the static placeholder UI with a sleek `DefaultTabController` wrapped container! Include:
+- A sleek, dark-themed `TabBar` with tab icons.
+- A fully interactive `SongLibraryTab` ConsumerWidget.
+  
+#### Interface Flow Highlights:
+*   **Empty State Management**: If no songs are found (or on first boot), the system renders an empty state with an **"Import Sample Songs"** button. Clicking this triggers our repository seed inject logic automatically!
+*   **Rapid Search Bar**: A built-in header `TextField` cleanly intercepts keyboard strokes.
+*   **ListView Output**: A standard Material `ListTile` showing `Song title`, `author`, and a navigational chevron.
+
+### Verification
+> [!TIP]
+> The Phase 2 Song Library is active. Verify the search & database seeding immediately!
+
+1. Close your previous terminal instance of Flutter to clear the locks.
+2. Run `flutter run -d windows` again in your directory.
+3. Observe the Left pane now holds interactive tabs. In the "Songs" tab, click the **Import Sample Songs** button! 
+4. The list will populate with classic hymns, and you can test the instant query search bar at the very top!

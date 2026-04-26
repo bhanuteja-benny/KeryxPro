@@ -1,0 +1,31 @@
+# KeryxPro Development Walkthrough
+
+We have successfully established the technical foundation (Phase 1), implemented the primarily interactive Song UI (Phase 2), and completely wired up the cross-pane Song Preview Logic (Phase 3) for KeryxPro!
+
+## Phase 1 & 2 Recap
+- Scaffolding of the Clean Architecture pattern using Riverpod + Isar 3.x database.
+- Implemented `DashboardApp` for primary views and `ProjectorApp` for secondary Go-Live screens.
+- Connected the `SongLibraryTab` to perform real-time SQL full-text searching using an `AsyncNotifierProvider`.
+
+## Phase 3 Accomplishments: The Preview Pane
+
+We successfully connected the disparate panes of your UI using Riverpod's reactive graph, demonstrating how easily we can route projection data!
+
+### Global Cross-Pane States
+Created `selectedSongProvider`, a simple `StateProvider` living above the UI tree. The `SongLibraryTab` (Left Pane) was updated so that `onTap`, it simply registers the targeted `Song` with this provider. 
+
+### Lyric Parsing Engine (`PreviewPane`)
+Replaced the Right Pane placeholder with the new `PreviewPane`. When a user clicks a song:
+1. The Preview Pane instantly rebuilds via Riverpod's listening mechanisms.
+2. It fetches the text-blob `lyrics` string from Isar.
+3. It utilizes a `RegExp(r'\n\s*\n')` split execution to slice the lyrics precisely on double-newlines.
+4. Each stanza is dynamically wrapped in a modern, styled `Card` displaying its Slide Number and text boundaries.
+
+### Validation Details
+The system now functions as a unified previewer. If no song is selected, the preview pane gracefully falls back to a helper instruction screen. Clicking an item immediately slices that content up to mimic individual projection bounds.
+
+### Next Steps...
+> [!TIP]
+> The Right Pane now accurately simulates stanza slides! Next up, we can build the actual cross-window channel so that clicking a slide on the Right Pane physically renders it on the second screen!
+
+Run `flutter run -d windows` to test out selecting "Amazing Grace" and watching it seamlessly populate the Preview slides!

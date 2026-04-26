@@ -1,0 +1,53 @@
+# Phase 6 Plan: Presentation Layout & Top Menu Refinement
+
+This phase focuses on correcting the presentation behavior and UI navigation based on your feedback. We will move the settings to a top menu, separate Title/Lyrics controls, and fix the "shrink vs wrap" logic.
+
+## Proposed Changes
+
+### 1. Data Model & Persistence
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- Expand the `PresentationSettings` collection:
+  - **Shared**: `backgroundColor`.
+  - **Title**: `titlePosition`, `titleFontSize`, `titleFontFamily`, `titleColor`, `titleMargin`.
+  - **Lyrics**: `lyricsAlignment`, `lyricsMaxFontSize`, `lyricsFontFamily`, `lyricsColor`, `lyricsMargin`.
+- Run `build_runner` to update Isar generated code.
+
+### 2. Navigation & UI Structure
+#### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- **Remove** the `AppBar` entirely (deleting 'KeryxPro' title).
+- **Remove** the right-side `Drawer` and gear icon.
+- **Add** a `MenuBar` at the very top of the Scaffold's `body` or as a `PreferredSize` top widget.
+- This will maximize vertical space for the three-pane layout.
+- Structure: `Settings` menu -> `Presentation Settings` item.
+- Clicking the item will open a modal **Dialog**.
+
+### 3. Settings Dialog
+#### [NEW] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Implement a modal dialog with `DefaultTabController`.
+- **Tab: Title**: Controls for position (Top/Bottom/None), font family (searchable), color picker, font size slider, and margin slider.
+- **Tab: Lyrics**: Controls for alignment, font family (searchable), color picker, max font size slider, and margin slider.
+- **Tab: Appearance**: Background color picker.
+
+### 4. Projector Logic (The "Correction")
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- **Layout**: Change from `Stack` to `Column` to prevent Title/Lyrics overlap.
+  - If Title is 'Top': [Title] -> [Spacer/Expanded Lyrics] -> [Empty].
+  - If Title is 'Bottom': [Empty] -> [Spacer/Expanded Lyrics] -> [Title].
+- **Scaling Logic**: 
+  - Count the number of newline-separated lines in the slide.
+  - Set `AutoSizeText.maxLines` to that count.
+  - This forces `AutoSizeText` to shrink the font size to fit all lines into the available space *without* wrapping words, maintaining your line structure perfectly.
+
+## Open Questions
+
+> [!NOTE]
+> - **Menu Placement**: Do you want the `MenuBar` to be part of the Windows System menu (at the very top of the window frame) or an in-app menu bar located below the AppBar? (In-app is usually easier to stylize to match your dark theme).
+> - **Shrink Threshold**: If the text becomes too small to read (e.g., < 12pt), should we eventually allow wrapping, or just let it be small?
+
+## Verification Plan
+### Manual Verification
+1. Open the app and verify the top "Settings" menu exists.
+2. Select "Presentation Settings" and verify the tabbed Dialog appears with separate Title/Lyrics options.
+3. Change the Title font to a different family/color and verify it doesn't overlap the lyrics.
+4. Input a long lyric slide and verify that it shrinks the font size to keep lines on one row each, rather than wrapping them into many rows.
+5. Verify settings persist after restart.

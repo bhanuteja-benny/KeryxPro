@@ -1,0 +1,63 @@
+# Phase 17: Bible Search Implementation Plan
+
+This plan details the implementation of the comprehensive Bible Search tab, which will replace the current placeholder in the Library Pane. It incorporates a flexible search box, four cascading listboxes, version selection, and seamless integration with the Setlist and Live Presentation views.
+
+## User Review Required
+
+Please review the proposed approach for adding Bible verses to the Setlist. We will create a "mock" Song object behind the scenes, ensuring that the selected verses seamlessly generate perfectly formatted slides with their correct shortcuts (e.g., `[V1]`) and the expected blank slide at the end, precisely as the existing Song projection works. 
+
+## Proposed Changes
+
+### Domain & Data Layer
+
+#### [NEW] `lib/features/bible/domain/bible_constants.dart`
+- Define two lists: `oldTestamentBooks` and `newTestamentBooks`. This ensures the books are always ordered correctly (Genesis to Revelation) rather than relying on database insertion order.
+- Define a dictionary mapping common abbreviations (e.g., "gen", "1 pet", "jn") to their full book names.
+
+### Presentation Layer
+
+#### [NEW] `lib/features/bible/presentation/bible_search_providers.dart`
+Create Riverpod providers to manage the state of the Bible Search tab:
+- `selectedBibleVersionProvider`
+- `selectedBookProvider`
+- `selectedChapterProvider`
+- `selectedVersesProvider` (A `Set<int>` to support multiple verse selection like 1-5).
+- `biblePreviewTextProvider`: Fetches the actual text from the database for the currently selected book, chapter, and verses.
+
+#### [NEW] `lib/features/bible/presentation/widgets/bible_search_tab.dart`
+Build the main UI for the Bible Tab:
+1. **Top Bar**:
+   - `TextField` for quick search (e.g., "John 3:1-5").
+   - `DropdownButton` to select the Bible version (populated from the imported versions).
+2. **Four Cascading ListBoxes** (Side-by-side using `Expanded` and `ListView`):
+   - **Old Testament Books**
+   - **New Testament Books**
+   - **Chapters** (Populates based on the maximum chapters available for the selected book).
+   - **Verses** (Populates based on the available verses for the selected chapter. Allows multi-selection).
+3. **Preview Section** (Bottom):
+   - Mirrors the design of the `SongLibraryTab` preview.
+   - Displays the selected verses.
+   - Contains an **"Add to Setlist"** button.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/library_pane.dart`
+- Replace the "Coming Soon" placeholder in the `TabBarView` with the new `BibleSearchTab`.
+
+### Logic & Workflows
+
+**1. Textbox Parser Workflow**:
+- When the user presses Enter in the text box (e.g., "1 pet 2:12-14"), a Regex `^(\d?\s*[a-zA-Z\s]+)\s+(\d+):(\d+)(?:-(\d+))?$` parses the input.
+- The abbreviation "1 pet" is resolved to "1 Peter".
+- The `selectedBookProvider`, `selectedChapterProvider`, and `selectedVersesProvider` states are automatically updated, causing the UI listboxes to jump to those selections.
+
+**2. Add to Setlist Workflow**:
+- When "Add" is clicked, the selected verses are grouped.
+- A virtual `Song` object is created:
+  - `title`: `"{Book} {Chapter}:{Verses} {Version}"` (e.g., "John 1:1-5 NKJV")
+  - `lyrics`: `"[V1]\nIn the beginning...\n\n[V2]\nThe same was in the..."`
+- This object is pushed to the `setlistProvider`.
+- Because the lyrics are formatted with standard OpenSong `[V...]` tags, `SlideUtils` will perfectly parse them into individual slides, apply the verse number to the shortcut, and automatically add a blank slide at the end.
+
+## Verification Plan
+1. **Search parsing**: Verify inputs like `gen 1:3`, `1 john 2:1`, and `Ps 23:1-4` successfully auto-select the correct lists.
+2. **Listbox Cascading**: Verify that selecting "Genesis" populates 50 chapters, and selecting Chapter 1 populates 31 verses.
+3. **Projection Integration**: Click "Add" on a selection and verify it appears in the Setlist. Select it in the Setlist and ensure the projector shows the correct slide titles ("John 1:1-5 NKJV") and slide shortcuts ("V1", "V2").

@@ -1,0 +1,74 @@
+# Implementation Plan - Phase 13: Song Search & Setlist Workflow
+
+Enhance the library management and projection workflow with dual-filter search, a quick-preview lyrics panel, and a dedicated setlist (middle section) to track songs added for the session.
+
+## User Review Required
+
+> [!IMPORTANT]
+> To support the new workflow, I will update how songs are managed:
+> 1. **Clicking a song in the library**: Opens the **Lyrics Preview Pane** at the bottom of the library (Left Section).
+> 2. **Clicking '+' or pressing 'Enter'**: Adds the song to the **Setlist** (Middle Section) AND immediately appends its slides to the **Slides Section** (Right Section).
+> 3. **Continuous Slides**: The Right Section will show slides for ALL songs in the setlist, with each song separated by a blank slide.
+> 4. **Search Performance**: I will implement debounced dual-filtering for fast searching.
+
+## Proposed Changes
+
+### 1. Search & Data Logic
+
+#### [MODIFY] `lib/features/songs/domain/song_repository.dart`
+- Update `searchSongs` to accept optional `titleQuery` and `lyricsQuery`.
+
+#### [MODIFY] `lib/features/songs/data/isar_song_repository.dart`
+- Implement the dual-filter logic. If both are provided, it will find songs matching BOTH (Intersection).
+
+#### [MODIFY] `lib/features/songs/presentation/song_providers.dart`
+- Add `titleSearchProvider` and `lyricsSearchProvider` (StateProviders).
+- Update `SongListNotifier` to watch both search providers and trigger searches.
+
+### 2. Setlist & Selection State
+
+#### [MODIFY] `lib/features/songs/presentation/song_selection_providers.dart`
+- Rename `selectedSongProvider` to `previewSongProvider`.
+- Add `setlistProvider` (StateNotifierProvider) to manage the list of songs for the session.
+- Update `currentSlidesProvider` (in live_controller) to flatten all songs in the setlist into a single list of slides.
+
+### 3. UI Components
+
+#### [MODIFY] `lib/features/songs/presentation/song_library_tab.dart`
+- **Dual Search UI**: Two compact `TextField` widgets at the top.
+- **Lyrics Preview Pane**: 
+    - A panel at the bottom of the tab that appears when a song is clicked.
+    - Displays full lyrics with a scrollbar and a close button.
+    - **Keyword Highlighting**: Matches from the lyrics search box will be highlighted in yellow.
+- **List Items**: 
+    - Add a `+` button for adding to the setlist.
+    - Support for `Enter` key to add the selected song.
+
+#### [NEW] `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+- The middle section of the dashboard.
+- Lists titles of songs added to the session.
+- Allows reordering (future) or removing songs.
+- Selection here updates `activeSongProvider`.
+
+#### [MODIFY] `lib/features/dashboard/presentation/pages/main_dashboard_page.dart`
+- Integrate `SetlistPane` into the layout.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- Update to watch `activeSongProvider` instead of the old `selectedSongProvider`.
+
+## Implementation Details
+
+### Highlight Generator
+I will implement a `RichText` helper that uses `RegExp` to find all occurrences of the search term and builds a list of `TextSpan` objects with either normal or highlighted styles.
+
+### Layout Density
+To keep the UI clean, the search boxes and preview pane will use high-density styling (low padding, small fonts) consistent with the VS Code / OpenSong aesthetic.
+
+## Verification Plan
+
+### Manual Verification
+1. **Search**: Enter "Amazing" in title, "Grace" in lyrics. Verify "Amazing Grace" is found.
+2. **Preview**: Click a song title. Verify the lyrics pane slides up. Check that the search keyword is highlighted.
+3. **Setlist**: Click `+`. Verify song title appears in the middle section.
+4. **Projection**: Select the song in the middle section. Verify slides appear on the right.
+5. **Shortcuts**: Verify that arrow keys and shortcuts (Phase 12) still work for the song selected in the setlist.

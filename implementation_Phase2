@@ -1,0 +1,60 @@
+# KeryxPro - Phase 2 Implementation Plan: Song Library & Isar Imports
+
+This phase will establish the fundamental pattern for KeryxPro's Data-to-UI flow. We will connect the Isar database we created in Phase 1 to a Riverpod-backed Song Repository, and replace our Left Pane placeholder with a fully functional Song Library tab.
+
+## User Review Required
+
+> [!WARNING]
+> Please review this architecture pattern. We will use it for all future KeryxPro modules (Bible, Media, etc.).
+> Does the Clean Architecture flow (`Data source (Isar) -> Repository -> Riverpod AsyncNotifier -> UI`) match your expectations for state management?
+
+## Proposed Changes
+
+---
+
+### Core Data & Domain Layer
+
+We will build an interactive repository to manage Song saving, importing, and searching over our `IsarService`.
+
+#### [NEW] `lib/features/songs/domain/song_repository.dart`
+- Create an abstract repository defining `getSongs()`, `searchSongs(query)`, `addSong()`, and `seedMockSongs()`.
+
+#### [NEW] `lib/features/songs/data/isar_song_repository.dart`
+- Implement the interface using `Isar`.
+- Add a `.seedMockSongs()` utility that injects 3-5 standard worship songs (e.g., *Amazing Grace*, *How Great Thou Art*, etc.) in JSON-like structure into the Isar Database if it's empty, so we have immediate data for testing the UI.
+
+---
+
+### State Management Layer (Riverpod)
+
+#### [NEW] `lib/features/songs/presentation/song_providers.dart`
+- **`songRepositoryProvider`**: Injects the `IsarSongRepository`.
+- **`songListControllerProvider`**: An `AsyncNotifier` that fetches songs from the repository. It will automatically update the UI when the user performs a text search.
+
+---
+
+### UI / Presentation Layer
+
+We will replace the generic Left Pane with a structured Library interface.
+
+#### [NEW] `lib/features/dashboard/presentation/widgets/library_pane.dart`
+- A container that hosts a `DefaultTabController` with two distinct tabs: "Songs" and "Bible".
+- Replaces the generic `Text` widget in our Left Pane inside `MainDashboardPage`.
+
+#### [NEW] `lib/features/songs/presentation/song_library_tab.dart`
+- A Riverpod `ConsumerWidget` representing the "Songs" tab.
+- Contains a modern `TextField` for rapid searching.
+- Displays the fetched songs in a scrollable `ListView`.
+- Includes an "Import Sample Songs" floating button (or empty state button) to trigger the `seedMockSongs()` function.
+
+#### [MODIFY] `lib/features/dashboard/presentation/pages/main_dashboard_page.dart`
+- Plug the new `LibraryPane()` into the `Left Pane` Expanded area.
+
+## Verification Plan
+
+### Manual Verification
+1. We will run `flutter run -d windows`.
+2. The Left Pane should cleanly display a "Songs" tab.
+3. Because the Database is empty, it will show an "Import Samples" button.
+4. Clicking it will populate the local Isar Database instantly and rebuild the UI.
+5. We will verify real-time search functionality by typing in the search box to filter the songs.

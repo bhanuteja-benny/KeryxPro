@@ -1,0 +1,10 @@
+- [x] Create `live_projector_providers.dart` for active slide state
+- [x] Create `live_projector_pane.dart` matching requirements:
+  - 16:9 Aspect Ratio
+  - Auto-shrinking text logic combined with wrapping (`auto_size_text`)
+  - Clean UI for region capture
+- [x] Update `main_dashboard_page.dart` to include `LiveProjectorPane`
+- [x] Update `preview_pane.dart`:
+  - Wire tap events to update the `activeSlideProvider`
+  - Highlight the currently active slide
+- [x] Verification and testing

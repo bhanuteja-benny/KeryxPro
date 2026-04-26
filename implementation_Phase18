@@ -1,0 +1,44 @@
+# Phase 18: UI Refinements & Advanced Display
+
+This phase focuses on polishing the projection display for better readability and optimizing the Bible search layout.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Song Wrapping Logic**: I will implement a "Smart Wrap" for songs. It will first try to keep one line per lyrics line. If the font shrinks below a threshold (e.g., 40pt), it will allow wrapping to prevent the text from becoming unreadably small.
+
+## Proposed Changes
+
+### 1. Advanced Text Scaling Logic
+- **[MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)**:
+    - Implement conditional `maxLines` and `wrapWords` logic.
+    - **For Scripture**: Use `maxLines: 30` and `wrapWords: true` to prioritize readability and space utilization.
+    - **For Songs**:
+        - Use `maxLines: lineCount` initially to keep lines unbroken.
+        - If the calculated `fontSize` would drop below a "comfort threshold" (e.g., 40), increase `maxLines` to `lineCount * 2` and enable wrapping.
+    - Ensure `fontSize` never exceeds the preset value.
+
+### 2. Scripture Enhancements
+- **[MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)**:
+    - Update `_addToSetlist` to include the verse number at the start of the verse text (e.g., `1 In the beginning...`).
+    - Use just the verse number (or range) as the shortcut tag, e.g., `[5]` or `[5-7]`.
+    - **Layout**: Change the `Row` flex ratios for listboxes. 
+        - Books (OT/NT): `flex: 4`
+        - Chapters: `flex: 2`
+        - Verses: `flex: 2`
+- **[MODIFY] [slide_utils.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/slide_utils.dart)**:
+    - Update the shortcut parser to handle pure numeric or range-based shortcuts like `[5]` or `[5-7]` without automatically prefixing "V" if unnecessary.
+
+### 3. Listbox Layout Optimization
+- **[MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)**:
+    - Reduce the width of Chapter and Verse listboxes by adjusting their `flex` properties in the `Row`.
+
+## Verification Plan
+
+### Automated/Code Verification
+- Run `flutter analyze` to ensure no regressions in the parser logic.
+
+### Manual Verification
+1. **Song Scaling**: Add a song with a very long line. Verify that it first shrinks, and only if it gets too small does it wrap to a second line.
+2. **Scripture Display**: Add a Bible passage. Verify that verse numbers appear on the screen and in the slide shortcuts. Test a combined verse (if available in the database) to see if `5-7` appears correctly.
+3. **Bible Tab Layout**: Verify that the Chapter and Verse columns are narrower than the Book columns.

@@ -1,0 +1,11 @@
+# Phase 9: Typography and Color Picker Enhancements
+
+- [x] Update `PresentationSettings` schema with `Underline`, `HasFill`, `FillColor`, `HasStroke`, `StrokeColor`.
+- [x] Run `build_runner` to regenerate Isar schema.
+- [x] Update `PresentationSettingsProvider` with fallbacks and update methods.
+- [x] Modify `PresentationSettingsDialog`:
+  - [x] Update all color pickers to be rectangular.
+  - [x] Build the new `Typography` popup dialog.
+  - [x] Include a comprehensive predefined list of common system fonts.
+  - [x] Implement live preview updates for underline, fill, and stroke.
+- [x] Manual verification and testing.
