@@ -28,10 +28,26 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
   ViewMode _mode = ViewMode.choose;
   int _editTabIndex = 0; // 0: Song, 1: Scripture
   final TextEditingController _newPresetCtrl = TextEditingController();
+  final TextEditingController _widthCtrl = TextEditingController();
+  final TextEditingController _heightCtrl = TextEditingController();
+  
+  final FocusNode _widthFocusNode = FocusNode(debugLabel: 'CustomWidthField');
+  final FocusNode _heightFocusNode = FocusNode(debugLabel: 'CustomHeightField');
+
+  void _updateControllers() {
+    final settings = ref.read(editingPresetProvider);
+    final isSong = _editTabIndex == 0;
+    _widthCtrl.text = (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth).toStringAsFixed(0);
+    _heightCtrl.text = (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight).toStringAsFixed(0);
+  }
 
   @override
   void dispose() {
     _newPresetCtrl.dispose();
+    _widthCtrl.dispose();
+    _heightCtrl.dispose();
+    _widthFocusNode.dispose();
+    _heightFocusNode.dispose();
     super.dispose();
   }
 
@@ -108,7 +124,12 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 ButtonSegment(value: 1, label: Text('Scripture')),
               ],
               selected: {_editTabIndex},
-              onSelectionChanged: (set) => setState(() => _editTabIndex = set.first),
+              onSelectionChanged: (set) {
+                setState(() {
+                  _editTabIndex = set.first;
+                  _updateControllers(); // Sync when switching tabs
+                });
+              },
             ),
             const Spacer(),
             IconButton(
@@ -209,7 +230,10 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           borderRadius: BorderRadius.circular(8),
           onTap: () {
             ref.read(editingPresetProvider.notifier).setPresetToEdit(preset);
-            setState(() => _mode = ViewMode.edit);
+            setState(() {
+              _mode = ViewMode.edit;
+              _updateControllers(); // Sync when entering edit mode
+            });
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
@@ -664,7 +688,12 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           initialSelection: aspectRatio,
           label: const Text('Aspect Ratio'),
           onSelected: (val) {
-            if (val != null) notifier.updateAspectRatio(val, isSong);
+            if (val != null) {
+              notifier.updateAspectRatio(val, isSong);
+              if (val == 'Custom') {
+                _updateControllers();
+              }
+            }
           },
           dropdownMenuEntries: const [
             DropdownMenuEntry(value: '16:9', label: '16:9'),
@@ -677,21 +706,29 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
-              key: ValueKey('${isSong ? "song" : "scripture"}_cw'),
-              controller: TextEditingController(text: customWidth.toStringAsFixed(0)),
+              key: const ValueKey('custom_width_field'),
+              focusNode: _widthFocusNode,
+              controller: _widthCtrl,
               decoration: const InputDecoration(labelText: 'W (px)', isDense: true, border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
-              onChanged: (v) => notifier.updateCustomWidth(double.tryParse(v) ?? 1920.0, isSong),
+              onChanged: (v) {
+                final parsed = double.tryParse(v);
+                if (parsed != null) notifier.updateCustomWidth(parsed, isSong);
+              },
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
-              key: ValueKey('${isSong ? "song" : "scripture"}_ch'),
-              controller: TextEditingController(text: customHeight.toStringAsFixed(0)),
+              key: const ValueKey('custom_height_field'),
+              focusNode: _heightFocusNode,
+              controller: _heightCtrl,
               decoration: const InputDecoration(labelText: 'H (px)', isDense: true, border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
-              onChanged: (v) => notifier.updateCustomHeight(double.tryParse(v) ?? 1080.0, isSong),
+              onChanged: (v) {
+                final parsed = double.tryParse(v);
+                if (parsed != null) notifier.updateCustomHeight(parsed, isSong);
+              },
             ),
           ),
         ]
@@ -1074,8 +1111,12 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     double ratio = 16 / 9;
     if (aspectRatioStr == '4:3') ratio = 4 / 3;
     else if (aspectRatioStr == '4:1') ratio = 4 / 1;
-    else if (aspectRatioStr == 'Custom' && cHeight > 0) {
-      ratio = cWidth / cHeight;
+    else if (aspectRatioStr == 'Custom') {
+      if (cHeight > 0 && cWidth > 0) {
+        ratio = cWidth / cHeight;
+      } else {
+        ratio = 1.0; // Temporary fallback to square if dimensions are 0
+      }
     }
 
     String previewTitle = isSong ? "Amazing Grace" : "John 3:16";

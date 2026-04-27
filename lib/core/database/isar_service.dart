@@ -6,6 +6,7 @@ import '../../features/songs/data/song.dart';
 import '../../features/bible/data/bible.dart';
 import '../../features/settings/data/presentation_settings.dart';
 import '../../features/settings/data/projection_config.dart';
+import '../../features/setlist/data/saved_setlist.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -29,6 +30,7 @@ class IsarService {
           BibleVerseSchema,
           PresentationSettingsSchema,
           ProjectionConfigSchema,
+          SavedSetlistSchema,
         ],
         directory: dbDir.path,
         inspector: true,

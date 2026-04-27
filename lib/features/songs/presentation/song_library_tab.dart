@@ -5,6 +5,8 @@ import 'song_providers.dart';
 import 'song_selection_providers.dart';
 import '../data/song.dart';
 import '../../dashboard/presentation/global_ui_providers.dart';
+import '../../setlist/presentation/setlist_providers.dart';
+import '../../setlist/data/setlist_item.dart';
 
 final librarySelectedIndexProvider = StateProvider<int>((ref) => 0);
 

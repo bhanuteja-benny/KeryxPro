@@ -27,6 +27,25 @@ class ProjectorView extends StatelessWidget {
     final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
     
+    // Determine the reference canvas size
+    final aspectRatioStr = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+    double canvasWidth = 1920;
+    double canvasHeight = 1080;
+
+    if (aspectRatioStr == '4:3') {
+      canvasWidth = 1440;
+      canvasHeight = 1080;
+    } else if (aspectRatioStr == '4:1') {
+      canvasWidth = 1920;
+      canvasHeight = 480;
+    } else if (aspectRatioStr == 'Custom') {
+      canvasWidth = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
+      canvasHeight = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
+      // Safety fallbacks
+      if (canvasWidth <= 0) canvasWidth = 1920;
+      if (canvasHeight <= 0) canvasHeight = 1080;
+    }
+
     final lyricsFontSizeValue = isSong 
         ? ((settings.lyricsFontSize.isNaN || settings.lyricsFontSize <= 0) ? 80.0 : settings.lyricsFontSize)
         : ((settings.verseFontSize.isNaN || settings.verseFontSize <= 0) ? 80.0 : settings.verseFontSize);
@@ -62,10 +81,12 @@ class ProjectorView extends StatelessWidget {
     final titleMarginRightValue = isSong ? settings.titleMarginRight : settings.chapterMarginRight;
 
     final lineCount = activeSlideText?.split('\n').length ?? 1;
-
     final isBlankScreen = activeSlideText == "";
 
-    return Container(
+    // The inner content that is sized to the virtual canvas
+    Widget content = Container(
+      width: canvasWidth,
+      height: canvasHeight,
       decoration: BoxDecoration(
         color: (activeSlideText == null || isBlankScreen) ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
         image: !isBlankScreen && activeSlideText != null && isImageEnabled && (backgroundImage?.isNotEmpty ?? false) && File(backgroundImage!).existsSync()
@@ -107,12 +128,8 @@ class ProjectorView extends StatelessWidget {
                             decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                           ),
                           textAlign: _getTextAlign(alignStr),
-                          // Hybrid Logic:
-                          // 1. For multi-line songs (>1 line), we force one line per lyrics line (maxLines = lineCount).
-                          // 2. For single-line blocks or Scripture, we allow generous wrapping (maxLines = 30).
                           maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
                           minFontSize: 8, 
-                          // Only wrap words if it's scripture or a single-line block that needs to break
                           wrapWords: !isSong || lineCount == 1,
                           softWrap: true,
                         ),
@@ -140,6 +157,17 @@ class ProjectorView extends StatelessWidget {
                 ),
             ],
           ),
+    );
+
+    // Use FittedBox to scale the virtual canvas to the actual display window
+    return Container(
+      color: Colors.black, // Background fill for letterboxing
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: content,
+        ),
+      ),
     );
   }
 

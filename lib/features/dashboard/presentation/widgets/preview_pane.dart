@@ -5,10 +5,9 @@ import '../../../live_controller/presentation/live_projector_providers.dart';
 import '../../../live_controller/presentation/slide_utils.dart';
 import '../../../live_controller/domain/slide.dart';
 import 'slide_item_widget.dart';
-
 import 'package:flutter/services.dart';
-
 import '../global_ui_providers.dart';
+import '../../../setlist/presentation/setlist_providers.dart';
 
 class PreviewPane extends ConsumerStatefulWidget {
   const PreviewPane({super.key});
@@ -20,31 +19,38 @@ class PreviewPane extends ConsumerStatefulWidget {
 class _PreviewPaneState extends ConsumerState<PreviewPane> {
   // We use nodes and controllers from the global provider now
 
-  void _handleKeyEvent(KeyEvent event) {
-    if (event is! KeyDownEvent) return;
+  KeyEventResult _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     final slides = ref.read(currentSlidesProvider);
     final currentIndex = ref.read(activeSlideIndexProvider);
-    if (slides.isEmpty) return;
+    if (slides.isEmpty) return KeyEventResult.ignored;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
       if (currentIndex < slides.length - 1) {
         ref.read(activeSlideIndexProvider.notifier).state = currentIndex + 1;
       }
+      return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
       if (currentIndex > 0) {
         ref.read(activeSlideIndexProvider.notifier).state = currentIndex - 1;
       }
+      return KeyEventResult.handled;
     } else if (_isDigit(event.logicalKey)) {
       final digit = _getDigit(event.logicalKey);
       _cycleShortcuts(digit, slides, currentIndex);
+      return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyV) {
       _cycleShortcuts('V', slides, currentIndex);
+      return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyC) {
       _cycleShortcuts('C', slides, currentIndex);
+      return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyB) {
       _cycleShortcuts('B', slides, currentIndex);
+      return KeyEventResult.handled;
     }
+    return KeyEventResult.ignored;
   }
 
   bool _isDigit(LogicalKeyboardKey key) {
@@ -146,8 +152,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
       focusNode: focusNode,
       autofocus: false,
       onKeyEvent: (node, event) {
-        _handleKeyEvent(event);
-        return KeyEventResult.handled;
+        return _handleKeyEvent(event);
       },
       child: GestureDetector(
         onTap: () => focusNode.requestFocus(),
