@@ -1,0 +1,40 @@
+# Phase 21.3: SetList Name and Save Functionality
+
+This plan details the implementation of a combobox for SetList names, protection against losing unsaved changes, handling empty/existing SetList names, and enabling deletion of entire SetLists.
+
+## User Review Required
+> [!IMPORTANT]
+> - **Combobox UI**: I will replace the current `RawAutocomplete` with a `DropdownMenu` (or a custom `TextField` with a dropdown button) to satisfy the "textbox + dropdown" requirement while matching the existing dark theme.
+> - **Existing Name Alert**: When saving an initially unnamed SetList, if the entered name already exists, the plan specifies showing an alert ("SetList name already exists") and **blocking the save**. *Question: Would you prefer this alert to have an "Overwrite" option instead of just blocking the save?*
+
+## Proposed Changes
+
+### [Setlist State Management]
+#### [MODIFY] [setlist_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/setlist_providers.dart)
+- **Signature Tracking**: Add a provider (`activeSetlistSignatureProvider`) that tracks the exact item composition of the currently loaded or last-saved SetList.
+- **Unsaved Changes Helper**: Create logic to compare the current SetList items against the `activeSetlistSignatureProvider` to accurately detect unsaved modifications.
+
+### [Setlist Pane UI]
+#### [MODIFY] [setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)
+- **Combobox Implementation**: 
+  - Replace the SetList name `RawAutocomplete` widget with a combobox implementation that includes a dropdown arrow to view all existing names.
+- **Loading with Confirmation**: 
+  - When the user selects a saved list from the combobox, check for unsaved changes using the new signature tracking.
+  - If unsaved changes exist, show an `AlertDialog`: "You have unsaved items. Do you want to clear them and load the selected list?".
+- **Empty Name Save Flow**:
+  - Update `_saveSetlist` to handle cases where the name is empty.
+  - Show a dialog asking the user to enter a name.
+  - If the name exists in `savedSetlistNamesProvider`, show the "SetList name already exists" alert and stop.
+- **Delete Setlist Flow**:
+  - Update the "Delete" button logic in the bottom toolbar. Enable it if there is an active item selection OR if the SetList is entirely empty but has an active name.
+  - If the list is empty and the user presses delete, show an `AlertDialog`: "Are you sure you want to delete the SetList '[Name]'?". If confirmed, delete it from the database and clear the active name.
+- **Empty Save Prevention**:
+  - Add a validation check in `_saveSetlist`: `if (items.isEmpty)` show a snackbar or alert preventing the save.
+
+## Verification Plan
+### Manual Verification
+- **Combobox**: Ensure the text box has a dropdown arrow and lists all saved SetLists.
+- **Unsaved Confirmation**: Create a blank list, add an item, and select an existing list from the dropdown. Verify the confirmation dialog appears.
+- **Empty Name Save**: Leave the name empty, add an item, press Save. Verify it asks for a name, and rejects names that already exist.
+- **Empty Save Prevention**: Try to save an empty list. Verify it is blocked.
+- **Delete SetList**: Load an existing list, click 'Clear All', then click the Delete icon. Verify it prompts to delete the SetList name and successfully removes it.

@@ -130,7 +130,10 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     final previousSlides = ref.read(currentSlidesProvider);
     final nextIndex = previousSlides.length;
 
-    ref.read(setlistProvider.notifier).addSong(mockSong);
+    final selection = ref.read(setlistSelectionProvider);
+    final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+
+    ref.read(setlistProvider.notifier).insertSong(mockSong, insertIndex);
 
     // Auto-activate the newly added song and focus slides if goLive is true
     if (goLive) {

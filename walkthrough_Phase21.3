@@ -1,0 +1,32 @@
+# Walkthrough - Phase 21.3 Improvements
+
+I have successfully implemented all Phase 21.3 requirements for SetList naming, saving, and protection flows. 
+
+## Key Changes
+
+### 1. Combobox UI Implementation
+- **Component**: The `RawAutocomplete` widget has been fully replaced with a Material 3 `DropdownMenu` in `setlist_pane.dart`.
+- **Features**: 
+    - It acts as both a textbox and a dropdown.
+    - Features a dropdown arrow on the right side.
+    - Matches the dark theme and dense padding of the existing interface.
+    - Automatically filters the saved list names as you type.
+
+### 2. Unsaved Changes Protection
+- **Tracking Mechanism**: Implemented `activeSetlistSignatureProvider` which takes a lightweight snapshot of the SetList state (ordering, items, and favorites) whenever a list is loaded or saved.
+- **Confirmation Logic**: When you select an existing list from the dropdown, it now checks `_hasUnsavedChanges()`. If the current pane items differ from the last snapshot, it displays an alert: *"You have unsaved items. Do you want to clear them and load the selected list?"*
+
+### 3. Save Validation & Workflows
+- **Empty List Prevention**: Clicking "Save" when there are no items in the SetList will now immediately block the action and show a snackbar warning.
+- **Save As / Missing Name**: If you have an unnamed SetList with items and try to save, it will now pop up a dialogue asking for a name.
+- **Overwrite Protection**: If you input a name that already exists in the database during the "Save As" flow, it checks the database and prompts you with an "Overwrite?" warning dialog as requested. 
+
+### 4. Delete SetList Flow
+- **Recycled Button Logic**: Updated the existing "Delete Selected" trash icon in the bottom toolbar.
+- **Dynamic Tooltip & State**: 
+    - When items are selected, it behaves normally ("Delete Selected").
+    - If the pane is cleared (empty items) but an active SetList is still loaded, the icon stays enabled and the tooltip changes to "Delete SetList".
+- **Execution**: Clicking it in this state opens an alert: *"Are you sure you want to delete the SetList '[Name]'?"* If confirmed, the SetList is permanently removed from the database and the active state is cleared.
+
+### Extra: Bug Fix
+- **Late Initialization Fix**: Also resolved the Isar `LateInitializationError` that caused `flutter run` to crash when attempting to load older database entries missing the `favorites` field!

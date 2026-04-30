@@ -475,6 +475,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final fontFamily = isSong ? settings.titleFontFamily : settings.chapterFontFamily;
     final fontSize = isSong ? settings.titleFontSize : settings.chapterFontSize;
     final fontColor = isSong ? settings.titleFontColor : settings.chapterFontColor;
+    final bold = isSong ? settings.titleBold : settings.chapterBold;
+    final italic = isSong ? settings.titleItalic : settings.chapterItalic;
     final underline = isSong ? settings.titleUnderline : settings.chapterUnderline;
     final hasFill = isSong ? settings.titleHasFill : settings.chapterHasFill;
     final fillColor = isSong ? settings.titleFillColor : settings.chapterFillColor;
@@ -492,15 +494,19 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFontFamily: fontFamily,
                 initialFontSize: fontSize,
                 initialFontColor: fontColor,
+                initialBold: bold,
+                initialItalic: italic,
                 initialUnderline: underline,
                 initialHasFill: hasFill,
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
                   if (fontFamily != null) isSong ? notifier.updateTitleFontFamily(fontFamily) : notifier.updateChapterFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateTitleFontSize(fontSize) : notifier.updateChapterFontSize(fontSize);
                   if (fontColor != null) isSong ? notifier.updateTitleFontColor(fontColor) : notifier.updateChapterFontColor(fontColor);
+                  if (bold != null) isSong ? notifier.updateTitleBold(bold) : notifier.updateChapterBold(bold);
+                  if (italic != null) isSong ? notifier.updateTitleItalic(italic) : notifier.updateChapterItalic(italic);
                   if (underline != null) isSong ? notifier.updateTitleUnderline(underline) : notifier.updateChapterUnderline(underline);
                   if (hasFill != null || fillColor != null) {
                     final f = hasFill ?? (isSong ? settings.titleHasFill : settings.chapterHasFill);
@@ -589,6 +595,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final fontFamily = isSong ? settings.lyricsFontFamily : settings.verseFontFamily;
     final fontSize = isSong ? settings.lyricsFontSize : settings.verseFontSize;
     final fontColor = isSong ? settings.lyricsFontColor : settings.verseFontColor;
+    final bold = isSong ? settings.lyricsBold : settings.verseBold;
+    final italic = isSong ? settings.lyricsItalic : settings.verseItalic;
     final underline = isSong ? settings.lyricsUnderline : settings.verseUnderline;
     final hasFill = isSong ? settings.lyricsHasFill : settings.verseHasFill;
     final fillColor = isSong ? settings.lyricsFillColor : settings.verseFillColor;
@@ -606,15 +614,19 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFontFamily: fontFamily,
                 initialFontSize: fontSize,
                 initialFontColor: fontColor,
+                initialBold: bold,
+                initialItalic: italic,
                 initialUnderline: underline,
                 initialHasFill: hasFill,
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
                   if (fontFamily != null) isSong ? notifier.updateLyricsFontFamily(fontFamily) : notifier.updateVerseFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateLyricsFontSize(fontSize) : notifier.updateVerseFontSize(fontSize);
                   if (fontColor != null) isSong ? notifier.updateLyricsFontColor(fontColor) : notifier.updateVerseFontColor(fontColor);
+                  if (bold != null) isSong ? notifier.updateLyricsBold(bold) : notifier.updateVerseBold(bold);
+                  if (italic != null) isSong ? notifier.updateLyricsItalic(italic) : notifier.updateVerseItalic(italic);
                   if (underline != null) isSong ? notifier.updateLyricsUnderline(underline) : notifier.updateVerseUnderline(underline);
                   if (hasFill != null || fillColor != null) {
                     final f = hasFill ?? (isSong ? settings.lyricsHasFill : settings.verseHasFill);
@@ -856,6 +868,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     required String initialFontFamily,
     required double initialFontSize,
     required int initialFontColor,
+    required bool initialBold,
+    required bool initialItalic,
     required bool initialUnderline,
     required bool initialHasFill,
     required int initialFillColor,
@@ -865,6 +879,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
       String? fontFamily,
       double? fontSize,
       int? fontColor,
+      bool? bold,
+      bool? italic,
       bool? underline,
       bool? hasFill,
       int? fillColor,
@@ -875,6 +891,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     String fontFamily = initialFontFamily;
     double fontSize = initialFontSize;
     int fontColor = initialFontColor;
+    bool bold = initialBold;
+    bool italic = initialItalic;
     bool underline = initialUnderline;
     bool hasFill = initialHasFill;
     int fillColor = initialFillColor;
@@ -1032,55 +1050,102 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                   ),
                   const SizedBox(height: 16),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(
-                        value: underline,
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => underline = v);
-                            onChanged(underline: v);
-                          }
-                        },
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: underline,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => underline = v);
+                                      onChanged(underline: v);
+                                    }
+                                  },
+                                ),
+                                const Text('Underline'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: hasFill,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => hasFill = v);
+                                      onChanged(hasFill: v);
+                                    }
+                                  },
+                                ),
+                                const Text('Fill'),
+                                const SizedBox(width: 16),
+                                if (hasFill) buildColorBox(fillColor, (c) {
+                                  setState(() => fillColor = c.value);
+                                  onChanged(fillColor: c.value);
+                                }),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: hasStroke,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => hasStroke = v);
+                                      onChanged(hasStroke: v);
+                                    }
+                                  },
+                                ),
+                                const Text('Stroke'),
+                                const SizedBox(width: 16),
+                                if (hasStroke) buildColorBox(strokeColor, (c) {
+                                  setState(() => strokeColor = c.value);
+                                  onChanged(strokeColor: c.value);
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      const Text('Underline'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: hasFill,
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => hasFill = v);
-                            onChanged(hasFill: v);
-                          }
-                        },
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: bold,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => bold = v);
+                                      onChanged(bold: v);
+                                    }
+                                  },
+                                ),
+                                const Text('Bold'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: italic,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => italic = v);
+                                      onChanged(italic: v);
+                                    }
+                                  },
+                                ),
+                                const Text('Italic'),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      const Text('Fill'),
-                      const SizedBox(width: 16),
-                      if (hasFill) buildColorBox(fillColor, (c) {
-                        setState(() => fillColor = c.value);
-                        onChanged(fillColor: c.value);
-                      }),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: hasStroke,
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => hasStroke = v);
-                            onChanged(hasStroke: v);
-                          }
-                        },
-                      ),
-                      const Text('Stroke'),
-                      const SizedBox(width: 16),
-                      if (hasStroke) buildColorBox(strokeColor, (c) {
-                        setState(() => strokeColor = c.value);
-                        onChanged(strokeColor: c.value);
-                      }),
                     ],
                   ),
                 ],
@@ -1176,6 +1241,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final fontFamily = isSong ? settings.lyricsFontFamily : settings.verseFontFamily;
     final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
+    final bold = isSong ? settings.lyricsBold : settings.verseBold;
+    final italic = isSong ? settings.lyricsItalic : settings.verseItalic;
     final underline = isSong ? settings.lyricsUnderline : settings.verseUnderline;
     final hasFill = isSong ? settings.lyricsHasFill : settings.verseHasFill;
     final fillColor = isSong ? Color(settings.lyricsFillColor) : Color(settings.verseFillColor);
@@ -1194,6 +1261,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final tBotMargin = isSong ? settings.titleMarginBottom : settings.chapterMarginBottom;
     final tLeftMargin = isSong ? settings.titleMarginLeft : settings.chapterMarginLeft;
     final tRightMargin = isSong ? settings.titleMarginRight : settings.chapterMarginRight;
+    final tBold = isSong ? settings.titleBold : settings.chapterBold;
+    final tItalic = isSong ? settings.titleItalic : settings.chapterItalic;
     final tUnderline = isSong ? settings.titleUnderline : settings.chapterUnderline;
     final tHasFill = isSong ? settings.titleHasFill : settings.chapterHasFill;
     final tFillColor = isSong ? Color(settings.titleFillColor) : Color(settings.chapterFillColor);
@@ -1216,7 +1285,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                     style: TextStyle(
                       fontSize: fontSize,
                       fontFamily: fontFamily,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                      fontStyle: italic ? FontStyle.italic : FontStyle.normal,
                       height: 1.2,
                       decoration: underline ? TextDecoration.underline : TextDecoration.none,
                       backgroundColor: hasFill ? fillColor : null,
@@ -1234,7 +1304,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                     color: fontColor,
                     fontSize: fontSize,
                     fontFamily: fontFamily,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                    fontStyle: italic ? FontStyle.italic : FontStyle.normal,
                     height: 1.2,
                     decoration: underline ? TextDecoration.underline : TextDecoration.none,
                     backgroundColor: hasFill ? fillColor : null,
@@ -1261,6 +1332,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                       style: TextStyle(
                         fontSize: titleFontSize.clamp(8.0, 32.0), 
                         fontFamily: tFontFamily,
+                        fontWeight: tBold ? FontWeight.bold : FontWeight.normal,
+                        fontStyle: tItalic ? FontStyle.italic : FontStyle.normal,
                         decoration: tUnderline ? TextDecoration.underline : TextDecoration.none,
                         backgroundColor: tHasFill ? tFillColor : null,
                         foreground: Paint()
@@ -1276,6 +1349,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                       fontSize: titleFontSize.clamp(8.0, 32.0), 
                       color: titleFontColor,
                       fontFamily: tFontFamily,
+                      fontWeight: tBold ? FontWeight.bold : FontWeight.normal,
+                      fontStyle: tItalic ? FontStyle.italic : FontStyle.normal,
                       decoration: tUnderline ? TextDecoration.underline : TextDecoration.none,
                       backgroundColor: tHasFill ? tFillColor : null,
                     ),

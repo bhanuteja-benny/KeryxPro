@@ -55,6 +55,8 @@ class ProjectorView extends StatelessWidget {
 
     final lyricsFontFamilyValue = isSong ? settings.lyricsFontFamily : settings.verseFontFamily;
     final lyricsUnderlineValue = isSong ? settings.lyricsUnderline : settings.verseUnderline;
+    final lyricsBoldValue = isSong ? settings.lyricsBold : settings.verseBold;
+    final lyricsItalicValue = isSong ? settings.lyricsItalic : settings.verseItalic;
 
     final lyricsMarginTopValue = isSong ? settings.lyricsMarginTop : settings.verseMarginTop;
     final lyricsMarginBottomValue = isSong ? settings.lyricsMarginBottom : settings.verseMarginBottom;
@@ -74,6 +76,8 @@ class ProjectorView extends StatelessWidget {
 
     final titleFontFamilyValue = isSong ? settings.titleFontFamily : settings.chapterFontFamily;
     final titleUnderlineValue = isSong ? settings.titleUnderline : settings.chapterUnderline;
+    final titleBoldValue = isSong ? settings.titleBold : settings.chapterBold;
+    final titleItalicValue = isSong ? settings.titleItalic : settings.chapterItalic;
 
     final titleMarginTopValue = isSong ? settings.titleMarginTop : settings.chapterMarginTop;
     final titleMarginBottomValue = isSong ? settings.titleMarginBottom : settings.chapterMarginBottom;
@@ -82,6 +86,7 @@ class ProjectorView extends StatelessWidget {
 
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
+    final isImageSlide = activeSlideText?.startsWith('IMAGE:') ?? false;
 
     // The inner content that is sized to the virtual canvas
     Widget content = Container(
@@ -89,7 +94,7 @@ class ProjectorView extends StatelessWidget {
       height: canvasHeight,
       decoration: BoxDecoration(
         color: (activeSlideText == null || isBlankScreen) ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
-        image: !isBlankScreen && activeSlideText != null && isImageEnabled && (backgroundImage?.isNotEmpty ?? false) && File(backgroundImage!).existsSync()
+        image: !isBlankScreen && activeSlideText != null && !isImageSlide && isImageEnabled && (backgroundImage?.isNotEmpty ?? false) && File(backgroundImage!).existsSync()
           ? DecorationImage(
               image: FileImage(File(backgroundImage!)),
               fit: BoxFit.cover,
@@ -103,36 +108,44 @@ class ProjectorView extends StatelessWidget {
             children: [
               // Body Layer
               Align(
-                alignment: _getAlignmentGeometry(alignStr, vAlignStr),
+                alignment: isImageSlide 
+                    ? _getImageAlignment(activeSlideText!)
+                    : _getAlignmentGeometry(alignStr, vAlignStr),
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(lyricsMarginLeftValue, lyricsMarginTopValue, lyricsMarginRightValue, lyricsMarginBottomValue),
-                  child: activeSlideText == null || activeSlideText!.isEmpty
-                      ? AutoSizeText(
-                          'KeryxPro Worship',
-                          style: TextStyle(
-                            color: lyricsFontColorValue.withValues(alpha: 0.2),
-                            fontSize: lyricsFontSizeValue,
-                            fontFamily: settings.lyricsFontFamily,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                        )
-                      : AutoSizeText(
-                          activeSlideText!,
-                          style: TextStyle(
-                            color: lyricsFontColorValue,
-                            fontSize: lyricsFontSizeValue,
-                            fontFamily: lyricsFontFamilyValue,
-                            fontWeight: FontWeight.bold,
-                            height: 1.2,
-                            decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
-                          ),
-                          textAlign: _getTextAlign(alignStr),
-                          maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
-                          minFontSize: 8, 
-                          wrapWords: !isSong || lineCount == 1,
-                          softWrap: true,
-                        ),
+                  padding: isImageSlide 
+                      ? EdgeInsets.zero 
+                      : EdgeInsets.fromLTRB(lyricsMarginLeftValue, lyricsMarginTopValue, lyricsMarginRightValue, lyricsMarginBottomValue),
+                  child: isImageSlide
+                      ? _buildImageWidget(activeSlideText!)
+                      : activeSlideText == null || activeSlideText!.isEmpty
+                          ? AutoSizeText(
+                              'KeryxPro Worship',
+                              style: TextStyle(
+                                color: lyricsFontColorValue.withValues(alpha: 0.2),
+                                fontSize: lyricsFontSizeValue,
+                                fontFamily: settings.lyricsFontFamily,
+                                fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+                                fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+                              ),
+                              maxLines: 1,
+                            )
+                          : AutoSizeText(
+                              activeSlideText!,
+                              style: TextStyle(
+                                color: lyricsFontColorValue,
+                                fontSize: lyricsFontSizeValue,
+                                fontFamily: lyricsFontFamilyValue,
+                                fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+                                fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+                                height: 1.2,
+                                decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
+                              ),
+                              textAlign: _getTextAlign(alignStr),
+                              maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
+                              minFontSize: 8, 
+                              wrapWords: !isSong || lineCount == 1,
+                              softWrap: true,
+                            ),
                 ),
               ),
 
@@ -149,7 +162,8 @@ class ProjectorView extends StatelessWidget {
                         color: titleFontColorValue,
                         fontSize: titleFontSizeValue,
                         fontFamily: titleFontFamilyValue,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
+                        fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
                         decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                       ),
                     ),
@@ -193,5 +207,47 @@ class ProjectorView extends StatelessWidget {
       case 'center': default: y = 0; break;
     }
     return Alignment(x, y);
+  }
+
+  Widget _buildImageWidget(String content) {
+    final rest = content.substring(6);
+    final parts = rest.split('|');
+    final path = parts[0];
+    final layout = parts.length > 1 ? parts[1] : 'contain';
+    
+    BoxFit fit;
+    switch (layout) {
+      case 'stretch': fit = BoxFit.fill; break;
+      case 'fit': fit = BoxFit.cover; break;
+      case 'contain': default: fit = BoxFit.contain; break;
+    }
+
+    if (!File(path).existsSync()) {
+      return Center(child: Icon(Icons.broken_image, size: 64, color: Colors.red.withOpacity(0.5)));
+    }
+
+    return Image.file(
+      File(path),
+      fit: fit,
+    );
+  }
+
+  Alignment _getImageAlignment(String content) {
+    final rest = content.substring(6);
+    final parts = rest.split('|');
+    final alignment = parts.length > 2 ? parts[2] : 'center';
+    
+    switch (alignment) {
+      case 'topLeft': return Alignment.topLeft;
+      case 'topCenter': return Alignment.topCenter;
+      case 'topRight': return Alignment.topRight;
+      case 'centerLeft': return Alignment.centerLeft;
+      case 'center': return Alignment.center;
+      case 'centerRight': return Alignment.centerRight;
+      case 'bottomLeft': return Alignment.bottomLeft;
+      case 'bottomCenter': return Alignment.bottomCenter;
+      case 'bottomRight': return Alignment.bottomRight;
+      default: return Alignment.center;
+    }
   }
 }

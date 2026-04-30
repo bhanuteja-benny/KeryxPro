@@ -49,16 +49,33 @@ class SetlistRepository {
 
     // Reconstruct ordered list from itemOrder
     final items = <SetlistItem>[];
-    for (final entry in saved.itemOrder) {
+    for (int i = 0; i < saved.itemOrder.length; i++) {
+      final entry = saved.itemOrder[i];
+      bool isFav = false;
+      try {
+        isFav = i < saved.favorites.length ? saved.favorites[i] : false;
+      } catch (_) {}
+
       if (entry.startsWith('song:')) {
         final id = int.tryParse(entry.substring(5));
         if (id != null && songMap.containsKey(id)) {
-          items.add(SongSetlistItem(songMap[id]!));
+          items.add(SongSetlistItem(songMap[id]!, isFavorite: isFav));
+        }
+      } else if (entry.startsWith('scripture:')) {
+        final parts = entry.substring(10).split('|');
+        if (parts.length == 2) {
+          final title = Uri.decodeComponent(parts[0]);
+          final lyrics = Uri.decodeComponent(parts[1]);
+          final mockSong = Song()
+            ..title = title
+            ..author = 'Bible'
+            ..lyrics = lyrics;
+          items.add(SongSetlistItem(mockSong, isFavorite: isFav));
         }
       } else if (entry.startsWith('image:')) {
         final idx = int.tryParse(entry.substring(6));
         if (idx != null && imageItems.containsKey(idx)) {
-          items.add(imageItems[idx]!);
+          items.add(imageItems[idx]!.copyWith(isFavorite: isFav));
         }
       }
     }
@@ -71,12 +88,20 @@ class SetlistRepository {
     final songIds = <int>[];
     final imageEntries = <String>[];
     final itemOrder = <String>[];
+    final favorites = <bool>[];
 
     for (final item in items) {
+      favorites.add(item.isFavorite);
       switch (item) {
         case SongSetlistItem(:final song):
-          songIds.add(song.id);
-          itemOrder.add('song:${song.id}');
+          if (song.author == 'Bible') {
+            final encodedTitle = Uri.encodeComponent(song.title);
+            final encodedLyrics = Uri.encodeComponent(song.lyrics);
+            itemOrder.add('scripture:$encodedTitle|$encodedLyrics');
+          } else {
+            songIds.add(song.id);
+            itemOrder.add('song:${song.id}');
+          }
         case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
           final idx = imageEntries.length;
           imageEntries.add('$imagePath|$layout|$alignment');
@@ -84,11 +109,15 @@ class SetlistRepository {
       }
     }
 
-    final saved = SavedSetlist()
+    final existing = await isar.savedSetlists.where().nameEqualTo(name).findFirst();
+
+    final saved = existing ?? SavedSetlist();
+    saved
       ..name = name
       ..songIds = songIds
       ..imageEntries = imageEntries
       ..itemOrder = itemOrder
+      ..favorites = favorites
       ..lastModified = DateTime.now();
 
     await isar.writeTxn(() async {

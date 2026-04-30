@@ -1,0 +1,70 @@
+# Phase 21: SetList Panel Icon Layout & Bottom Toolbar Redesign
+
+This phase focuses on replacing the existing SetList toolbar with a more professional, high-density segmented control layout consisting of two horizontal icon bars. It also introduces new functionality like "Clear All", "Favorite marking", and "Refresh".
+
+## User Review Required
+
+> [!IMPORTANT]
+> The new button bars are strictly 20px high each, which is quite small for touch targets but fits the requested high-density "professional" look.
+> Icons will be sized approximately 14-16px to fit comfortably.
+
+> [!NOTE]
+> The "Engraved" look will be achieved using a monochrome icon color with a subtle drop shadow or specific HSL color selection to simulate depth on the gradient background.
+
+## Proposed Changes
+
+### Data Layer
+
+#### [MODIFY] [setlist_item.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_item.dart)
+- Add `final bool isFavorite` property to the `SetlistItem` base class (sealed).
+- Update `SongSetlistItem` and `ImageSetlistItem` constructors to accept `isFavorite` (defaulting to `false`).
+- Add a `copyWith` method to `SetlistItem` subclasses to allow easy toggling of the favorite state.
+
+#### [MODIFY] [saved_setlist.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/saved_setlist.dart)
+- Add `late List<bool> favorites;` to the `SavedSetlist` collection to persist the favorite status of each item in `itemOrder`.
+
+#### [MODIFY] [setlist_repository.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_repository.dart)
+- Update `loadByName` to read the `favorites` list and apply it to the reconstructed `SetlistItem`s.
+- Update `saveByName` to extract the `isFavorite` status from items and save it into the `favorites` list in Isar.
+
+---
+
+### Presentation Layer
+
+#### [MODIFY] [setlist_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/setlist_providers.dart)
+- Add `toggleFavorite(Set<int> indices)` method to `SetlistNotifier`.
+- This will map over the state and flip `isFavorite` for items at the given indices.
+
+#### [MODIFY] [setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)
+- **UI Structure**:
+    - Remove the existing `Wrap` based toolbar.
+    - Implement a new `Column` containing two `Row` widgets at the bottom.
+    - Each `Row` will have a fixed height of 20px.
+    - Each button in the `Row` will be an `Expanded` widget to ensure equal width.
+- **Button Styling**:
+    - Create a helper widget `_SegmentedIconButton` with:
+        - `BoxDecoration` featuring a linear gradient (matching the gray/silver look in the reference image).
+        - Thin vertical borders between buttons.
+        - `InkWell` for hover and splash effects.
+        - `Tooltip` for accessibility and description.
+        - Center-aligned monochrome icon.
+- **New Handlers**:
+    - `_clearAll()`: Show a confirmation `AlertDialog`. If confirmed, call `ref.read(setlistProvider.notifier).clear()`.
+    - `_toggleFavorite()`: Call the new notifier method for current selection.
+    - `_refresh()`: Add a placeholder log/snackbar as requested.
+- **Item List Update**:
+    - In the `ListView` builder, add a star icon (`Icons.star`) at the start of the row if `item.isFavorite` is true.
+
+## Verification Plan
+
+### Automated Tests
+- N/A (UI focused)
+
+### Manual Verification
+1.  **Layout**: Verify the bottom of the SetList panel has exactly two bars of 4 buttons each, spanning full width.
+2.  **Visuals**: Compare the button appearance (gradients, 3D look, separators) with the reference image.
+3.  **Tooltips**: Hover over each of the 8 buttons to ensure the correct tooltip appears.
+4.  **Clear All**: Add items, click "Clear All", verify the alert appears, and items are cleared only after confirmation.
+5.  **Favorite**: Select one or more items, click "Favorite", verify a star icon appears next to them in the list.
+6.  **Persistence**: Mark an item as favorite, save the setlist, reload it, and verify the favorite status is preserved.
+7.  **Existing Actions**: Verify Delete, Move Up/Down, Save, and Add Image still work as expected.

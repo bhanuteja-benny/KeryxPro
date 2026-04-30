@@ -1,0 +1,53 @@
+# Phase 21.2 Improvements: SetList & Live Screen
+
+This plan addresses a design refinement for scripture items, a functionality enhancement for item insertion, and a bug fix for image rendering on the live projector.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Scripture Icon Selection**: 
+> - **Icon**: `Icons.menu_book_rounded` (a modern book icon).
+> - **Color**: `Colors.orangeAccent` (vibrant orange, easily distinguishable from the purple used for songs).
+> - **Detection**: Items will be identified as scriptures if they are `SongSetlistItem` objects with the author set to `'Bible'`.
+
+> [!NOTE]
+> **Insertion Logic**: If multiple items are selected in the SetList, the new item will be inserted immediately after the **top-most** (lowest index) selected item. If nothing is selected, it will be added to the end as before.
+
+## Proposed Changes
+
+### [SetList Component]
+
+#### [MODIFY] [setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)
+- Update the item builder logic to use the new scripture icon and color.
+- Update `_addImage` to calculate the insertion index based on current selection.
+
+#### [MODIFY] [setlist_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/setlist_providers.dart)
+- Add `insertSong(Song song, int? atIndex)` and `insertImage(ImageSetlistItem item, int? atIndex)` to `SetlistNotifier`.
+- Logic: If `atIndex` is null, append; else, insert at `atIndex + 1`.
+
+### [Library & Bible Components]
+
+#### [MODIFY] [song_library_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/songs/presentation/song_library_tab.dart)
+- Update `onKeyEvent` (Enter) and other add-triggers to pass the current setlist selection's minimum index.
+
+#### [MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)
+- Update `_addToSetlist` to pass the current setlist selection's minimum index.
+
+### [Presentation Component]
+
+#### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- **Fix**: Update the `build` method to detect the `IMAGE:` prefix in `activeSlideText`.
+- **Parsing**: Extract `imagePath`, `layout`, and `alignment` from the content string.
+- **Rendering**: Replace the text layer with an `Image.file` widget when an image slide is active. 
+- **Mapping**:
+    - Layout: `stretch` -> `BoxFit.fill`, `fit` -> `BoxFit.cover`, `contain` -> `BoxFit.contain`.
+    - Alignment: Map the string (e.g., `center`, `bottomRight`) to standard `Alignment` objects.
+
+## Verification Plan
+
+### Manual Verification
+- **Icon Test**: Add a scripture from the Bible tab and verify it shows the orange book icon in the SetList.
+- **Insertion Test**: 
+    - Select the 2nd item in the SetList. Add a new song. Verify it appears at position 3.
+    - Select multiple items (e.g., 2 and 4). Add a new song. Verify it appears at position 3.
+- **Image Test**: Add an image slide and go live. Verify the image is displayed on Monitor 1 and Monitor 2 instead of the "IMAGE:path..." string.

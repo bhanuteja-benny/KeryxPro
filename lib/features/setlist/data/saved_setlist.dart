@@ -22,5 +22,8 @@ class SavedSetlist {
   /// This preserves mixed song + image ordering.
   late List<String> itemOrder;
 
+  /// Ordered favorite status for each item in itemOrder.
+  late List<bool> favorites;
+
   late DateTime lastModified;
 }

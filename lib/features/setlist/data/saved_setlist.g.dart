@@ -17,28 +17,33 @@ const SavedSetlistSchema = CollectionSchema(
   name: r'SavedSetlist',
   id: -1741556442742670559,
   properties: {
-    r'imageEntries': PropertySchema(
+    r'favorites': PropertySchema(
       id: 0,
+      name: r'favorites',
+      type: IsarType.boolList,
+    ),
+    r'imageEntries': PropertySchema(
+      id: 1,
       name: r'imageEntries',
       type: IsarType.stringList,
     ),
     r'itemOrder': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'itemOrder',
       type: IsarType.stringList,
     ),
     r'lastModified': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'lastModified',
       type: IsarType.dateTime,
     ),
     r'name': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
     r'songIds': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'songIds',
       type: IsarType.longList,
     )
@@ -77,6 +82,7 @@ int _savedSetlistEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.favorites.length;
   bytesCount += 3 + object.imageEntries.length * 3;
   {
     for (var i = 0; i < object.imageEntries.length; i++) {
@@ -102,11 +108,12 @@ void _savedSetlistSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeStringList(offsets[0], object.imageEntries);
-  writer.writeStringList(offsets[1], object.itemOrder);
-  writer.writeDateTime(offsets[2], object.lastModified);
-  writer.writeString(offsets[3], object.name);
-  writer.writeLongList(offsets[4], object.songIds);
+  writer.writeBoolList(offsets[0], object.favorites);
+  writer.writeStringList(offsets[1], object.imageEntries);
+  writer.writeStringList(offsets[2], object.itemOrder);
+  writer.writeDateTime(offsets[3], object.lastModified);
+  writer.writeString(offsets[4], object.name);
+  writer.writeLongList(offsets[5], object.songIds);
 }
 
 SavedSetlist _savedSetlistDeserialize(
@@ -116,12 +123,13 @@ SavedSetlist _savedSetlistDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = SavedSetlist();
+  object.favorites = reader.readBoolList(offsets[0]) ?? [];
   object.id = id;
-  object.imageEntries = reader.readStringList(offsets[0]) ?? [];
-  object.itemOrder = reader.readStringList(offsets[1]) ?? [];
-  object.lastModified = reader.readDateTime(offsets[2]);
-  object.name = reader.readString(offsets[3]);
-  object.songIds = reader.readLongList(offsets[4]) ?? [];
+  object.imageEntries = reader.readStringList(offsets[1]) ?? [];
+  object.itemOrder = reader.readStringList(offsets[2]) ?? [];
+  object.lastModified = reader.readDateTime(offsets[3]);
+  object.name = reader.readString(offsets[4]);
+  object.songIds = reader.readLongList(offsets[5]) ?? [];
   return object;
 }
 
@@ -133,14 +141,16 @@ P _savedSetlistDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readBoolList(offset) ?? []) as P;
     case 1:
       return (reader.readStringList(offset) ?? []) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readLongList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -440,6 +450,105 @@ extension SavedSetlistQueryWhere
 
 extension SavedSetlistQueryFilter
     on QueryBuilder<SavedSetlist, SavedSetlist, QFilterCondition> {
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesElementEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'favorites',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      favoritesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'favorites',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -1355,6 +1464,12 @@ extension SavedSetlistQuerySortThenBy
 
 extension SavedSetlistQueryWhereDistinct
     on QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> {
+  QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> distinctByFavorites() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'favorites');
+    });
+  }
+
   QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> distinctByImageEntries() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'imageEntries');
@@ -1392,6 +1507,12 @@ extension SavedSetlistQueryProperty
   QueryBuilder<SavedSetlist, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<SavedSetlist, List<bool>, QQueryOperations> favoritesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'favorites');
     });
   }
 

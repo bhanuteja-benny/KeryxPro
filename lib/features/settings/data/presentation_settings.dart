@@ -37,6 +37,8 @@ class PresentationSettings {
   double titleFontSize = 24.0;
   String titleFontFamily = 'Arial';
   int titleFontColor = 0x8FFFFFFF; 
+  bool titleBold = true;
+  bool titleItalic = false;
   bool titleUnderline = false;
   bool titleHasFill = false;
   int titleFillColor = 0x00000000;
@@ -53,6 +55,8 @@ class PresentationSettings {
   double lyricsFontSize = 80.0;
   String lyricsFontFamily = 'Arial';
   int lyricsFontColor = 0xFFFFFFFF;
+  bool lyricsBold = true;
+  bool lyricsItalic = false;
   bool lyricsUnderline = false;
   bool lyricsHasFill = false;
   int lyricsFillColor = 0x00000000;
@@ -70,6 +74,8 @@ class PresentationSettings {
   double chapterFontSize = 24.0;
   String chapterFontFamily = 'Arial';
   int chapterFontColor = 0x8FFFFFFF; 
+  bool chapterBold = true;
+  bool chapterItalic = false;
   bool chapterUnderline = false;
   bool chapterHasFill = false;
   int chapterFillColor = 0x00000000;
@@ -86,6 +92,8 @@ class PresentationSettings {
   double verseFontSize = 80.0;
   String verseFontFamily = 'Arial';
   int verseFontColor = 0xFFFFFFFF;
+  bool verseBold = true;
+  bool verseItalic = false;
   bool verseUnderline = false;
   bool verseHasFill = false;
   int verseFillColor = 0x00000000;

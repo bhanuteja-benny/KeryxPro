@@ -1,0 +1,56 @@
+# Phase 21.1 UI Changes: SetList Button Bars
+
+This plan outlines the design changes for the horizontal button bars at the bottom of the SetList panel to achieve a simpler, more professional monochrome look.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Color Selection**: 
+> - The "lighter version of SetList pane background color" is interpreted as `Color(0xFF2D2D3E)`, which is already used for secondary elements (like text fields) in the same panel.
+> - The "Dark gray" icon color is interpreted as `Color(0xFF757575)`. On the dark background, this provides a professional, subtle contrast (approx 4.8:1) while remaining "dark gray".
+> - The hover state will increase the background brightness to `Color(0xFF3D3D4E)`.
+
+## Open Questions
+
+- None at this stage. Assumptions are documented above.
+
+## Proposed Changes
+
+### [SetList Component]
+
+#### [MODIFY] [setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)
+
+- **Refactor `_segmentedButton`**:
+    - Replace the current implementation with a new private widget `_SetlistToolbarButton` (or update the helper) to handle hover states and the new styling.
+    - **Dimensions**: Increase height from 20px to **28px**.
+    - **Visuals**:
+        - Replace `gradient` with a solid `color: Color(0xFF2D2D3E)`.
+        - Remove the "engraved" shadow effect (the white icon offset).
+        - **Keep button borders** (e.g., the right separator border). Ensure no borders are applied to the icons themselves.
+    - **Icons**:
+        - Size: Increase from 14px to **16px**.
+        - Color: Use a fixed **dark gray** `Color(0xFF757575)` for all states (enabled, disabled, pressed).
+        - All icons (including the "image" icon `add_photo_alternate_rounded`) will use this same monochrome color.
+    - **States**:
+        - **Hover**: Increase background brightness to `Color(0xFF3D3D4E)`.
+        - **Disabled/Pressed**: Maintain the same background (`0xFF2D2D3E`) and icon color (`0xFF757575`) as the enabled state.
+- **Update Usage**:
+    - Ensure both rows (Bar 1 and Bar 2) use the updated button style.
+
+## Verification Plan
+
+### Automated Tests
+- N/A (UI visual changes)
+
+### Manual Verification
+- **Size Check**: Verify the two button bars at the bottom of the SetList panel are taller (28px each).
+- **Style Check**:
+    - Verify backgrounds are plain (no gradients).
+    - Verify icons are dark gray and 16x16.
+    - Verify no "engraved" look.
+    - Verify **button borders** (separators) are still present, while icons have no borders.
+- **Interactions**:
+    - Hover over buttons to see the background brighten slightly.
+    - Click buttons and verify no color change on press.
+    - Verify disabled buttons (e.g., "Move Up" when no item is selected) look identical to enabled ones.
+- **Visual Consistency**: Ensure the "Add Image" icon is also dark gray.

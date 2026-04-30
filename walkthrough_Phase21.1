@@ -1,0 +1,33 @@
+# Walkthrough - SetList UI Changes (Phase 21.1)
+
+I have updated the SetList panel toolbar buttons to match the new design requirements.
+
+## Changes Made
+
+### SetList Toolbar Refactor
+- **Component**: `SetlistPane` in `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+- **New Widget**: Created a private `_SetlistToolbarButton` widget to handle the new visual style and hover states.
+- **Visual Updates**:
+    - **Height**: Increased from 20px to **28px**.
+    - **Background**: Replaced gradients with a solid **Color(0xFF2D2D3E)**.
+    - **Hover State**: Added a hover effect that brightens the background to **Color(0xFF3D3D4E)**.
+    - **Icons**:
+        - Updated to a simple monochrome **dark gray** (`Color(0xFF757575)`).
+        - Size increased to **16px**.
+        - Removed the "engraved" shadow effect.
+    - **Borders**: Maintained the existing separator borders between buttons as requested.
+    - **States**: Background and icon colors remain consistent across enabled, disabled, and pressed states (only hover changes).
+
+## Verification Results
+
+### Visual Verification
+- [x] Toolbar height is noticeably larger (28px).
+- [x] Background is a flat, solid dark color.
+- [x] Icons are monochrome dark gray and larger.
+- [x] Buttons have a clear separator border.
+- [x] No white "engraved" shadow on icons.
+
+### Interaction Verification
+- [x] Hovering over any button highlights its background.
+- [x] Clicking a button triggers the action without changing the button's background/icon color.
+- [x] Disabled buttons (e.g., "Save" when no name is entered) look identical to enabled ones but are non-functional.

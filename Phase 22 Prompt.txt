@@ -1,0 +1,28 @@
+Phase 22
+
+Context:
+- New options in 'Settings -> Presentation Settings -> Typography Settings'
+
+UI Requirements:
+- Add 2 new checkboxes in Typography settings for all (Title, Lyrics, Chapter and Verse)
+
+Checkboxes:
+- Checkbox 1: Bold - if this checkbox is selected the font should be made bold
+- Checkbox 2: Italic - if this checkbox is selected the font should be made italic
+
+Visual Style:
+- Same style as existing checkboxes (underline, stroke etc)
+- Location: Arrange them in new vertical column beside existing checkboxes
+
+Interactions:
+- These styles should reflect in the respect font style of Title/Lyrics/Chapter/Verse in preview and these should be saved along with the other settings in song settings and scripture settings.
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval.
+
+Deliverables:
+⁃ Implementation Plan File

@@ -1,0 +1,36 @@
+# Phase 22: Typography Bold and Italic Controls
+
+This plan outlines the addition of Bold and Italic controls for the typography settings across Title, Lyrics, Chapter, and Verse components.
+
+## Proposed Changes
+
+### 1. Database Schema (`PresentationSettings`)
+To persist the user's styling choices, 8 new boolean properties will be added to the `PresentationSettings` Isar model:
+- `titleBold` (Default `true` to match current hardcoded behavior)
+- `titleItalic` (Default `false`)
+- `lyricsBold` (Default `true`)
+- `lyricsItalic` (Default `false`)
+- `chapterBold` (Default `true`)
+- `chapterItalic` (Default `false`)
+- `verseBold` (Default `true`)
+- `verseItalic` (Default `false`)
+
+**Note:** After making this change, I will run the `build_runner` command to update the Isar generated code.
+
+### 2. Provider Methods (`presentation_settings_provider.dart`)
+New methods will be exposed on the `PresentationSettingsNotifier` to update these boolean fields:
+- `updateTitleBold()`, `updateTitleItalic()`
+- `updateLyricsBold()`, `updateLyricsItalic()`
+- `updateChapterBold()`, `updateChapterItalic()`
+- `updateVerseBold()`, `updateVerseItalic()`
+
+### 3. Settings UI (`presentation_settings_dialog.dart`)
+- **Dialog Layout**: In `_showTypographyDialog`, I will place the "Bold" and "Italic" checkboxes in a new vertical column directly beside the existing column that contains "Underline", "Fill", and "Stroke" checkboxes.
+- **Preview Rendering**: The hardcoded `fontWeight: FontWeight.bold` in the `_buildPreviewContent` will be replaced with dynamic logic that respects the user's bold and italic selections.
+
+### 4. Live Output (`projector_view.dart`)
+- I will update the text rendering in `ProjectorView` to apply the selected `FontWeight` (bold vs normal) and `FontStyle` (italic vs normal) for both title and body text, allowing the live output to reflect the saved preferences accurately.
+
+## User Review Required
+> [!IMPORTANT]
+> The current text is hardcoded to be bold by default everywhere. I am proposing to default the new "Bold" checkboxes to `true` to maintain your current presentation aesthetic immediately upon update. Is this default acceptable? Please approve the plan if so.

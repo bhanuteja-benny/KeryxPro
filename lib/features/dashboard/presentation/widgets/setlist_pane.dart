@@ -21,6 +21,20 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
   final FocusNode _listFocusNode = FocusNode(debugLabel: 'SetlistListPane');
 
   @override
+  void initState() {
+    super.initState();
+    _nameCtrl.addListener(() {
+      // Need to defer this slightly as it might happen during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(activeSetlistNameProvider.notifier).state = 
+            _nameCtrl.text.isEmpty ? null : _nameCtrl.text;
+        }
+      });
+    });
+  }
+
+  @override
   void dispose() {
     _nameCtrl.dispose();
     _nameFocusNode.dispose();
@@ -28,42 +42,178 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     super.dispose();
   }
 
+  bool _hasUnsavedChanges() {
+    final items = ref.read(setlistProvider);
+    if (items.isEmpty) return false;
+    final currentSignature = generateSetlistSignature(items);
+    final savedSignature = ref.read(activeSetlistSignatureProvider);
+    return currentSignature != savedSignature;
+  }
+
   // ── Save current session list ──────────────────────────────────────────
   Future<void> _saveSetlist() async {
-    final name = ref.read(activeSetlistNameProvider);
-    if (name == null || name.trim().isEmpty) {
+    final items = ref.read(setlistProvider);
+    if (items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a setlist name first.')),
+        const SnackBar(content: Text('Cannot save an empty list. Add at least one item.')),
       );
       return;
     }
-    final items = ref.read(setlistProvider);
+
+    String? name = ref.read(activeSetlistNameProvider);
+    
+    if (name == null || name.trim().isEmpty) {
+      name = await _promptForName();
+      if (name == null || name.trim().isEmpty) return; // User cancelled
+    }
+    
     final repo = ref.read(setlistRepositoryProvider);
     await repo.saveByName(name.trim(), items);
+    ref.read(activeSetlistNameProvider.notifier).state = name.trim();
+    ref.read(activeSetlistSignatureProvider.notifier).state = generateSetlistSignature(items);
     ref.invalidate(savedSetlistNamesProvider);
+    _nameCtrl.text = name.trim();
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('SetList "$name" saved!')),
+        SnackBar(content: Text('SetList "${name.trim()}" saved!')),
       );
     }
+  }
+
+  Future<String?> _promptForName() async {
+    final ctrl = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF2D2D3E),
+          title: const Text('Save SetList', style: TextStyle(color: Colors.white, fontSize: 16)),
+          content: TextField(
+            controller: ctrl,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: 'Enter SetList name',
+              hintStyle: TextStyle(color: Colors.white38),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, null),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final input = ctrl.text.trim();
+                if (input.isEmpty) return;
+                
+                final existing = await ref.read(savedSetlistNamesProvider.future);
+                if (existing.contains(input)) {
+                  if (ctx.mounted) {
+                    final overwrite = await showDialog<bool>(
+                      context: ctx,
+                      builder: (innerCtx) => AlertDialog(
+                        backgroundColor: const Color(0xFF2D2D3E),
+                        title: const Text('Name Exists', style: TextStyle(color: Colors.white, fontSize: 16)),
+                        content: const Text('SetList name already exists. Overwrite?', style: TextStyle(color: Colors.white70)),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(innerCtx, false), child: const Text('Cancel', style: TextStyle(color: Colors.white38))),
+                          TextButton(onPressed: () => Navigator.pop(innerCtx, true), child: const Text('Overwrite', style: TextStyle(color: Colors.redAccent))),
+                        ],
+                      )
+                    );
+                    if (overwrite != true) return;
+                  }
+                }
+                if (ctx.mounted) Navigator.pop(ctx, input);
+              },
+              child: const Text('Save', style: TextStyle(color: Colors.blueAccent)),
+            ),
+          ],
+        );
+      }
+    );
   }
 
   // ── Load a saved setlist by name ───────────────────────────────────────
   Future<void> _loadSetlist(String name) async {
+    if (_hasUnsavedChanges()) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF2D2D3E),
+          title: const Text('Unsaved Changes', style: TextStyle(color: Colors.white, fontSize: 16)),
+          content: const Text('You have unsaved items. Do you want to clear them and load the selected list?', style: TextStyle(color: Colors.white70, fontSize: 13)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Load Anyway', style: TextStyle(color: Colors.redAccent)),
+            ),
+          ],
+        )
+      );
+      if (confirm != true) {
+        // Reset text field if they cancelled
+        _nameCtrl.text = ref.read(activeSetlistNameProvider) ?? '';
+        return;
+      }
+    }
+
     final repo = ref.read(setlistRepositoryProvider);
     final items = await repo.loadByName(name);
     ref.read(setlistProvider.notifier).replaceAll(items);
     ref.read(activeSetlistNameProvider.notifier).state = name;
+    ref.read(activeSetlistSignatureProvider.notifier).state = generateSetlistSignature(items);
     ref.read(setlistSelectionProvider.notifier).clear();
     _nameCtrl.text = name;
   }
 
-  // ── Delete selected items ──────────────────────────────────────────────
-  void _deleteSelected() {
+  // ── Delete actions ──────────────────────────────────────────────
+  void _deleteAction() {
     final selection = ref.read(setlistSelectionProvider);
-    if (selection.isEmpty) return;
-    ref.read(setlistProvider.notifier).removeAtIndices(selection);
-    ref.read(setlistSelectionProvider.notifier).clear();
+    final items = ref.read(setlistProvider);
+    final activeName = ref.read(activeSetlistNameProvider);
+    
+    if (selection.isNotEmpty) {
+      ref.read(setlistProvider.notifier).removeAtIndices(selection);
+      ref.read(setlistSelectionProvider.notifier).clear();
+    } else if (items.isEmpty && activeName != null) {
+      _confirmDeleteSetlist(activeName);
+    }
+  }
+
+  Future<void> _confirmDeleteSetlist(String name) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF2D2D3E),
+        title: const Text('Delete SetList', style: TextStyle(color: Colors.white, fontSize: 16)),
+        content: Text("Are you sure you want to delete the SetList '$name'?", style: const TextStyle(color: Colors.white70, fontSize: 13)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      )
+    );
+
+    if (confirm == true) {
+      final repo = ref.read(setlistRepositoryProvider);
+      await repo.deleteByName(name);
+      ref.read(activeSetlistNameProvider.notifier).state = null;
+      ref.read(activeSetlistSignatureProvider.notifier).state = '';
+      _nameCtrl.clear();
+      ref.invalidate(savedSetlistNamesProvider);
+    }
   }
 
   // ── Move selected items ────────────────────────────────────────────────
@@ -91,8 +241,52 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
       builder: (context) => const ImageSlideDialog(),
     );
     if (result != null) {
-      ref.read(setlistProvider.notifier).addImage(result);
+      final selection = ref.read(setlistSelectionProvider);
+      final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+      ref.read(setlistProvider.notifier).insertImage(result, insertIndex);
     }
+  }
+
+  // ── Clear all items ────────────────────────────────────────────────────
+  Future<void> _clearAll() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2D2D3E),
+        title: const Text('Clear SetList', style: TextStyle(color: Colors.white, fontSize: 16)),
+        content: const Text('Are you sure you want to clear all items? This will not save changes.',
+            style: TextStyle(color: Colors.white70, fontSize: 13)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Clear All', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(setlistProvider.notifier).clear();
+      ref.read(setlistSelectionProvider.notifier).clear();
+    }
+  }
+
+  // ── Toggle favorite status ─────────────────────────────────────────────
+  void _toggleFavorite() {
+    final selection = ref.read(setlistSelectionProvider);
+    if (selection.isEmpty) return;
+    ref.read(setlistProvider.notifier).toggleFavorite(selection);
+  }
+
+  // ── Refresh placeholder ────────────────────────────────────────────────
+  void _refresh() {
+    debugPrint('Refresh clicked');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Refresh clicked'), duration: Duration(seconds: 1)),
+    );
   }
 
   // ── Handle item tap (single / Ctrl / Shift) ───────────────────────────
@@ -134,32 +328,18 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     }
   }
 
-  // ── Toolbar icon button helper ─────────────────────────────────────────
-  Widget _toolbarIcon({
+  // ── Segmented Control Style Button Helper ────────────────────────────
+  Widget _segmentedButton({
     required IconData icon,
     required String tooltip,
     required VoidCallback? onPressed,
+    bool showBorder = true,
   }) {
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          width: 36,
-          height: 36,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: onPressed != null ? Colors.white.withValues(alpha: 0.06) : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: onPressed != null ? Colors.white70 : Colors.white24,
-          ),
-        ),
-      ),
+    return _SetlistToolbarButton(
+      icon: icon,
+      tooltip: tooltip,
+      onPressed: onPressed,
+      showBorder: showBorder,
     );
   }
 
@@ -192,89 +372,52 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
               color: Colors.black26,
               child: savedNamesAsync.when(
-                data: (names) => RawAutocomplete<String>(
-                  textEditingController: _nameCtrl,
-                  focusNode: _nameFocusNode,
-                  optionsBuilder: (value) {
-                    if (value.text.isEmpty) return names;
-                    return names.where(
-                      (n) => n.toLowerCase().contains(value.text.toLowerCase()),
-                    );
-                  },
-                  onSelected: (name) => _loadSetlist(name),
-                  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                    return TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      style: const TextStyle(color: Colors.white, fontSize: 11),
-                      decoration: InputDecoration(
-                        hintText: 'SetList name…',
-                        hintStyle: const TextStyle(color: Colors.white24, fontSize: 11),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                        filled: true,
-                        fillColor: const Color(0xFF2D2D3E),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide: BorderSide.none,
-                        ),
-                        suffixIcon: activeName != null
-                            ? IconButton(
-                                icon: const Icon(Icons.close, size: 14, color: Colors.white38),
-                                onPressed: () {
-                                  _nameCtrl.clear();
-                                  ref.read(activeSetlistNameProvider.notifier).state = null;
-                                },
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              )
-                            : null,
+                data: (names) => Theme(
+                  data: Theme.of(context).copyWith(
+                    iconButtonTheme: IconButtonThemeData(
+                      style: IconButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(24, 24),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      onChanged: (v) {
-                        ref.read(activeSetlistNameProvider.notifier).state = v.isEmpty ? null : v;
-                      },
-                      onSubmitted: (v) {
-                        if (names.contains(v.trim())) {
-                          _loadSetlist(v.trim());
-                        } else {
-                          ref.read(activeSetlistNameProvider.notifier).state = v.trim().isEmpty ? null : v.trim();
-                        }
-                      },
-                    );
-                  },
-                  optionsViewBuilder: (context, onSelected, options) {
-                    return Align(
-                      alignment: Alignment.topLeft,
-                      child: Material(
-                        color: const Color(0xFF2D2D3E),
-                        elevation: 4,
+                    ),
+                  ),
+                  child: DropdownMenu<String>(
+                    controller: _nameCtrl,
+                    focusNode: _nameFocusNode,
+                    initialSelection: activeName,
+                    enableFilter: true,
+                    requestFocusOnTap: true,
+                    dropdownMenuEntries: names.map((n) => DropdownMenuEntry(value: n, label: n)).toList(),
+                    onSelected: (name) {
+                      if (name != null) _loadSetlist(name);
+                    },
+                    textStyle: const TextStyle(color: Colors.white, fontSize: 11),
+                    inputDecorationTheme: InputDecorationTheme(
+                      isDense: true,
+                      constraints: const BoxConstraints(maxHeight: 28),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                      filled: true,
+                      fillColor: const Color(0xFF2D2D3E),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 180),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: options.length,
-                            itemBuilder: (context, i) {
-                              final name = options.elementAt(i);
-                              return InkWell(
-                                onTap: () => onSelected(name),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                                  child: Text(name,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                        borderSide: BorderSide.none,
                       ),
-                    );
-                  },
+                      hintStyle: const TextStyle(color: Colors.white24, fontSize: 11),
+                    ),
+                    hintText: 'SetList name…',
+                    expandedInsets: EdgeInsets.zero,
+                    menuStyle: MenuStyle(
+                      backgroundColor: WidgetStateProperty.all(const Color(0xFF2D2D3E)),
+                    ),
+                    trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white54, size: 20),
+                    selectedTrailingIcon: const Icon(Icons.arrow_drop_up, color: Colors.white54, size: 20),
+                  ),
                 ),
-                loading: () => const LinearProgressIndicator(minHeight: 2),
-                error: (_, __) => const Text('Error loading lists',
-                    style: TextStyle(color: Colors.redAccent, fontSize: 11)),
+                loading: () => const Center(child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator())),
+                error: (e, _) => Center(child: Text('Error: $e')),
               ),
+
             ),
 
             // ── Item List ───────────────────────────────────────────────
@@ -310,9 +453,22 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                             child: Row(
                               children: [
+                                if (item.isFavorite)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: Icon(Icons.star_rounded,
+                                        size: 12, color: Colors.amber.withValues(alpha: 0.8)),
+                                  ),
                                 if (item is SongSetlistItem)
-                                  const Icon(Icons.music_note_rounded,
-                                      size: 13, color: Colors.deepPurpleAccent)
+                                  Icon(
+                                    item.song.author == 'Bible' 
+                                      ? Icons.history_edu 
+                                      : Icons.music_note_rounded,
+                                    size: 13, 
+                                    color: item.song.author == 'Bible' 
+                                      ? Colors.indigoAccent 
+                                      : Colors.deepPurpleAccent,
+                                  )
                                 else
                                   const Icon(Icons.image_rounded,
                                       size: 13, color: Colors.tealAccent),
@@ -344,58 +500,123 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                     ),
             ),
 
-            // ── Bottom Toolbar (icon-only, 3x2) ────────────────────────
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF16162A),
-                border: Border(top: BorderSide(color: Colors.white12)),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 2,
-                runSpacing: 2,
-                children: [
-                  // Row 1
-                  _toolbarIcon(
-                    icon: Icons.save_rounded,
-                    tooltip: 'Save SetList',
-                    onPressed: activeName != null ? _saveSetlist : null,
-                  ),
-                  _toolbarIcon(
-                    icon: Icons.delete_rounded,
-                    tooltip: 'Delete Selected',
-                    onPressed: hasSelection ? _deleteSelected : null,
-                  ),
-                  _toolbarIcon(
-                    icon: Icons.arrow_upward_rounded,
-                    tooltip: 'Move Up',
-                    onPressed: canMoveUp ? _moveUp : null,
-                  ),
-                  // Row 2
-                  _toolbarIcon(
-                    icon: Icons.arrow_downward_rounded,
-                    tooltip: 'Move Down',
-                    onPressed: canMoveDown ? _moveDown : null,
-                  ),
-                  _toolbarIcon(
-                    icon: Icons.sync_rounded,
-                    tooltip: 'Sync (Coming Soon)',
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Sync — Coming Soon!')),
-                      );
-                    },
-                  ),
-                  _toolbarIcon(
-                    icon: Icons.add_photo_alternate_rounded,
-                    tooltip: 'Add Image Slide',
-                    onPressed: _addImage,
-                  ),
-                ],
-              ),
+            // ── Bottom Toolbar (2x4 Segmented Control) ────────────────
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Bar 1
+                Row(
+                  children: [
+                    _segmentedButton(
+                      icon: Icons.delete_rounded,
+                      tooltip: items.isEmpty && activeName != null ? 'Delete SetList' : 'Delete Selected',
+                      onPressed: (hasSelection || (items.isEmpty && activeName != null)) ? _deleteAction : null,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.arrow_upward_rounded,
+                      tooltip: 'Move Up',
+                      onPressed: canMoveUp ? _moveUp : null,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.arrow_downward_rounded,
+                      tooltip: 'Move Down',
+                      onPressed: canMoveDown ? _moveDown : null,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.save_rounded,
+                      tooltip: 'Save SetList',
+                      onPressed: _saveSetlist,
+                      showBorder: false,
+                    ),
+                  ],
+                ),
+                // Horizontal separator between bars
+                const Divider(height: 1, color: Colors.black12),
+                // Bar 2
+                Row(
+                  children: [
+                    _segmentedButton(
+                      icon: Icons.block_rounded,
+                      tooltip: 'Clear All',
+                      onPressed: items.isNotEmpty ? _clearAll : null,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.add_photo_alternate_rounded,
+                      tooltip: 'Add Image Slide',
+                      onPressed: _addImage,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.star_rounded,
+                      tooltip: 'Mark Item as Favorite',
+                      onPressed: hasSelection ? _toggleFavorite : null,
+                    ),
+                    _segmentedButton(
+                      icon: Icons.refresh_rounded,
+                      tooltip: 'Refresh',
+                      onPressed: _refresh,
+                      showBorder: false,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SetlistToolbarButton extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final bool showBorder;
+
+  const _SetlistToolbarButton({
+    required this.icon,
+    required this.tooltip,
+    this.onPressed,
+    this.showBorder = true,
+  });
+
+  @override
+  State<_SetlistToolbarButton> createState() => _SetlistToolbarButtonState();
+}
+
+class _SetlistToolbarButtonState extends State<_SetlistToolbarButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: Tooltip(
+          message: widget.tooltip,
+          waitDuration: const Duration(milliseconds: 500),
+          child: InkWell(
+            onTap: widget.onPressed,
+            child: Container(
+              height: 28,
+              decoration: BoxDecoration(
+                color: _isHovered ? const Color(0xFF3D3D4E) : const Color(0xFF2D2D3E),
+                border: widget.showBorder
+                    ? const Border(
+                        right: BorderSide(color: Colors.black12, width: 1),
+                      )
+                    : null,
+              ),
+              child: Center(
+                child: Icon(
+                  widget.icon,
+                  size: 16,
+                  color: const Color(0xFF757575),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

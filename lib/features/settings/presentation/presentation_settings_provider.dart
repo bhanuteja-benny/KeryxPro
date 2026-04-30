@@ -247,6 +247,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateTitleFontSize(double size) => state = cloneState(state)..titleFontSize = size;
   void updateTitleFontFamily(String family) => state = cloneState(state)..titleFontFamily = family;
   void updateTitleFontColor(int color) => state = cloneState(state)..titleFontColor = color;
+  void updateTitleBold(bool v) => state = cloneState(state)..titleBold = v;
+  void updateTitleItalic(bool v) => state = cloneState(state)..titleItalic = v;
   void updateTitleUnderline(bool v) => state = cloneState(state)..titleUnderline = v;
   void updateTitleFill(bool hasFill, int color) => state = cloneState(state)..titleHasFill = hasFill..titleFillColor = color;
   void updateTitleStroke(bool hasStroke, int color) => state = cloneState(state)..titleHasStroke = hasStroke..titleStrokeColor = color;
@@ -265,6 +267,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateLyricsFontSize(double size) => state = cloneState(state)..lyricsFontSize = size;
   void updateLyricsFontFamily(String family) => state = cloneState(state)..lyricsFontFamily = family;
   void updateLyricsFontColor(int color) => state = cloneState(state)..lyricsFontColor = color;
+  void updateLyricsBold(bool v) => state = cloneState(state)..lyricsBold = v;
+  void updateLyricsItalic(bool v) => state = cloneState(state)..lyricsItalic = v;
   void updateLyricsUnderline(bool v) => state = cloneState(state)..lyricsUnderline = v;
   void updateLyricsFill(bool hasFill, int color) => state = cloneState(state)..lyricsHasFill = hasFill..lyricsFillColor = color;
   void updateLyricsStroke(bool hasStroke, int color) => state = cloneState(state)..lyricsHasStroke = hasStroke..lyricsStrokeColor = color;
@@ -284,6 +288,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateChapterFontSize(double size) => state = cloneState(state)..chapterFontSize = size;
   void updateChapterFontFamily(String family) => state = cloneState(state)..chapterFontFamily = family;
   void updateChapterFontColor(int color) => state = cloneState(state)..chapterFontColor = color;
+  void updateChapterBold(bool v) => state = cloneState(state)..chapterBold = v;
+  void updateChapterItalic(bool v) => state = cloneState(state)..chapterItalic = v;
   void updateChapterUnderline(bool v) => state = cloneState(state)..chapterUnderline = v;
   void updateChapterFill(bool hasFill, int color) => state = cloneState(state)..chapterHasFill = hasFill..chapterFillColor = color;
   void updateChapterStroke(bool hasStroke, int color) => state = cloneState(state)..chapterHasStroke = hasStroke..chapterStrokeColor = color;
@@ -302,6 +308,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateVerseFontSize(double size) => state = cloneState(state)..verseFontSize = size;
   void updateVerseFontFamily(String family) => state = cloneState(state)..verseFontFamily = family;
   void updateVerseFontColor(int color) => state = cloneState(state)..verseFontColor = color;
+  void updateVerseBold(bool v) => state = cloneState(state)..verseBold = v;
+  void updateVerseItalic(bool v) => state = cloneState(state)..verseItalic = v;
   void updateVerseUnderline(bool v) => state = cloneState(state)..verseUnderline = v;
   void updateVerseFill(bool hasFill, int color) => state = cloneState(state)..verseHasFill = hasFill..verseFillColor = color;
   void updateVerseStroke(bool hasStroke, int color) => state = cloneState(state)..verseHasStroke = hasStroke..verseStrokeColor = color;
@@ -339,6 +347,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..titleFontSize = src.titleFontSize
       ..titleFontFamily = src.titleFontFamily
       ..titleFontColor = src.titleFontColor
+      ..titleBold = src.titleBold
+      ..titleItalic = src.titleItalic
       ..titleUnderline = src.titleUnderline
       ..titleHasFill = src.titleHasFill
       ..titleFillColor = src.titleFillColor
@@ -353,6 +363,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..lyricsFontSize = src.lyricsFontSize
       ..lyricsFontFamily = src.lyricsFontFamily
       ..lyricsFontColor = src.lyricsFontColor
+      ..lyricsBold = src.lyricsBold
+      ..lyricsItalic = src.lyricsItalic
       ..lyricsUnderline = src.lyricsUnderline
       ..lyricsHasFill = src.lyricsHasFill
       ..lyricsFillColor = src.lyricsFillColor
@@ -368,6 +380,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..chapterFontSize = src.chapterFontSize
       ..chapterFontFamily = src.chapterFontFamily
       ..chapterFontColor = src.chapterFontColor
+      ..chapterBold = src.chapterBold
+      ..chapterItalic = src.chapterItalic
       ..chapterUnderline = src.chapterUnderline
       ..chapterHasFill = src.chapterHasFill
       ..chapterFillColor = src.chapterFillColor
@@ -382,6 +396,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..verseFontSize = src.verseFontSize
       ..verseFontFamily = src.verseFontFamily
       ..verseFontColor = src.verseFontColor
+      ..verseBold = src.verseBold
+      ..verseItalic = src.verseItalic
       ..verseUnderline = src.verseUnderline
       ..verseHasFill = src.verseHasFill
       ..verseFillColor = src.verseFillColor

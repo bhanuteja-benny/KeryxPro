@@ -1,0 +1,37 @@
+# Walkthrough - Phase 21: SetList Panel Redesign
+
+I have redesigned the SetList panel's bottom toolbar to feature a high-density, professional segmented control layout with two horizontal bars.
+
+## Changes Made
+
+### 1. Data Models & Persistence
+- **[setlist_item.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_item.dart)**: Added `isFavorite` property and `copyWith` support to all setlist item types.
+- **[saved_setlist.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/saved_setlist.dart)**: Added a `favorites` list to persist the favorite status in Isar.
+- **[setlist_repository.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_repository.dart)**: Updated save/load logic to handle the new favorite status.
+
+### 2. State Management
+- **[setlist_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/setlist_providers.dart)**: Added `toggleFavorite` method to the `SetlistNotifier` to batch-toggle favorites for selected items.
+
+### 3. UI Implementation
+- **[setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)**:
+    - **Segmented Control**: Replaced the previous `Wrap`-based toolbar with two fixed-height (20px) rows.
+    - **3D Styling**: Implemented a `_segmentedButton` helper with silver gradients, thin vertical separators, and a stacked icon effect to simulate an "engraved" look.
+    - **Favorite Indicators**: SetList items now display a small amber star icon if they are marked as favorites.
+    - **Handlers**:
+        - **Delete/Move/Save**: Ported to the new layout.
+        - **Clear All**: Added a confirmation dialog.
+        - **Favorite**: Added logic to mark/unmark selected items.
+        - **Refresh**: Added a placeholder snackbar.
+
+## Verification Results
+
+- **Layout**: Two bars of 4 buttons each, occupying full width at the bottom of the panel.
+- **Interaction**:
+    - Multi-select items and click the Star icon -> Star appears next to items.
+    - Click "Clear All" -> Dialog appears.
+    - Click "Refresh" -> Snackbar appears.
+    - Click "Save" -> Favorite status is persisted to the database.
+- **Styling**: Silver/Gray gradient backgrounds with subtle 3D depth and centered monochrome icons.
+
+> [!TIP]
+> Hover over the icons to see the tooltips as labels are intentionally omitted to maintain the high-density professional look.

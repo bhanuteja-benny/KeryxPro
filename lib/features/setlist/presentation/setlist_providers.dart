@@ -14,8 +14,30 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     state = [...state, SongSetlistItem(song)];
   }
 
+  void insertSong(Song song, int? atIndex) {
+    if (atIndex == null) {
+      addSong(song);
+    } else {
+      final newList = List<SetlistItem>.from(state);
+      final insertAt = (atIndex + 1).clamp(0, newList.length);
+      newList.insert(insertAt, SongSetlistItem(song));
+      state = newList;
+    }
+  }
+
   void addImage(ImageSetlistItem imageItem) {
     state = [...state, imageItem];
+  }
+
+  void insertImage(ImageSetlistItem imageItem, int? atIndex) {
+    if (atIndex == null) {
+      addImage(imageItem);
+    } else {
+      final newList = List<SetlistItem>.from(state);
+      final insertAt = (atIndex + 1).clamp(0, newList.length);
+      newList.insert(insertAt, imageItem);
+      state = newList;
+    }
   }
 
   void removeAtIndices(Set<int> indices) {
@@ -56,6 +78,17 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
 
   void clear() {
     state = [];
+  }
+
+  void toggleFavorite(Set<int> indices) {
+    if (indices.isEmpty) return;
+    state = [
+      for (int i = 0; i < state.length; i++)
+        if (indices.contains(i))
+          state[i].copyWith(isFavorite: !state[i].isFavorite)
+        else
+          state[i]
+    ];
   }
 
   // Legacy helper used by Bible search add
@@ -115,10 +148,33 @@ final setlistSelectionProvider =
 });
 
 // ─────────────────────────────────────────────────────────
-// Active Saved SetList Name
+// Active Saved SetList Name & Signature
 // ─────────────────────────────────────────────────────────
 
 final activeSetlistNameProvider = StateProvider<String?>((ref) => null);
+
+/// Stores the signature of the currently active list as it was loaded/saved
+/// to detect if there are unsaved changes.
+final activeSetlistSignatureProvider = StateProvider<String>((ref) => '');
+
+/// Generates a unique string signature for a list of SetlistItems.
+String generateSetlistSignature(List<SetlistItem> items) {
+  final buffer = StringBuffer();
+  for (final item in items) {
+    buffer.write(item.isFavorite ? '1' : '0');
+    switch (item) {
+      case SongSetlistItem(:final song):
+        if (song.author == 'Bible') {
+          buffer.write('scripture:${song.title}|');
+        } else {
+          buffer.write('song:${song.id}|');
+        }
+      case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
+        buffer.write('img:$imagePath;$layout;$alignment|');
+    }
+  }
+  return buffer.toString();
+}
 
 // ─────────────────────────────────────────────────────────
 // List of all saved SetList names (for the dropdown)

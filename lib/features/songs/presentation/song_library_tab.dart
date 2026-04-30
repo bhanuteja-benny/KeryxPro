@@ -146,7 +146,9 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                     return KeyEventResult.handled;
                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                     if (songs.isNotEmpty && currentIndex >= 0 && currentIndex < songs.length) {
-                      ref.read(setlistProvider.notifier).addSong(songs[currentIndex]);
+                      final selection = ref.read(setlistSelectionProvider);
+                      final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+                      ref.read(setlistProvider.notifier).insertSong(songs[currentIndex], insertIndex);
                     }
                     return KeyEventResult.handled;
                   }
@@ -171,7 +173,11 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                       trailing: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
-                          onTap: () => ref.read(setlistProvider.notifier).addSong(song),
+                          onTap: () {
+                            final selection = ref.read(setlistSelectionProvider);
+                            final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+                            ref.read(setlistProvider.notifier).insertSong(song, insertIndex);
+                          },
                           child: Container(
                             width: 30,
                             height: 30,
