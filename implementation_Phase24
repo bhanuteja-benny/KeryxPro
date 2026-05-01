@@ -1,0 +1,54 @@
+# Phase 24: UI Changes in the Slides Pane
+
+This document outlines the UI changes and styling updates required for the Slides pane to align with the visual styling seen in the SetList pane.
+
+## User Review Required
+
+Please review the proposed plan to ensure all styling requirements and constraints are accurately captured before implementation begins. No assumptions have been made outside of modifying the `Slide` models to support the favorite state propagation.
+
+## Open Questions
+
+None at this time.
+
+## Proposed Changes
+
+### Domain & Provider Layer (Passing Favorite State)
+To show the favorite icon in the slide list, the `Slide` objects need to know if their parent setlist item is marked as a favorite.
+
+#### [MODIFY] `lib/features/live_controller/domain/slide.dart`
+- Add `final bool isFavorite;` to the `Slide` class properties.
+- Update the default constructor and `Slide.blank` factory to accept `this.isFavorite = false`.
+
+#### [MODIFY] `lib/features/live_controller/presentation/slide_utils.dart`
+- Update `SlideUtils.parseLyrics` method signature to accept `bool isFavorite = false`.
+- Pass this `isFavorite` flag when creating each `Slide` instance (including the blank slide).
+
+#### [MODIFY] `lib/features/live_controller/presentation/live_projector_providers.dart`
+- In `currentSlidesProvider`, read `item.isFavorite` from the `SetlistItem` and pass it through to `SlideUtils.parseLyrics` (for songs/scripture) and directly into the `Slide` constructor (for image slides).
+
+### Presentation Layer (Styling Updates)
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/slide_item_widget.dart`
+- **Shortcut Colors Update (`_getShortcutColor` refactoring)**:
+  - Update `_getShortcutColor` to accept the entire `Slide` object instead of just `SlideType`.
+  - For blank slides: return `Colors.grey`.
+  - For Image slides (`slide.shortcut == 'IMG'`): return `Colors.tealAccent`.
+  - For Scripture slides (`!slide.isSong`): return `Colors.indigoAccent`.
+  - For Song slides (`slide.isSong`, including Chorus, Verse, Bridge, etc.): uniformly return `Colors.deepPurpleAccent`.
+- **Image Shortcut Icon**:
+  - In the "Shortcut Tag" container, if `slide.shortcut == 'IMG'`, render an `Icon(Icons.image_rounded, size: 12, color: Colors.tealAccent)` instead of the raw text `"IMG"`. For all other shortcuts, render the text as usual.
+- **Favorite Icon**:
+  - In the "Title/Ref" section (Section 1), wrap the title text in a `Row`.
+  - If `slide.isFavorite` is true, prepend `Icon(Icons.star_rounded, size: 12, color: Colors.amber.withValues(alpha: 0.8))` with a slight right padding before the slide title. This directly mimics the setlist pane's styling.
+
+## Verification Plan
+
+### Manual Verification
+1. Add a Song, a Scripture, and an Image to the SetList.
+2. Mark the Song and the Scripture as favorites.
+3. Observe the Slides pane:
+   - Ensure the Song slide shortcuts (V1, C, etc.) are all colored `Colors.deepPurpleAccent`.
+   - Ensure the Scripture slide shortcuts are colored `Colors.indigoAccent`.
+   - Ensure the Image slide shortcut displays the `Icons.image_rounded` icon instead of the text "IMG", styled with `Colors.tealAccent`.
+   - Ensure a gold star icon prefixes the title text for all slides derived from the favorited Song and Scripture setlist items.
+   - Ensure the app continues to compile successfully.

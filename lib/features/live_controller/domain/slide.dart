@@ -7,6 +7,7 @@ class Slide {
   final SlideType type;
   final bool isBlank;
   final bool isSong;
+  final bool isFavorite;
 
   Slide({
     required this.title,
@@ -15,10 +16,11 @@ class Slide {
     required this.type,
     this.isBlank = false,
     this.isSong = true,
+    this.isFavorite = false,
   });
 
   // Factory for blank slides
-  factory Slide.blank({required String title, bool isSong = true}) {
+  factory Slide.blank({required String title, bool isSong = true, bool isFavorite = false}) {
     return Slide(
       title: title,
       shortcut: "BK", // Blank
@@ -26,6 +28,7 @@ class Slide {
       type: SlideType.blank,
       isBlank: true,
       isSong: isSong,
+      isFavorite: isFavorite,
     );
   }
 }

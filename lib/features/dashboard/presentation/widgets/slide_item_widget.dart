@@ -45,14 +45,25 @@ class SlideItemWidget extends StatelessWidget {
                 // Section 1: Title/Ref (Grey, small)
                 SizedBox(
                   width: 150,
-                  child: Text(
-                    slide.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 10,
-                    ),
+                  child: Row(
+                    children: [
+                      if (slide.isFavorite)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(Icons.star_rounded, size: 12, color: Colors.amber.withOpacity(0.8)),
+                        ),
+                      Expanded(
+                        child: Text(
+                          slide.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -63,18 +74,20 @@ class SlideItemWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                   decoration: BoxDecoration(
-                    color: _getShortcutColor(slide.type).withOpacity(0.1),
+                    color: _getShortcutColor(slide).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(3),
-                    border: Border.all(color: _getShortcutColor(slide.type).withOpacity(0.3)),
+                    border: Border.all(color: _getShortcutColor(slide).withOpacity(0.3)),
                   ),
-                  child: Text(
-                    slide.shortcut,
-                    style: TextStyle(
-                      color: _getShortcutColor(slide.type),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: slide.shortcut == 'IMG'
+                    ? Icon(Icons.image_rounded, size: 12, color: _getShortcutColor(slide))
+                    : Text(
+                        slide.shortcut,
+                        style: TextStyle(
+                          color: _getShortcutColor(slide),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                 ),
                 const SizedBox(width: 8),
                 
@@ -96,18 +109,10 @@ class SlideItemWidget extends StatelessWidget {
     );
   }
 
-  Color _getShortcutColor(SlideType type) {
-    switch (type) {
-      case SlideType.chorus:
-        return Colors.orangeAccent;
-      case SlideType.bridge:
-        return Colors.purpleAccent;
-      case SlideType.verse:
-        return Colors.blueAccent;
-      case SlideType.blank:
-        return Colors.grey;
-      default:
-        return Colors.tealAccent;
-    }
+  Color _getShortcutColor(Slide slide) {
+    if (slide.isBlank) return Colors.grey;
+    if (slide.shortcut == 'IMG') return Colors.tealAccent;
+    if (!slide.isSong) return Colors.indigoAccent; // Bible
+    return Colors.deepPurpleAccent; // Song
   }
 }

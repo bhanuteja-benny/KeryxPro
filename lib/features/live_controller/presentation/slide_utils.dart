@@ -1,8 +1,8 @@
 import '../domain/slide.dart';
 
 class SlideUtils {
-  static List<Slide> parseLyrics(String lyrics, String songTitle, {bool isSong = true}) {
-    if (lyrics.trim().isEmpty) return [Slide.blank(title: songTitle, isSong: isSong)];
+  static List<Slide> parseLyrics(String lyrics, String songTitle, {bool isSong = true, bool isFavorite = false}) {
+    if (lyrics.trim().isEmpty) return [Slide.blank(title: songTitle, isSong: isSong, isFavorite: isFavorite)];
 
     final stanzas = lyrics.split(RegExp(r'\n\s*\n')).where((s) => s.trim().isNotEmpty).toList();
     final List<Slide> slides = [];
@@ -92,11 +92,12 @@ class SlideUtils {
         content: content,
         type: type,
         isSong: isSong,
+        isFavorite: isFavorite,
       ));
     }
 
     // Add blank slide at the end
-    slides.add(Slide.blank(title: songTitle, isSong: isSong));
+    slides.add(Slide.blank(title: songTitle, isSong: isSong, isFavorite: isFavorite));
 
     return slides;
   }

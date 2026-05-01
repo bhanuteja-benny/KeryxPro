@@ -7,6 +7,7 @@ import '../../../settings/presentation/presentation_settings_provider.dart';
 import '../../../settings/presentation/projection_provider.dart';
 import '../../../settings/data/presentation_settings.dart';
 import '../../../presentation/presentation/widgets/projector_view.dart';
+import 'monitor_settings_popup.dart';
 
 class LiveProjectorPane extends ConsumerWidget {
   const LiveProjectorPane({super.key});
@@ -75,33 +76,25 @@ class _Monitor1View extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              const Text('Preset: ', style: TextStyle(color: Colors.grey, fontSize: 12)),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 150,
-                height: 32,
-                child: presetsAsync.when(
-                  data: (presets) {
-                    final currentId = selectedPresetId ?? presets.firstOrNull?.id;
-                    return DropdownButton<int>(
-                      value: currentId,
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      dropdownColor: Colors.grey[850],
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      items: presets.map((p) => DropdownMenuItem<int>(
-                        value: p.id,
-                        child: Text(p.presetName),
-                      )).toList(),
-                      onChanged: (val) {
-                        if (val == null) return;
-                        ref.read(projectionProvider.notifier).updateMonitor1Preset(val);
-                      },
-                    );
-                  },
-                  loading: () => const SizedBox(),
-                  error: (_, __) => const SizedBox(),
-                ),
+              Builder(
+                builder: (ctx) {
+                  return IconButton(
+                    icon: const Icon(Icons.settings, size: 18),
+                    color: Colors.grey,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Settings',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => MonitorSettingsPopup(
+                          monitorIndex: 1,
+                          initialPresetId: selectedPresetId,
+                        ),
+                      );
+                    },
+                  );
+                }
               ),
             ],
           ),
@@ -182,33 +175,25 @@ class _Monitor2View extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              const Text('Preset: ', style: TextStyle(color: Colors.grey, fontSize: 12)),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 150,
-                height: 32,
-                child: presetsAsync.when(
-                  data: (presets) {
-                    final currentId = selectedPresetId ?? presets.firstOrNull?.id;
-                    return DropdownButton<int>(
-                      value: currentId,
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      dropdownColor: Colors.grey[850],
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      items: presets.map((p) => DropdownMenuItem<int>(
-                        value: p.id,
-                        child: Text(p.presetName),
-                      )).toList(),
-                      onChanged: (val) {
-                        if (val == null) return;
-                        ref.read(projectionProvider.notifier).updateMonitor2Preset(val);
-                      },
-                    );
-                  },
-                  loading: () => const SizedBox(),
-                  error: (_, __) => const SizedBox(),
-                ),
+              Builder(
+                builder: (ctx) {
+                  return IconButton(
+                    icon: const Icon(Icons.settings, size: 18),
+                    color: Colors.grey,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Settings',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => MonitorSettingsPopup(
+                          monitorIndex: 2,
+                          initialPresetId: selectedPresetId,
+                        ),
+                      );
+                    },
+                  );
+                }
               ),
               const SizedBox(width: 16),
               ElevatedButton(

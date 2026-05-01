@@ -1,0 +1,30 @@
+# Phase 23: Monitor Settings Popup Implementation
+
+## Overview
+We have successfully implemented the Monitor Settings popup according to the Phase 23 prompt and subsequent feedback. The Preset dropdown in the headers of Monitor 1 and Monitor 2 has been replaced by a compact settings gear icon, resulting in a cleaner UI. Clicking the icon opens a lightweight dialog anchored near it.
+
+## Changes Made
+
+### 1. New Monitor Settings Popup (`monitor_settings_popup.dart`)
+- **Compact Dialog Form**: A new modal popup was created to house the projection settings. It appears directly near the settings icon.
+- **Fields Added**: 
+  - `Preset`: Replicates the previous dropdown's functionality to select projection presets.
+  - `Max No. of Verses / Slide`: A placeholder dropdown field (options 1, 2, 3) for upcoming segment functionality.
+  - `Max No. of Characters / Slide`: A placeholder numeric input field.
+  - `Format`: A placeholder dropdown field (options 'Verse', 'Paragraph').
+- **Apply & Cancel**: The modal includes these two buttons. `Apply` updates the respective monitor's active preset (Monitor 1 or Monitor 2 depending on where the icon was clicked), while `Cancel` safely discards changes.
+- **Clean Design**: Consistent spacing, minimal padding, and the standard dark KeryxPro styling.
+
+### 2. Live Projector Pane Updates (`live_projector_pane.dart`)
+- **Removed Old UI**: Removed the "Preset: " text and corresponding expanded dropdown from the Monitor 1 and Monitor 2 view headers.
+- **Added Settings Icon**: Placed a small, compact `Icons.settings` button at the end of the header row with a "Settings" tooltip.
+- **Anchoring Logic**: Hooked the `IconButton.onPressed` to calculate the global offset of the gear icon and pass this specific location to the popup, allowing it to anchor securely above the preview panes.
+
+## Validation
+- [x] Confirmed the code compiles without errors (`dart analyze` complete).
+- [x] Verified the `Preset` combobox persists its selected preset mapping accurately to the correct monitor slot.
+- [x] Ensured placeholder variables manage internal state but do not leak unintended data changes.
+- [x] Confirmed the modal restricts multiple instances from opening simultaneously.
+
+> [!NOTE]
+> The next phase will likely introduce the logic to actually process the `Max Verses`, `Max Characters`, and `Format` placeholders so that slides are dynamically broken down.

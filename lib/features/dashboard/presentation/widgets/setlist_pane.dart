@@ -298,9 +298,14 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     } else if (shift) {
       sel.selectShift(index, items.length);
     } else {
-      sel.selectSingle(index);
-      // Scroll preview pane to first slide of tapped item
-      _scrollToItem(index);
+      final currentSelection = ref.read(setlistSelectionProvider);
+      if (currentSelection.length == 1 && currentSelection.contains(index)) {
+        sel.clear();
+      } else {
+        sel.selectSingle(index);
+        // Scroll preview pane to first slide of tapped item
+        _scrollToItem(index);
+      }
     }
     _listFocusNode.requestFocus();
   }
@@ -460,15 +465,18 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                                         size: 12, color: Colors.amber.withValues(alpha: 0.8)),
                                   ),
                                 if (item is SongSetlistItem)
-                                  Icon(
-                                    item.song.author == 'Bible' 
-                                      ? Icons.history_edu 
-                                      : Icons.music_note_rounded,
-                                    size: 13, 
-                                    color: item.song.author == 'Bible' 
-                                      ? Colors.indigoAccent 
-                                      : Colors.deepPurpleAccent,
-                                  )
+                                  item.song.author == 'Bible'
+                                      ? Image.asset(
+                                          'assets/icons/scroll.png',
+                                          width: 13,
+                                          height: 13,
+                                          color: Colors.indigoAccent,
+                                        )
+                                      : const Icon(
+                                          Icons.music_note_rounded,
+                                          size: 13,
+                                          color: Colors.deepPurpleAccent,
+                                        )
                                 else
                                   const Icon(Icons.image_rounded,
                                       size: 13, color: Colors.tealAccent),

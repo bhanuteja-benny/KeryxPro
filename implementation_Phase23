@@ -1,0 +1,48 @@
+# Goal Description
+
+The objective is to clean up the headers of the Monitor 1 and Monitor 2 panels by moving the Preset dropdown into a dedicated "Settings" popup. This popup will be accessed via a small gear icon in the top-right corner of each panel's header. Additionally, the popup will introduce three new placeholder fields (Max No. of Verses / Slide, Max No. of Characters / Slide, and Format) to prepare for future slide generation functionality.
+
+## User Review Required
+
+The user requested that the popup opens **near the settings icon and over the Monitor 1 and Monitor 2 panes**, rather than being centered on the screen. To achieve this, I will capture the `RenderBox` of the Settings icon when clicked to determine its global position. The popup will then be launched via `showDialog` containing a `Stack` and a `Positioned` widget (or using `CustomSingleChildLayout`) to place the dialog directly below and to the left of the settings icon, anchoring it to the panel. It will still act as a modal (blocking interaction with the rest of the app until closed or applied) ensuring only one instance is open.
+
+## Open Questions
+
+None. The requirements and positioning requests are clear.
+
+## Proposed Changes
+
+### Live Controller Presentation Layer
+
+#### [NEW] `monitor_settings_popup.dart` (file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/monitor_settings_popup.dart)
+- Create a new `ConsumerStatefulWidget` named `MonitorSettingsPopup`.
+- Parameters: `int monitorIndex` (1 or 2), `int? initialPresetId`, and an `Offset anchorPosition` (or `Rect`) to position the dialog.
+- UI: A `Stack` containing a transparent barrier and a `Positioned` widget to anchor a compact Card/Container near the given `anchorPosition`.
+- Inside the Card:
+  - Title: "Settings"
+  - Dropdown 1: "Preset" (Combobox replicating current preset selection).
+  - Dropdown 2: "Max No. of Verses / Slide" (Options: [1, 2, 3], default to 1).
+  - Textbox 1: "Max No. of Characters / Slide" (Number input only).
+  - Dropdown 3: "Format" (Options: ['Verse', 'Paragraph'], default to 'Verse').
+  - Buttons: "Cancel" (closes dialog) and "Apply" (saves the selected Preset to `projectionProvider` and closes).
+- The new fields (Max Verses, Max Characters, Format) will manage their own local state for now and will not affect the application state upon "Apply" (this functionality will come in the next phase).
+
+#### [MODIFY] `live_projector_pane.dart` (file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- In `_Monitor1View` and `_Monitor2View`:
+  - Remove the "Preset:" text label and the `DropdownButton`.
+  - Add an `IconButton` (using `Icons.settings`) at the end of the header row.
+  - Set the icon size to ~18px, minimal padding, and add the tooltip `"Settings"`.
+  - Assign a `GlobalKey` or use a `Builder` context for the settings icon to extract its `RenderBox` during the `onPressed` event.
+  - The `onPressed` callback will compute the exact screen coordinates of the icon and pass them to the `MonitorSettingsPopup` via `showDialog` (with `barrierColor: Colors.transparent` or a very light shadow, so it acts like a modal overlay over the pane).
+
+## Verification Plan
+
+### Manual Verification
+- Open KeryxPro and navigate to the dashboard.
+- Verify that the Monitor 1 and Monitor 2 headers no longer display the Preset dropdown.
+- Verify that a small gear icon is visible at the top right of each monitor panel header.
+- Click the gear icon and verify that a compact "Settings" dialog appears **anchored directly near the icon** (over the monitor pane).
+- Verify that the dialog contains the 4 specified fields, aligned cleanly.
+- Select a different Preset in the dialog and click "Apply". Verify that the preset updates on the respective monitor.
+- Click the gear icon again and click "Cancel". Verify that no changes are applied.
+- Ensure that only one popup can be opened at a time and that it acts as a lightweight dialog.

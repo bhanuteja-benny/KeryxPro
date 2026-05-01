@@ -1,0 +1,91 @@
+Phase 23 Prompt
+
+Context:
+Settings icon in Monitor 1 and Monitor 2 panels
+
+----------------------------------------------
+
+Primary UI Element (Settings Icon):
+- Remove the preset dropdown and label in the panel header area (this has to be moved to a new pop-up)
+- Add a small settings icon (gear icon) to the top-right corner of the panels (both in Monitor 1 and Monitor 2).
+- The icon must appear inside the panel header area.
+⁃ Icon size: small (toolbar-style, approx. 16x16 or 20x20 pixels)
+⁃ Icon should be icon-only (no text or label).
+⁃ Include a tooltip: "Settings"
+
+----------------------------------------------
+
+Interaction (Settings Icon):
+- Enable click event on the icon
+- When the user clicks the settings icon, open a popup dialog
+- The popup should be anchored to the panel (not full-screen)
+- Only one popup instance should open at a time.
+
+----------------------------------------------
+
+Secondary UI Element (Popup / Dialog):
+- Popup type: modal or lightweight dialog (not a new window
+- Size: compact, just large enough for 4 dropdown fields
+- Position: centered relative to the panel OR near the settings icon
+- Include a title at the top of the popup: "Settings"
+
+----------------------------------------------
+
+Popup Content:
+- The popup must contain 4 fields - 3 dropdown fields and 1 textbox field
+
+1. Dropdown 1 (Combobox): Replicate the preset dropdown and its functionality (which was directly in panel header)
+   Style: combobox
+   Label: Preset
+   Options: Available list of saved presets
+2. Dropdown 2:
+   Label: "Max No. of Verses / Slide"
+   Options: [1,2,3]
+3. Textbox 1:
+   Label: "Max No. of Characters / Slide
+   Type: Only Numbers
+4. Dropdown 3:
+   Label: "Format"
+   Options: ['Verse', 'Paragraph']
+
+----------------------------------------------
+
+Visual Design Rules:
+
+- Clean, minimal UI
+- Consistent spacing between fields.
+- Consistent alignment between fields.
+- Labels left-aligned above or beside dropdowns
+- Use standard dropdown styling provided by the framework
+- No excessive colors or custom animations
+
+----------------------------------------------
+
+Interactions/Actions in Popup:
+- Include two buttons at the bottom
+
+1) "Apply"
+2) "Cancel"
+
+- Apply button should save those preferences and should apply to the current slides
+- Currently apply the Preset value as you are already applying. Remaining fields functionality or application will be given in next phase.
+- Cancel closes the popup without changes
+
+----------------------------------------------
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+----------------------------------------------
+
+Deliverables:
+- Implementation Plan File
+
+

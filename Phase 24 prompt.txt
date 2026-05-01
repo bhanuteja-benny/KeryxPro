@@ -1,0 +1,26 @@
+Phase 24
+
+Context:
+- UI Changes in Slides pane.
+
+Visual Styles:
+- Songs shortcut: currently shortcut is blue in color (border and font etc). change this color to purple which is being used for songs icon in setlist pane.
+- Scripture shortcut: similarly change this shortcut color to scripture icon color (indigo) which is being used for scripture icon in setlist pane.
+- Image shortcut: same color from setlist pane should reflect for shortcut as well (I think already it is displaying the same). but change the 'IMG' letters in shortcut to image icon.
+- don't use different shortcut colors for stanza, chorus, bridge etc for song. just maintain the same color.
+- favorite icon: if an item in setlist pane is marked favorite, add that star icon in slides title as well, as you are adding to the setlist item. same position same color.
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan File
+

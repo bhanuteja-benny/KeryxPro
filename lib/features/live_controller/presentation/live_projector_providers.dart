@@ -12,10 +12,10 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
   final List<Slide> allSlides = [];
   for (final item in setlist) {
     switch (item) {
-      case SongSetlistItem(:final song):
+      case SongSetlistItem(:final song, :final isFavorite):
         final isSong = song.author != 'Bible';
-        allSlides.addAll(SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong));
-      case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
+        allSlides.addAll(SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite));
+      case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         // Image items produce one special "image" slide
         allSlides.add(Slide(
           title: imagePath.split(RegExp(r'[/\\]')).last,
@@ -24,6 +24,7 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
           type: SlideType.other,
           isBlank: false,
           isSong: false,
+          isFavorite: isFavorite,
         ));
     }
   }
