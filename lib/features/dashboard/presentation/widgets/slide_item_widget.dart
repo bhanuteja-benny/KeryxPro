@@ -4,12 +4,14 @@ import '../../../live_controller/domain/slide.dart';
 class SlideItemWidget extends StatelessWidget {
   final Slide slide;
   final bool isActive;
+  final bool isBorderActive;
   final VoidCallback onTap;
 
   const SlideItemWidget({
     super.key,
     required this.slide,
     required this.isActive,
+    required this.isBorderActive,
     required this.onTap,
   });
 
@@ -24,7 +26,7 @@ class SlideItemWidget extends StatelessWidget {
           color: isActive ? Colors.blue.withOpacity(0.2) : Colors.transparent,
           border: Border(
             bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
-            left: BorderSide(color: isActive ? Colors.blue : Colors.transparent, width: 3),
+            left: BorderSide(color: isBorderActive ? Colors.blue : Colors.transparent, width: 3),
           ),
         ),
         child: slide.isBlank 

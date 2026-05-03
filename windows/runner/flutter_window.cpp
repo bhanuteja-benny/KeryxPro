@@ -1,8 +1,41 @@
 #include "flutter_window.h"
 
 #include <optional>
+#include <windows.h>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "flutter/method_channel.h"
+#include "flutter/method_result_functions.h"
+#include "flutter/standard_method_codec.h"
+
+// ── Helper: find the projector sub-window ────────────────────────────────────
+// EnumWindows callback data.
+struct SubWindowSearchData {
+  HWND mainHwnd;
+  DWORD processId;
+  HWND found;
+};
+
+static BOOL CALLBACK FindSubWindowProc(HWND hwnd, LPARAM lParam) {
+  auto* data = reinterpret_cast<SubWindowSearchData*>(lParam);
+
+  if (hwnd == data->mainHwnd) return TRUE;           // skip main window
+
+  DWORD pid = 0;
+  GetWindowThreadProcessId(hwnd, &pid);
+  if (pid != data->processId) return TRUE;           // different process
+
+  // Check if it's a desktop_multi_window class
+  wchar_t cls[256] = {};
+  GetClassNameW(hwnd, cls, 256);
+  if (wcscmp(cls, L"FLUTTER_MULTI_WINDOW_WIN32_WINDOW") == 0) {
+    data->found = hwnd;
+    return FALSE;  // found it! stop enumeration
+  }
+  
+  return TRUE;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -16,24 +49,76 @@ bool FlutterWindow::OnCreate() {
 
   RECT frame = GetClientArea();
 
-  // The size here must match the window dimensions to avoid unnecessary surface
-  // creation / destruction in the startup path.
   flutter_controller_ = std::make_unique<flutter::FlutterViewController>(
       frame.right - frame.left, frame.bottom - frame.top, project_);
-  // Ensure that basic setup of the controller was successful.
   if (!flutter_controller_->engine() || !flutter_controller_->view()) {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
+  // ── KeryxPro: native window-control channel ──────────────────────────────
+  auto channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+      flutter_controller_->engine()->messenger(),
+      "keryx/window",
+      &flutter::StandardMethodCodec::GetInstance());
+
+  HWND mainHwnd = GetHandle();
+
+  channel->SetMethodCallHandler(
+      [mainHwnd](const flutter::MethodCall<flutter::EncodableValue>& call,
+             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+
+        if (call.method_name() == "move_subwindow_to_display") {
+          const auto* args =
+              std::get_if<flutter::EncodableMap>(call.arguments());
+          if (!args) {
+            result->Error("BAD_ARGS", "Expected map with x,y,w,h");
+            return;
+          }
+
+          auto getInt = [&](const std::string& key) -> int {
+            auto it = args->find(flutter::EncodableValue(key));
+            if (it != args->end()) {
+              if (auto* d = std::get_if<double>(&it->second))
+                return static_cast<int>(*d);
+              if (auto* i = std::get_if<int>(&it->second)) return *i;
+            }
+            return 0;
+          };
+
+          int x = getInt("x");
+          int y = getInt("y");
+          int w = getInt("w");
+          int h = getInt("h");
+
+          // Find the projector sub-window
+          SubWindowSearchData data = {mainHwnd, GetCurrentProcessId(), nullptr};
+          EnumWindows(FindSubWindowProc, reinterpret_cast<LPARAM>(&data));
+
+          if (data.found) {
+            // Move and resize to the secondary display bounds
+            SetWindowPos(data.found, HWND_TOPMOST,
+                         x, y, w, h,
+                         SWP_SHOWWINDOW);
+            // Maximise on the secondary display
+            ShowWindow(data.found, SW_SHOWMAXIMIZED);
+            result->Success();
+          } else {
+            result->Error("NOT_FOUND", "Projector sub-window (FLUTTER_MULTI_WINDOW_WIN32_WINDOW) not found");
+          }
+        } else {
+          result->NotImplemented();
+        }
+      });
+
+  window_channel_ = std::move(channel);
+  // ─────────────────────────────────────────────────────────────────────────
+
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
   });
 
-  // Flutter can complete the first frame before the "show window" callback is
-  // registered. The following call ensures a frame is pending to ensure the
-  // window is shown. It is a no-op if the first frame hasn't completed yet.
   flutter_controller_->ForceRedraw();
 
   return true;
@@ -51,7 +136,6 @@ LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
-  // Give Flutter, including plugins, an opportunity to handle window messages.
   if (flutter_controller_) {
     std::optional<LRESULT> result =
         flutter_controller_->HandleTopLevelWindowProc(hwnd, message, wparam,

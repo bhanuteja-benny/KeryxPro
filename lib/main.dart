@@ -15,6 +15,9 @@ void main(List<String> args) async {
 
   // If this is a spawned sub-window, handle projector UI
   if (args.firstOrNull == 'multi_window') {
+    // NOTE: Do NOT call windowManager.ensureInitialized() here.
+    // window_manager is auto-registered for sub-windows via RegisterPlugins.
+    // Calling ensureInitialized() conflicts with desktop_multi_window's channel.
     final windowController = await WindowController.fromCurrentEngine();
     runApp(
       ProviderScope(
@@ -122,15 +125,12 @@ class _ProjectorAppState extends State<ProjectorApp> {
   }
 
   void _initWindow() {
-    // Parse the arguments string that was passed during WindowController.create()
     final argsString = widget.windowController.arguments;
     if (argsString.isNotEmpty) {
       try {
         final parsed = jsonDecode(argsString) as Map<String, dynamic>;
         _presetId = parsed['presetId'] as int?;
-      } catch (_) {
-        // Ignore parse errors
-      }
+      } catch (_) {}
     }
   }
 

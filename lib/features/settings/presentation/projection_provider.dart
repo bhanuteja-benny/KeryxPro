@@ -4,6 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'dart:convert';
+import 'package:flutter/services.dart';
 
 import '../../../main.dart';
 import '../../../core/database/isar_service.dart';
@@ -122,18 +123,71 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
   }
 
   Future<void> launchMonitor2() async {
-    if (state.displays.length < 2) return;
+    await refreshDisplays();
+    if (state.displays.length < 2) {
+      print("monitor does not exists");
+      return;
+    }
+
+    print("monitor exists");
+    print(state.displays);
+
+    final primaryDisplay = state.displays[0];
+    // visiblePosition is the screen-coordinate offset of the primary display
+    final primaryDisplayX = primaryDisplay.visiblePosition?.dx ?? primaryDisplay.size.width;
+    final primaryDisplayY = primaryDisplay.visiblePosition?.dy ?? 0.0;
+    final primaryDisplayW = primaryDisplay.size.width;
+    final primaryDisplayH = primaryDisplay.size.height;
+
+    print("primaryDisplayX: $primaryDisplayX");
+    print("primaryDisplayY: $primaryDisplayY");
+    print("primaryDisplayW: $primaryDisplayW");
+    print("primaryDisplayH: $primaryDisplayH");
+
+    final secondaryDisplay = state.displays[1];
+    // visiblePosition is the screen-coordinate offset of the secondary display
+    final displayX = secondaryDisplay.visiblePosition?.dx ?? secondaryDisplay.size.width;
+    final displayY = secondaryDisplay.visiblePosition?.dy ?? 0.0;
+    final displayW = secondaryDisplay.size.width;
+    final displayH = secondaryDisplay.size.height;
+
+    print("displayX: $displayX");
+    print("displayY: $displayY");
+    print("displayW: $displayW");
+    print("displayH: $displayH");
 
     final args = {
       'type': 'projector',
       'monitorIndex': 2,
       'presetId': state.config.monitor2PresetId,
+      'displayX': displayX,
+      'displayY': displayY,
+      'displayW': displayW,
+      'displayH': displayH,
     };
 
     final config = WindowConfiguration(arguments: jsonEncode(args));
     final window = await WindowController.create(config);
-    await window.show();
     
+    // Show the window initially.
+    await window.show();
+
+    // Now ask the native side (running in the main window's context)
+    // to find the sub-window and move it to the secondary display.
+    // We wait a bit to ensure the sub-window's HWND is created and registered.
+    await Future.delayed(const Duration(milliseconds: 1000));
+    try {
+      const channel = MethodChannel('keryx/window');
+      await channel.invokeMethod('move_subwindow_to_display', {
+        'x': displayX.toInt(),
+        'y': displayY.toInt(),
+        'w': displayW.toInt(),
+        'h': displayH.toInt(),
+      });
+    } catch (e) {
+      print("Error moving sub-window: $e");
+    }
+
     state = state.copyWith(monitor2WindowId: window.windowId);
   }
 

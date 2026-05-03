@@ -1,0 +1,55 @@
+# Extend Bible Slide Grouping Logic for Dual Monitors
+
+This plan extends the Phase 25 Bible grouping logic (which only applied to Monitor 1) to support both Monitor 1 and Monitor 2 independently based on their respective settings (max verses, max characters, format), while fulfilling complex UI and keyboard navigation requirements.
+
+## User Review Required / Assumptions
+
+> [!WARNING]
+> **Typo Assumption in Scenario 4**: In the prompt describing Scenario 4, the example was: Monitor 1 has Max Verses = 2, Monitor 2 has Max Verses = 1.
+> The prompt stated: *"when user clicks on 2nd verse, display the 2nd verse in **Monitor 1**. but Monitor 2 projection remains same... so user can use right and left arrows for navigating the slides in **Monitor 1** in this case. (generally whichever Monitor settings has less no. of verses per slide)"*
+> Since Monitor 2 has the LESS number of verses (1 verse), I am assuming "Monitor 1" was accidentally written here instead of "Monitor 2". 
+> The implementation will assume: clicking the 2nd verse updates Monitor 2 (which has max verses = 1) to show just verse 2, while Monitor 1 (which has max verses = 2) continues displaying verses 1 & 2. Right/Left arrows will also control Monitor 2 (the one with fewer verses).
+
+> [!TIP]
+> **Right/Left arrow behavior when settings are identical**: If both Monitor 1 and Monitor 2 have the exact same `maxVerses` setting, the Right/Left arrows will simply behave identically to the Down/Up arrows (moving to the next block of grouped verses).
+
+## Proposed Changes
+
+### `live_projector_providers.dart`
+#### [MODIFY] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)
+- Create a generic `_getGroups(slides, start, end, maxVerses, maxChars)` function.
+- Create `m1ActiveSlideIndicesProvider` and `m2ActiveSlideIndicesProvider` to partition Bible blocks independently. (Includes logic for Scenario 3: picking least chars if maxVerses are equal).
+- Replace `activeSlideProvider` with `m1ActiveSlideProvider` and `m2ActiveSlideProvider`.
+- Update `activeSlideIndicesProvider` to return the **union** of M1 and M2 indices. This drives the background highlighting.
+- Add `borderActiveSlideIndicesProvider` which returns the active indices of the monitor with the **lesser** `maxVerses`. This drives the left border highlight.
+- Add a new helper provider `slideNavigationProvider` to calculate what the next index should be when Down/Up (moves group of larger monitor) and Right/Left (moves group of smaller monitor) are pressed.
+
+---
+
+### `widgets` (UI Updates)
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Update `_Monitor1View` to watch `m1ActiveSlideProvider`.
+- Update `_Monitor2View` to watch `m2ActiveSlideProvider`.
+
+#### [MODIFY] [slide_item_widget.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/slide_item_widget.dart)
+- Add `final bool isBorderActive;`.
+- Use `isBorderActive` to display the left blue border, while keeping `isActive` for the blue background color.
+
+#### [MODIFY] [preview_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/preview_pane.dart)
+- Watch both `activeSlideIndicesProvider` (for background highlight) and `borderActiveSlideIndicesProvider` (for border highlight) to pass to `SlideItemWidget`.
+- Update `_handleKeyEvent` to support Right/Left arrows.
+- Use `slideNavigationProvider` to determine the target index for Down, Up, Right, and Left arrows.
+
+---
+
+### `projection_broadcaster.dart`
+#### [MODIFY] [projection_broadcaster.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/projection_broadcaster.dart)
+- Update to listen to `m2ActiveSlideProvider` instead of `activeSlideProvider` so that the external Monitor 2 window displays the correctly grouped text.
+
+## Verification Plan
+1. Set M1 max verses = 2 (max chars = 300), M2 max verses = 1 (max chars = 200). Select a group of Bible verses.
+2. Verify selecting verse 1 shows verse 1 in M2, verses 1 & 2 in M1.
+3. Verify Right Arrow changes M2 to verse 2, while M1 stays verses 1 & 2.
+4. Verify Down Arrow jumps to verse 3 (M2 shows verse 3, M1 shows verses 3 & 4).
+5. Verify Slide UI shows background highlight on both verses 1 & 2, but left border only on verse 1, and border moves to verse 2 on Right Arrow.
+6. Verify Scenario 3 logic triggers correctly if max verses are equal but chars differ.

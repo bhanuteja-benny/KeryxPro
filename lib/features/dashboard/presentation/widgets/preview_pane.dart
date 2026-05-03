@@ -24,18 +24,28 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
 
     final slides = ref.read(currentSlidesProvider);
     final activeIndices = ref.read(activeSlideIndicesProvider);
+    final navState = ref.read(slideNavigationProvider);
+    
     if (slides.isEmpty || activeIndices.isEmpty) return KeyEventResult.ignored;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      final nextIndex = activeIndices.last + 1;
-      if (nextIndex < slides.length) {
-        ref.read(activeSlideIndexProvider.notifier).state = nextIndex;
+      if (navState.nextPrimaryIndex != null) {
+        ref.read(activeSlideIndexProvider.notifier).state = navState.nextPrimaryIndex!;
       }
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      final prevIndex = activeIndices.first - 1;
-      if (prevIndex >= 0) {
-        ref.read(activeSlideIndexProvider.notifier).state = prevIndex;
+      if (navState.prevPrimaryIndex != null) {
+        ref.read(activeSlideIndexProvider.notifier).state = navState.prevPrimaryIndex!;
+      }
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (navState.nextSecondaryIndex != null) {
+        ref.read(activeSlideIndexProvider.notifier).state = navState.nextSecondaryIndex!;
+      }
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (navState.prevSecondaryIndex != null) {
+        ref.read(activeSlideIndexProvider.notifier).state = navState.prevSecondaryIndex!;
       }
       return KeyEventResult.handled;
     } else if (_isDigit(event.logicalKey)) {
@@ -133,6 +143,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
 
     final activeIndex = ref.watch(activeSlideIndexProvider);
     final activeIndices = ref.watch(activeSlideIndicesProvider);
+    final borderActiveIndices = ref.watch(borderActiveSlideIndicesProvider);
     final slides = ref.watch(currentSlidesProvider);
 
     // Scroll to active index
@@ -191,10 +202,12 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                   itemBuilder: (context, index) {
                     final slide = slides[index];
                     final isActive = activeIndices.contains(index);
+                    final isBorderActive = borderActiveIndices.contains(index);
                     
                     return SlideItemWidget(
                       slide: slide,
                       isActive: isActive,
+                      isBorderActive: isBorderActive,
                       onTap: () {
                         ref.read(activeSlideIndexProvider.notifier).state = index;
                         focusNode.requestFocus();

@@ -6,13 +6,13 @@ import '../../settings/presentation/projection_provider.dart';
 
 final projectionBroadcasterProvider = Provider<void>((ref) {
   // Listen for slide changes
-  ref.listen(activeSlideProvider, (previous, next) {
+  ref.listen(m2ActiveSlideProvider, (previous, next) {
     _broadcastContent(ref, next);
   });
 
   // Listen for title changes
   ref.listen(activeTitleProvider, (previous, next) {
-    _broadcastContent(ref, ref.read(activeSlideProvider));
+    _broadcastContent(ref, ref.read(m2ActiveSlideProvider));
   });
 });
 
@@ -28,6 +28,7 @@ void _broadcastContent(Ref ref, String? text) {
       'title': title,
       'isSong': isSong,
     };
+    // The library's fromWindowId seems to expect a String in this setup
     WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
   }
 }

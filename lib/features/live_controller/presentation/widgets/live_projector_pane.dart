@@ -50,7 +50,7 @@ class _Monitor1View extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final projectionState = ref.watch(projectionProvider);
     final presetsAsync = ref.watch(presetsListProvider);
-    final activeSlideText = ref.watch(activeSlideProvider);
+    final activeSlideText = ref.watch(m1ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
 
@@ -144,7 +144,7 @@ class _Monitor2View extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final projectionState = ref.watch(projectionProvider);
     final presetsAsync = ref.watch(presetsListProvider);
-    final activeSlideText = ref.watch(activeSlideProvider);
+    final activeSlideText = ref.watch(m2ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
 

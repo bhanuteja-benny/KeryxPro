@@ -1,0 +1,25 @@
+# Dual Monitor Slide Grouping
+
+The Phase 25 Bible grouping logic has been significantly extended to support both Monitor 1 and Monitor 2 simultaneously and independently. The implementation strictly follows the combining logic, visual style constraints, and keyboard navigation rules.
+
+## Changes Made
+
+### 1. Independent Monitor Grouping Providers (`live_projector_providers.dart`)
+- **Centralized Grouping**: Created a `_getGroups` helper function that partitions a block of continuous Bible verses into sub-groups according to `maxVerses` and `maxChars` settings.
+- **Scenario 3 handling**: If `maxVerses` are the same between Monitor 1 and Monitor 2, the system automatically picks the smaller of the two `maxChars` limits (treating `0` as unbounded) and applies it to both to keep the output symmetrical.
+- **Separate active slide text**: Replaced the global `activeSlideProvider` with `m1ActiveSlideProvider` and `m2ActiveSlideProvider`. Monitor 1 and Monitor 2 now project independently combined verses.
+
+### 2. Dual UI Highlight Indicators (`slide_item_widget.dart` / `preview_pane.dart`)
+- **Background Highlight (`activeSlideIndicesProvider`)**: Background highlights are now controlled by the union of Monitor 1 and Monitor 2 active groups. For example, if Monitor 1 is showing 2 verses and Monitor 2 is showing 1 verse, the background highlight covers both.
+- **Left Border Highlight (`borderActiveSlideIndicesProvider`)**: Added `isBorderActive` to `SlideItemWidget` to strictly target the "currently selected" verse for the monitor with *fewer* `maxVerses`. When clicking the right/left arrows within a combined group, the border will visibly follow the selected sub-verse while the background highlight stays static.
+
+### 3. Keyboard Navigation Logic (`slideNavigationProvider`)
+- Keyboard navigation dynamically switches mapping based on the monitor with more combined verses ("primary") and the monitor with fewer combined verses ("secondary").
+- **Down / Up arrows**: Navigate to the next/prev set of verses according to the **Primary** monitor's grouping (e.g. jumping from verse 1 to verse 3).
+- **Right / Left arrows**: Navigate to the next/prev set of verses according to the **Secondary** monitor's grouping (e.g. stepping from verse 1 to verse 2).
+- **Fallback Rule**: If both monitors share the same `maxVerses` setting, Down/Up and Right/Left behave identically.
+
+### 4. Broadcasting Updates
+- Monitor 1 (Inline surface) watches `m1ActiveSlideProvider`.
+- Monitor 2 (External window) watches `m2ActiveSlideProvider`.
+- The multi-window broadcaster explicitly listens to `m2ActiveSlideProvider` to correctly update the external projector.
