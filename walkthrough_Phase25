@@ -1,0 +1,34 @@
+# Phase 25 Completed: Monitor Settings-based Slide Grouping
+
+I have successfully implemented the requested functionality for slide grouping based on Monitor 1 settings.
+
+## Overview of Changes
+
+### 1. Database & Settings
+- Updated `ProjectionConfig` to include new settings for Monitor 1: `monitor1MaxVerses`, `monitor1MaxChars`, and `monitor1Format` (and future-proofed by adding similar settings for Monitor 2).
+- Updated `ProjectionNotifier` and regenerated the Isar schema to store these new settings.
+
+### 2. Monitor Settings Popup UI
+- Updated `MonitorSettingsPopup` to read the real saved configuration for Max Verses, Max Characters, and Format on load.
+- Updated the "Apply" button to save the configuration persistently for Monitor 1.
+
+### 3. Smart Slide Grouping Engine
+- Created a new `activeSlideIndicesProvider` in `live_projector_providers.dart`.
+- The engine checks if the active slide is a Bible verse. If it is, it identifies the contiguous block of verses from the same book/chapter.
+- It calculates sub-groups within the block according to the `monitor1MaxVerses` constraint.
+- It simultaneously performs an active length calculation against `monitor1MaxChars`. If grouping additional verses would exceed the limit, it creates a break, exactly as requested.
+- If a slide is not a Bible verse (e.g., song, image, blank screen), the grouping logic correctly skips it.
+
+### 4. Live Output and Formatting
+- Updated `activeSlideProvider` to compute the combined projected text from all grouped verses.
+- Honoring the `monitor1Format` setting, the text is joined by either a newline (`\n` for 'Verse' format) or a single space (` ` for 'Paragraph' format).
+
+### 5. Seamless Navigation and Preview
+- Modified `PreviewPane` to understand multiple "active" slides simultaneously.
+- `SlideItemWidget` will visually highlight all slides in the current group.
+- Arrow key navigation (`_handleKeyEvent`) intelligently jumps between verse **groups**. For example, pressing "Down" from a 2-verse group perfectly lands on the start of the next grouped set, bypassing the visually combined items in the middle.
+
+> [!TIP]
+> The OpenSong and native Bible import automatically pre-pend the verse number to the content text, ensuring the verse number is accurately shown at the start of each grouped verse.
+
+You can now test adding Bible verses and experimenting with the monitor configurations to see the projection dynamically adapt!

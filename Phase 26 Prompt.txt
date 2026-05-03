@@ -1,0 +1,78 @@
+Phase 26
+
+Context:
+- Extended functionality in slides projection with respect to both the Monitor settings in parallel.
+- Last phase we added the Monitor settings functionality only for Monitor 1.
+- In this phase we extend the functionality simultaneously for Monitor 1 and Monitor 2.
+- Most of the logic remains the same for combining the slides/verses. 
+- Once again giving the below points from phase 25
+- This functionality applies to only group of verses slides (eg: John 1:2-5, Gen 3:4-6 etc)
+- This functionality does not apply to songs slides and image slides
+- This functionality does not apply to single verse slides (eg: Luk 3:5, Rev 5:2 etc)
+
+Interactions:
+1) Scenario 1: when monitor 1 settings and monitor 2 settings both are same (preset, max no. of verses, max no. of characters and format)
+   - No need to explain this scenario as the projection will be same for both (as all the settings are same)
+2) Scenario 2: when monitor 1 settings and monitor 2 settings differ for preset and format, but same for max no. of verses and max no. of characters.
+   - Even in this scenario same rules are applicable because preset and format settings doesn't make much difference in this logic. but max no. of verses and max no. of characters are crucial and combining logic depends only on them.
+3) Scenario 3: When Max no. of verses is same and Max no. of characters is different.
+   - Then pick the least of no. of characters and apply the same logic to both the screens (monitors).
+4) Scenario 4: When Max no. of verses is different and Max no. of characters is different (eg: Monitor 1 Max no. of verses = 2, Max no. of characters = 300 and Monitor 2 Max no. of verses = 1 and Max no. of characters = 200 and group of verses are Jon 1:1-10)
+   - when user selects first/top verse in the group of verses
+      -- for Monitor 2, just display that one verse as Max no. of verses is 1 (Max no. of characters cannot be applicable)
+      -- for Monitor 1, add the immediate next verse and check no of total characters (in eg 300)
+         --- if the characters count exceeds the no. of max characters settings 
+             ---- then only the selected verse should be displayed. 
+         --- if the characters count does not exceeds the no. of max characters settings 
+             ---- then display the both verses (slides) at a time in the live screen. 
+             ---- if format is 'verse' display next verse in new line
+             ---- if format is 'paragraph' display both verses as a single paragraph. 
+             ---- verse numbers should be displayed always.
+             ---- when user presses down arrow 
+                  ----- then move to the next set of verses (in this case 3rd)
+                  ----- not from first verse to the second verse (because second verse is already combined with first)
+             ---- same functionality for up arrow as well
+             ---- when user selects second verse still it should be combined with first verse (the live screen view remains the same).
+      -- so in this scenario only one verse is displayed in the Monitor 2 and two verses may display in the Monitor 1
+         --- for example, first verse is being displayed in Monitor 2 and both first and second verses are being displayed in Monitor 1.
+         --- here both the slides/verses look like selected as per the visual style logic from Phase 25
+         --- when user presses down arrow, it is going to next set of verses as per our logic. so directly 3rd verse will be displayed in Monitor 1.
+         --- we need to give option to user to select the 2nd verse to be displayed in Monitor 1.
+         --- let us give below two options for user for this flexibility
+             ---- when user clicks on 2nd verse, display the 2nd verse in Monitor 1. but Monitor 2 projection remains same
+             ---- when user presses right arrow while on the first verse, display the 2nd verse in Monitor 1. but Monitor 2 projection remains the same.
+         --- so user can use right and left arrows for navigating the slides in Monitor 1 in this case. (generally whichever Monitor settings has less no. of verses per slide)
+         --- up/down arrows to move from set of verses to set of verses (for Monitor which is having more Max no. of verses per slide)
+         --- right/left arrows to move from set of verses to set of verses (for Monitor which is having less Max no. of verses per slide)
+- so when user selects first or second verse or any verse the combination checking should always flow from top verse and has to determine whether the selected verse should be combined with previous or next or just only that single verse should be displayed. 
+5) Similar logic should be applied for combinations of 1 and 3, and 2 and 3 as well (if any conflicting scenario is there, let me know)
+
+
+Visual Styles:
+- When two slides/verses are being displayed at once in any monitor: then show both the slides as selected
+- when three slides/verses are being displayed at once in any monitor: then show all three slides as selected
+- As of now the selected slide(s) background is being highlighted and a border left is being marked in highlighted blue.
+  -- Need slight visual difference in case different no. of slides are being displayed in Monitor 1 and Monitor 2.
+  -- for example first two slides are displaying in Monitor 1 and only first slide is displaying in Monitor 2.
+     --- the two slides background should be highlighted as already doing. but the left highlighted border should be displayed only for 1st verse.
+     --- when user presses right arrow, as per the logic 2nd slide will be displayed in Monitor 2, then move the left highlighted border to 2nd verse.
+  -- So background highlighting will be done for the combined slides for Max no. of verses settings, and left highlighted border will be done for less no. of verses settings.
+
+Important (note):
+- These monitor settings functionality should not affect the preset settings (background, font color, font family, all typography settings). that functionality should remain same. 
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan File
+
+
+

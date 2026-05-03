@@ -1,0 +1,62 @@
+# Goal Description
+Phase 25 requires extending the slide projection logic to group multiple Bible verses onto a single slide based on monitor settings (Max Verses, Max Characters, and Format). This applies only to Monitor 1 and only for Bible readings (not songs or image slides). Grouping flows from the top verse and handles selection, projection output, and arrow-key navigation.
+
+## Proposed Changes
+
+### 1. Data Layer: Projection Config Updates
+#### [MODIFY] `lib/features/settings/data/projection_config.dart`
+- Add new properties to `ProjectionConfig`:
+  - `int monitor1MaxVerses = 1;`
+  - `int monitor1MaxChars = 0;` (0 implies no character limit)
+  - `String monitor1Format = 'Verse';`
+- Run `build_runner` to regenerate `projection_config.g.dart`.
+
+### 2. State Management: Providers
+#### [MODIFY] `lib/features/settings/presentation/projection_provider.dart`
+- Update `ProjectionNotifier` to include methods for saving the new monitor settings: `updateMonitor1Settings(int maxVerses, int maxChars, String format)`.
+
+#### [MODIFY] `lib/features/live_controller/presentation/live_projector_providers.dart`
+- Introduce a new provider `activeSlideIndicesProvider` (returns `List<int>`).
+  - Read `currentSlidesProvider`, `activeSlideIndexProvider`, and `projectionProvider`.
+  - Logic: 
+    - If the current slide is a Song, Image, Blank, or single verse, return `[activeIndex]`.
+    - If it's a Bible reading (group of verses):
+      - Find the contiguous block of verses (same title, `isSong == false`).
+      - Partition this block into sub-groups starting from the top verse, honoring `monitor1MaxVerses` and `monitor1MaxChars`.
+      - Return the specific sub-group list that contains `activeIndex`.
+- Update `activeSlideProvider` to use `activeSlideIndicesProvider`:
+  - Combine the `content` of all active slides.
+  - If `monitor1Format` is 'Verse', join with `\n`.
+  - If `monitor1Format` is 'Paragraph', join with a space `' '`.
+- Update `activeTitleProvider` and `isSongActiveProvider` to rely on the first element of `activeSlideIndicesProvider`.
+
+### 3. UI Layer: Settings Popup & Preview Pane
+#### [MODIFY] `lib/features/live_controller/presentation/widgets/monitor_settings_popup.dart`
+- Initialize `_maxVerses`, `_maxCharsController`, and `_format` from the current `projectionProvider` state.
+- Update `_apply()` to call the new `updateMonitor1Settings` method if `widget.monitorIndex == 1`.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- Arrow Navigation (`_handleKeyEvent`):
+  - **Down Arrow**: `nextIndex = activeSlideIndices.last + 1`. Check bounds.
+  - **Up Arrow**: `nextIndex = activeSlideIndices.first - 1`. Check bounds.
+- Selection UI:
+  - Watch `activeSlideIndicesProvider`.
+  - In `ListView.builder`, pass `isActive = activeIndices.contains(index)` to `SlideItemWidget` instead of checking a single index.
+
+### 4. UI Layer: Slide Item
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/slide_item_widget.dart`
+- Ensure that the UI highlights appropriately when `isActive` is true. (No functional changes needed here since it already accepts `isActive`, but we ensure multiple contiguous items can be highlighted).
+
+## Verification Plan
+### Automated Tests
+- Build and run the desktop application successfully.
+
+### Manual Verification
+1. Open KeryxPro and add a group of Bible verses to the setlist (e.g., Gen 1:1-5).
+2. Open Monitor 1 Settings. Set Max Verses = 2, Max Characters = 100, Format = 'Paragraph'.
+3. Click the first verse in the group.
+4. Verify the slide preview shows 2 verses selected (if total characters <= 100) or 1 verse (if > 100).
+5. Verify live screen displays combined verses formatted as a paragraph.
+6. Use Down Arrow and verify selection jumps to the 3rd verse (or 2nd if first was too long).
+7. Change Format to 'Verse' and verify live screen splits them by newlines.
+8. Add a song and verify song slides still operate individually without grouping.

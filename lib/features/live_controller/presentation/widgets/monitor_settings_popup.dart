@@ -29,6 +29,18 @@ class _MonitorSettingsPopupState extends ConsumerState<MonitorSettingsPopup> {
   void initState() {
     super.initState();
     _selectedPresetId = widget.initialPresetId;
+    
+    // Initialize current settings
+    final config = ref.read(projectionProvider).config;
+    if (widget.monitorIndex == 1) {
+      _maxVerses = config.monitor1MaxVerses;
+      _maxCharsController.text = config.monitor1MaxChars == 0 ? '' : config.monitor1MaxChars.toString();
+      _format = config.monitor1Format;
+    } else {
+      _maxVerses = config.monitor2MaxVerses;
+      _maxCharsController.text = config.monitor2MaxChars == 0 ? '' : config.monitor2MaxChars.toString();
+      _format = config.monitor2Format;
+    }
   }
 
   @override
@@ -38,14 +50,20 @@ class _MonitorSettingsPopupState extends ConsumerState<MonitorSettingsPopup> {
   }
 
   void _apply() {
-    if (_selectedPresetId != null) {
-      if (widget.monitorIndex == 1) {
+    int maxChars = int.tryParse(_maxCharsController.text) ?? 0;
+    
+    if (widget.monitorIndex == 1) {
+      if (_selectedPresetId != null) {
         ref.read(projectionProvider.notifier).updateMonitor1Preset(_selectedPresetId!);
-      } else {
+      }
+      ref.read(projectionProvider.notifier).updateMonitor1Settings(_maxVerses, maxChars, _format);
+    } else {
+      if (_selectedPresetId != null) {
         ref.read(projectionProvider.notifier).updateMonitor2Preset(_selectedPresetId!);
       }
+      // Future: updateMonitor2Settings
     }
-    // Max Verses, Max Characters, Format are placeholders for now.
+    
     Navigator.of(context).pop();
   }
 

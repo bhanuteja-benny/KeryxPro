@@ -51,6 +51,19 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     if (config == null) {
       config = ProjectionConfig()..id = ProjectionConfig.singletonId;
       await isar.writeTxn(() => isar.projectionConfigs.put(config!));
+    } else {
+      // Handle Isar minInt for newly added fields on existing records
+      bool needsUpdate = false;
+      if (config.monitor1MaxVerses < 1) { config.monitor1MaxVerses = 1; needsUpdate = true; }
+      if (config.monitor2MaxVerses < 1) { config.monitor2MaxVerses = 1; needsUpdate = true; }
+      if (config.monitor1MaxChars < 0) { config.monitor1MaxChars = 0; needsUpdate = true; }
+      if (config.monitor2MaxChars < 0) { config.monitor2MaxChars = 0; needsUpdate = true; }
+      if (config.monitor1Format != 'Verse' && config.monitor1Format != 'Paragraph') { config.monitor1Format = 'Verse'; needsUpdate = true; }
+      if (config.monitor2Format != 'Verse' && config.monitor2Format != 'Paragraph') { config.monitor2Format = 'Verse'; needsUpdate = true; }
+      
+      if (needsUpdate) {
+        await isar.writeTxn(() => isar.projectionConfigs.put(config!));
+      }
     }
 
     List<Display> displays = await ScreenRetriever.instance.getAllDisplays();
@@ -64,10 +77,8 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
 
   Future<void> updateMonitor1Preset(int? presetId) async {
     final isar = await _isarService.db;
-    final newConfig = ProjectionConfig()
-      ..id = state.config.id
-      ..monitor1PresetId = presetId
-      ..monitor2PresetId = state.config.monitor2PresetId;
+    final newConfig = _copyConfig(state.config)
+      ..monitor1PresetId = presetId;
     
     await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
     state = state.copyWith(config: newConfig);
@@ -76,9 +87,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
 
   Future<void> updateMonitor2Preset(int? presetId) async {
     final isar = await _isarService.db;
-    final newConfig = ProjectionConfig()
-      ..id = state.config.id
-      ..monitor1PresetId = state.config.monitor1PresetId
+    final newConfig = _copyConfig(state.config)
       ..monitor2PresetId = presetId;
     
     await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
@@ -86,6 +95,30 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     if (state.monitor2WindowId != null) {
       _syncToWindow(state.monitor2WindowId!, presetId);
     }
+  }
+
+  Future<void> updateMonitor1Settings(int maxVerses, int maxChars, String format) async {
+    final isar = await _isarService.db;
+    final newConfig = _copyConfig(state.config)
+      ..monitor1MaxVerses = maxVerses
+      ..monitor1MaxChars = maxChars
+      ..monitor1Format = format;
+    
+    await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
+    state = state.copyWith(config: newConfig);
+  }
+
+  ProjectionConfig _copyConfig(ProjectionConfig old) {
+    return ProjectionConfig()
+      ..id = old.id
+      ..monitor1PresetId = old.monitor1PresetId
+      ..monitor2PresetId = old.monitor2PresetId
+      ..monitor1MaxVerses = old.monitor1MaxVerses
+      ..monitor1MaxChars = old.monitor1MaxChars
+      ..monitor1Format = old.monitor1Format
+      ..monitor2MaxVerses = old.monitor2MaxVerses
+      ..monitor2MaxChars = old.monitor2MaxChars
+      ..monitor2Format = old.monitor2Format;
   }
 
   Future<void> launchMonitor2() async {

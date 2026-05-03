@@ -23,30 +23,36 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     final slides = ref.read(currentSlidesProvider);
-    final currentIndex = ref.read(activeSlideIndexProvider);
-    if (slides.isEmpty) return KeyEventResult.ignored;
+    final activeIndices = ref.read(activeSlideIndicesProvider);
+    if (slides.isEmpty || activeIndices.isEmpty) return KeyEventResult.ignored;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      if (currentIndex < slides.length - 1) {
-        ref.read(activeSlideIndexProvider.notifier).state = currentIndex + 1;
+      final nextIndex = activeIndices.last + 1;
+      if (nextIndex < slides.length) {
+        ref.read(activeSlideIndexProvider.notifier).state = nextIndex;
       }
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      if (currentIndex > 0) {
-        ref.read(activeSlideIndexProvider.notifier).state = currentIndex - 1;
+      final prevIndex = activeIndices.first - 1;
+      if (prevIndex >= 0) {
+        ref.read(activeSlideIndexProvider.notifier).state = prevIndex;
       }
       return KeyEventResult.handled;
     } else if (_isDigit(event.logicalKey)) {
+      final currentIndex = activeIndices.first;
       final digit = _getDigit(event.logicalKey);
       _cycleShortcuts(digit, slides, currentIndex);
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyV) {
+      final currentIndex = activeIndices.first;
       _cycleShortcuts('V', slides, currentIndex);
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyC) {
+      final currentIndex = activeIndices.first;
       _cycleShortcuts('C', slides, currentIndex);
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.keyB) {
+      final currentIndex = activeIndices.first;
       _cycleShortcuts('B', slides, currentIndex);
       return KeyEventResult.handled;
     }
@@ -126,6 +132,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     }
 
     final activeIndex = ref.watch(activeSlideIndexProvider);
+    final activeIndices = ref.watch(activeSlideIndicesProvider);
     final slides = ref.watch(currentSlidesProvider);
 
     // Scroll to active index
@@ -183,7 +190,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                   itemCount: slides.length,
                   itemBuilder: (context, index) {
                     final slide = slides[index];
-                    final isActive = activeIndex == index;
+                    final isActive = activeIndices.contains(index);
                     
                     return SlideItemWidget(
                       slide: slide,
