@@ -1,0 +1,72 @@
+# Implementation Plan - Phase 26.1: Fixing Live Screen (Presentation) Issues
+
+This plan addresses several issues with the extended live screen projection:
+1.  **Full Screen Mode:** The projected window currently only maximizes; it should be in true full-screen mode (slideshow style) without a title bar or system taskbar.
+2.  **Initial Content & Settings Sync:** The projected window is blank initially. Furthermore, even when slides change, the Monitor 2 preset settings (background, typography, alignment, etc.) are not applied because the sub-window only receives a `presetId` but lacks the logic to load or apply those settings.
+3.  **Button Lifecycle:** The "Launch" button should transition to "Stop" while active, and "Re-Launch" after being stopped or closed.
+
+## Proposed Changes
+
+### Native (Windows)
+
+#### [MODIFY] [flutter_window.cpp](file:///c:/Users/bhanu/projects/KeryxPro/windows/runner/flutter_window.cpp)
+- Update `move_subwindow_to_display` logic to:
+    - Remove window styles (`WS_CAPTION`, `WS_THICKFRAME`) to hide the title bar and borders.
+    - Remove extended styles (`WS_EX_DLGMODALFRAME`, etc.).
+    - Use `SetWindowPos` with `SWP_FRAMECHANGED` to apply styles and cover the full screen area (including taskbar).
+
+### Features: Presentation Settings
+
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- Add a `toMap()` method to `PresentationSettings` to facilitate passing settings to the sub-window.
+- Add a `fromMap()` factory or static method to recreate the object from a Map.
+
+### Features: Projection Logic
+
+#### [MODIFY] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- Add `hasLaunchedOnce` to `ProjectionState` to track if we should show "RE-LAUNCH".
+- Update `launchMonitor2()`:
+    - Accept `initialText`, `initialTitle`, `isSong`, and `settingsMap`.
+    - Pass these in the initial window arguments.
+- Add `stopMonitor2()`:
+    - Close the sub-window programmatically using `WindowController.close()`.
+    - Reset `monitor2WindowId` and set `hasLaunchedOnce = true`.
+- Update `updateMonitor2Preset()`:
+    - Fetch the full `PresentationSettings` object.
+    - Send the full settings map to the sub-window via `update_preset` method call.
+
+### Main App & Projector Entry Point
+
+#### [MODIFY] [main.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/main.dart)
+- Update `_ProjectorAppState`:
+    - In `_initWindow`, parse `text`, `title`, `isSong`, and `settings` from arguments.
+    - In the method handler, handle `update_preset` by updating the full `_settings` object using `fromMap`.
+
+### Features: Live Controller UI
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Update the "Launch" button:
+    - Logic: `isActive ? 'STOP' : (state.hasLaunchedOnce ? 'RE-LAUNCH' : 'LAUNCH')`.
+    - `onPressed`: Call `launchMonitor2` (passing current slide content and settings) or `stopMonitor2`.
+- Add a listener to the `projectionProvider` in `_Monitor2View` or `LiveProjectorPane` to handle side effects if needed (though `ProjectionState` should suffice).
+
+## Verification Plan
+
+### Automated Tests
+- None (UI/Native heavy).
+
+### Manual Verification
+1.  **Launch:** Click "Launch" on Monitor 2.
+    - Verify the window appears on the extended monitor.
+    - Verify it is full screen (no taskbar, no title bar).
+    - Verify it shows the current slide content immediately.
+    - Verify it uses the correct background and typography from the Monitor 2 preset.
+2.  **Sync:** Change the slide in the dashboard.
+    - Verify the projector updates immediately.
+3.  **Settings Sync:** Change the Monitor 2 preset or edit the current preset.
+    - Verify the projector updates its style (background/font) immediately.
+4.  **Stop:** Click "Stop".
+    - Verify the projector window closes.
+    - Verify the button changes to "RE-LAUNCH".
+5.  **Close Manually:** Close the projector window using Alt+F4.
+    - Verify the dashboard button changes to "RE-LAUNCH" (may require a mechanism to detect close if `desktop_multi_window` doesn't notify automatically; I will investigate this during implementation).

@@ -97,15 +97,34 @@ bool FlutterWindow::OnCreate() {
           EnumWindows(FindSubWindowProc, reinterpret_cast<LPARAM>(&data));
 
           if (data.found) {
+            // Remove window decorations for true full screen
+            LONG style = GetWindowLong(data.found, GWL_STYLE);
+            style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+            SetWindowLong(data.found, GWL_STYLE, style);
+
+            LONG exStyle = GetWindowLong(data.found, GWL_EXSTYLE);
+            exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+            SetWindowLong(data.found, GWL_EXSTYLE, exStyle);
+
             // Move and resize to the secondary display bounds
             SetWindowPos(data.found, HWND_TOPMOST,
                          x, y, w, h,
-                         SWP_SHOWWINDOW);
-            // Maximise on the secondary display
-            ShowWindow(data.found, SW_SHOWMAXIMIZED);
+                         SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            
             result->Success();
           } else {
             result->Error("NOT_FOUND", "Projector sub-window (FLUTTER_MULTI_WINDOW_WIN32_WINDOW) not found");
+          }
+        } else if (call.method_name() == "close_subwindow") {
+          // Find and close the projector sub-window
+          SubWindowSearchData data = {mainHwnd, GetCurrentProcessId(), nullptr};
+          EnumWindows(FindSubWindowProc, reinterpret_cast<LPARAM>(&data));
+
+          if (data.found) {
+            PostMessage(data.found, WM_CLOSE, 0, 0);
+            result->Success();
+          } else {
+            result->Error("NOT_FOUND", "Projector sub-window not found");
           }
         } else {
           result->NotImplemented();

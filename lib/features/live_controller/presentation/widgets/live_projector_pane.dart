@@ -197,13 +197,28 @@ class _Monitor2View extends ConsumerWidget {
               ),
               const SizedBox(width: 16),
               ElevatedButton(
-                onPressed: isConnected ? () => ref.read(projectionProvider.notifier).launchMonitor2() : null,
+                onPressed: isConnected 
+                  ? () {
+                      if (isActive) {
+                        ref.read(projectionProvider.notifier).stopMonitor2();
+                      } else {
+                        ref.read(projectionProvider.notifier).launchMonitor2(
+                          text: activeSlideText,
+                          title: activeTitle,
+                          isSong: isSong,
+                        );
+                      }
+                    }
+                  : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isActive ? Colors.blue : Colors.grey[800],
+                  backgroundColor: isActive ? Colors.red[900] : Colors.blue,
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                   minimumSize: const Size(80, 28),
                 ),
-                child: Text(isActive ? 'RELAUNCH' : 'LAUNCH', style: const TextStyle(fontSize: 10)),
+                child: Text(
+                  isActive ? 'STOP' : (projectionState.hasLaunchedOnce ? 'RE-LAUNCH' : 'LAUNCH'), 
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)
+                ),
               ),
             ],
           ),

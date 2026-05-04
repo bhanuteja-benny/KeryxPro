@@ -1,0 +1,31 @@
+Phase 26.1 - fixing live screen (presentation) issues
+
+Context:
+⁃ The extended live screen projection is not working/appearing as expected. Need to fix the issues
+
+Expected functionality:
+- When user clicks on 'Launch' button in Monitor 2 pane
+  1) A new screen/window should be projected in Extended Monitor/Projector (which is connected)
+  2) The live screen should be in full screen mode
+     a) not just maximizing the window. it should be full screen presentation (like power point slideshow presentation)
+     b) system task bar and title bar of the window should not be displayed
+  3) The live screen presentation should be same as the preview screen which is in Monitor 2 pane
+     a) All the monitor 2 settings should be applied (preset, max no. of verses etc) (preset settings which include background, typography etc)
+     b) The live screen should start showing the current slide which is being displayed in the preview screen in Monitor 2 pane
+   4) Once the live screen presentation started then 'launch' button should be shown as 'Stop'
+   5) when user clicks on stop or closes the presentation, then 'launch' button should be shown as 'Re-Launch'
+
+Current functionality:
+- When user clicked on 'Launch' button in Monitor 2 pane
+  1) Working as expected - A new screen/window is being projected in Extended Monitor/Projector (which is connected)
+  2) Not working as expected - The live screen is not in full screen mode
+     a) its just maximizing the window, not appearing as full screen mode
+     b) system task bar and title bar of the window are being displayed (which are not supposed to)
+  3) Not working as expected - The live screen presentation is not same as the preview screen which is in Monitor 2 pane
+     a) Monitor 2 settings are not applied (showing text as center aligned and some default font, with black color background, where the preset settings has a specific background with left alignment etc)
+     b) The live screen is blank initially and when user changes the slide then that slide is appearing in the projected live screen
+  4) Not working as expected - Once user clicks the 'launch' button and presentation started the button is being displayed as 'Re-Launch'
+  5) Not working as expected
+
+Deliverables:
+Implementation Plan File (with steps of possible resolution)

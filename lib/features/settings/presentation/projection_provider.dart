@@ -9,16 +9,19 @@ import 'package:flutter/services.dart';
 import '../../../main.dart';
 import '../../../core/database/isar_service.dart';
 import '../data/projection_config.dart';
+import '../data/presentation_settings.dart';
 
 class ProjectionState {
   final ProjectionConfig config;
   final List<Display> displays;
   final String? monitor2WindowId;
+  final bool hasLaunchedOnce;
 
   ProjectionState({
     required this.config,
     required this.displays,
     this.monitor2WindowId,
+    this.hasLaunchedOnce = false,
   });
 
   bool get isMonitor2Active => monitor2WindowId != null;
@@ -29,11 +32,13 @@ class ProjectionState {
     List<Display>? displays,
     String? monitor2WindowId,
     bool clearMonitor2 = false,
+    bool? hasLaunchedOnce,
   }) {
     return ProjectionState(
       config: config ?? this.config,
       displays: displays ?? this.displays,
       monitor2WindowId: clearMonitor2 ? null : (monitor2WindowId ?? this.monitor2WindowId),
+      hasLaunchedOnce: hasLaunchedOnce ?? this.hasLaunchedOnce,
     );
   }
 }
@@ -69,6 +74,19 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
 
     List<Display> displays = await ScreenRetriever.instance.getAllDisplays();
     state = ProjectionState(config: config, displays: displays);
+
+    // Listen for messages from sub-windows (like manual closure)
+    WindowController.fromCurrentEngine().then((controller) {
+      controller.setWindowMethodHandler((call) async {
+        if (call.method == 'window_closed') {
+          final closedId = call.arguments.toString();
+          if (state.monitor2WindowId == closedId) {
+            state = state.copyWith(clearMonitor2: true, hasLaunchedOnce: true);
+          }
+        }
+        return null;
+      });
+    });
   }
 
   Future<void> refreshDisplays() async {
@@ -94,7 +112,10 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
     state = state.copyWith(config: newConfig);
     if (state.monitor2WindowId != null) {
-      _syncToWindow(state.monitor2WindowId!, presetId);
+      final preset = presetId != null 
+          ? await isar.presentationSettings.get(presetId)
+          : null;
+      _syncToWindow(state.monitor2WindowId!, preset);
     }
   }
 
@@ -122,44 +143,37 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
       ..monitor2Format = old.monitor2Format;
   }
 
-  Future<void> launchMonitor2() async {
+  Future<void> launchMonitor2({
+    String? text,
+    String? title,
+    bool isSong = true,
+  }) async {
     await refreshDisplays();
     if (state.displays.length < 2) {
       print("monitor does not exists");
       return;
     }
 
-    print("monitor exists");
-    print(state.displays);
-
-    final primaryDisplay = state.displays[0];
-    // visiblePosition is the screen-coordinate offset of the primary display
-    final primaryDisplayX = primaryDisplay.visiblePosition?.dx ?? primaryDisplay.size.width;
-    final primaryDisplayY = primaryDisplay.visiblePosition?.dy ?? 0.0;
-    final primaryDisplayW = primaryDisplay.size.width;
-    final primaryDisplayH = primaryDisplay.size.height;
-
-    print("primaryDisplayX: $primaryDisplayX");
-    print("primaryDisplayY: $primaryDisplayY");
-    print("primaryDisplayW: $primaryDisplayW");
-    print("primaryDisplayH: $primaryDisplayH");
+    final isar = await _isarService.db;
+    final presetId = state.config.monitor2PresetId;
+    final preset = presetId != null 
+        ? await isar.presentationSettings.get(presetId)
+        : null;
 
     final secondaryDisplay = state.displays[1];
-    // visiblePosition is the screen-coordinate offset of the secondary display
     final displayX = secondaryDisplay.visiblePosition?.dx ?? secondaryDisplay.size.width;
     final displayY = secondaryDisplay.visiblePosition?.dy ?? 0.0;
     final displayW = secondaryDisplay.size.width;
     final displayH = secondaryDisplay.size.height;
 
-    print("displayX: $displayX");
-    print("displayY: $displayY");
-    print("displayW: $displayW");
-    print("displayH: $displayH");
-
     final args = {
       'type': 'projector',
       'monitorIndex': 2,
-      'presetId': state.config.monitor2PresetId,
+      'presetId': presetId,
+      'settings': preset?.toMap(),
+      'text': text,
+      'title': title,
+      'isSong': isSong,
       'displayX': displayX,
       'displayY': displayY,
       'displayW': displayW,
@@ -174,7 +188,6 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
 
     // Now ask the native side (running in the main window's context)
     // to find the sub-window and move it to the secondary display.
-    // We wait a bit to ensure the sub-window's HWND is created and registered.
     await Future.delayed(const Duration(milliseconds: 1000));
     try {
       const channel = MethodChannel('keryx/window');
@@ -188,12 +201,30 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
       print("Error moving sub-window: $e");
     }
 
-    state = state.copyWith(monitor2WindowId: window.windowId);
+    state = state.copyWith(
+      monitor2WindowId: window.windowId,
+      hasLaunchedOnce: true,
+    );
   }
 
-  void _syncToWindow(String windowId, int? presetId) {
+  Future<void> stopMonitor2() async {
+    if (state.monitor2WindowId != null) {
+      try {
+        const channel = MethodChannel('keryx/window');
+        await channel.invokeMethod('close_subwindow');
+      } catch (e) {
+        print("Error closing sub-window natively: $e");
+        // Fallback to old method just in case
+        await WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('close_window');
+      }
+      state = state.copyWith(clearMonitor2: true);
+    }
+  }
+
+  void _syncToWindow(String windowId, PresentationSettings? settings) {
     WindowController.fromWindowId(windowId).invokeMethod('update_preset', {
-      'presetId': presetId,
+      'presetId': settings?.id,
+      'settings': settings?.toMap(),
     });
   }
 }

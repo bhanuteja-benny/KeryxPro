@@ -1,0 +1,37 @@
+# Walkthrough - Phase 26.1: Live Screen Projection Fixes
+
+## Changes
+
+### Native Window Management
+#### [flutter_window.cpp](file:///c:/Users/bhanu/projects/KeryxPro/windows/runner/flutter_window.cpp)
+- Modified `move_subwindow_to_display` to strip window styles (`WS_CAPTION`, `WS_THICKFRAME`) and extended styles.
+- Used `SetWindowPos` with `SWP_FRAMECHANGED` to force the window into a true borderless full-screen state on the secondary monitor.
+
+### Data & Serialization
+#### [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- Added `toMap()` and `fromMap()` to allow sending full presentation presets across window boundaries.
+
+### State & Providers
+#### [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- Added `hasLaunchedOnce` to track the "RE-LAUNCH" state.
+- Updated `launchMonitor2` to fetch and pass the current slide's text, title, and full preset settings.
+- Added `stopMonitor2` for programmatically closing the window.
+- Added a global `DesktopMultiWindow.setMethodHandler` to listen for `window_closed` messages from sub-windows.
+
+### Projector UI
+#### [main.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/main.dart)
+- Updated `ProjectorApp` to initialize its state from the arguments passed during window creation.
+- Implemented `WindowListener` to detect when the window is closed and notify the main window via `DesktopMultiWindow.invokeMethod`.
+- Updated the method handler to receive full settings maps for live theme updates.
+
+### Dashboard UI
+#### [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Updated the launch button to show **STOP** (red) while active and **RE-LAUNCH** if it has been launched before.
+- Passing current slide data to the launch command.
+
+## Verification Results
+
+### Manual Verification
+- **Full Screen**: The projector window now appears without any title bar or borders and covers the Windows taskbar.
+- **Initial Sync**: The window immediately shows the current slide with the correct background and font settings upon launch.
+- **Button Logic**: The button correctly toggles between states and resets if the window is closed manually.
