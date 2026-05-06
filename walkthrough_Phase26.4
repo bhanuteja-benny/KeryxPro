@@ -1,0 +1,21 @@
+# Walkthrough - Extended Monitor Detection Fix
+
+I have implemented both automatic and manual methods to ensure that KeryxPro detects when an extended monitor is connected or disconnected.
+
+## Changes Made
+
+### Automatic Detection
+- **System Listener**: Integrated `ScreenRetrieverListener` into the `ProjectionNotifier`. The application now listens for OS-level display change events.
+- **Auto-Refresh**: Whenever a monitor is plugged in or unplugged, the app automatically calls `refreshDisplays()` to update the status in the UI and internal state without requiring any user action.
+
+### Manual Fallback UI
+- **Interactive Status**: In the **Monitor 1 (Extended)** tab, the status indicator (the "CONNECTED/NOT CONNECTED" text and icon) is now clickable. Clicking it will trigger a manual refresh of the display list.
+- **Refresh Icon**: Added a small refresh icon button next to the status label for explicit user feedback and ease of use.
+
+## Verification Results
+
+### Manual Verification Required
+- [ ] Launch the app with one monitor. Verify "NOT CONNECTED" is shown.
+- [ ] Plug in a monitor. Verify the status changes to "CONNECTED" automatically within a second.
+- [ ] Unplug the monitor. Verify the status reverts to "NOT CONNECTED" automatically.
+- [ ] Click the manual refresh icon and verify the state refreshes.

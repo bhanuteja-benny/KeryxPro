@@ -21,8 +21,8 @@ class LiveMonitorPage extends ConsumerWidget {
           toolbarHeight: 0,
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Monitor 1 (Streaming)'),
-              Tab(text: 'Monitor 2 (Extended)'),
+              Tab(text: 'Monitor 1 (Extended)'),
+              Tab(text: 'Monitor 2 (Streaming)'),
             ],
             indicatorColor: Colors.blue,
             labelColor: Colors.blue,
@@ -37,7 +37,7 @@ class LiveMonitorPage extends ConsumerWidget {
               1, 
               projectionState.config.monitor1PresetId, 
               projectionState.isMonitor1Active,
-              projectionState.displays.isNotEmpty, // Monitor 1 is always available usually
+              projectionState.displays.length >= 2,
               presetsAsync
             ),
             _buildMonitorTab(
@@ -46,7 +46,7 @@ class LiveMonitorPage extends ConsumerWidget {
               2, 
               projectionState.config.monitor2PresetId, 
               projectionState.isMonitor2Active,
-              projectionState.displays.length >= 2,
+              projectionState.displays.isNotEmpty, // Monitor 2 is now streaming, always available
               presetsAsync
             ),
           ],
@@ -132,7 +132,16 @@ class LiveMonitorPage extends ConsumerWidget {
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: isConnected ? () {
-                  ref.read(projectionProvider.notifier).launchMonitor(monitorIndex);
+                  if (monitorIndex == 1) {
+                    final activeSlideText = ref.read(m1ActiveSlideProvider);
+                    final activeTitle = ref.read(activeTitleProvider);
+                    final isSong = ref.read(isSongActiveProvider);
+                    ref.read(projectionProvider.notifier).launchMonitor1(
+                      text: activeSlideText,
+                      title: activeTitle,
+                      isSong: isSong,
+                    );
+                  }
                 } : null,
                 icon: const Icon(Icons.launch),
                 label: Text(isActive ? 'RELAUNCH OUTPUT' : 'LAUNCH OUTPUT'),
@@ -145,10 +154,10 @@ class LiveMonitorPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (monitorIndex == 2 && !isConnected)
+          if (monitorIndex == 1 && !isConnected)
             const Center(
               child: Text(
-                'Please connect an extended monitor to enable Monitor 2 output.',
+                'Please connect an extended monitor to enable Monitor 1 output.',
                 style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
               ),
             ),

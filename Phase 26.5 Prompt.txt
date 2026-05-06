@@ -1,0 +1,25 @@
+Phase 26.5
+
+Context:
+- fixing the selection issues in bible search list boxes (books, chapters and verses)
+
+Testing observations regarding the issue:
+- when user typed bible reference in search box and clicked enter, then respective book, chapter and verse are being selected.
+- above functionality is working well and also remaining functionality also working well like when clicking enter two times, the respective verse is being added and displayed.
+- there is no issue in the above functionality. but below unexpected behaviour is observed
+- after user typed bible reference in search box and clicked enter, after automatically book, chapter and verse are selected, then if user trying to use shift button and select more verses it is not selecting from the already selected verse
+- example: user typed 'John 1:1 in search box and clicked enter, then John is auto selected in the New testament books listbox, 1 is auto selected in the chapters list box, 1 is auto selected in verses list box. then user held "shift' button and clicked verse 5 in the verses listbox, then only the verse number 5 is getting selected BUT the expected functionality is verses from 1 to 5 should be selected.
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+fix the issue

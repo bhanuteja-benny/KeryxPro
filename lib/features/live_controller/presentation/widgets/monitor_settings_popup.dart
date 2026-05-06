@@ -52,17 +52,14 @@ class _MonitorSettingsPopupState extends ConsumerState<MonitorSettingsPopup> {
   void _apply() {
     int maxChars = int.tryParse(_maxCharsController.text) ?? 0;
     
-    if (widget.monitorIndex == 1) {
-      if (_selectedPresetId != null) {
-        ref.read(projectionProvider.notifier).updateMonitor1Preset(_selectedPresetId!);
-      }
-      ref.read(projectionProvider.notifier).updateMonitor1Settings(_maxVerses, maxChars, _format);
-    } else {
-      if (_selectedPresetId != null) {
-        ref.read(projectionProvider.notifier).updateMonitor2Preset(_selectedPresetId!);
-      }
-      // Future: updateMonitor2Settings
-    }
+    ref.read(projectionProvider.notifier).updateMonitorConfig(
+      monitorIndex: widget.monitorIndex,
+      presetId: _selectedPresetId,
+      updatePreset: true,
+      maxVerses: _maxVerses,
+      maxChars: maxChars,
+      format: _format,
+    );
     
     Navigator.of(context).pop();
   }

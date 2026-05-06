@@ -1,0 +1,49 @@
+Phase 27
+
+Context:
+- Pin/Unpin/"Auto Hide" functionality for left pane (songs/bible search) and Monitors pane (Monitor 1 and 2).
+
+Example 1: Solution Explorer in Visual Studio has 'Auto Hide' option.
+
+Example 2: options like 'Explorer', 'Code Search', 'Source Control"' etc. in Google Antigravity (which are also available in Visual Studio Code)
+- All these windows/panes have a pin type of icon, when user clicks on that icon, the window will remain open and docked and when user again clicks on that icon the window will hide and an icon or text like `solution explorer' etc are displayed sides ways.
+- this similar type of functionality is required for songs/bible search section and Monitors section. by default search section and monitors section should be open mode. when users clicks on pin icon then they should hide.
+
+UI Requirements:
+- Add a pin type of icon should be added in title bar of Songs/Bible search pane
+- Position: top right corner
+- Add a pin type of icon should be added in title bar of Monitors (Monitor 1 and Monitor 2) pane
+- Position: top right corner
+
+Interactions:
+- when user clicks on Pin icon of Songs/Bible search pane
+  -- hide the Songs/Bible search pane
+  -- display two icons in the left of tool
+     --- one icon is music icon and another is book icon
+     --- when user clicks on music icon, open the Songs/Bible search pane with Songs tab opened
+     --- when user clicks on book icon, open the Songs/Bible search pane with Bible tab opened
+- when user clicks on Pin icon of Monitors pane
+  -- hide the Monitors pane (but that should not stop presenting actual live screen projection or OBS capture screen)
+  -- display two screen/monitor icons in the bottom of the tool
+  -- inside first monitor icon display 1'
+  -- inside second monitor icon display "2"
+  -- when user clicks on first monitor icon, open the Monitors pane with Monitor 1 tab opened
+  -- when user clicks on second monitor icon, open the Monitors pane with Monitor 2 tab opened
+
+Visual styles
+- let the icons and the bars (vertical or bottom) which are showing icons be sleek. (should not occupy too much space)
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+- hiding monitor panes should not stop presenting actual live screen projection or OBS capture screen
+
+Deliverables:
+- Implementation Plan file
+

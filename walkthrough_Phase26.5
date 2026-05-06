@@ -1,0 +1,16 @@
+# Walkthrough - Bible Verse Selection Fix
+
+I have resolved the issue where range selection (`Shift + click`) was not working correctly after a search or a chapter change.
+
+## Changes Made
+
+### Selection Logic
+- **Search Synchronization**: Updated `_handleSearch` to set the selection pivot (`_lastVerseToggled`) to the last verse of the searched range. This allows a subsequent `Shift + click` to correctly span from the search result to the clicked verse.
+- **Auto-Selection Tracking**: Added logic to update the selection pivot whenever a Book or Chapter is manually selected. Since these actions automatically reset the verse selection to `1`, the pivot is now correctly set to `1` as well.
+
+## Verification Results
+
+### Manual Verification Required
+- [ ] **Search Test**: Search for `John 3:1`, press Enter. Then `Shift + click` verse `10`. Verify verses `1-10` are selected.
+- [ ] **Chapter Test**: Select a different chapter. Verify verse `1` is auto-selected. `Shift + click` verse `5`. Verify verses `1-5` are selected.
+- [ ] **Book Test**: Select a different book. Verify verse `1` is auto-selected. `Shift + click` verse `3`. Verify verses `1-3` are selected.

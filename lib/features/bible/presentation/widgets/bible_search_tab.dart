@@ -70,6 +70,9 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
               versesToSelect.add(startVerse);
             }
             ref.read(selectedVersesProvider.notifier).state = versesToSelect;
+            setState(() {
+              _lastVerseToggled = endVerse ?? startVerse;
+            });
           }
         }
       }
@@ -246,6 +249,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     // Default select 1st chapter and 1st verse
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    setState(() => _lastVerseToggled = 1);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
@@ -269,6 +273,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     // Default select 1st chapter and 1st verse
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    setState(() => _lastVerseToggled = 1);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
@@ -291,6 +296,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     ref.read(selectedChapterProvider.notifier).state = val;
                     // Default select 1st verse
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    setState(() => _lastVerseToggled = 1);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;

@@ -1,0 +1,54 @@
+# Implementation Plan - Swap Monitor 1 and Monitor 2 Roles
+
+The goal is to swap the roles of Monitor 1 and Monitor 2 in the application. Monitor 1 will become the "Extended Monitor" (external window output), and Monitor 2 will become the "Streaming/OBS" monitor (inline preview).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This change will effectively swap the user's saved settings for Monitor 1 and Monitor 2 in the database. What was previously configured for "Streaming" (M1) will now apply to "Extended" (M1), and vice versa.
+
+## Proposed Changes
+
+### Projection Configuration & Logic
+
+#### [MODIFY] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- Rename `monitor2WindowId` to `monitor1WindowId` in `ProjectionState` and `ProjectionNotifier`.
+- Rename `isMonitor2Active` to `isMonitor1Active`.
+- Rename `launchMonitor2` to `launchMonitor1`.
+- Rename `stopMonitor2` to `stopMonitor1`.
+- Update `updateMonitor1Preset` to sync content to the external window (`monitor1WindowId`).
+- Update `updateMonitor2Preset` to remove window synchronization logic (since it's now inline).
+- Implement `updateMonitor2Settings` to persist settings for the streaming monitor.
+
+#### [MODIFY] [projection_broadcaster.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/projection_broadcaster.dart)
+- Change listener from `m2ActiveSlideProvider` to `m1ActiveSlideProvider`.
+- Broadcast content using `monitor1WindowId`.
+
+### UI Components
+
+#### [MODIFY] [live_monitor_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/live_monitor_page.dart)
+- Swap tab labels: "Monitor 1 (Extended)" and "Monitor 2 (Streaming)".
+- Swap the arguments in `TabBarView` children so that the first child handles Monitor 1 logic and the second handles Monitor 2.
+- Update the "Please connect an extended monitor..." warning to show for `monitorIndex == 1`.
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Swap tab labels in the `TabBar`.
+- Swap the `_Monitor1View` and `_Monitor2View` classes in the `TabBarView`.
+- Swap the implementation details inside `_Monitor1View` and `_Monitor2View`:
+    - `_Monitor1View`: Now includes the "Launch" button and external window logic.
+    - `_Monitor2View`: Now includes the "OBS CAPTURE SURFACE" label and inline preview logic.
+
+#### [MODIFY] [monitor_settings_popup.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/monitor_settings_popup.dart)
+- Update `_apply` logic to call the newly renamed/swapped methods in `ProjectionNotifier`.
+- Implement persistence for Monitor 2 settings.
+
+## Verification Plan
+
+### Manual Verification
+1. Open the application.
+2. Observe the **Monitor 1** tab: It should now be titled **Monitor 1 (Extended)** and have a **Launch** button.
+3. Observe the **Monitor 2** tab: It should now be titled **Monitor 2 (Streaming)** and show the inline OBS capture preview.
+4. Launch Monitor 1 and verify the external window opens.
+5. Change a preset for Monitor 1 and verify it updates the external window.
+6. Change a preset for Monitor 2 and verify it updates the inline preview.
+7. Verify that Bible grouping settings (Max Verses/Chars) are correctly applied to each monitor according to their new roles.

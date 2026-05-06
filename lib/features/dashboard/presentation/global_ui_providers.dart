@@ -13,6 +13,22 @@ final slideListFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'Slid
 // Shared Scroll Controllers for cross-pane interaction
 final slideListScrollControllerProvider = Provider((ref) => ScrollController());
 
+// ─── Library Pane Auto-Hide State ───
+
+/// Pin mode for the Library (Songs/Bible) pane.
+enum LibraryPinMode { pinned, autoHide }
+
+/// Whether the Library pane is pinned or in auto-hide mode. Default: pinned.
+final libraryPinModeProvider = StateProvider<LibraryPinMode>(
+  (ref) => LibraryPinMode.pinned,
+);
+
+/// Whether the Library pane is currently visible. Default: true.
+final libraryPaneVisibleProvider = StateProvider<bool>((ref) => true);
+
+/// Tracks which tab is active in the icon rail (0 = Songs, 1 = Bible).
+final activeLibraryRailIndexProvider = StateProvider<int>((ref) => 0);
+
 // Intents for Global Shortcuts
 class BibleTabIntent extends Intent {
   const BibleTabIntent();
@@ -34,12 +50,18 @@ class GlobalShortcutActions {
   GlobalShortcutActions(this.ref);
 
   void openBibleTab() {
+    // Ensure library pane is visible (un-hide if hidden)
+    ref.read(libraryPaneVisibleProvider.notifier).state = true;
+    ref.read(activeLibraryRailIndexProvider.notifier).state = 1;
     final controller = ref.read(libraryTabControllerProvider);
     controller?.animateTo(1);
     ref.read(bibleSearchFocusNodeProvider).requestFocus();
   }
 
   void openSongsTab() {
+    // Ensure library pane is visible (un-hide if hidden)
+    ref.read(libraryPaneVisibleProvider.notifier).state = true;
+    ref.read(activeLibraryRailIndexProvider.notifier).state = 0;
     final controller = ref.read(libraryTabControllerProvider);
     controller?.animateTo(0);
     ref.read(songSearchFocusNodeProvider).requestFocus();

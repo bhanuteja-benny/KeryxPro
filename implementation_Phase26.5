@@ -1,0 +1,37 @@
+# Implementation Plan - Fix Bible Verse Multi-Selection Pivot
+
+The goal is to ensure that `Shift + click` range selection in the Bible verse list works correctly after an automatic selection (e.g., from a search result or when changing chapters).
+
+## User Review Required
+
+> [!NOTE]
+> This change only affects the internal state tracking of the last selected verse. It does not change any UI or data providers.
+
+## Proposed Changes
+
+### Bible Search UI
+
+#### [MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)
+- [ ] In `_handleSearch`: Update `_lastVerseToggled` to the end of the searched range. This ensures that a subsequent `Shift + click` starts from the last searched verse.
+- [ ] In `onSelected` for Books (OT and NT): Update `_lastVerseToggled` to `1`. Since changing a book automatically selects chapter 1 and verse 1, the selection pivot should follow.
+- [ ] In `onSelected` for Chapters: Update `_lastVerseToggled` to `1`. Since changing a chapter automatically selects verse 1, the selection pivot should follow.
+
+## Verification Plan
+
+### Manual Verification
+1.  **Search Scenario**:
+    - Type `John 1:1` in the search box and press Enter.
+    - Hold `Shift` and click verse `5` in the verses list.
+    - Verify that verses `1` through `5` are selected.
+2.  **Chapter Change Scenario**:
+    - Select any book and chapter.
+    - Change to a different chapter.
+    - Verify that verse `1` is auto-selected.
+    - Hold `Shift` and click verse `3`.
+    - Verify that verses `1` through `3` are selected.
+3.  **Book Change Scenario**:
+    - Select any book.
+    - Change to a different book.
+    - Verify that verse `1` (of chapter 1) is auto-selected.
+    - Hold `Shift` and click verse `3`.
+    - Verify that verses `1` through `3` are selected.

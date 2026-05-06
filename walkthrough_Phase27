@@ -1,0 +1,674 @@
+# Phase 27: Pin/Unpin Auto-Hide — Walkthrough
+
+## Summary
+
+Added VS Code-style auto-hide pin functionality to the Library (Songs/Bible) pane. The feature uses a two-state system (pin mode + visibility) with a permanent icon rail on the left side.
+
+## Changes Made
+
+### 4 Files Modified/Created
+
+| File | Type | What Changed |
+|------|------|-------------|
+| [global_ui_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/global_ui_providers.dart) | MODIFY | Added `LibraryPinMode` enum, 3 new state providers, updated shortcuts to un-hide pane |
+| [library_icon_rail.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_icon_rail.dart) | NEW | Slim 32px vertical icon rail with Songs/Bible icons and tap toggle logic |
+| [library_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_pane.dart) | MODIFY | Added pin icon button in tab bar, tab change listener to sync rail index |
+| [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart) | MODIFY | Restructured layout with permanent icon rail, conditional docked/overlay rendering |
+
+### Key Design Decisions
+
+1. **Permanent Icon Rail**: Always visible on the far left (32px), not just when pane is hidden
+2. **Docked vs Overlay**: Pinned mode uses flex-based docking (layout reflows); Auto-hide mode uses Stack-based overlay (no layout shift)
+3. **Dismiss Barrier**: In auto-hide mode, a transparent GestureDetector covers the entire area behind the overlay to detect outside clicks
+
+```diff:global_ui_providers.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Tab Controller for Library (Songs vs Bible)
+final libraryTabControllerProvider = StateProvider<TabController?>((ref) => null);
+
+// Focus Nodes for various sections
+final songSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'SongSearchField'));
+final bibleSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'BibleSearchField'));
+final bibleVerseListFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'BibleVerseList'));
+final slideListFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'SlideList'));
+
+// Shared Scroll Controllers for cross-pane interaction
+final slideListScrollControllerProvider = Provider((ref) => ScrollController());
+
+// Intents for Global Shortcuts
+class BibleTabIntent extends Intent {
+  const BibleTabIntent();
+}
+
+class SongsTabIntent extends Intent {
+  const SongsTabIntent();
+}
+
+class SlidesFocusIntent extends Intent {
+  const SlidesFocusIntent();
+}
+
+// Provider to manage the global shortcut actions
+final globalShortcutActionProvider = Provider((ref) => GlobalShortcutActions(ref));
+
+class GlobalShortcutActions {
+  final Ref ref;
+  GlobalShortcutActions(this.ref);
+
+  void openBibleTab() {
+    final controller = ref.read(libraryTabControllerProvider);
+    controller?.animateTo(1);
+    ref.read(bibleSearchFocusNodeProvider).requestFocus();
+  }
+
+  void openSongsTab() {
+    final controller = ref.read(libraryTabControllerProvider);
+    controller?.animateTo(0);
+    ref.read(songSearchFocusNodeProvider).requestFocus();
+  }
+
+  void focusSlides() {
+    ref.read(slideListFocusNodeProvider).requestFocus();
+  }
+}
+===
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Tab Controller for Library (Songs vs Bible)
+final libraryTabControllerProvider = StateProvider<TabController?>((ref) => null);
+
+// Focus Nodes for various sections
+final songSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'SongSearchField'));
+final bibleSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'BibleSearchField'));
+final bibleVerseListFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'BibleVerseList'));
+final slideListFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'SlideList'));
+
+// Shared Scroll Controllers for cross-pane interaction
+final slideListScrollControllerProvider = Provider((ref) => ScrollController());
+
+// ─── Library Pane Auto-Hide State ───
+
+/// Pin mode for the Library (Songs/Bible) pane.
+enum LibraryPinMode { pinned, autoHide }
+
+/// Whether the Library pane is pinned or in auto-hide mode. Default: pinned.
+final libraryPinModeProvider = StateProvider<LibraryPinMode>(
+  (ref) => LibraryPinMode.pinned,
+);
+
+/// Whether the Library pane is currently visible. Default: true.
+final libraryPaneVisibleProvider = StateProvider<bool>((ref) => true);
+
+/// Tracks which tab is active in the icon rail (0 = Songs, 1 = Bible).
+final activeLibraryRailIndexProvider = StateProvider<int>((ref) => 0);
+
+// Intents for Global Shortcuts
+class BibleTabIntent extends Intent {
+  const BibleTabIntent();
+}
+
+class SongsTabIntent extends Intent {
+  const SongsTabIntent();
+}
+
+class SlidesFocusIntent extends Intent {
+  const SlidesFocusIntent();
+}
+
+// Provider to manage the global shortcut actions
+final globalShortcutActionProvider = Provider((ref) => GlobalShortcutActions(ref));
+
+class GlobalShortcutActions {
+  final Ref ref;
+  GlobalShortcutActions(this.ref);
+
+  void openBibleTab() {
+    // Ensure library pane is visible (un-hide if hidden)
+    ref.read(libraryPaneVisibleProvider.notifier).state = true;
+    ref.read(activeLibraryRailIndexProvider.notifier).state = 1;
+    final controller = ref.read(libraryTabControllerProvider);
+    controller?.animateTo(1);
+    ref.read(bibleSearchFocusNodeProvider).requestFocus();
+  }
+
+  void openSongsTab() {
+    // Ensure library pane is visible (un-hide if hidden)
+    ref.read(libraryPaneVisibleProvider.notifier).state = true;
+    ref.read(activeLibraryRailIndexProvider.notifier).state = 0;
+    final controller = ref.read(libraryTabControllerProvider);
+    controller?.animateTo(0);
+    ref.read(songSearchFocusNodeProvider).requestFocus();
+  }
+
+  void focusSlides() {
+    ref.read(slideListFocusNodeProvider).requestFocus();
+  }
+}
+```
+
+```diff:library_pane.dart
+import 'package:flutter/material.dart';
+import '../../../songs/presentation/song_library_tab.dart';
+import '../../../bible/presentation/widgets/bible_search_tab.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../global_ui_providers.dart';
+
+class LibraryPane extends ConsumerWidget {
+  const LibraryPane({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tabController = ref.watch(libraryTabControllerProvider);
+
+    if (tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 30,
+          child: Container(
+            color: Colors.grey[900], // Darker background for tab bar
+            child: TabBar(
+              controller: tabController,
+              indicatorColor: Colors.deepPurpleAccent,
+              tabs: const [
+                Tab(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.library_music, size: 16), SizedBox(width: 4), Text('Songs', style: TextStyle(fontSize: 11))])),
+                Tab(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.menu_book, size: 16), SizedBox(width: 4), Text('Bible', style: TextStyle(fontSize: 11))])),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            color: Colors.grey[850],
+            child: TabBarView(
+              controller: tabController,
+              children: const [
+                SongLibraryTab(),
+                BibleSearchTab(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+===
+import 'package:flutter/material.dart';
+import 'dart:math' as math;
+import '../../../songs/presentation/song_library_tab.dart';
+import '../../../bible/presentation/widgets/bible_search_tab.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../global_ui_providers.dart';
+
+class LibraryPane extends ConsumerStatefulWidget {
+  const LibraryPane({super.key});
+
+  @override
+  ConsumerState<LibraryPane> createState() => _LibraryPaneState();
+}
+
+class _LibraryPaneState extends ConsumerState<LibraryPane> {
+  @override
+  void initState() {
+    super.initState();
+    // Sync tab changes to the rail index provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = ref.read(libraryTabControllerProvider);
+      controller?.addListener(_onTabChanged);
+    });
+  }
+
+  void _onTabChanged() {
+    final controller = ref.read(libraryTabControllerProvider);
+    if (controller != null && !controller.indexIsChanging) {
+      ref.read(activeLibraryRailIndexProvider.notifier).state = controller.index;
+    }
+  }
+
+  @override
+  void dispose() {
+    final controller = ref.read(libraryTabControllerProvider);
+    controller?.removeListener(_onTabChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tabController = ref.watch(libraryTabControllerProvider);
+    final pinMode = ref.watch(libraryPinModeProvider);
+
+    if (tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final isPinned = pinMode == LibraryPinMode.pinned;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 30,
+          child: Container(
+            color: Colors.grey[900], // Darker background for tab bar
+            child: Row(
+              children: [
+                Expanded(
+                  child: TabBar(
+                    controller: tabController,
+                    indicatorColor: Colors.deepPurpleAccent,
+                    tabs: const [
+                      Tab(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.library_music, size: 16), SizedBox(width: 4), Text('Songs', style: TextStyle(fontSize: 11))])),
+                      Tab(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.menu_book, size: 16), SizedBox(width: 4), Text('Bible', style: TextStyle(fontSize: 11))])),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 28,
+                  child: Tooltip(
+                    message: isPinned ? 'Unpin (Auto Hide)' : 'Pin',
+                    waitDuration: const Duration(milliseconds: 500),
+                    child: InkWell(
+                      onTap: () {
+                        if (isPinned) {
+                          // Switch to auto-hide mode and hide pane
+                          ref.read(libraryPinModeProvider.notifier).state = LibraryPinMode.autoHide;
+                          ref.read(libraryPaneVisibleProvider.notifier).state = false;
+                        } else {
+                          // Switch back to pinned mode (pane stays visible)
+                          ref.read(libraryPinModeProvider.notifier).state = LibraryPinMode.pinned;
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(4),
+                      child: Center(
+                        child: isPinned
+                            ? const Icon(Icons.push_pin, size: 14, color: Colors.grey)
+                            : Transform.rotate(
+                                angle: math.pi / 4,
+                                child: const Icon(Icons.push_pin_outlined, size: 14, color: Colors.grey),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            color: Colors.grey[850],
+            child: TabBarView(
+              controller: tabController,
+              children: const [
+                SongLibraryTab(),
+                BibleSearchTab(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
+```diff:main_dashboard_page.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../presentation/presentation/projection_broadcaster.dart';
+import '../widgets/library_pane.dart';
+import '../widgets/preview_pane.dart';
+import '../widgets/setlist_pane.dart';
+import '../../../live_controller/presentation/widgets/live_projector_pane.dart';
+import '../widgets/custom_title_bar.dart';
+import '../../../songs/presentation/song_editor_pane.dart';
+import '../../../songs/presentation/song_selection_providers.dart';
+
+import 'package:flutter/services.dart';
+import '../global_ui_providers.dart';
+
+class MainDashboardPage extends ConsumerStatefulWidget {
+  const MainDashboardPage({super.key});
+
+  @override
+  ConsumerState<MainDashboardPage> createState() => _MainDashboardPageState();
+}
+
+class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with SingleTickerProviderStateMixin {
+  late TabController _libraryTabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _libraryTabController = TabController(length: 2, vsync: this);
+    // Give the controller to the provider so other widgets can use it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(libraryTabControllerProvider.notifier).state = _libraryTabController;
+    });
+  }
+
+  @override
+  void dispose() {
+    _libraryTabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Initialize broadcaster
+    ref.watch(projectionBroadcasterProvider);
+    final isEditorOpen = ref.watch(isSongEditorOpenProvider);
+    final shortcuts = ref.read(globalShortcutActionProvider);
+
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+        // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
+        final primaryFocus = FocusManager.instance.primaryFocus;
+        if (primaryFocus != null) {
+          final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
+          // Check for editable fields or our specifically labeled search boxes
+          if (label.contains('editable') || label.contains('field') || label.contains('search')) {
+            return KeyEventResult.ignored;
+          }
+          
+          // Double check the context widget as a backup
+          final widget = primaryFocus.context?.widget;
+          if (widget is EditableText || widget is TextField) {
+            return KeyEventResult.ignored;
+          }
+        }
+
+        // Not typing? Handle shortcuts
+        if (event.logicalKey == LogicalKeyboardKey.keyS) {
+          shortcuts.openBibleTab();
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.keyQ) {
+          shortcuts.openSongsTab();
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.keyL) {
+          shortcuts.focusSlides();
+          return KeyEventResult.handled;
+        }
+
+        return KeyEventResult.ignored;
+      },
+      child: Scaffold(
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            // Pull focus away from search boxes when clicking any empty area
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Column(
+            children: [
+              // Premium Custom Title Bar (VS Code Style)
+              const CustomTitleBar(),
+              
+              Expanded(
+                child: Row(
+                  children: [
+                    // Left: Library (Songs, Bible, Media) — 40% (Flex 8)
+                    const Expanded(
+                      flex: 8,
+                      child: LibraryPane(),
+                    ),
+                    const VerticalDivider(width: 1, color: Colors.black),
+                    
+                    if (isEditorOpen)
+                      const Expanded(
+                        flex: 12, // 3 + 9 = 12
+                        child: SongEditorPane(),
+                      )
+                    else ...[
+                      // Middle: Setlist (Active Queue) — 10% (Flex 3)
+                      const Expanded(
+                        flex: 3,
+                        child: SetlistPane(),
+                      ),
+                      const VerticalDivider(width: 1, color: Colors.black),
+                      
+                      // Right: Slides (top) + Live Projection (bottom) — 50% (Flex 9)
+                      Expanded(
+                        flex: 9,
+                        child: Column(
+                          children: [
+                            // Upper: Slides / Preview
+                            const Expanded(
+                              flex: 3,
+                              child: PreviewPane(),
+                            ),
+                            const Divider(height: 1, color: Colors.black),
+                            // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
+                            const Expanded(
+                              flex: 2,
+                              child: LiveProjectorPane(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+===
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../presentation/presentation/projection_broadcaster.dart';
+import '../widgets/library_pane.dart';
+import '../widgets/library_icon_rail.dart';
+import '../widgets/preview_pane.dart';
+import '../widgets/setlist_pane.dart';
+import '../../../live_controller/presentation/widgets/live_projector_pane.dart';
+import '../widgets/custom_title_bar.dart';
+import '../../../songs/presentation/song_editor_pane.dart';
+import '../../../songs/presentation/song_selection_providers.dart';
+
+import 'package:flutter/services.dart';
+import '../global_ui_providers.dart';
+
+class MainDashboardPage extends ConsumerStatefulWidget {
+  const MainDashboardPage({super.key});
+
+  @override
+  ConsumerState<MainDashboardPage> createState() => _MainDashboardPageState();
+}
+
+class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with SingleTickerProviderStateMixin {
+  late TabController _libraryTabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _libraryTabController = TabController(length: 2, vsync: this);
+    // Give the controller to the provider so other widgets can use it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(libraryTabControllerProvider.notifier).state = _libraryTabController;
+    });
+  }
+
+  @override
+  void dispose() {
+    _libraryTabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Initialize broadcaster
+    ref.watch(projectionBroadcasterProvider);
+    final isEditorOpen = ref.watch(isSongEditorOpenProvider);
+    final shortcuts = ref.read(globalShortcutActionProvider);
+
+    // Library pane auto-hide state
+    final pinMode = ref.watch(libraryPinModeProvider);
+    final isLibraryVisible = ref.watch(libraryPaneVisibleProvider);
+    final isDockedVisible = pinMode == LibraryPinMode.pinned && isLibraryVisible;
+    final isOverlayVisible = pinMode == LibraryPinMode.autoHide && isLibraryVisible;
+
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+        // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
+        final primaryFocus = FocusManager.instance.primaryFocus;
+        if (primaryFocus != null) {
+          final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
+          // Check for editable fields or our specifically labeled search boxes
+          if (label.contains('editable') || label.contains('field') || label.contains('search')) {
+            return KeyEventResult.ignored;
+          }
+          
+          // Double check the context widget as a backup
+          final widget = primaryFocus.context?.widget;
+          if (widget is EditableText || widget is TextField) {
+            return KeyEventResult.ignored;
+          }
+        }
+
+        // Not typing? Handle shortcuts
+        if (event.logicalKey == LogicalKeyboardKey.keyS) {
+          shortcuts.openBibleTab();
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.keyQ) {
+          shortcuts.openSongsTab();
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.keyL) {
+          shortcuts.focusSlides();
+          return KeyEventResult.handled;
+        }
+
+        return KeyEventResult.ignored;
+      },
+      child: Scaffold(
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            // Pull focus away from search boxes when clicking any empty area
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Column(
+            children: [
+              // Premium Custom Title Bar (VS Code Style)
+              const CustomTitleBar(),
+              
+              Expanded(
+                child: Stack(
+                  children: [
+                    // ─── Base Layout Row ───
+                    Row(
+                      children: [
+                        // Always-visible icon rail
+                        const LibraryIconRail(),
+                        const VerticalDivider(width: 1, color: Colors.black),
+
+                        // Library pane (docked) — only when pinned + visible
+                        if (isDockedVisible) ...[
+                          const Expanded(
+                            flex: 8,
+                            child: LibraryPane(),
+                          ),
+                          const VerticalDivider(width: 1, color: Colors.black),
+                        ],
+                        
+                        if (isEditorOpen)
+                          const Expanded(
+                            flex: 12, // 3 + 9 = 12
+                            child: SongEditorPane(),
+                          )
+                        else ...[
+                          // Middle: Setlist (Active Queue)
+                          const Expanded(
+                            flex: 3,
+                            child: SetlistPane(),
+                          ),
+                          const VerticalDivider(width: 1, color: Colors.black),
+                          
+                          // Right: Slides (top) + Live Projection (bottom)
+                          Expanded(
+                            flex: 9,
+                            child: Column(
+                              children: [
+                                // Upper: Slides / Preview
+                                const Expanded(
+                                  flex: 3,
+                                  child: PreviewPane(),
+                                ),
+                                const Divider(height: 1, color: Colors.black),
+                                // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
+                                const Expanded(
+                                  flex: 2,
+                                  child: LiveProjectorPane(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    // ─── Auto-hide overlay ───
+                    if (isOverlayVisible) ...[
+                      // Dismiss barrier — tapping outside closes the overlay
+                      Positioned.fill(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            ref.read(libraryPaneVisibleProvider.notifier).state = false;
+                          },
+                          child: Container(color: Colors.transparent),
+                        ),
+                      ),
+                      // Overlay Library pane
+                      Positioned(
+                        left: 33, // icon rail (32) + divider (1)
+                        top: 0,
+                        bottom: 0,
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                blurRadius: 8,
+                                offset: const Offset(2, 0),
+                              ),
+                            ],
+                          ),
+                          child: const LibraryPane(),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```
+
+## Validation
+
+- **Static analysis**: 0 new issues introduced (99 pre-existing issues in other files unchanged)
+- All 4 files pass `flutter analyze` cleanly

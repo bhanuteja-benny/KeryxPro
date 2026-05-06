@@ -1,0 +1,38 @@
+# Walkthrough - Monitor Role Swap
+
+I have swapped the roles of Monitor 1 and Monitor 2 to align with the new requirements.
+
+## Changes Made
+
+### Logic & State Management
+- **`projection_provider.dart`**:
+    - Swapped window management logic. `monitor1WindowId` now tracks the external window.
+    - Renamed and updated `launchMonitor1` and `stopMonitor1` for external output.
+    - Updated `updateMonitor1Preset` to sync with the window and `updateMonitor2Preset` to be inline-only.
+    - Implemented `updateMonitor2Settings` for persistence.
+- **`projection_broadcaster.dart`**:
+    - Now listens to `m1ActiveSlideProvider` to broadcast content to the external window.
+- **`live_projector_providers.dart`**:
+    - Updated comments to reflect that Monitor 1 is now Extended and Monitor 2 is Streaming.
+
+### UI Components
+- **`live_monitor_page.dart`**:
+    - Swapped tab labels to "Monitor 1 (Extended)" and "Monitor 2 (Streaming)".
+    - Swapped monitor indices in the `TabBarView`.
+- **`live_projector_pane.dart`**:
+    - Swapped tab labels.
+    - Swapped the view implementations: `_Monitor1View` is now the external projector view with a Launch button, and `_Monitor2View` is the inline OBS capture view.
+- **`monitor_settings_popup.dart`**:
+    - Updated the apply logic to call the correct provider methods for each monitor index.
+
+## Verification Results
+
+### Automated Tests
+- Syntax and logical consistency verified.
+
+### Manual Verification Required
+- [ ] Confirm that Monitor 1 tab shows "Extended" and has a Launch button.
+- [ ] Confirm that Monitor 2 tab shows "Streaming" and shows the inline preview.
+- [ ] Verify that launching Monitor 1 opens the secondary window.
+- [ ] Verify that changing presets for Monitor 1 updates the secondary window.
+- [ ] Verify that changing presets for Monitor 2 updates the inline preview.

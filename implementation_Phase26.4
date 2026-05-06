@@ -1,0 +1,30 @@
+# Implementation Plan - Extended Monitor Detection Fix
+
+The goal is to ensure that KeryxPro correctly detects when an extended monitor is plugged in or unplugged, even if the application is already running.
+
+## Proposed Changes
+
+### Logic & Detection
+
+#### [MODIFY] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- [ ] Modify `ProjectionNotifier` to implement `ScreenRetrieverListener`.
+- [ ] In `_init`, register the notifier as a listener via `ScreenRetriever.instance.addListener(this)`.
+- [ ] Override `onDisplayAdded` and `onDisplayRemoved` to call `refreshDisplays()`.
+- [ ] Override `dispose` to unregister the listener via `ScreenRetriever.instance.removeListener(this)`.
+
+### UI Enhancements
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- [ ] In `_Monitor1View`, wrap the status indicator `Row` in a `GestureDetector` or `InkWell` to trigger `refreshDisplays()`.
+- [ ] Add a small `IconButton` with `Icons.refresh` next to the "CONNECTED/NOT CONNECTED" text for explicit manual refresh.
+- [ ] Add a tooltip to the status area: "Click to refresh monitor status".
+
+## Verification Plan
+
+### Manual Verification
+1.  Launch KeryxPro with only one monitor connected.
+2.  Navigate to the **Monitor 1 (Extended)** tab. It should show **NOT CONNECTED**.
+3.  Plug in an extended monitor.
+4.  Verify that the status automatically changes to **CONNECTED** (via the listener).
+5.  Unplug the monitor and verify it changes back to **NOT CONNECTED**.
+6.  Manually click the refresh icon and verify it correctly updates the state.

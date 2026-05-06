@@ -1,0 +1,23 @@
+Phase 26.3
+
+Context:
+
+- switch Monitor 1 and Monitor 2 tabs
+
+Visual style:
+- switch Monitor 1 to Monitor 2 and Monitor 2 to Monitor 1
+- let Monitor 1 tab be for Extended monitor and its respective settings
+- and Monitor 2 tab be for OBS capture service and its respective settings
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+Implementation plan file

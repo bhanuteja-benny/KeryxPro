@@ -109,7 +109,10 @@ bool FlutterWindow::OnCreate() {
             // Move and resize to the secondary display bounds
             SetWindowPos(data.found, HWND_TOPMOST,
                          x, y, w, h,
-                         SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+                         SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+            
+            // Ensure focus stays on/returns to main window
+            SetForegroundWindow(mainHwnd);
             
             result->Success();
           } else {
@@ -126,6 +129,9 @@ bool FlutterWindow::OnCreate() {
           } else {
             result->Error("NOT_FOUND", "Projector sub-window not found");
           }
+        } else if (call.method_name() == "refocus_main_window") {
+          SetForegroundWindow(mainHwnd);
+          result->Success();
         } else {
           result->NotImplemented();
         }

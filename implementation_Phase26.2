@@ -1,0 +1,33 @@
+# Implementation Plan - Fix Focus Shift on Monitor Launch
+
+The goal is to ensure the main application window retains focus (allowing keyboard shortcuts to continue working) even after the secondary projector window is launched on an extended monitor.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The fix involves using native Win32 API calls (`SetForegroundWindow` and `SWP_NOACTIVATE`) to manage window focus. This is a common pattern for presentation software.
+
+## Proposed Changes
+
+### Native Windows Component
+
+#### [MODIFY] [flutter_window.cpp](file:///c:/Users/bhanu/projects/KeryxPro/windows/runner/flutter_window.cpp)
+- Add `refocus_main_window` method to the `keryx/window` channel.
+- Update `move_subwindow_to_display` to use `SWP_NOACTIVATE` flag.
+- Explicitly call `SetForegroundWindow(mainHwnd)` after positioning the sub-window.
+
+### Presentation Logic Component
+
+#### [MODIFY] [projection_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/projection_provider.dart)
+- Call `refocus_main_window` immediately after `window.show()` in `launchMonitor2`.
+- This ensures focus returns to the main window as soon as the plugin launches the new window.
+
+## Verification Plan
+
+### Manual Verification
+1. Open the application on a system with two monitors.
+2. Go to the Monitor 2 settings pane and click **Launch**.
+3. Observe the second window opening on the extended monitor.
+4. Immediately press the **Up** or **Down** arrow keys.
+5. **Expected Result**: The slides in the main window should change immediately without requiring a manual click to regain focus.
+6. Verify that shortcuts like `Ctrl+Tab` or other navigation keys still work as expected in the main window.

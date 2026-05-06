@@ -1,0 +1,16 @@
+Phase 26.4
+
+Context:
+- fixing the extended monitor detection issue
+
+Testing observations regarding the issue
+- when extended monitor is plugged in first and then KeryxPro is opened, then there is no issue, Monitor 1 preview is showing connected.
+⁃ BUT when the extended monitor is plugged in while the KeryxPro is already in open mode (means first KeryxPro is opened and then extended monitor is
+plugged in), then it is still showing 'No monitor connected' in Monitor 1 preview pane.
+
+Possible solution:
+⁃ Can you check if the extended monitor is plugged in, every time 'Not Connected' label in ' Monitor 1' tab is clicked?
+⁃ is there any better solution than this? may giving small refresh icon somewhere?
+
+Deliverables:
+Plan/Suggestions

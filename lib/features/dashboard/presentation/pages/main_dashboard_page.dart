@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../presentation/presentation/projection_broadcaster.dart';
 import '../widgets/library_pane.dart';
+import '../widgets/library_icon_rail.dart';
 import '../widgets/preview_pane.dart';
 import '../widgets/setlist_pane.dart';
 import '../../../live_controller/presentation/widgets/live_projector_pane.dart';
@@ -44,6 +45,12 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
     ref.watch(projectionBroadcasterProvider);
     final isEditorOpen = ref.watch(isSongEditorOpenProvider);
     final shortcuts = ref.read(globalShortcutActionProvider);
+
+    // Library pane auto-hide state
+    final pinMode = ref.watch(libraryPinModeProvider);
+    final isLibraryVisible = ref.watch(libraryPaneVisibleProvider);
+    final isDockedVisible = pinMode == LibraryPinMode.pinned && isLibraryVisible;
+    final isOverlayVisible = pinMode == LibraryPinMode.autoHide && isLibraryVisible;
 
     return Focus(
       onKeyEvent: (node, event) {
@@ -92,45 +99,89 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
               const CustomTitleBar(),
               
               Expanded(
-                child: Row(
+                child: Stack(
                   children: [
-                    // Left: Library (Songs, Bible, Media) — 40% (Flex 8)
-                    const Expanded(
-                      flex: 8,
-                      child: LibraryPane(),
+                    // ─── Base Layout Row ───
+                    Row(
+                      children: [
+                        // Always-visible icon rail
+                        const LibraryIconRail(),
+                        const VerticalDivider(width: 1, color: Colors.black),
+
+                        // Library pane (docked) — only when pinned + visible
+                        if (isDockedVisible) ...[
+                          const Expanded(
+                            flex: 8,
+                            child: LibraryPane(),
+                          ),
+                          const VerticalDivider(width: 1, color: Colors.black),
+                        ],
+                        
+                        if (isEditorOpen)
+                          const Expanded(
+                            flex: 12, // 3 + 9 = 12
+                            child: SongEditorPane(),
+                          )
+                        else ...[
+                          // Middle: Setlist (Active Queue)
+                          const Expanded(
+                            flex: 3,
+                            child: SetlistPane(),
+                          ),
+                          const VerticalDivider(width: 1, color: Colors.black),
+                          
+                          // Right: Slides (top) + Live Projection (bottom)
+                          Expanded(
+                            flex: 9,
+                            child: Column(
+                              children: [
+                                // Upper: Slides / Preview
+                                const Expanded(
+                                  flex: 3,
+                                  child: PreviewPane(),
+                                ),
+                                const Divider(height: 1, color: Colors.black),
+                                // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
+                                const Expanded(
+                                  flex: 2,
+                                  child: LiveProjectorPane(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    const VerticalDivider(width: 1, color: Colors.black),
-                    
-                    if (isEditorOpen)
-                      const Expanded(
-                        flex: 12, // 3 + 9 = 12
-                        child: SongEditorPane(),
-                      )
-                    else ...[
-                      // Middle: Setlist (Active Queue) — 10% (Flex 3)
-                      const Expanded(
-                        flex: 3,
-                        child: SetlistPane(),
+
+                    // ─── Auto-hide overlay ───
+                    if (isOverlayVisible) ...[
+                      // Dismiss barrier — tapping outside closes the overlay
+                      Positioned.fill(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            ref.read(libraryPaneVisibleProvider.notifier).state = false;
+                          },
+                          child: Container(color: Colors.transparent),
+                        ),
                       ),
-                      const VerticalDivider(width: 1, color: Colors.black),
-                      
-                      // Right: Slides (top) + Live Projection (bottom) — 50% (Flex 9)
-                      Expanded(
-                        flex: 9,
-                        child: Column(
-                          children: [
-                            // Upper: Slides / Preview
-                            const Expanded(
-                              flex: 3,
-                              child: PreviewPane(),
-                            ),
-                            const Divider(height: 1, color: Colors.black),
-                            // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
-                            const Expanded(
-                              flex: 2,
-                              child: LiveProjectorPane(),
-                            ),
-                          ],
+                      // Overlay Library pane
+                      Positioned(
+                        left: 33, // icon rail (32) + divider (1)
+                        top: 0,
+                        bottom: 0,
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                blurRadius: 8,
+                                offset: const Offset(2, 0),
+                              ),
+                            ],
+                          ),
+                          child: const LibraryPane(),
                         ),
                       ),
                     ],
@@ -144,3 +195,4 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
     );
   }
 }
+

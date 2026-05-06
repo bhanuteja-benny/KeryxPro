@@ -1,0 +1,252 @@
+# Phase 27: Pin/Unpin Auto-Hide for Library (Songs/Bible) Pane
+
+Add VS Code-style auto-hide pin functionality to the Songs/Bible search pane only. A permanent slim icon rail on the left side provides toggle controls, and a pin icon in the pane's title bar controls the pin mode.
+
+**Scope**: Library (Songs/Bible) pane only. Monitors pane is excluded (hiding it would break OBS capture surface).
+
+## Interaction Model
+
+The Library pane has two independent states:
+
+| State | Values | Default |
+|-------|--------|---------|
+| **Pin Mode** | `pinned` / `autoHide` | `pinned` |
+| **Visibility** | `visible` / `hidden` | `visible` |
+
+### Always-Visible Left Icon Rail
+
+A slim vertical rail (~32px wide) is **always visible** on the far left of the app, containing two icons:
+- 🎵 Music icon (`Icons.library_music`) — for Songs tab
+- 📖 Book icon (`Icons.menu_book`) — for Bible tab
+
+The Library pane opens **to the right** of this rail.
+
+### Behavior When Pinned (Default)
+
+| Action | Result |
+|--------|--------|
+| Click rail icon for **same** active tab | Pane **hides** (stays pinned) |
+| Click rail icon for **different** tab | Pane switches to that tab (stays visible) |
+| Click rail icon when pane is **hidden** | Pane **opens** on that tab (stays open, stays pinned) |
+| Click **pin icon** in pane title bar | Mode changes to `autoHide`, pane **hides** |
+
+In pinned mode, the pane is **docked** — it occupies layout space (flex-based) and other panes adjust around it.
+
+### Behavior When Auto-Hide (Unpinned)
+
+| Action | Result |
+|--------|--------|
+| Click rail icon when pane is **hidden** | Pane opens **as an overlay** on that tab |
+| Click rail icon when pane is **visible** (overlay) | Pane **hides** |
+| Click **elsewhere** (outside the overlay pane) | Pane **hides** |
+| Click **pin icon** in pane title bar (while overlay is open) | Mode changes back to `pinned`, pane **docks** into layout |
+
+In auto-hide mode, the pane opens as a **floating overlay** (does NOT shift layout of Setlist/Slides). This ensures the layout doesn't jump around with each temporary open/close.
+
+### Pin Icon Visual States
+
+| Mode | Icon | Tooltip |
+|------|------|---------|
+| Pinned | `Icons.push_pin` (filled, vertical) | "Unpin (Auto Hide)" |
+| Auto-Hide | `Icons.push_pin_outlined` (rotated 45°) | "Pin" |
+
+### Keyboard Shortcuts
+
+- `Q` key: Opens Songs tab + un-hides pane (regardless of pin mode). If in auto-hide mode, acts as if user clicked the Songs rail icon.
+- `S` key: Opens Bible tab + un-hides pane (regardless of pin mode). If in auto-hide mode, acts as if user clicked the Bible rail icon.
+
+## Assumptions
+
+> [!NOTE]
+> **Rail icon highlight**: The currently active tab's rail icon will have a subtle highlight (e.g., left border accent or background tint) when the pane is visible, matching VS Code's Activity Bar behavior. This is minimal and only for indicating which tab is active.
+
+> [!NOTE]
+> **Overlay dimensions in auto-hide mode**: When the pane opens as an overlay, it will match its original docked width (same flex-8 equivalent, approximately 40% of available width). The overlay will have a subtle drop shadow on its right edge to visually distinguish it from the content behind.
+
+> [!NOTE]
+> **No state persistence**: The pin mode will NOT be persisted to disk. On app restart, the pane defaults back to pinned + visible. If you want persistence, let me know and I'll add it.
+
+## Proposed Changes
+
+### State Management — New Providers
+
+#### [MODIFY] [global_ui_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/global_ui_providers.dart)
+
+Add new providers to manage the Library pane state:
+
+```dart
+/// Pin mode for the Library pane. Default: pinned.
+enum LibraryPinMode { pinned, autoHide }
+
+final libraryPinModeProvider = StateProvider<LibraryPinMode>(
+  (ref) => LibraryPinMode.pinned,
+);
+
+/// Whether the Library pane is currently visible. Default: true.
+final libraryPaneVisibleProvider = StateProvider<bool>((ref) => true);
+
+/// Tracks which tab is "active" in the rail (0 = Songs, 1 = Bible).
+/// This is synced with the libraryTabControllerProvider.
+final activeLibraryRailIndexProvider = StateProvider<int>((ref) => 0);
+```
+
+Update `GlobalShortcutActions`:
+- `openSongsTab()`: Set `libraryPaneVisibleProvider = true`, switch to Songs tab (index 0)
+- `openBibleTab()`: Set `libraryPaneVisibleProvider = true`, switch to Bible tab (index 1)
+
+---
+
+### Left Icon Rail Widget
+
+#### [NEW] [library_icon_rail.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_icon_rail.dart)
+
+A new widget for the always-visible left icon rail.
+
+**Visual spec:**
+- Width: **32px**
+- Background: `Colors.grey[900]`
+- Contains two icon buttons stacked vertically at the top:
+  - `Icons.library_music` (size 18) — Songs
+  - `Icons.menu_book` (size 18) — Bible
+- Icon color: `Colors.white38` (inactive), `Colors.white` (active/hovered)
+- Active indicator: 2px left border accent in `Colors.deepPurpleAccent` on the active icon (only when pane is visible)
+- Each icon wrapped in `Tooltip` with labels "Songs (Q)" and "Bible (S)"
+- Vertical padding between icons: **4px**
+
+**Tap logic** (implemented in the widget):
+```
+onTap(tappedIndex):
+  if pane is visible AND tappedIndex == current active tab:
+    hide pane (in pinned mode only — toggle off)
+  else if pane is visible AND tappedIndex != current active tab:
+    switch to tapped tab
+  else (pane is hidden):
+    show pane on tapped tab
+```
+
+---
+
+### Library Pane — Pin Icon in Title Bar
+
+#### [MODIFY] [library_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_pane.dart)
+
+Add a pin icon button to the right side of the tab bar:
+
+- The existing `SizedBox(height: 30)` container will have its child changed to a `Row`:
+  - `Expanded` → existing `TabBar`
+  - `SizedBox(width: 28)` → `IconButton` with pin icon
+
+**Pin icon spec:**
+- Size: **14px**
+- When pinned: `Icons.push_pin`, color `Colors.grey`
+- When auto-hide: `Icons.push_pin_outlined` with 45° rotation, color `Colors.grey`
+- Tooltip: "Unpin (Auto Hide)" when pinned, "Pin" when auto-hide
+- `padding: EdgeInsets.zero`, `constraints: BoxConstraints()`
+
+**Tap behavior:**
+- If currently pinned → set mode to `autoHide`, set `libraryPaneVisibleProvider = false` (hides pane)
+- If currently auto-hide → set mode to `pinned` (pane stays visible since user can only click this while pane is open)
+
+Also sync tab changes to `activeLibraryRailIndexProvider` by adding a listener on the `TabController`.
+
+---
+
+### Main Dashboard Layout — Restructured
+
+#### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+
+The main layout row changes from:
+
+```
+[ LibraryPane (flex:8) ] | [ Setlist (flex:3) ] | [ Slides+Monitors (flex:9) ]
+```
+
+To:
+
+```
+[ IconRail (32px fixed) ] [ LibraryPane (flex:8, conditional) ] | [ Setlist (flex:3) ] | [ Slides+Monitors (flex:9) ]
+```
+
+**When pinned + visible:**
+```
+[ Rail 32px ][ Library flex:8 ]|[ Setlist flex:3 ]|[ Slides+Monitors flex:9 ]
+```
+Layout is docked. Library pane takes space normally.
+
+**When pinned + hidden** (user toggled via rail icon):
+```
+[ Rail 32px ]|[ Setlist flex:3 ]|[ Slides+Monitors flex:9 ]
+```
+Library pane removed from layout. Remaining panes expand.
+
+**When auto-hide + hidden:**
+```
+[ Rail 32px ]|[ Setlist flex:3 ]|[ Slides+Monitors flex:9 ]
+```
+Same as above — Library pane not in layout.
+
+**When auto-hide + visible** (user clicked rail icon to temporarily open):
+```
+[ Rail 32px ][ OVERLAY: Library pane ]
+             [ Setlist flex:3 ]|[ Slides+Monitors flex:9 ]
+```
+Library pane renders as an **overlay** (via `Stack` + `Positioned`) on top of the content. A semi-transparent barrier behind it detects clicks to dismiss. The overlay has:
+- Same width as the docked version would have (~40% of remaining width, or a fixed pixel width like 320px — whichever looks better)
+- Drop shadow on the right edge: `BoxShadow(color: Colors.black54, blurRadius: 8, offset: Offset(2, 0))`
+- Full height (below title bar, above bottom)
+
+**Implementation approach:**
+- Wrap the main `Row` in a `Stack`
+- The `Row` always contains the `IconRail` + remaining panes
+- When pinned + visible, the `LibraryPane` is inside the `Row` (docked, takes flex space)
+- When auto-hide + visible, the `LibraryPane` is in a `Positioned` overlay in the `Stack`
+- A `GestureDetector` barrier behind the overlay catches taps to dismiss
+
+**Song Editor mode**: When `isEditorOpen` is true, the existing behavior is preserved. The icon rail remains visible. If Library pane is hidden, the editor still takes its full flex:12 space.
+
+---
+
+### Summary of All File Changes
+
+| File | Change | Description |
+|------|--------|-------------|
+| [global_ui_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/global_ui_providers.dart) | MODIFY | Add `LibraryPinMode` enum, `libraryPinModeProvider`, `libraryPaneVisibleProvider`, `activeLibraryRailIndexProvider`. Update shortcut actions. |
+| [library_icon_rail.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_icon_rail.dart) | NEW | Slim vertical icon rail with Songs/Bible icons and tap logic. |
+| [library_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/library_pane.dart) | MODIFY | Add pin icon button in tab bar. Sync tab changes to rail index provider. |
+| [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart) | MODIFY | Add icon rail, conditional docked/overlay rendering based on pin mode and visibility. |
+
+### Files NOT Changed
+
+- `preview_pane.dart` — No changes
+- `setlist_pane.dart` — No changes  
+- `custom_title_bar.dart` — No changes
+- `song_editor_pane.dart` — No changes
+- `live_projector_pane.dart` — No changes (Monitors pane excluded from scope)
+- All data/domain/settings layers — No changes
+- Projector/presentation output — No changes
+
+## Verification Plan
+
+### Manual Verification
+1. Launch app → verify Library pane is visible and pinned by default
+2. Verify slim icon rail is visible on the far left with Songs and Bible icons
+3. Verify the active icon has a left accent indicator
+4. **Pinned mode — rail toggle:**
+   - Click Bible rail icon → pane switches to Bible tab
+   - Click Bible rail icon again (same tab) → pane hides
+   - Click Songs rail icon → pane re-opens on Songs tab
+5. **Pinned mode — pin icon:**
+   - Click pin icon (top-right of pane) → mode changes to auto-hide, pane hides
+6. **Auto-hide mode — overlay:**
+   - Click Songs rail icon → pane opens as overlay (no layout shift)
+   - Click outside the pane → pane closes
+   - Click Bible rail icon → pane opens as overlay on Bible tab
+   - Click Bible rail icon again → pane closes
+7. **Re-pinning:**
+   - In auto-hide mode, click a rail icon to open overlay
+   - Click the pin icon → pane docks into layout (pinned mode restored)
+8. **Keyboard shortcuts:**
+   - Hide pane → press `Q` → pane opens on Songs tab
+   - Hide pane → press `S` → pane opens on Bible tab
+9. **Song Editor mode:** Open song editor → verify rail still visible, layout correct
+10. **Monitors unaffected:** Verify Monitor 1 launch/stop and Monitor 2 OBS surface work normally

@@ -1,0 +1,23 @@
+# Walkthrough - Focus Shift Fix
+
+I have implemented a fix to prevent the secondary monitor window from stealing focus from the main dashboard when launched.
+
+## Changes Made
+
+### Native Win32 (`flutter_window.cpp`)
+- Added a new `refocus_main_window` method to the `keryx/window` method channel.
+- Updated the `move_subwindow_to_display` logic:
+    - Added the `SWP_NOACTIVATE` flag to `SetWindowPos` to ensure the window move doesn't force activation.
+    - Added an explicit call to `SetForegroundWindow(mainHwnd)` after the sub-window is positioned.
+
+### Dart Logic (`projection_provider.dart`)
+- Updated `launchMonitor2` to immediately call `refocus_main_window` right after the plugin's `window.show()` call. This ensures focus returns to the main window as quickly as possible.
+
+## Verification Results
+
+### Automated Tests
+- Syntax and logical consistency verified across modified files.
+
+### Manual Verification Required
+- [ ] Launch the Monitor 2 screen.
+- [ ] Verify that the main window remains active (indicated by keyboard shortcuts like Up/Down arrows working immediately).

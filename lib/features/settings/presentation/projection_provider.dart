@@ -14,39 +14,45 @@ import '../data/presentation_settings.dart';
 class ProjectionState {
   final ProjectionConfig config;
   final List<Display> displays;
-  final String? monitor2WindowId;
+  final String? monitor1WindowId; // Monitor 1 is now Extended
   final bool hasLaunchedOnce;
 
   ProjectionState({
     required this.config,
     required this.displays,
-    this.monitor2WindowId,
+    this.monitor1WindowId,
     this.hasLaunchedOnce = false,
   });
 
-  bool get isMonitor2Active => monitor2WindowId != null;
+  bool get isMonitor1Active => monitor1WindowId != null;
+  bool get isMonitor2Active => false; // Streaming is always "active" in a sense, but no window
   bool get hasSecondaryDisplay => displays.length >= 2;
 
   ProjectionState copyWith({
     ProjectionConfig? config,
     List<Display>? displays,
-    String? monitor2WindowId,
-    bool clearMonitor2 = false,
+    String? monitor1WindowId,
+    bool clearMonitor1 = false,
     bool? hasLaunchedOnce,
   }) {
     return ProjectionState(
       config: config ?? this.config,
       displays: displays ?? this.displays,
-      monitor2WindowId: clearMonitor2 ? null : (monitor2WindowId ?? this.monitor2WindowId),
+      monitor1WindowId: clearMonitor1 ? null : (monitor1WindowId ?? this.monitor1WindowId),
       hasLaunchedOnce: hasLaunchedOnce ?? this.hasLaunchedOnce,
     );
   }
 }
 
-class ProjectionNotifier extends StateNotifier<ProjectionState> {
+class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListener {
   final IsarService _isarService;
 
-  ProjectionNotifier(this._isarService) : super(ProjectionState(config: ProjectionConfig(), displays: [])) {
+  ProjectionNotifier(this._isarService) : super(
+    ProjectionState(
+      config: ProjectionConfig()..id = ProjectionConfig.singletonId, 
+      displays: []
+    )
+  ) {
     _init();
   }
 
@@ -72,6 +78,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
       }
     }
 
+    ScreenRetriever.instance.addListener(this);
     List<Display> displays = await ScreenRetriever.instance.getAllDisplays();
     state = ProjectionState(config: config, displays: displays);
 
@@ -80,8 +87,8 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
       controller.setWindowMethodHandler((call) async {
         if (call.method == 'window_closed') {
           final closedId = call.arguments.toString();
-          if (state.monitor2WindowId == closedId) {
-            state = state.copyWith(clearMonitor2: true, hasLaunchedOnce: true);
+          if (state.monitor1WindowId == closedId) {
+            state = state.copyWith(clearMonitor1: true, hasLaunchedOnce: true);
           }
         }
         return null;
@@ -94,40 +101,83 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     state = state.copyWith(displays: displays);
   }
 
+  @override
+  void onDisplayAdded(Display display) {
+    refreshDisplays();
+  }
+
+  @override
+  void onDisplayRemoved(Display display) {
+    refreshDisplays();
+  }
+
+  @override
+  void dispose() {
+    ScreenRetriever.instance.removeListener(this);
+    super.dispose();
+  }
+
   Future<void> updateMonitor1Preset(int? presetId) async {
-    final isar = await _isarService.db;
-    final newConfig = _copyConfig(state.config)
-      ..monitor1PresetId = presetId;
-    
-    await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
-    state = state.copyWith(config: newConfig);
-    // No window sync needed — Monitor 1 reads state directly via Riverpod
+    await updateMonitorConfig(monitorIndex: 1, presetId: presetId, updatePreset: true);
   }
 
   Future<void> updateMonitor2Preset(int? presetId) async {
-    final isar = await _isarService.db;
-    final newConfig = _copyConfig(state.config)
-      ..monitor2PresetId = presetId;
-    
-    await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
-    state = state.copyWith(config: newConfig);
-    if (state.monitor2WindowId != null) {
-      final preset = presetId != null 
-          ? await isar.presentationSettings.get(presetId)
-          : null;
-      _syncToWindow(state.monitor2WindowId!, preset);
-    }
+    await updateMonitorConfig(monitorIndex: 2, presetId: presetId, updatePreset: true);
   }
 
   Future<void> updateMonitor1Settings(int maxVerses, int maxChars, String format) async {
+    await updateMonitorConfig(
+      monitorIndex: 1, 
+      maxVerses: maxVerses, 
+      maxChars: maxChars, 
+      format: format
+    );
+  }
+
+  Future<void> updateMonitor2Settings(int maxVerses, int maxChars, String format) async {
+    await updateMonitorConfig(
+      monitorIndex: 2, 
+      maxVerses: maxVerses, 
+      maxChars: maxChars, 
+      format: format
+    );
+  }
+
+  Future<void> updateMonitorConfig({
+    required int monitorIndex,
+    int? presetId,
+    bool updatePreset = false,
+    int? maxVerses,
+    int? maxChars,
+    String? format,
+  }) async {
     final isar = await _isarService.db;
-    final newConfig = _copyConfig(state.config)
-      ..monitor1MaxVerses = maxVerses
-      ..monitor1MaxChars = maxChars
-      ..monitor1Format = format;
     
+    // Always use the latest state and ensure singleton ID
+    final newConfig = _copyConfig(state.config)..id = ProjectionConfig.singletonId;
+    
+    if (monitorIndex == 1) {
+      if (updatePreset) newConfig.monitor1PresetId = presetId;
+      if (maxVerses != null) newConfig.monitor1MaxVerses = maxVerses;
+      if (maxChars != null) newConfig.monitor1MaxChars = maxChars;
+      if (format != null) newConfig.monitor1Format = format;
+    } else {
+      if (updatePreset) newConfig.monitor2PresetId = presetId;
+      if (maxVerses != null) newConfig.monitor2MaxVerses = maxVerses;
+      if (maxChars != null) newConfig.monitor2MaxChars = maxChars;
+      if (format != null) newConfig.monitor2Format = format;
+    }
+
     await isar.writeTxn(() => isar.projectionConfigs.put(newConfig));
     state = state.copyWith(config: newConfig);
+
+    if (monitorIndex == 1 && state.monitor1WindowId != null) {
+      final actualPresetId = newConfig.monitor1PresetId;
+      final preset = actualPresetId != null 
+          ? await isar.presentationSettings.get(actualPresetId)
+          : null;
+      _syncToWindow(state.monitor1WindowId!, preset);
+    }
   }
 
   ProjectionConfig _copyConfig(ProjectionConfig old) {
@@ -143,7 +193,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
       ..monitor2Format = old.monitor2Format;
   }
 
-  Future<void> launchMonitor2({
+  Future<void> launchMonitor1({
     String? text,
     String? title,
     bool isSong = true,
@@ -155,7 +205,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     }
 
     final isar = await _isarService.db;
-    final presetId = state.config.monitor2PresetId;
+    final presetId = state.config.monitor1PresetId;
     final preset = presetId != null 
         ? await isar.presentationSettings.get(presetId)
         : null;
@@ -168,7 +218,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
 
     final args = {
       'type': 'projector',
-      'monitorIndex': 2,
+      'monitorIndex': 1,
       'presetId': presetId,
       'settings': preset?.toMap(),
       'text': text,
@@ -185,6 +235,14 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     
     // Show the window initially.
     await window.show();
+    
+    // Refocus main window immediately to prevent focus theft by the new window
+    try {
+      const channel = MethodChannel('keryx/window');
+      await channel.invokeMethod('refocus_main_window');
+    } catch (e) {
+      print("Error refocusing main window: $e");
+    }
 
     // Now ask the native side (running in the main window's context)
     // to find the sub-window and move it to the secondary display.
@@ -202,22 +260,22 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> {
     }
 
     state = state.copyWith(
-      monitor2WindowId: window.windowId,
+      monitor1WindowId: window.windowId,
       hasLaunchedOnce: true,
     );
   }
 
-  Future<void> stopMonitor2() async {
-    if (state.monitor2WindowId != null) {
+  Future<void> stopMonitor1() async {
+    if (state.monitor1WindowId != null) {
       try {
         const channel = MethodChannel('keryx/window');
         await channel.invokeMethod('close_subwindow');
       } catch (e) {
         print("Error closing sub-window natively: $e");
         // Fallback to old method just in case
-        await WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('close_window');
+        await WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('close_window');
       }
-      state = state.copyWith(clearMonitor2: true);
+      state = state.copyWith(clearMonitor1: true);
     }
   }
 

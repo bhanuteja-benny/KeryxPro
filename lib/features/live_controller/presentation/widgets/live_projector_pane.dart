@@ -22,8 +22,8 @@ class LiveProjectorPane extends ConsumerWidget {
             color: Colors.grey[850],
             child: const TabBar(
               tabs: [
-                Tab(height: 28, child: Text('Monitor 1 (Streaming)', style: TextStyle(fontSize: 11))),
-                Tab(height: 28, child: Text('Monitor 2 (Extended)', style: TextStyle(fontSize: 11))),
+                Tab(height: 28, child: Text('Monitor 1 (Extended)', style: TextStyle(fontSize: 11))),
+                Tab(height: 28, child: Text('Monitor 2 (Streaming)', style: TextStyle(fontSize: 11))),
               ],
               indicatorColor: Colors.blue,
               labelPadding: EdgeInsets.zero,
@@ -32,8 +32,8 @@ class LiveProjectorPane extends ConsumerWidget {
           Expanded(
             child: TabBarView(
               children: [
-                _Monitor1View(),
-                _Monitor2View(),
+                _Monitor1View(), // Extended
+                _Monitor2View(), // Streaming
               ],
             ),
           ),
@@ -43,7 +43,7 @@ class LiveProjectorPane extends ConsumerWidget {
   }
 }
 
-// ─── Monitor 1: Inline projection surface (no popup window) ───
+// ─── Monitor 1: External projector window (Launch button) ───
 
 class _Monitor1View extends ConsumerWidget {
   @override
@@ -55,25 +55,50 @@ class _Monitor1View extends ConsumerWidget {
     final isSong = ref.watch(isSongActiveProvider);
 
     final selectedPresetId = projectionState.config.monitor1PresetId;
+    final isConnected = projectionState.hasSecondaryDisplay;
+    final isActive = projectionState.isMonitor1Active;
 
     return Container(
       color: Colors.grey[900],
       padding: const EdgeInsets.all(8),
       child: Column(
         children: [
-          // Header: Preset dropdown only (no Launch button)
+          // Header: Status, Preset dropdown, Launch button
           Row(
             children: [
-              const Icon(Icons.videocam, color: Colors.blue, size: 16),
-              const SizedBox(width: 8),
-              const Text(
-                'OBS CAPTURE SURFACE',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
+              InkWell(
+                onTap: () => ref.read(projectionProvider.notifier).refreshDisplays(),
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isConnected ? Icons.circle : Icons.circle_outlined,
+                        color: isConnected ? Colors.green : Colors.red,
+                        size: 10,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        isConnected ? 'CONNECTED' : 'NOT CONNECTED',
+                        style: TextStyle(
+                          color: isConnected ? Colors.green : Colors.red,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, size: 14),
+                color: Colors.grey,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                tooltip: 'Refresh Monitor Status',
+                onPressed: () => ref.read(projectionProvider.notifier).refreshDisplays(),
               ),
               const Spacer(),
               Builder(
@@ -96,113 +121,14 @@ class _Monitor1View extends ConsumerWidget {
                   );
                 }
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Projection Surface — this IS the capture region for OBS
-          Expanded(
-            child: Center(
-              child: presetsAsync.when(
-                data: (presets) {
-                  final currentId = selectedPresetId ?? presets.firstOrNull?.id;
-                  final settings = presets.firstWhere(
-                    (p) => p.id == currentId,
-                    orElse: () => PresentationSettings(),
-                  );
-                  final aspectRatio = _getAspectRatio(settings, isSong);
-
-                  return AspectRatio(
-                    aspectRatio: aspectRatio,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white10),
-                      ),
-                      child: ProjectorView(
-                        settings: settings,
-                        activeSlideText: activeSlideText,
-                        titleText: activeTitle,
-                        isSong: isSong,
-                      ),
-                    ),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Error: $e')),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Monitor 2: External projector window (Launch button) ───
-
-class _Monitor2View extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final projectionState = ref.watch(projectionProvider);
-    final presetsAsync = ref.watch(presetsListProvider);
-    final activeSlideText = ref.watch(m2ActiveSlideProvider);
-    final activeTitle = ref.watch(activeTitleProvider);
-    final isSong = ref.watch(isSongActiveProvider);
-
-    final selectedPresetId = projectionState.config.monitor2PresetId;
-    final isConnected = projectionState.hasSecondaryDisplay;
-    final isActive = projectionState.isMonitor2Active;
-
-    return Container(
-      color: Colors.grey[900],
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          // Header: Status, Preset dropdown, Launch button
-          Row(
-            children: [
-              Icon(
-                isConnected ? Icons.circle : Icons.circle_outlined,
-                color: isConnected ? Colors.green : Colors.red,
-                size: 12,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                isConnected ? 'CONNECTED' : 'NOT CONNECTED',
-                style: TextStyle(
-                  color: isConnected ? Colors.green : Colors.red,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Builder(
-                builder: (ctx) {
-                  return IconButton(
-                    icon: const Icon(Icons.settings, size: 18),
-                    color: Colors.grey,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    tooltip: 'Settings',
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => MonitorSettingsPopup(
-                          monitorIndex: 2,
-                          initialPresetId: selectedPresetId,
-                        ),
-                      );
-                    },
-                  );
-                }
-              ),
               const SizedBox(width: 16),
               ElevatedButton(
                 onPressed: isConnected 
                   ? () {
                       if (isActive) {
-                        ref.read(projectionProvider.notifier).stopMonitor2();
+                        ref.read(projectionProvider.notifier).stopMonitor1();
                       } else {
-                        ref.read(projectionProvider.notifier).launchMonitor2(
+                        ref.read(projectionProvider.notifier).launchMonitor1(
                           text: activeSlideText,
                           title: activeTitle,
                           isSong: isSong,
@@ -265,6 +191,100 @@ class _Monitor2View extends ConsumerWidget {
                     ],
                   ),
                 ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Monitor 2: Inline projection surface (no popup window) ───
+
+class _Monitor2View extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final projectionState = ref.watch(projectionProvider);
+    final presetsAsync = ref.watch(presetsListProvider);
+    final activeSlideText = ref.watch(m2ActiveSlideProvider);
+    final activeTitle = ref.watch(activeTitleProvider);
+    final isSong = ref.watch(isSongActiveProvider);
+
+    final selectedPresetId = projectionState.config.monitor2PresetId;
+
+    return Container(
+      color: Colors.grey[900],
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          // Header: Preset dropdown only (no Launch button)
+          Row(
+            children: [
+              const Icon(Icons.videocam, color: Colors.blue, size: 16),
+              const SizedBox(width: 8),
+              const Text(
+                'OBS CAPTURE SURFACE',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const Spacer(),
+              Builder(
+                builder: (ctx) {
+                  return IconButton(
+                    icon: const Icon(Icons.settings, size: 18),
+                    color: Colors.grey,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Settings',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => MonitorSettingsPopup(
+                          monitorIndex: 2,
+                          initialPresetId: selectedPresetId,
+                        ),
+                      );
+                    },
+                  );
+                }
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          // Projection Surface — this IS the capture region for OBS
+          Expanded(
+            child: Center(
+              child: presetsAsync.when(
+                data: (presets) {
+                  final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+                  final settings = presets.firstWhere(
+                    (p) => p.id == currentId,
+                    orElse: () => PresentationSettings(),
+                  );
+                  final aspectRatio = _getAspectRatio(settings, isSong);
+
+                  return AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: ProjectorView(
+                        settings: settings,
+                        activeSlideText: activeSlideText,
+                        titleText: activeTitle,
+                        isSong: isSong,
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Error: $e')),
+              ),
+            ),
           ),
         ],
       ),

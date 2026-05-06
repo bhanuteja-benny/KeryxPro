@@ -1,0 +1,26 @@
+Phase 26.2
+
+Context:
+
+⁃ focus shift issue when launching the extended monitor screen
+
+issue:
+- when user clicks on `launch' button in Monitor 2 pane, a new full screen is opening in the extended monitor and everything is fine with the view.
+- but I think the focus is shifting to the new window(screen), because the when user pressing down/up arrow doesn't change the slide and also shortcuts not
+working.
+- if the user again selecting (shifting focus to using ctrl + tab) Main window then it is getting selected
+- can we not stay the focus or selection on slides section (or main window) instead of new window even after clicking `launch' button?
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+Implementation Plan File (with steps of possible resolution)
