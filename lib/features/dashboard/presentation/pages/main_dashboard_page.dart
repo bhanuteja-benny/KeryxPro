@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../presentation/presentation/projection_broadcaster.dart';
 import '../widgets/library_pane.dart';
@@ -111,7 +112,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                         // Library pane (docked) — only when pinned + visible
                         if (isDockedVisible) ...[
                           const Expanded(
-                            flex: 8,
+                            flex: 3,
                             child: LibraryPane(),
                           ),
                           const VerticalDivider(width: 1, color: Colors.black),
@@ -125,14 +126,14 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                         else ...[
                           // Middle: Setlist (Active Queue)
                           const Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: SetlistPane(),
                           ),
                           const VerticalDivider(width: 1, color: Colors.black),
                           
                           // Right: Slides (top) + Live Projection (bottom)
                           Expanded(
-                            flex: 9,
+                            flex: 5,
                             child: Column(
                               children: [
                                 // Upper: Slides / Preview
@@ -170,7 +171,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                         left: 33, // icon rail (32) + divider (1)
                         top: 0,
                         bottom: 0,
-                        width: MediaQuery.of(context).size.width * 0.35,
+                        width: math.max(400.0, MediaQuery.of(context).size.width * 0.35),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [

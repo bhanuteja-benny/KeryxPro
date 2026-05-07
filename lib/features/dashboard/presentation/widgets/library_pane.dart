@@ -14,27 +14,29 @@ class LibraryPane extends ConsumerStatefulWidget {
 }
 
 class _LibraryPaneState extends ConsumerState<LibraryPane> {
+  TabController? _controller;
+
   @override
   void initState() {
     super.initState();
     // Sync tab changes to the rail index provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = ref.read(libraryTabControllerProvider);
-      controller?.addListener(_onTabChanged);
+      if (!mounted) return;
+      _controller = ref.read(libraryTabControllerProvider);
+      _controller?.addListener(_onTabChanged);
     });
   }
 
   void _onTabChanged() {
-    final controller = ref.read(libraryTabControllerProvider);
-    if (controller != null && !controller.indexIsChanging) {
-      ref.read(activeLibraryRailIndexProvider.notifier).state = controller.index;
+    if (!mounted) return;
+    if (_controller != null && !_controller!.indexIsChanging) {
+      ref.read(activeLibraryRailIndexProvider.notifier).state = _controller!.index;
     }
   }
 
   @override
   void dispose() {
-    final controller = ref.read(libraryTabControllerProvider);
-    controller?.removeListener(_onTabChanged);
+    _controller?.removeListener(_onTabChanged);
     super.dispose();
   }
 

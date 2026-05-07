@@ -310,7 +310,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     _listFocusNode.requestFocus();
   }
 
-  // ── Scroll slide list to item ──────────────────────────────────────────
+  // ── Scroll slide list to item only if not visible ─────────────────────
   void _scrollToItem(int index) {
     final items = ref.read(setlistProvider);
     int slideStartIndex = 0;
@@ -323,13 +323,29 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
         slideStartIndex += 1; // Image = 1 slide
       }
     }
+    
     final scrollController = ref.read(slideListScrollControllerProvider);
     if (scrollController.hasClients) {
-      scrollController.animateTo(
-        slideStartIndex * 28.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      const itemHeight = 28.0;
+      final targetOffset = slideStartIndex * itemHeight;
+      final currentOffset = scrollController.offset;
+      final viewportHeight = scrollController.position.viewportDimension;
+
+      if (targetOffset < currentOffset) {
+        // Slide is above visible area
+        scrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else if (targetOffset + itemHeight > currentOffset + viewportHeight) {
+        // Slide is below visible area
+        scrollController.animateTo(
+          targetOffset + itemHeight - viewportHeight,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
 

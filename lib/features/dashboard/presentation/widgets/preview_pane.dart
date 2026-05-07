@@ -146,15 +146,29 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final borderActiveIndices = ref.watch(borderActiveSlideIndicesProvider);
     final slides = ref.watch(currentSlidesProvider);
 
-    // Scroll to active index
+    // Scroll to active index only if not already visible
     ref.listen(activeSlideIndexProvider, (previous, next) {
       if (scrollController.hasClients) {
-        final targetOffset = next * 28.0; // 28 is the new height of SlideItemWidget
-        scrollController.animateTo(
-          targetOffset,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-        );
+        const itemHeight = 28.0; // height of SlideItemWidget
+        final targetOffset = next * itemHeight;
+        final currentOffset = scrollController.offset;
+        final viewportHeight = scrollController.position.viewportDimension;
+
+        if (targetOffset < currentOffset) {
+          // Slide is above the visible area, scroll up to show it at the top
+          scrollController.animateTo(
+            targetOffset,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+          );
+        } else if (targetOffset + itemHeight > currentOffset + viewportHeight) {
+          // Slide is below the visible area, scroll down to show it at the bottom
+          scrollController.animateTo(
+            targetOffset + itemHeight - viewportHeight,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
 
