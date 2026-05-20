@@ -120,7 +120,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                         
                         if (isEditorOpen)
                           const Expanded(
-                            flex: 12, // 3 + 9 = 12
+                            flex: 7, 
                             child: SongEditorPane(),
                           )
                         else ...[
