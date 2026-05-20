@@ -210,13 +210,14 @@ class _Monitor2View extends ConsumerWidget {
     final isSong = ref.watch(isSongActiveProvider);
 
     final selectedPresetId = projectionState.config.monitor2PresetId;
+    final isActive = projectionState.isMonitor2Active;
 
     return Container(
       color: Colors.grey[900],
       padding: const EdgeInsets.all(8),
       child: Column(
         children: [
-          // Header: Preset dropdown only (no Launch button)
+          // Header: Preset settings and Launch/Stop button
           Row(
             children: [
               const Icon(Icons.videocam, color: Colors.blue, size: 16),
@@ -250,6 +251,29 @@ class _Monitor2View extends ConsumerWidget {
                     },
                   );
                 }
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: () {
+                  if (isActive) {
+                    ref.read(projectionProvider.notifier).stopMonitor2();
+                  } else {
+                    ref.read(projectionProvider.notifier).launchMonitor2(
+                      text: activeSlideText,
+                      title: activeTitle,
+                      isSong: isSong,
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isActive ? Colors.red[900] : Colors.blue,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  minimumSize: const Size(80, 28),
+                ),
+                child: Text(
+                  isActive ? 'STOP' : 'LAUNCH', 
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)
+                ),
               ),
             ],
           ),

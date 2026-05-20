@@ -136,17 +136,34 @@ class LiveMonitorPage extends ConsumerWidget {
                     final activeSlideText = ref.read(m1ActiveSlideProvider);
                     final activeTitle = ref.read(activeTitleProvider);
                     final isSong = ref.read(isSongActiveProvider);
-                    ref.read(projectionProvider.notifier).launchMonitor1(
-                      text: activeSlideText,
-                      title: activeTitle,
-                      isSong: isSong,
-                    );
+                    if (isActive) {
+                      ref.read(projectionProvider.notifier).stopMonitor1();
+                    } else {
+                      ref.read(projectionProvider.notifier).launchMonitor1(
+                        text: activeSlideText,
+                        title: activeTitle,
+                        isSong: isSong,
+                      );
+                    }
+                  } else {
+                    final activeSlideText = ref.read(m2ActiveSlideProvider);
+                    final activeTitle = ref.read(activeTitleProvider);
+                    final isSong = ref.read(isSongActiveProvider);
+                    if (isActive) {
+                      ref.read(projectionProvider.notifier).stopMonitor2();
+                    } else {
+                      ref.read(projectionProvider.notifier).launchMonitor2(
+                        text: activeSlideText,
+                        title: activeTitle,
+                        isSong: isSong,
+                      );
+                    }
                   }
                 } : null,
-                icon: const Icon(Icons.launch),
-                label: Text(isActive ? 'RELAUNCH OUTPUT' : 'LAUNCH OUTPUT'),
+                icon: Icon(isActive ? Icons.stop : Icons.launch),
+                label: Text(isActive ? 'STOP OUTPUT' : 'LAUNCH OUTPUT'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: isActive ? Colors.red[900] : Colors.blue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),

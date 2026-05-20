@@ -7,28 +7,48 @@ import '../../settings/presentation/projection_provider.dart';
 final projectionBroadcasterProvider = Provider<void>((ref) {
   // Listen for slide changes
   ref.listen(m1ActiveSlideProvider, (previous, next) {
-    _broadcastContent(ref, next);
+    _broadcastContentM1(ref, next);
   });
 
   // Listen for title changes
   ref.listen(activeTitleProvider, (previous, next) {
-    _broadcastContent(ref, ref.read(m1ActiveSlideProvider));
+    _broadcastContentM1(ref, ref.read(m1ActiveSlideProvider));
+    _broadcastContentM2(ref, ref.read(m2ActiveSlideProvider));
+  });
+
+  // Listen for Monitor 2 slide changes
+  ref.listen(m2ActiveSlideProvider, (previous, next) {
+    _broadcastContentM2(ref, next);
   });
 });
 
-void _broadcastContent(Ref ref, String? text) {
+void _broadcastContentM1(Ref ref, String? text) {
   final title = ref.read(activeTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
   final state = ref.read(projectionProvider);
   
-  // Only broadcast to Monitor 1 external window (Monitor 2 is inline via Riverpod)
   if (state.monitor1WindowId != null) {
     final args = {
       'text': text,
       'title': title,
       'isSong': isSong,
     };
-    // The library's fromWindowId seems to expect a String in this setup
     WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('update_content', args);
+  }
+}
+
+void _broadcastContentM2(Ref ref, String? text) {
+  final title = ref.read(activeTitleProvider);
+  final isSong = ref.read(isSongActiveProvider);
+  final state = ref.read(projectionProvider);
+  
+  if (state.monitor2WindowId != null) {
+    final args = {
+      'text': text,
+      'title': title,
+      'isSong': isSong,
+    };
+    WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
+    ref.read(projectionProvider.notifier).resizeMonitor2Window(isSong);
   }
 }

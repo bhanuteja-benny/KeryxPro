@@ -87,57 +87,45 @@ class ProjectorApp extends StatefulWidget {
   State<ProjectorApp> createState() => _ProjectorAppState();
 }
 
-class _ProjectorAppState extends State<ProjectorApp> with WindowListener {
+class _ProjectorAppState extends State<ProjectorApp> {
   String? _activeSlideText;
   String? _titleText;
   bool _isSong = true;
   PresentationSettings _settings = PresentationSettings();
   int? _presetId;
+  int? _monitorIndex;
 
   @override
   void initState() {
     super.initState();
     // Parse initial arguments passed during window creation
     _initWindow();
-    windowManager.addListener(this);
 
     // Setup listener for updates from the main window
     widget.windowController.setWindowMethodHandler((MethodCall call) async {
       if (call.method == 'update_content') {
         final args = call.arguments as Map?;
         if (args != null) {
+          final isSong = args['isSong'] as bool? ?? true;
           setState(() {
             _activeSlideText = args['text'] as String?;
             _titleText = args['title'] as String?;
-            _isSong = args['isSong'] as bool? ?? true;
+            _isSong = isSong;
           });
         }
       } else if (call.method == 'update_preset') {
         final args = call.arguments as Map?;
         final settingsMap = args?['settings'] as Map<String, dynamic>?;
         if (settingsMap != null) {
+          final newSettings = PresentationSettings.fromMap(settingsMap);
           setState(() {
-            _settings = PresentationSettings.fromMap(settingsMap);
+            _settings = newSettings;
             _presetId = args?['presetId'] as int?;
           });
         }
-      } else if (call.method == 'close_window') {
-        windowManager.close();
       }
       return null;
     });
-  }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
-
-  @override
-  void onWindowClose() {
-    // Notify the main window that this window is closing
-    WindowController.fromWindowId('0').invokeMethod('window_closed', widget.windowController.windowId);
   }
 
   void _initWindow() {
@@ -149,6 +137,7 @@ class _ProjectorAppState extends State<ProjectorApp> with WindowListener {
         _activeSlideText = parsed['text'] as String?;
         _titleText = parsed['title'] as String?;
         _isSong = parsed['isSong'] as bool? ?? true;
+        _monitorIndex = parsed['monitorIndex'] as int?;
         
         final settingsMap = parsed['settings'] as Map<String, dynamic>?;
         if (settingsMap != null) {
@@ -160,16 +149,18 @@ class _ProjectorAppState extends State<ProjectorApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    Widget view = ProjectorView(
+      settings: _settings,
+      activeSlideText: _activeSlideText,
+      titleText: _titleText,
+      isSong: _isSong,
+    );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.black,
-        body: ProjectorView(
-          settings: _settings,
-          activeSlideText: _activeSlideText,
-          titleText: _titleText,
-          isSong: _isSong,
-        ),
+        body: view,
       ),
     );
   }
