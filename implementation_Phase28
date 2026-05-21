@@ -1,0 +1,68 @@
+# Phase 28: Presentation Settings Font Size & Monitor Pane Pin/Unpin
+
+This document outlines the implementation plan for Phase 28.
+
+---
+
+## 1. Font Size up to 300
+Allow font sizes up to 300 (previously capped at 100) in all text box and list box options under song and bible preset settings.
+
+### Changes:
+- **`presentation_settings_dialog.dart`**:
+  - In `_showTypographyDialog`, expand `List.generate(96, (i) => i + 5)` to `List.generate(296, (i) => i + 5)` (from 5 to 300).
+  - In the font size `TextField`'s `onChanged`, parse the value. If it exceeds 300, clamp it to `300.0`. Dynamically set the text field's value to `300` and position the cursor at the end to visually restrict input.
+
+---
+
+## 2. Exact Preview Screens
+Preview screens in song and bible presentation settings must reflect settings exactly (layout, alignment, scaling, backgrounds, stroke/fill, margins, etc.), just like Monitor 1 and Monitor 2.
+
+### Changes:
+- **`projector_view.dart`**:
+  - Add optional constructor parameter `showCheckerboard` (default `false`).
+  - Copy `_CheckerboardPainter` to `projector_view.dart`. If `isTransparent` is true and `showCheckerboard` is true, render the checkerboard inside the canvas stack.
+  - Implement full stroke and fill support in `ProjectorView` for both lyrics and titles using nested stacked text widgets, syncing text layouts.
+- **`presentation_settings_dialog.dart`**:
+  - Import and use `ProjectorView` inside `_buildPreviewPane` by passing the current editing settings and the mock lyrics/titles. Set `showCheckerboard: true`.
+  - Delete legacy custom preview layout widgets/methods that are no longer needed.
+
+---
+
+## 3. Monitor Pane Pin/Unpin and Bottom Rail
+Add VS Code-style auto-hide/pinning to Monitor 1 and Monitor 2 panes, using a sleek bottom bar for tab switching and visibility control.
+
+### Changes:
+- **`global_ui_providers.dart`**:
+  - Declare `MonitorPinMode` enum.
+  - Create StateProviders for `monitorPinModeProvider` (default: pinned), `monitorPaneVisibleProvider` (default: true), `monitorTabControllerProvider`, and `activeMonitorRailIndexProvider`.
+- **`main_dashboard_page.dart`**:
+  - Initialize and sync a `_monitorTabController` in the page state.
+  - Modify Right column:
+    - Wrap column contents in a `Stack` to allow a local floating overlay.
+    - If `isMonitorDockedVisible` is true, render `PreviewPane` (flex 3) and `LiveProjectorPane` (flex 2).
+    - If not docked visible, render `PreviewPane` with `Expanded` filling all remaining height.
+    - Always render the `MonitorBottomBar` at the very bottom.
+    - If `isMonitorOverlayVisible` is true, display `LiveProjectorPane` as a positioned overlay (`bottom: 29`, `height: 250`) with a top drop shadow.
+  - Render a transparent full-screen dismiss barrier at the top-level dashboard Stack if the overlay is visible.
+- **`live_projector_pane.dart`**:
+  - Convert to `ConsumerStatefulWidget` and sync changes to `activeMonitorRailIndexProvider`.
+  - Use the shared synced `monitorTabController` from the provider.
+  - Add the pin/unpin icon button in the header TabBar row (identical style to library pane).
+- **`monitor_bottom_bar.dart` [NEW]**:
+  - Sleek horizontal panel at the bottom (height 28, background `Colors.grey[900]`).
+  - Contains stacked monitor icons with digits `1` and `2` inside.
+  - Highlights the active icon with a blue bottom indicator border.
+  - Implements tab switching and visibility toggle logic (like `LibraryIconRail`).
+
+---
+
+## Verification Plan
+
+### Automated Checks
+- Run `flutter analyze` to ensure clean code.
+
+### Manual Verification
+- Verify font sizing clamps at 300 and displays in the list box.
+- Verify settings changes (like stroke, fill, margins, fonts, aspect ratios) update in the preview immediately and exactly match the projector layout.
+- Verify pinning/unpinning, overlay popup, tapping outside to close, re-docking, and switching tabs via bottom rail icons.
+- Verify that hiding the monitor pane does not close the external projection windows.

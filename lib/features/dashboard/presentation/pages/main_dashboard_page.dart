@@ -6,6 +6,7 @@ import '../widgets/library_pane.dart';
 import '../widgets/library_icon_rail.dart';
 import '../widgets/preview_pane.dart';
 import '../widgets/setlist_pane.dart';
+import '../widgets/monitor_bottom_bar.dart';
 import '../../../live_controller/presentation/widgets/live_projector_pane.dart';
 import '../widgets/custom_title_bar.dart';
 import '../../../songs/presentation/song_editor_pane.dart';
@@ -21,23 +22,71 @@ class MainDashboardPage extends ConsumerStatefulWidget {
   ConsumerState<MainDashboardPage> createState() => _MainDashboardPageState();
 }
 
-class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with SingleTickerProviderStateMixin {
+class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with TickerProviderStateMixin {
   late TabController _libraryTabController;
+  late TabController _monitorTabController;
 
   @override
   void initState() {
     super.initState();
     _libraryTabController = TabController(length: 2, vsync: this);
-    // Give the controller to the provider so other widgets can use it
+    _monitorTabController = TabController(length: 2, vsync: this);
+    // Give the controllers to the providers so other widgets can use them
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(libraryTabControllerProvider.notifier).state = _libraryTabController;
+      ref.read(monitorTabControllerProvider.notifier).state = _monitorTabController;
     });
+    HardwareKeyboard.instance.addHandler(_handleGlobalKeys);
   }
 
   @override
   void dispose() {
+    HardwareKeyboard.instance.removeHandler(_handleGlobalKeys);
     _libraryTabController.dispose();
+    _monitorTabController.dispose();
     super.dispose();
+  }
+
+  bool _handleGlobalKeys(KeyEvent event) {
+    if (event is! KeyDownEvent) return false;
+
+    // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
+    final primaryFocus = FocusManager.instance.primaryFocus;
+    if (primaryFocus != null) {
+      final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
+      // Check for editable fields or our specifically labeled search boxes
+      if (label.contains('editable') || label.contains('field') || label.contains('search') || label.contains('setlistname')) {
+        return false;
+      }
+      
+      // Double check the context widget as a backup
+      final widget = primaryFocus.context?.widget;
+      if (widget is EditableText || widget is TextField) {
+        return false;
+      }
+    }
+
+    final shortcuts = ref.read(globalShortcutActionProvider);
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.keyS) {
+      shortcuts.openBibleTab();
+      return true;
+    } else if (key == LogicalKeyboardKey.keyQ) {
+      shortcuts.openSongsTab();
+      return true;
+    } else if (key == LogicalKeyboardKey.keyL) {
+      shortcuts.focusSlides();
+      return true;
+    } else if (key == LogicalKeyboardKey.keyF) {
+      shortcuts.toggleFreeze();
+      return true;
+    } else if (key == LogicalKeyboardKey.escape) {
+      shortcuts.handleEscape();
+      return true; // We can return true so it consumes the event
+    }
+
+    return false;
   }
 
   @override
@@ -53,41 +102,13 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
     final isDockedVisible = pinMode == LibraryPinMode.pinned && isLibraryVisible;
     final isOverlayVisible = pinMode == LibraryPinMode.autoHide && isLibraryVisible;
 
-    return Focus(
-      onKeyEvent: (node, event) {
-        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    // Monitor pane auto-hide state
+    final monitorPinMode = ref.watch(monitorPinModeProvider);
+    final isMonitorVisible = ref.watch(monitorPaneVisibleProvider);
+    final isMonitorDockedVisible = monitorPinMode == MonitorPinMode.pinned && isMonitorVisible;
+    final isMonitorOverlayVisible = monitorPinMode == MonitorPinMode.autoHide && isMonitorVisible;
 
-        // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
-        final primaryFocus = FocusManager.instance.primaryFocus;
-        if (primaryFocus != null) {
-          final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
-          // Check for editable fields or our specifically labeled search boxes
-          if (label.contains('editable') || label.contains('field') || label.contains('search')) {
-            return KeyEventResult.ignored;
-          }
-          
-          // Double check the context widget as a backup
-          final widget = primaryFocus.context?.widget;
-          if (widget is EditableText || widget is TextField) {
-            return KeyEventResult.ignored;
-          }
-        }
-
-        // Not typing? Handle shortcuts
-        if (event.logicalKey == LogicalKeyboardKey.keyS) {
-          shortcuts.openBibleTab();
-          return KeyEventResult.handled;
-        } else if (event.logicalKey == LogicalKeyboardKey.keyQ) {
-          shortcuts.openSongsTab();
-          return KeyEventResult.handled;
-        } else if (event.logicalKey == LogicalKeyboardKey.keyL) {
-          shortcuts.focusSlides();
-          return KeyEventResult.handled;
-        }
-
-        return KeyEventResult.ignored;
-      },
-      child: Scaffold(
+    return Scaffold(
         body: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
@@ -131,21 +152,29 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                           ),
                           const VerticalDivider(width: 1, color: Colors.black),
                           
-                          // Right: Slides (top) + Live Projection (bottom)
+                          // Right: Slides (top) + Live Projection (bottom) + Bottom Bar
                           Expanded(
                             flex: 5,
-                            child: Column(
+                            child: Stack(
                               children: [
-                                // Upper: Slides / Preview
-                                const Expanded(
-                                  flex: 3,
-                                  child: PreviewPane(),
-                                ),
-                                const Divider(height: 1, color: Colors.black),
-                                // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
-                                const Expanded(
-                                  flex: 2,
-                                  child: LiveProjectorPane(),
+                                Column(
+                                  children: [
+                                    // Upper: Slides / Preview
+                                    const Expanded(
+                                      child: PreviewPane(),
+                                    ),
+                                    if (isMonitorDockedVisible) ...[
+                                      const Divider(height: 1, color: Colors.black),
+                                      // Lower: Live Projection Screens (Monitor 1 & 2 tabs)
+                                      const SizedBox(
+                                        height: 250,
+                                        child: LiveProjectorPane(),
+                                      ),
+                                    ],
+                                    const Divider(height: 1, color: Colors.black),
+                                    // Bottom Navigation Bar
+                                    const MonitorBottomBar(),
+                                  ],
                                 ),
                               ],
                             ),
@@ -154,7 +183,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                       ],
                     ),
 
-                    // ─── Auto-hide overlay ───
+                    // ─── Auto-hide overlays ───
                     if (isOverlayVisible) ...[
                       // Dismiss barrier — tapping outside closes the overlay
                       Positioned.fill(
@@ -186,14 +215,66 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Sing
                         ),
                       ),
                     ],
+
+                    if (isMonitorOverlayVisible && !isEditorOpen) ...[
+                      // Dismiss barrier — tapping outside closes the overlay
+                      Positioned.fill(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            ref.read(monitorPaneVisibleProvider.notifier).state = false;
+                          },
+                          child: Container(color: Colors.transparent),
+                        ),
+                      ),
+                      // Overlay Monitor pane positioned exactly over the right column
+                      Positioned.fill(
+                        child: Row(
+                          children: [
+                            const IgnorePointer(child: SizedBox(width: 33)), // rail (32) + divider (1)
+                            if (isDockedVisible) ...[
+                              const Expanded(flex: 3, child: IgnorePointer(child: SizedBox.shrink())),
+                              const IgnorePointer(child: SizedBox(width: 1)),
+                            ],
+                            const Expanded(flex: 2, child: IgnorePointer(child: SizedBox.shrink())),
+                            const IgnorePointer(child: SizedBox(width: 1)),
+                            Expanded(
+                              flex: 5,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 29, // above bottom bar (28) + divider (1)
+                                    height: 250,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.5),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, -2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const LiveProjectorPane(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

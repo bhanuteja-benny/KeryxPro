@@ -1,0 +1,154 @@
+# Phase 28 Implementation Plan: Presentation Settings Font Size and Monitor Pane Pin/Unpin
+
+This plan details the implementation of presentation setting updates (supporting font sizes up to 300, exact preview screens) and the addition of VS Code-style pin/unpin auto-hide functionality with a sleek bottom rail for the Monitor 1 and Monitor 2 panes.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **No State Persistence**: Following the design of the Library pane (Songs/Bible search), the pin mode and visibility state of the Monitor pane will not be persisted to disk. On app restart, the pane will default to pinned + visible. 
+> 
+> **Overlay Height**: In auto-hide mode, the Monitor pane overlay will occupy a fixed height of `250px` positioned directly above the bottom bar, spanning the full width of the Right column. It will include a subtle drop shadow on its top edge to indicate it is a floating panel.
+
+---
+
+## Open Questions
+
+*No open questions are identified at this time, as the requirements map directly to existing patterns established in Phase 27.*
+
+---
+
+## Proposed Changes
+
+### 1. Presentation Settings — Font Size Range
+Expand the font size range in the typography dialog up to 300 (formerly capped at 100) and clamp the text box inputs.
+
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Inside `_showTypographyDialog`:
+  - Update the list box generator from `List.generate(96, (i) => i + 5)` to `List.generate(296, (i) => i + 5)` to include items from 5 up to 300.
+  - In the `TextField`'s `onChanged` handler for the size input:
+    - Parse the value and, if it exceeds `300.0`, clamp it to `300.0`.
+    - Update the text controller text to `300` and place the selection cursor at the end to visually enforce the clamp on change.
+
+---
+
+### 2. Presentation Settings — Exact Previews
+Use the virtual canvas-based `ProjectorView` in the settings dialog instead of a manual preview Stack, ensuring scaling, aspect ratios, margins, backgrounds, and styling are displayed exactly as they are on the actual screens.
+
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- Import `ProjectorView`:
+  ```dart
+  import 'package:keryxpro/features/presentation/presentation/widgets/projector_view.dart';
+  ```
+- Replace the body of `_buildPreviewPane` with a call to `ProjectorView` passing the current editing settings, the text, and `showCheckerboard: true`.
+- Remove the unused helper methods `_buildPreviewContent`, `_getAlignmentGeometry`, `_buildCheckerboard`, `_getAlignment`, `_getVerticalAlignment`, and `_CheckerboardPainter` to clean up the file.
+
+#### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- Add a constructor parameter `final bool showCheckerboard;` (defaulting to `false`).
+- Copy the `_CheckerboardPainter` class to `projector_view.dart`.
+- If `isTransparent` is true and `showCheckerboard` is true, paint the checkerboard inside `content` as the bottom-most layer of the `Stack`.
+- Update the body text and title text rendering in `ProjectorView` to support the stroke and fill style settings (`lyricsHasStroke`, `lyricsStrokeColor`, `lyricsHasFill`, `lyricsFillColor`, etc.) by wrapping the texts in a `Stack` (matching the text stroke rendering logic previously used in the settings dialog preview).
+
+---
+
+### 3. State Management for Monitor 1 & 2 Pinning
+Introduce providers to track the pin mode, visibility, active tab, and tab controller of the Monitor pane.
+
+#### [MODIFY] [global_ui_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/global_ui_providers.dart)
+- Add:
+  ```dart
+  enum MonitorPinMode { pinned, autoHide }
+
+  final monitorPinModeProvider = StateProvider<MonitorPinMode>(
+    (ref) => MonitorPinMode.pinned,
+  );
+
+  final monitorPaneVisibleProvider = StateProvider<bool>((ref) => true);
+
+  final monitorTabControllerProvider = StateProvider<TabController?>((ref) => null);
+
+  final activeMonitorRailIndexProvider = StateProvider<int>((ref) => 0);
+  ```
+
+---
+
+### 4. Monitor Tab Controller Sync & Layout Updates
+Manage and sync the Monitor tab controller and adapt the dashboard layout to show the docked pane, bottom rail, or overlay.
+
+#### [MODIFY] [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+- Initialize a `_monitorTabController` in `_MainDashboardPageState`.
+- Sync it to `monitorTabControllerProvider` in a post-frame callback, and dispose it in `dispose()`.
+- Import `monitor_bottom_bar.dart`.
+- Define local boolean states:
+  - `isMonitorDockedVisible = monitorPinMode == MonitorPinMode.pinned && isMonitorVisible`
+  - `isMonitorOverlayVisible = monitorPinMode == MonitorPinMode.autoHide && isMonitorVisible`
+- Modify the Right column in the dashboard base layout:
+  - Wrap the Right column's content in a `Stack` to allow local positioning of the overlay.
+  - If `isMonitorDockedVisible` is true:
+    - Display `PreviewPane()` wrapped in `Expanded(flex: 3)`
+    - Display `LiveProjectorPane()` wrapped in `Expanded(flex: 2)`
+  - If `isMonitorDockedVisible` is false (hidden or in auto-hide mode):
+    - Display `PreviewPane()` wrapped in `Expanded` (to fill the space)
+  - Below this, display a divider and `MonitorBottomBar()`.
+  - Inside the Right column's Stack, if `isMonitorOverlayVisible` is true:
+    - Render the overlay panel containing `LiveProjectorPane()` positioned at `bottom: 29` (height of bottom bar + divider) with a height of `250.0`, width matching the column, and drop shadow on its top edge.
+- At the top dashboard Stack level, if `isMonitorOverlayVisible` is true:
+  - Add a global full-screen transparent dismiss barrier (`GestureDetector` with `Positioned.fill`) that sets `monitorPaneVisibleProvider = false` when tapped outside.
+
+---
+
+### 5. LiveProjectorPane Pin/Unpin Controls
+Integrate the TabController and add the pin/unpin icon button in the header.
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- Change `LiveProjectorPane` to a `ConsumerStatefulWidget`.
+- Sync the tab index changes to `activeMonitorRailIndexProvider` by adding a listener on the `TabController`.
+- Replace `DefaultTabController` in the build method with the synced controller.
+- Change the header container to a `Row`:
+  - `Expanded` -> `TabBar`
+  - `SizedBox(width: 28)` -> Pin/Unpin icon button (styling and actions matching `LibraryPane`'s pin button).
+
+---
+
+### 6. Sleek Monitor Bottom Bar
+Implement the bottom horizontal bar that allows users to toggle visibility and switch tabs.
+
+#### [NEW] [monitor_bottom_bar.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/monitor_bottom_bar.dart)
+- Create a new horizontal widget `MonitorBottomBar`:
+  - Height: `28`
+  - Background: `Colors.grey[900]`
+  - Centered Row containing two icon buttons for Monitor 1 and Monitor 2.
+  - Buttons use a stacked widget: outline monitor icon (`Icons.monitor`, size 18) with a centered digit `1` or `2` (size 7, bold).
+  - Selected state shows a bottom accent border (height 2, color blue) and highlighted white color (inactive color is `white38`).
+  - Tapping behaves identically to `LibraryIconRail`:
+    - Tapping same active tab when pane is visible hides the pane.
+    - Tapping inactive tab when pane is visible switches active tab.
+    - Tapping any tab when pane is hidden makes it visible and switches to that tab.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Build check: Run `flutter analyze` and `flutter test` to ensure there are no compilation errors or analysis issues.
+
+### Manual Verification
+1. **Font Size Selection**:
+   - Open presentation settings -> select a preset to edit.
+   - Click the "Title" or "Body" input boxes -> verify font list contains sizes up to 300.
+   - Enter `350` in the text box -> verify it clamps to `300`.
+2. **Exact Preview Rendering**:
+   - Change font family, size, margins, bold, italic, outline/stroke, fill, and aspect ratio of a preset.
+   - Verify that the preview area instantly and exactly matches the layout changes (including FittedBox scaling).
+   - Change background transparency to true -> verify checkerboard pattern appears in the preview.
+3. **Monitor Pane Pin/Unpin & Bottom Rail**:
+   - Verify that by default, the Monitor pane is pinned at the bottom of the Right column, and the sleek bottom bar is visible.
+   - Click the pin icon in `LiveProjectorPane` -> verify the Monitor pane auto-hides and the `PreviewPane` fills the column.
+   - Hover over the bottom bar icons -> check tooltips.
+   - Click `Monitor 1` or `Monitor 2` icons on the bottom bar -> verify the overlay slides up above the bottom bar.
+   - Tap outside the overlay -> verify it closes.
+   - Click the pin icon inside the overlay -> verify it docks back into the Right column.
+4. **Presentation Robustness**:
+   - Launch Monitor 1 (Secondary Window) and Monitor 2 (OBS capture surface).
+   - Set Monitor pane to auto-hide and close the panel -> verify the external secondary window and the OBS window continue displaying slides and updating as normal.

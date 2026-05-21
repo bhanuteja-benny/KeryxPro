@@ -1,0 +1,35 @@
+# Phase 28 Walkthrough
+
+We have successfully implemented and verified all Phase 28 requirements. Below is a summary of the accomplishments, architectural modifications, and verification results.
+
+## Key Changes
+
+### 1. Presentation Settings Font Size Limits (Up to 300)
+- Expanded the dropdown font list generator to support values from `5` to `300` (`List.generate(296, (i) => i + 5)`).
+- Dynamically parse user text box entries and clamp values strictly between `5.0` and `300.0`.
+
+### 2. Exact Preview Screens Integration
+- Integrated `ProjectorView` inside `_buildPreviewPane` in `presentation_settings_dialog.dart`, removing 250+ lines of duplicate rendering boilerplates.
+- Added nested `Stack` widgets in `ProjectorView` to draw a stroked text outline behind a filled foreground text layer to support exact preview matching.
+- Implemented `showCheckerboard` background option in `ProjectorView` for transparent slides.
+
+### 3. Sleek Monitor Pane Pinning & Auto-Hide
+- Declared state providers in `global_ui_providers.dart` for monitor pane pinning and visibility.
+- Created a sleek activity bottom bar `MonitorBottomBar` containing custom monitor icons and digits (`1` and `2`) to match the VS Code design.
+- Converted `LiveProjectorPane` to a stateful consumer widget, added a rotating pin/unpin header button, and synchronized tab controller listeners.
+- Restructured `MainDashboardPage` base layout and overlays with aligned dismiss barriers.
+
+## Verification Results
+
+- Modified codebase passes static analysis (`flutter analyze`) with **zero** new warnings.
+- The UI builds and renders correctly.
+
+## Files Modified
+- [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- [global_ui_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/global_ui_providers.dart)
+- [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- [main_dashboard_page.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/pages/main_dashboard_page.dart)
+
+## New Files
+- [monitor_bottom_bar.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/monitor_bottom_bar.dart)

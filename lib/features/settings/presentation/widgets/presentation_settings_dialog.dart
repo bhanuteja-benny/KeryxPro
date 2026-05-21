@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:keryxpro/features/presentation/presentation/widgets/projector_view.dart';
 import '../presentation_settings_provider.dart';
 import '../../data/presentation_settings.dart';
 
@@ -691,8 +691,6 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final isSong = _editTabIndex == 0;
 
     final aspectRatio = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
-    final customWidth = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
-    final customHeight = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
 
     return Row(
       children: [
@@ -999,8 +997,15 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                                 setState(() {
                                   hasEditedSize = true;
                                 });
-                                final parsed = double.tryParse(v);
+                                var parsed = double.tryParse(v);
                                 if (parsed != null) {
+                                  if (parsed > 300.0) {
+                                    parsed = 300.0;
+                                    sizeCtrl.text = '300';
+                                    sizeCtrl.selection = TextSelection.fromPosition(
+                                      TextPosition(offset: sizeCtrl.text.length),
+                                    );
+                                  }
                                   fontSize = parsed;
                                   onChanged(fontSize: parsed);
                                 }
@@ -1014,7 +1019,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: ListView(
-                                children: List.generate(96, (i) => i + 5)
+                                children: List.generate(296, (i) => i + 5)
                                     .where((s) => !hasEditedSize || sizeCtrl.text.isEmpty || s.toString().contains(sizeCtrl.text))
                                     .map((s) => ListTile(
                                           title: Text(s.toString()),
@@ -1168,262 +1173,17 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final isSong = _editTabIndex == 0;
     
-    // Calculate aspect ratio
-    final aspectRatioStr = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
-    final cWidth = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
-    final cHeight = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
-
-    double ratio = 16 / 9;
-    if (aspectRatioStr == '4:3') ratio = 4 / 3;
-    else if (aspectRatioStr == '4:1') ratio = 4 / 1;
-    else if (aspectRatioStr == 'Custom') {
-      if (cHeight > 0 && cWidth > 0) {
-        ratio = cWidth / cHeight;
-      } else {
-        ratio = 1.0; // Temporary fallback to square if dimensions are 0
-      }
-    }
-
-    String previewTitle = isSong ? "Amazing Grace" : "John 3:16";
-    String previewText = isSong 
+    final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
+    final previewText = isSong 
       ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
       : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
 
-    // Apply settings appropriately based on tab selection
-    // Note: In real preview we would scale down fonts relative to preview container size, 
-    // but AutoSizeText handles some scaling inherently. We will rely on AutoSizeText for now.
-
-    final isTransparent = isSong ? settings.isSongTransparent : settings.isScriptureTransparent;
-    final backgroundColor = isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor;
-    final isImageEnabled = isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled;
-    final backgroundImage = isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage;
-
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-      child: Center(
-        child: AspectRatio(
-          aspectRatio: ratio,
-          child: DefaultTextStyle(
-            style: const TextStyle(decoration: TextDecoration.none),
-            child: Container(
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: isTransparent ? Colors.transparent : Color(backgroundColor),
-              ),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (isTransparent) _buildCheckerboard(),
-                  if (isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync())
-                    Image.file(
-                      File(backgroundImage),
-                      fit: BoxFit.cover,
-                    ),
-                  _buildPreviewContent(settings, isSong, previewTitle, previewText),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+    return ProjectorView(
+      settings: settings,
+      activeSlideText: previewText,
+      titleText: previewTitle,
+      isSong: isSong,
+      showCheckerboard: true,
     );
   }
-
-  Widget _buildPreviewContent(PresentationSettings settings, bool isSong, String title, String mainText) {
-    // Body Settings
-    final topMargin = isSong ? settings.lyricsMarginTop : settings.verseMarginTop;
-    final botMargin = isSong ? settings.lyricsMarginBottom : settings.verseMarginBottom;
-    final leftMargin = isSong ? settings.lyricsMarginLeft : settings.verseMarginLeft;
-    final rightMargin = isSong ? settings.lyricsMarginRight : settings.verseMarginRight;
-
-    final fontSize = isSong ? settings.lyricsFontSize : settings.verseFontSize;
-    final fontColor = isSong ? Color(settings.lyricsFontColor) : Color(settings.verseFontColor);
-    final fontFamily = isSong ? settings.lyricsFontFamily : settings.verseFontFamily;
-    final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
-    final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
-    final bold = isSong ? settings.lyricsBold : settings.verseBold;
-    final italic = isSong ? settings.lyricsItalic : settings.verseItalic;
-    final underline = isSong ? settings.lyricsUnderline : settings.verseUnderline;
-    final hasFill = isSong ? settings.lyricsHasFill : settings.verseHasFill;
-    final fillColor = isSong ? Color(settings.lyricsFillColor) : Color(settings.verseFillColor);
-    final hasStroke = isSong ? settings.lyricsHasStroke : settings.verseHasStroke;
-    final strokeColor = isSong ? Color(settings.lyricsStrokeColor) : Color(settings.verseStrokeColor);
-
-    // Title Settings
-    final showTitle = isSong ? settings.showTitle : settings.showChapter;
-    final titleHorizontalStr = isSong ? settings.titleAlignment : settings.chapterAlignment;
-    final titleVerticalStr = isSong ? settings.titleVerticalAlignment : settings.chapterVerticalAlignment;
-    final titleFontSize = isSong ? settings.titleFontSize : settings.chapterFontSize;
-    final titleFontColor = isSong ? Color(settings.titleFontColor) : Color(settings.chapterFontColor);
-    final tFontFamily = isSong ? settings.titleFontFamily : settings.chapterFontFamily;
-    
-    final tTopMargin = isSong ? settings.titleMarginTop : settings.chapterMarginTop;
-    final tBotMargin = isSong ? settings.titleMarginBottom : settings.chapterMarginBottom;
-    final tLeftMargin = isSong ? settings.titleMarginLeft : settings.chapterMarginLeft;
-    final tRightMargin = isSong ? settings.titleMarginRight : settings.chapterMarginRight;
-    final tBold = isSong ? settings.titleBold : settings.chapterBold;
-    final tItalic = isSong ? settings.titleItalic : settings.chapterItalic;
-    final tUnderline = isSong ? settings.titleUnderline : settings.chapterUnderline;
-    final tHasFill = isSong ? settings.titleHasFill : settings.chapterHasFill;
-    final tFillColor = isSong ? Color(settings.titleFillColor) : Color(settings.chapterFillColor);
-    final tHasStroke = isSong ? settings.titleHasStroke : settings.chapterHasStroke;
-    final tStrokeColor = isSong ? Color(settings.titleStrokeColor) : Color(settings.chapterStrokeColor);
-
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // Body Layer
-        Align(
-          alignment: _getAlignmentGeometry(alignStr, vAlignStr),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(leftMargin, topMargin, rightMargin, botMargin),
-            child: Stack(
-              children: [
-                if (hasStroke)
-                  AutoSizeText(
-                    mainText,
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontFamily: fontFamily,
-                      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-                      fontStyle: italic ? FontStyle.italic : FontStyle.normal,
-                      height: 1.2,
-                      decoration: underline ? TextDecoration.underline : TextDecoration.none,
-                      backgroundColor: hasFill ? fillColor : null,
-                      foreground: Paint()
-                        ..style = PaintingStyle.stroke
-                        ..strokeWidth = 2.0
-                        ..color = strokeColor,
-                    ),
-                    textAlign: _getAlignment(alignStr),
-                    minFontSize: 8,
-                  ),
-                AutoSizeText(
-                  mainText,
-                  style: TextStyle(
-                    color: fontColor,
-                    fontSize: fontSize,
-                    fontFamily: fontFamily,
-                    fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-                    fontStyle: italic ? FontStyle.italic : FontStyle.normal,
-                    height: 1.2,
-                    decoration: underline ? TextDecoration.underline : TextDecoration.none,
-                    backgroundColor: hasFill ? fillColor : null,
-                  ),
-                  textAlign: _getAlignment(alignStr),
-                  minFontSize: 8,
-                ),
-              ],
-            ),
-          ),
-        ),
-        
-        // Title Layer
-        if (showTitle)
-          Align(
-            alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(tLeftMargin, tTopMargin, tRightMargin, tBotMargin),
-              child: Stack(
-                children: [
-                  if (tHasStroke)
-                    Text(
-                      title, 
-                      style: TextStyle(
-                        fontSize: titleFontSize.clamp(8.0, 32.0), 
-                        fontFamily: tFontFamily,
-                        fontWeight: tBold ? FontWeight.bold : FontWeight.normal,
-                        fontStyle: tItalic ? FontStyle.italic : FontStyle.normal,
-                        decoration: tUnderline ? TextDecoration.underline : TextDecoration.none,
-                        backgroundColor: tHasFill ? tFillColor : null,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 2.0
-                          ..color = tStrokeColor,
-                      ),
-                      textAlign: _getAlignment(titleHorizontalStr),
-                    ),
-                  Text(
-                    title, 
-                    style: TextStyle(
-                      fontSize: titleFontSize.clamp(8.0, 32.0), 
-                      color: titleFontColor,
-                      fontFamily: tFontFamily,
-                      fontWeight: tBold ? FontWeight.bold : FontWeight.normal,
-                      fontStyle: tItalic ? FontStyle.italic : FontStyle.normal,
-                      decoration: tUnderline ? TextDecoration.underline : TextDecoration.none,
-                      backgroundColor: tHasFill ? tFillColor : null,
-                    ),
-                    textAlign: _getAlignment(titleHorizontalStr),
-                  ),
-                ],
-              ),
-            ),
-          )
-      ],
-    );
-  }
-
-  Alignment _getAlignmentGeometry(String horizontal, String vertical) {
-    double x = 0;
-    double y = 0;
-    switch (horizontal) {
-      case 'left': x = -1; break;
-      case 'right': x = 1; break;
-      case 'center': default: x = 0; break;
-    }
-    switch (vertical) {
-      case 'top': y = -1; break;
-      case 'bottom': y = 1; break;
-      case 'center': default: y = 0; break;
-    }
-    return Alignment(x, y);
-  }
-
-  Widget _buildCheckerboard() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return CustomPaint(
-          size: Size(constraints.maxWidth, constraints.maxHeight),
-          painter: _CheckerboardPainter(),
-        );
-      },
-    );
-  }
-
-  TextAlign _getAlignment(String alignment) {
-    switch (alignment) {
-      case 'left': return TextAlign.left;
-      case 'right': return TextAlign.right;
-      case 'center': default: return TextAlign.center;
-    }
-  }
-
-  Alignment _getVerticalAlignment(String alignment) {
-    switch (alignment) {
-      case 'top': return Alignment.topCenter;
-      case 'bottom': return Alignment.bottomCenter;
-      case 'center': default: return Alignment.center;
-    }
-  }
-}
-
-class _CheckerboardPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint1 = Paint()..color = Colors.grey[400]!;
-    final paint2 = Paint()..color = Colors.grey[300]!;
-    const double squareSize = 20.0;
-    
-    for (int i = 0; i < size.width / squareSize; i++) {
-      for (int j = 0; j < size.height / squareSize; j++) {
-        final isEven = (i + j) % 2 == 0;
-        final rect = Rect.fromLTWH(i * squareSize, j * squareSize, squareSize, squareSize);
-        canvas.drawRect(rect, isEven ? paint1 : paint2);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

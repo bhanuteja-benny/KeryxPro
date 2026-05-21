@@ -1,0 +1,33 @@
+# Phase 29: Keyboard Shortcuts & Live Freeze Functionality
+
+I have successfully implemented all the requested features and fixes for Phase 29. Here is a summary of the changes:
+
+## 1. Global Keyboard Shortcuts
+- **Fixed Focus Issues**: Replaced the `Focus` widget wrapping the Scaffold with a global hardware keyboard listener (`HardwareKeyboard`). This ensures that `S`, `Q`, `L`, `F`, and `Esc` always work across the entire application, even if you click on an empty space, as long as KeryxPro is the active window.
+- **Smart Input Detection**: The global shortcuts intelligently ignore keystrokes if your cursor is actively inside any text input field (like a search box or text editor). This means you can still type "s", "q", "l", or "f" into search boxes normally.
+
+## 2. Live Screen Freeze (`F`)
+- **Freeze State**: Added a new global toggle `isLiveScreenFrozenProvider` which is toggled using the `F` key.
+- **Visual Indicator**: When frozen, a red translucent diagonal line is drawn across both Monitor 1 and Monitor 2 preview panes to indicate that they are disconnected from the live output.
+- **Synchronization**: While frozen, the live projection windows stop receiving content updates. Once unfrozen, they immediately sync up with the current active slide on the dashboard.
+
+## 3. Bible Search Tab Flow
+- **Tab Focus Traversal**: Intercepted the `Tab` key when inside the search input box or the verse list results. Pressing `Tab` will now immediately jump your focus to the "Add" button.
+- **Add Button Logic**: Since the focus is on the "Add" button, pressing `Enter` will trigger it. The button was verified to already be using `goLive: false`, meaning the verse is added to the setlist and slides without updating the live projection screens.
+
+## 4. Setlist Pane Interaction
+- **Enter to Go Live**: Added an interception for the `Enter` key when navigating the active setlist via keyboard. Pressing `Enter` on a selected item instantly calculates its starting slide index and pushes it live.
+- **Tab to Slides**: Retained the `Tab` functionality that jumps focus from the setlist directly to the slides pane.
+
+## 5. Preview Pane (Slides) Navigation
+- **Spacebar**: Added `Spacebar` to replicate the `navState.nextPrimaryIndex` behavior. It jumps to the next immediate slide, or if at the end of a group (like a song or a grouped Bible passage), jumps to the top slide of the next group.
+- **Tab Key**: Pressing `Tab` while focused on the slides will scan downward and automatically jump to the next immediate blank screen.
+
+## 6. Auto-Hide Library Pane Polish
+- **Escape Key**: Pressing `Esc` now hides the library or monitor panes if they were opened in `autoHide` mode (e.g., opened via shortcut or the icon rail).
+- **Shift Focus (`L`)**: Pressing `L` forces focus to the slides and also smartly closes any open auto-hidden panes so they don't block your view of the slides.
+
+---
+
+> [!TIP]
+> Try clicking anywhere outside the widgets and pressing **'S'**, **'Q'**, or **'F'** to test the new global shortcut handling!

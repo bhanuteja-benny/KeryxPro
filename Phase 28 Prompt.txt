@@ -1,0 +1,35 @@
+Phase 28
+
+Context:
+- changes in presentation settings
+- pin/unpin functionality for Monitor 1 and 2 pane
+
+UI Requirements:
+- Allow the font size up to 300 (at preset it is 100) in the song and bible preset settings in presentation settings. do it for all the fonts (song title, lyrics, bible chapter and verse)
+-- allow up to 300 in the text box
+-- add items up to 300 in the font size list box
+- Preview screens in song and bible presentation settings are not displaying exactly (they should exactly reflect all the settings like preview screens in Monitor 1 and Monitor 2)
+- Add pin/unpin and rail icons functionality to Monitor 1 and Monitor 2 pane, the functionality similar to song and bible search pane, but the rail icons towards bottom.
+
+Interactions:
+- For pin/unpin functionality. please replicate the same functionality as song/bible search pin/unpin functionality.
+
+Visual styles
+- let the icons and the bar (bottom) which are showing icons be sleek. (should not occupy too much space). use screen/display/monitor type of icons and numbers 1 and 2 should appear inside that screen icon respectively for Monitor 1 and Monitor 2
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+- hiding monitor panes should not hinder the presentations (presentation in secondary monitor and OBS capture window). 
+
+Deliverables:
+- Implementation Plan file
+
+
+

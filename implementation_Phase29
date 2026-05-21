@@ -1,0 +1,64 @@
+# Goal
+
+Fine-tune existing keyboard shortcuts, add new shortcuts (including freeze/unfreeze functionality), and fix the issue where shortcuts do not work when the main application window loses focus.
+
+## User Review Required
+
+No mandatory UI or functionality changes are needed outside of what was requested. However, please review the proposed implementation for global shortcut listening (using `HardwareKeyboard`) to ensure it aligns with your expectations.
+
+## Proposed Changes
+
+### `lib/features/dashboard/presentation/global_ui_providers.dart`
+- **[MODIFY]** `global_ui_providers.dart`
+  - Add `isLiveScreenFrozenProvider` (`StateProvider<bool>` default `false`).
+  - Update `GlobalShortcutActions`:
+    - `toggleFreeze()`: toggles `isLiveScreenFrozenProvider`.
+    - `handleEscape()`: checks if the library pane is unpinned and visible, and if so, hides it.
+    - `focusSlides()`: if the library pane or monitor pane is unpinned and visible, hide it, then shift focus to slides.
+    - `openBibleTab()` & `openSongsTab()`: remain mostly the same but ensure they open the overlays correctly.
+
+### `lib/features/dashboard/presentation/pages/main_dashboard_page.dart`
+- **[MODIFY]** `main_dashboard_page.dart`
+  - Remove the root `Focus` widget that currently handles shortcuts.
+  - Implement `HardwareKeyboard.instance.addHandler` in `initState` (and remove in `dispose`) to listen for `'s'`, `'q'`, `'l'`, `'f'`, and `'Esc'` globally.
+  - Add a check in the handler: if `FocusManager.instance.primaryFocus` is an input text field (like search boxes), ignore the shortcut and let the user type. This guarantees shortcuts work anywhere in the app as long as KeryxPro is active, fixing the issue where clicking empty areas disables shortcuts.
+
+### `lib/features/bible/presentation/widgets/bible_search_tab.dart`
+- **[MODIFY]** `bible_search_tab.dart`
+  - Update the "Add" button's `onPressed` logic to call `_addToSetlist` with `goLive: false` so it adds the item but does not display it immediately.
+  - Add a `FocusNode` for the Add button.
+  - Intercept the `Tab` key press in the search box/list boxes to jump focus directly to the Add button, allowing the user to press Enter on the Add button to fire its click event.
+
+### `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+- **[MODIFY]** `setlist_pane.dart`
+  - In `_listFocusNode`'s `onKeyEvent`, detect the `Enter` key.
+  - Calculate the `slideStartIndex` for the currently selected item and set `ref.read(activeSlideIndexProvider.notifier).state = slideStartIndex` to display it immediately on the screens.
+
+### `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- **[MODIFY]** `preview_pane.dart`
+  - In `_handleKeyEvent`, add logic for `LogicalKeyboardKey.space`: set the active slide to `navState.nextPrimaryIndex` (which inherently jumps to the next immediate slide or the top slide of the next group).
+  - Add logic for `LogicalKeyboardKey.tab`: search forward in the `slides` list for the next slide where `isBlank == true`, and set the active slide to its index.
+
+### `lib/features/presentation/presentation/projection_broadcaster.dart`
+- **[MODIFY]** `projection_broadcaster.dart`
+  - In `_broadcastContentM1` and `_broadcastContentM2`, check `ref.read(isLiveScreenFrozenProvider)`. If true, `return` early so the live separate windows stop receiving updates.
+  - Add a new listener for `isLiveScreenFrozenProvider`. When it changes from `true` to `false` (unfrozen), immediately call `_broadcastContentM1` and `_broadcastContentM2` with the current slide text/title to resync the live windows.
+
+### `lib/features/live_controller/presentation/widgets/live_projector_pane.dart`
+- **[MODIFY]** `live_projector_pane.dart`
+  - Inside `_Monitor1View` and `_Monitor2View` preview areas, watch `isLiveScreenFrozenProvider`.
+  - When frozen, wrap the `ProjectorView` widget in a `CustomPaint` that draws a diagonal line from the top-left to the bottom-right over the preview panes to symbolically indicate the freeze mode.
+
+## Verification Plan
+
+### Automated Tests
+- N/A
+
+### Manual Verification
+- Test all global shortcuts ('s', 'q', 'l', 'f', 'Esc') by clicking empty areas first, ensuring they still work.
+- Focus a text field and ensure typing 's', 'q', 'l', 'f' inputs text and doesn't trigger the shortcut.
+- In Bible pane, verify that 'Add' adds to setlist without going live.
+- Test Tab flow in Bible pane (Search -> Enter -> Tab to Add -> Enter to add).
+- In Setlist, select an item, press Enter, verify it goes live.
+- In Slides pane, press Spacebar to verify next slide/group selection, and Tab to verify it jumps to the next blank screen.
+- Turn on Monitor 1/2 windows, press 'f' to freeze. Change slides. Verify previews update with a diagonal line, but live windows don't change. Press 'f' to unfreeze and verify windows sync up immediately and diagonal line disappears.

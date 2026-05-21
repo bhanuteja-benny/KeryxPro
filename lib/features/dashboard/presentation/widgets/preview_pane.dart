@@ -65,6 +65,25 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
       final currentIndex = activeIndices.first;
       _cycleShortcuts('B', slides, currentIndex);
       return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.space) {
+      final currentIndex = activeIndices.first;
+      final currentTitle = slides[currentIndex].title;
+      for (int i = currentIndex + 1; i < slides.length; i++) {
+        if (slides[i].title != currentTitle) {
+          ref.read(activeSlideIndexProvider.notifier).state = i;
+          break;
+        }
+      }
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.tab) {
+      final currentIndex = activeIndices.first;
+      for (int i = currentIndex + 1; i < slides.length; i++) {
+        if (slides[i].isBlank) {
+          ref.read(activeSlideIndexProvider.notifier).state = i;
+          break;
+        }
+      }
+      return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }

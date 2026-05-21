@@ -7,6 +7,7 @@ import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/presentation/image_slide_dialog.dart';
 import '../global_ui_providers.dart';
 import '../../../live_controller/presentation/slide_utils.dart';
+import '../../../live_controller/presentation/live_projector_providers.dart';
 
 class SetlistPane extends ConsumerStatefulWidget {
   const SetlistPane({super.key});
@@ -310,8 +311,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     _listFocusNode.requestFocus();
   }
 
-  // ── Scroll slide list to item only if not visible ─────────────────────
-  void _scrollToItem(int index) {
+  int _getSlideStartIndex(int index) {
     final items = ref.read(setlistProvider);
     int slideStartIndex = 0;
     for (int i = 0; i < index; i++) {
@@ -323,6 +323,12 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
         slideStartIndex += 1; // Image = 1 slide
       }
     }
+    return slideStartIndex;
+  }
+
+  // ── Scroll slide list to item only if not visible ─────────────────────
+  void _scrollToItem(int index) {
+    int slideStartIndex = _getSlideStartIndex(index);
     
     final scrollController = ref.read(slideListScrollControllerProvider);
     if (scrollController.hasClients) {
@@ -378,9 +384,20 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     return Focus(
       focusNode: _listFocusNode,
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+        
+        if (event.logicalKey == LogicalKeyboardKey.tab) {
           ref.read(slideListFocusNodeProvider).requestFocus();
           return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+          final sel = ref.read(setlistSelectionProvider);
+          if (sel.isNotEmpty) {
+            // Find the lowest selected index
+            final selectedIndex = sel.reduce((a, b) => a < b ? a : b);
+            final slideIndex = _getSlideStartIndex(selectedIndex);
+            ref.read(activeSlideIndexProvider.notifier).state = slideIndex;
+            return KeyEventResult.handled;
+          }
         }
         return KeyEventResult.ignored;
       },

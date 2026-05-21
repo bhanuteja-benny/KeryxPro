@@ -1,44 +1,121 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../live_projector_providers.dart';
-import '../../../songs/presentation/song_selection_providers.dart';
 import '../../../settings/presentation/presentation_settings_provider.dart';
 import '../../../settings/presentation/projection_provider.dart';
 import '../../../settings/data/presentation_settings.dart';
 import '../../../presentation/presentation/widgets/projector_view.dart';
+import '../../../dashboard/presentation/global_ui_providers.dart';
 import 'monitor_settings_popup.dart';
 
-class LiveProjectorPane extends ConsumerWidget {
+class LiveProjectorPane extends ConsumerStatefulWidget {
   const LiveProjectorPane({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          Container(
+  ConsumerState<LiveProjectorPane> createState() => _LiveProjectorPaneState();
+}
+
+class _LiveProjectorPaneState extends ConsumerState<LiveProjectorPane> {
+  TabController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sync tab changes to the rail index provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _controller = ref.read(monitorTabControllerProvider);
+      _controller?.addListener(_onTabChanged);
+    });
+  }
+
+  void _onTabChanged() {
+    if (!mounted) return;
+    if (_controller != null && !_controller!.indexIsChanging) {
+      ref.read(activeMonitorRailIndexProvider.notifier).state = _controller!.index;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onTabChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tabController = ref.watch(monitorTabControllerProvider);
+    final pinMode = ref.watch(monitorPinModeProvider);
+
+    if (tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final isPinned = pinMode == MonitorPinMode.pinned;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 30,
+          child: Container(
             color: Colors.grey[850],
-            child: const TabBar(
-              tabs: [
-                Tab(height: 28, child: Text('Monitor 1 (Extended)', style: TextStyle(fontSize: 11))),
-                Tab(height: 28, child: Text('Monitor 2 (Streaming)', style: TextStyle(fontSize: 11))),
-              ],
-              indicatorColor: Colors.blue,
-              labelPadding: EdgeInsets.zero,
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
+            child: Row(
               children: [
-                _Monitor1View(), // Extended
-                _Monitor2View(), // Streaming
+                Expanded(
+                  child: TabBar(
+                    controller: tabController,
+                    indicatorColor: Colors.blue,
+                    tabs: const [
+                      Tab(height: 28, child: Text('Monitor 1 (Extended)', style: TextStyle(fontSize: 11))),
+                      Tab(height: 28, child: Text('Monitor 2 (Streaming)', style: TextStyle(fontSize: 11))),
+                    ],
+                    labelPadding: EdgeInsets.zero,
+                  ),
+                ),
+                SizedBox(
+                  width: 28,
+                  child: Tooltip(
+                    message: isPinned ? 'Unpin (Auto Hide)' : 'Pin',
+                    waitDuration: const Duration(milliseconds: 500),
+                    child: InkWell(
+                      onTap: () {
+                        if (isPinned) {
+                          // Switch to auto-hide mode and hide pane
+                          ref.read(monitorPinModeProvider.notifier).state = MonitorPinMode.autoHide;
+                          ref.read(monitorPaneVisibleProvider.notifier).state = false;
+                        } else {
+                          // Switch back to pinned mode (pane stays visible)
+                          ref.read(monitorPinModeProvider.notifier).state = MonitorPinMode.pinned;
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(4),
+                      child: Center(
+                        child: isPinned
+                            ? const Icon(Icons.push_pin, size: 14, color: Colors.grey)
+                            : Transform.rotate(
+                                angle: math.pi / 4,
+                                child: const Icon(Icons.push_pin_outlined, size: 14, color: Colors.grey),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: tabController,
+            children: [
+              _Monitor1View(), // Extended
+              _Monitor2View(), // Streaming
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -53,6 +130,7 @@ class _Monitor1View extends ConsumerWidget {
     final activeSlideText = ref.watch(m1ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
+    final isFrozen = ref.watch(isLiveScreenFrozenProvider);
 
     final selectedPresetId = projectionState.config.monitor1PresetId;
     final isConnected = projectionState.hasSecondaryDisplay;
@@ -168,11 +246,14 @@ class _Monitor1View extends ConsumerWidget {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.white10),
                           ),
-                          child: ProjectorView(
-                            settings: settings,
-                            activeSlideText: activeSlideText,
-                            titleText: activeTitle,
-                            isSong: isSong,
+                          child: CustomPaint(
+                            foregroundPainter: isFrozen ? _DiagonalLinePainter() : null,
+                            child: ProjectorView(
+                              settings: settings,
+                              activeSlideText: activeSlideText,
+                              titleText: activeTitle,
+                              isSong: isSong,
+                            ),
                           ),
                         ),
                       );
@@ -208,6 +289,7 @@ class _Monitor2View extends ConsumerWidget {
     final activeSlideText = ref.watch(m2ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
+    final isFrozen = ref.watch(isLiveScreenFrozenProvider);
 
     final selectedPresetId = projectionState.config.monitor2PresetId;
     final isActive = projectionState.isMonitor2Active;
@@ -296,11 +378,14 @@ class _Monitor2View extends ConsumerWidget {
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white10),
                       ),
-                      child: ProjectorView(
-                        settings: settings,
-                        activeSlideText: activeSlideText,
-                        titleText: activeTitle,
-                        isSong: isSong,
+                      child: CustomPaint(
+                        foregroundPainter: isFrozen ? _DiagonalLinePainter() : null,
+                        child: ProjectorView(
+                          settings: settings,
+                          activeSlideText: activeSlideText,
+                          titleText: activeTitle,
+                          isSong: isSong,
+                        ),
                       ),
                     ),
                   );
@@ -333,4 +418,19 @@ double _getAspectRatio(PresentationSettings settings, bool isSong) {
     default:
       return 16 / 9;
   }
+}
+
+class _DiagonalLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.redAccent.withValues(alpha: 0.8)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawLine(const Offset(0, 0), Offset(size.width, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

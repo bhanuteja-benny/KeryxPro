@@ -29,6 +29,29 @@ final libraryPaneVisibleProvider = StateProvider<bool>((ref) => true);
 /// Tracks which tab is active in the icon rail (0 = Songs, 1 = Bible).
 final activeLibraryRailIndexProvider = StateProvider<int>((ref) => 0);
 
+// ─── Monitor Pane Auto-Hide State ───
+
+/// Pin mode for the Monitor 1 and 2 pane.
+enum MonitorPinMode { pinned, autoHide }
+
+/// Whether the Monitor pane is pinned or in auto-hide mode. Default: pinned.
+final monitorPinModeProvider = StateProvider<MonitorPinMode>(
+  (ref) => MonitorPinMode.pinned,
+);
+
+/// Whether the Monitor pane is currently visible. Default: true.
+final monitorPaneVisibleProvider = StateProvider<bool>((ref) => true);
+
+/// Sync Tab Controller for Monitor pane
+final monitorTabControllerProvider = StateProvider<TabController?>((ref) => null);
+
+/// Tracks which tab is active in the monitor bottom rail (0 = Monitor 1, 1 = Monitor 2).
+final activeMonitorRailIndexProvider = StateProvider<int>((ref) => 0);
+
+// ─── Live Screen Freeze State ───
+/// Whether the separate live screens (Monitor 1 and Monitor 2 windows) are frozen.
+final isLiveScreenFrozenProvider = StateProvider<bool>((ref) => false);
+
 // Intents for Global Shortcuts
 class BibleTabIntent extends Intent {
   const BibleTabIntent();
@@ -49,6 +72,24 @@ class GlobalShortcutActions {
   final Ref ref;
   GlobalShortcutActions(this.ref);
 
+  void toggleFreeze() {
+    final current = ref.read(isLiveScreenFrozenProvider);
+    ref.read(isLiveScreenFrozenProvider.notifier).state = !current;
+  }
+
+  void handleEscape() {
+    // If library pane is unpinned and visible, hide it
+    if (ref.read(libraryPinModeProvider) == LibraryPinMode.autoHide &&
+        ref.read(libraryPaneVisibleProvider)) {
+      ref.read(libraryPaneVisibleProvider.notifier).state = false;
+    }
+    // If monitor pane is unpinned and visible, hide it
+    if (ref.read(monitorPinModeProvider) == MonitorPinMode.autoHide &&
+        ref.read(monitorPaneVisibleProvider)) {
+      ref.read(monitorPaneVisibleProvider.notifier).state = false;
+    }
+  }
+
   void openBibleTab() {
     // Ensure library pane is visible (un-hide if hidden)
     ref.read(libraryPaneVisibleProvider.notifier).state = true;
@@ -68,6 +109,16 @@ class GlobalShortcutActions {
   }
 
   void focusSlides() {
+    // If library or monitor panes are unpinned and visible, hide them when focusing slides
+    if (ref.read(libraryPinModeProvider) == LibraryPinMode.autoHide &&
+        ref.read(libraryPaneVisibleProvider)) {
+      ref.read(libraryPaneVisibleProvider.notifier).state = false;
+    }
+    if (ref.read(monitorPinModeProvider) == MonitorPinMode.autoHide &&
+        ref.read(monitorPaneVisibleProvider)) {
+      ref.read(monitorPaneVisibleProvider.notifier).state = false;
+    }
+    
     ref.read(slideListFocusNodeProvider).requestFocus();
   }
 }

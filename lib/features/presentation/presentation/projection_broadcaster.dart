@@ -3,6 +3,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import '../../live_controller/presentation/live_projector_providers.dart';
 import '../../songs/presentation/song_selection_providers.dart';
 import '../../settings/presentation/projection_provider.dart';
+import '../../dashboard/presentation/global_ui_providers.dart';
 
 final projectionBroadcasterProvider = Provider<void>((ref) {
   // Listen for slide changes
@@ -20,9 +21,19 @@ final projectionBroadcasterProvider = Provider<void>((ref) {
   ref.listen(m2ActiveSlideProvider, (previous, next) {
     _broadcastContentM2(ref, next);
   });
+
+  // Listen for unfreeze to sync live windows
+  ref.listen(isLiveScreenFrozenProvider, (previous, isFrozen) {
+    if (previous == true && !isFrozen) {
+      _broadcastContentM1(ref, ref.read(m1ActiveSlideProvider));
+      _broadcastContentM2(ref, ref.read(m2ActiveSlideProvider));
+    }
+  });
 });
 
 void _broadcastContentM1(Ref ref, String? text) {
+  if (ref.read(isLiveScreenFrozenProvider)) return;
+
   final title = ref.read(activeTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
   final state = ref.read(projectionProvider);
@@ -38,6 +49,8 @@ void _broadcastContentM1(Ref ref, String? text) {
 }
 
 void _broadcastContentM2(Ref ref, String? text) {
+  if (ref.read(isLiveScreenFrozenProvider)) return;
+
   final title = ref.read(activeTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
   final state = ref.read(projectionProvider);

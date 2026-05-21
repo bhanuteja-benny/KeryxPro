@@ -26,6 +26,21 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   final FocusNode _otFocusNode = FocusNode();
   final FocusNode _ntFocusNode = FocusNode();
   final FocusNode _chFocusNode = FocusNode();
+  final FocusNode _addButtonFocusNode = FocusNode(debugLabel: 'BibleAddButton');
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(bibleSearchFocusNodeProvider).onKeyEvent = (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+          _addButtonFocusNode.requestFocus();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      };
+    });
+  }
 
   @override
   void dispose() {
@@ -33,6 +48,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     _otFocusNode.dispose();
     _ntFocusNode.dispose();
     _chFocusNode.dispose();
+    _addButtonFocusNode.dispose();
     super.dispose();
   }
 
@@ -322,6 +338,9 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                       _addToSetlist(preview, version, ref, goLive: true);
                     }
                   },
+                  onTab: () {
+                    _addButtonFocusNode.requestFocus();
+                  },
                   onSelected: (val, isSelected, allItems) {
                   final current = Set<int>.from(ref.read(selectedVersesProvider));
                   
@@ -517,6 +536,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     required Function(T, bool, List<T>) onSelected,
     FocusNode? focusNode,
     VoidCallback? onEnter,
+    VoidCallback? onTab,
   }) {
     return Column(
       children: [
@@ -536,6 +556,11 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
 
                   if (event.logicalKey == LogicalKeyboardKey.enter && onEnter != null) {
                     onEnter();
+                    return KeyEventResult.handled;
+                  }
+
+                  if (event.logicalKey == LogicalKeyboardKey.tab && onTab != null) {
+                    onTab();
                     return KeyEventResult.handled;
                   }
 
@@ -624,6 +649,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   ),
                 ),
                 ElevatedButton.icon(
+                  focusNode: _addButtonFocusNode,
                   onPressed: previewAsync.valueOrNull?.isNotEmpty == true && selectedVersion != null
                       ? () {
                           _addToSetlist(previewAsync.value!, selectedVersion, ref, goLive: false);

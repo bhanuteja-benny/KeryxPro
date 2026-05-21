@@ -8,6 +8,7 @@ class ProjectorView extends StatelessWidget {
   final String? activeSlideText;
   final String? titleText;
   final bool isSong;
+  final bool showCheckerboard;
 
   const ProjectorView({
     super.key,
@@ -15,6 +16,7 @@ class ProjectorView extends StatelessWidget {
     this.activeSlideText,
     this.titleText,
     this.isSong = true,
+    this.showCheckerboard = false,
   });
 
   @override
@@ -63,6 +65,11 @@ class ProjectorView extends StatelessWidget {
     final lyricsMarginLeftValue = isSong ? settings.lyricsMarginLeft : settings.verseMarginLeft;
     final lyricsMarginRightValue = isSong ? settings.lyricsMarginRight : settings.verseMarginRight;
 
+    final lyricsHasStrokeValue = isSong ? settings.lyricsHasStroke : settings.verseHasStroke;
+    final lyricsStrokeColorValue = Color(isSong ? settings.lyricsStrokeColor : settings.verseStrokeColor);
+    final lyricsHasFillValue = isSong ? settings.lyricsHasFill : settings.verseHasFill;
+    final lyricsFillColorValue = Color(isSong ? settings.lyricsFillColor : settings.verseFillColor);
+
     final showTitle = isSong ? settings.showTitle : settings.showChapter;
     final titleHorizontalStr = isSong ? settings.titleAlignment : settings.chapterAlignment;
     final titleVerticalStr = isSong ? settings.titleVerticalAlignment : settings.chapterVerticalAlignment;
@@ -84,6 +91,11 @@ class ProjectorView extends StatelessWidget {
     final titleMarginLeftValue = isSong ? settings.titleMarginLeft : settings.chapterMarginLeft;
     final titleMarginRightValue = isSong ? settings.titleMarginRight : settings.chapterMarginRight;
 
+    final titleHasStrokeValue = isSong ? settings.titleHasStroke : settings.chapterHasStroke;
+    final titleStrokeColorValue = Color(isSong ? settings.titleStrokeColor : settings.chapterStrokeColor);
+    final titleHasFillValue = isSong ? settings.titleHasFill : settings.chapterHasFill;
+    final titleFillColorValue = Color(isSong ? settings.titleFillColor : settings.chapterFillColor);
+
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
     final isImageSlide = activeSlideText?.startsWith('IMAGE:') ?? false;
@@ -94,9 +106,9 @@ class ProjectorView extends StatelessWidget {
       height: canvasHeight,
       decoration: BoxDecoration(
         color: (activeSlideText == null || isBlankScreen) ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
-        image: !isBlankScreen && activeSlideText != null && !isImageSlide && isImageEnabled && (backgroundImage?.isNotEmpty ?? false) && File(backgroundImage!).existsSync()
+        image: !isBlankScreen && activeSlideText != null && !isImageSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync()
           ? DecorationImage(
-              image: FileImage(File(backgroundImage!)),
+              image: FileImage(File(backgroundImage)),
               fit: BoxFit.cover,
             )
           : null,
@@ -106,6 +118,12 @@ class ProjectorView extends StatelessWidget {
         : Stack(
             fit: StackFit.expand,
             children: [
+              if (isTransparent && showCheckerboard)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _CheckerboardPainter(),
+                  ),
+                ),
               // Body Layer
               Align(
                 alignment: isImageSlide 
@@ -129,22 +147,49 @@ class ProjectorView extends StatelessWidget {
                               ),
                               maxLines: 1,
                             )
-                          : AutoSizeText(
-                              activeSlideText!,
-                              style: TextStyle(
-                                color: lyricsFontColorValue,
-                                fontSize: lyricsFontSizeValue,
-                                fontFamily: lyricsFontFamilyValue,
-                                fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
-                                fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
-                                height: 1.2,
-                                decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
-                              ),
-                              textAlign: _getTextAlign(alignStr),
-                              maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
-                              minFontSize: 8, 
-                              wrapWords: !isSong || lineCount == 1,
-                              softWrap: true,
+                          : Stack(
+                              children: [
+                                if (lyricsHasStrokeValue)
+                                  AutoSizeText(
+                                    activeSlideText!,
+                                    style: TextStyle(
+                                      fontSize: lyricsFontSizeValue,
+                                      fontFamily: lyricsFontFamilyValue,
+                                      fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+                                      fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+                                      height: 1.2,
+                                      decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
+                                      backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 2.0
+                                        ..color = lyricsStrokeColorValue,
+                                    ),
+                                    textAlign: _getTextAlign(alignStr),
+                                    maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
+                                    minFontSize: 8, 
+                                    wrapWords: !isSong || lineCount == 1,
+                                    softWrap: true,
+                                  ),
+                                AutoSizeText(
+                                  activeSlideText!,
+                                  style: TextStyle(
+                                    color: lyricsFontColorValue,
+                                    fontSize: lyricsFontSizeValue,
+                                    fontFamily: lyricsFontFamilyValue,
+                                    fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+                                    fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+                                    height: 1.2,
+                                    decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
+                                    backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
+                                  ),
+                                  textAlign: _getTextAlign(alignStr),
+                                  maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
+                                  minFontSize: 8, 
+                                  wrapWords: !isSong || lineCount == 1,
+                                  softWrap: true,
+                                ),
+                              ],
                             ),
                 ),
               ),
@@ -155,17 +200,39 @@ class ProjectorView extends StatelessWidget {
                   alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(titleMarginLeftValue, titleMarginTopValue, titleMarginRightValue, titleMarginBottomValue),
-                    child: Text(
-                      titleText!,
-                      textAlign: _getTextAlign(titleHorizontalStr),
-                      style: TextStyle(
-                        color: titleFontColorValue,
-                        fontSize: titleFontSizeValue,
-                        fontFamily: titleFontFamilyValue,
-                        fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
-                        fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
-                        decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
-                      ),
+                    child: Stack(
+                      children: [
+                        if (titleHasStrokeValue)
+                          Text(
+                            titleText!,
+                            textAlign: _getTextAlign(titleHorizontalStr),
+                            style: TextStyle(
+                              fontSize: titleFontSizeValue,
+                              fontFamily: titleFontFamilyValue,
+                              fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
+                              fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
+                              decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
+                              backgroundColor: titleHasFillValue ? titleFillColorValue : null,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 2.0
+                                ..color = titleStrokeColorValue,
+                            ),
+                          ),
+                        Text(
+                          titleText!,
+                          textAlign: _getTextAlign(titleHorizontalStr),
+                          style: TextStyle(
+                            color: titleFontColorValue,
+                            fontSize: titleFontSizeValue,
+                            fontFamily: titleFontFamilyValue,
+                            fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
+                            fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
+                            decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
+                            backgroundColor: titleHasFillValue ? titleFillColorValue : null,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -250,4 +317,24 @@ class ProjectorView extends StatelessWidget {
       default: return Alignment.center;
     }
   }
+}
+
+class _CheckerboardPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint1 = Paint()..color = Colors.grey[400]!;
+    final paint2 = Paint()..color = Colors.grey[300]!;
+    const double squareSize = 20.0;
+    
+    for (int i = 0; i < size.width / squareSize; i++) {
+      for (int j = 0; j < size.height / squareSize; j++) {
+        final isEven = (i + j) % 2 == 0;
+        final rect = Rect.fromLTWH(i * squareSize, j * squareSize, squareSize, squareSize);
+        canvas.drawRect(rect, isEven ? paint1 : paint2);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

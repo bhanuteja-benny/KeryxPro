@@ -1,0 +1,59 @@
+Phase 29
+
+Context:
+- finetuning shortcut functionalities 
+- adding more shortcuts (freeze/unfreeze) 
+- fixing shortcut issues
+
+Interactions (shortcuts):
+1)'s' for scripture
+⁃ no change in existing functionality. but more additions
+⁃ when 's' is pressed, the focus should go to bible search textbox. (existing)
+⁃ in case when song/bible pane is in unpinned mode. pressing 's' should open that pane and proceed with the remaining functionality (like focusing search textbox etc) (existing) 
+- in case when song/bible pane is in unpinned mode and is opened due to pressing shortcut or rail icon, then pressing 'esc' should hide that pane again 
+- in case when song/bible pane is in unpinned mode and is opened due to pressing shortcut or rail icon, then pressing 'l' should shift focus to slides pane and hide bible search pane again.
+2) 'q' for songs
+⁃ no change in existing functionality. but more additions
+- when "q' is pressed, the focus should go to song search textbox. (existing)
+- in case when song/bible pane is in unpinned mode. pressing 'q' should open the tab and proceed with the remaining functionality (like focusing search textbox etc) (existing) 
+- in case when song/bible pane is in unpinned mode and is opened due to pressing shortcut or rail icon, then pressing 'esc' should hide that pane again 
+- in case when song/bible pane is in unpinned mode and is opened due to pressing shortcut or rail icon, then pressing 'l' should shift focus to slides pane and hide song/bible search pane again 
+3) 'l' for slides
+⁃ no change in existing functionality. but more additions
+⁃ when 'l' is pressed, the focus should go to slides pane
+4) 'f' for freeze and unfreeze
+- when user presses 'f' the live screens (the separate windows for secondary monitor and OBS window capture) should freeze to the current slide/display 
+- when user changes the slide selections they should reflect only in Monitor 1 and 2 preview screens but not in the live screens (for secondary screen and OBS capture) 
+- simply the sync between preview screens in Monitor 1 and 2 and the actual live screen windows should stop/freeze 
+- show a diagonal line (from top left to right bottom) in preview screens in Monitor 1 and 2 as a symbolic representation for freeze
+- when user presses 'f' when it is already in freeze mode, then remove the freeze mode - i.e., the changed/selected slide which is displaying in Monitor 1 and 2 should start reflecting in their respective live screen windows. 
+- and the diagonal line in preview screens should be removed.
+5) Bible search section shortcuts
+- when user types in search box and clicks enter button two times, the bible verse is automatically searched and selected, added in setlist, added in slides and also automatically the slide is selected and displays in the preview screens and live screens (this functionality already exists and no changes required but verify it is as intended)
+- when user clicks enter button while in any of the list boxes (Old testament books, New testament books, chapters, verses) then the selected bible verse is automatically added in setlist, added in slides and also automatically the slide is selected and displays in the preview screens and live screens (this functionality already exists and no changes required but verify as it is intended)
+- when user clicks on add button, then the selected bible verse should be added in setlist, added in slides but slide should not be selected, i.e., should not display immediately in preview screens and live screens.
+- when user types in search box and clicks enter button once then the bible verse is automatically selected (automatic selection happens in books, chapters and verses listboxes) (this functionality already exists and no changes required), but when user clicks 'tab', then shift the focus to add button. i.e., when user types verse reference in search box and then clicks 'enter' -> 'tab' -> 'enter' then search should happen and the respective book chapter and verse numbers should be selected and it should fire 'add' button click event and the functionality should continue for the add button click.
+6) SetList pane shortcuts
+- when user selects an item in the setlist the slides section is scrolling to the respective slide (this functionality already exists and no changes required)
+- after user selects an item in the setlist, if user clicks 'enter' button, then that respective slide (or top slide of the group of slides) should be selected and displayed.
+7) More shortcuts in the Slides section/pane
+- when user clicks on 'tab' button, then selection should jump to next immediate blank screen
+- when user clicks on space bar button, then selection should jump to next immediate slide or top slide of next immediate group of slides.
+8) Shortcuts issue
+- 's', 'q', 'l' shortcuts are working only when any item or control is in focus. if user clicks on empty areas like slides empty area or setlist empty etc. these shortcuts are not working. but if the focus is on a slide in the slides pane then if user presses 's' or 'q', the shortcut is working.
+- make sure that 's', 'q', 'l', 'f' shortcuts should work when the KeryxPro main window is active (no matter where the focus is, expect for the input textboxes)
+- the shortcuts should not work only when the focus is in any input textbox (so that user can input even the letters used for shortcut)
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan file
