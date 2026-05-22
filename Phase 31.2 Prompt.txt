@@ -1,0 +1,23 @@
+Phase 31.2
+
+Context: 
+- Issue in Background settings of song/scripture/blank screen
+
+Problem:
+- when background image and transparent both are selected, then background image is disappearing and it is looking transparent (means checker board is displaying).
+- the expected functionality when background image and transparent both are selected is, the background image should be displayed, and if there are any areas which are transparent in the background image (in png image), then those areas should display transparent.
+- the expected functionality when background image and background color both are selected, then the background image should be displayed, and if there are any areas which are transparent in the background image (in png image), then those areas should display the selected background color.
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan file

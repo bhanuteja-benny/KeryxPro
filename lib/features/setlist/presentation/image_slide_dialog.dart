@@ -3,20 +3,38 @@ import 'package:flutter/material.dart';
 import '../data/setlist_item.dart';
 
 class ImageSlideDialog extends StatefulWidget {
-  const ImageSlideDialog({super.key});
+  final bool isForBackground;
+  final String initialImagePath;
+  final String initialLayout;
+  final String initialAlignment;
+
+  const ImageSlideDialog({
+    super.key,
+    this.isForBackground = false,
+    this.initialImagePath = '',
+    this.initialLayout = 'contain',
+    this.initialAlignment = 'center',
+  });
 
   @override
   State<ImageSlideDialog> createState() => _ImageSlideDialogState();
 }
 
 class _ImageSlideDialogState extends State<ImageSlideDialog> {
-  String _imagePath = '';
-  String _layout = 'contain';
-  String _alignment = 'center';
+  late String _imagePath;
+  late String _layout;
+  late String _alignment;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePath = widget.initialImagePath;
+    _layout = widget.initialLayout;
+    _alignment = widget.initialAlignment;
+  }
 
   static const _layouts = [
     ('stretch', 'Stretch', Icons.aspect_ratio),
-    ('fit', 'Fit to Window', Icons.fit_screen),
     ('contain', 'Keep Aspect Ratio', Icons.crop_free),
   ];
 
@@ -45,7 +63,7 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
     return AlertDialog(
       backgroundColor: const Color(0xFF2D2D2D),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      title: const Text('Add Image Slide', style: TextStyle(color: Colors.white, fontSize: 16)),
+      title: Text(widget.isForBackground ? 'Background Image Settings' : 'Add Image Slide', style: const TextStyle(color: Colors.white, fontSize: 16)),
       content: SizedBox(
         width: 420,
         child: Column(
@@ -198,7 +216,7 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
             disabledBackgroundColor: Colors.white12,
             foregroundColor: Colors.white,
           ),
-          child: const Text('Add to SetList'),
+          child: Text(widget.isForBackground ? 'Done' : 'Add to SetList'),
         ),
       ],
     );

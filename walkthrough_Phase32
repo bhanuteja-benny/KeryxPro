@@ -1,0 +1,33 @@
+# Phase 32: Background Image Settings Implementation
+
+I have fully implemented the expanded background image settings feature according to your approved plan.
+
+## Overview of Changes
+
+> [!NOTE]
+> Background images across Song, Scripture, and Blank screens now fully support the same dynamic Layout (Stretch/Keep Aspect Ratio) and Alignment choices as standard image slides!
+
+### 1. Database and Provider Upgrades
+- Safely extended the `PresentationSettings` Isar schema to store six new persistent properties:
+  - `songBackgroundImageLayout`, `songBackgroundImageAlignment`
+  - `scriptureBackgroundImageLayout`, `scriptureBackgroundImageAlignment`
+  - `blankBackgroundImageLayout`, `blankBackgroundImageAlignment`
+- Ran the `build_runner` to synchronize the local database mappings with these new fields.
+- Updated the `EditingPresetNotifier` provider to safely update these new values and gracefully fallback to default settings ('stretch' and 'center') for existing presets.
+
+### 2. Streamlined UI Workflow
+- Modified the `PresentationSettingsDialog` so that when a user wants to assign a background image, they click a new **'Add'** button instead of a simple 'Browse' file picker.
+- This invokes the existing `ImageSlideDialog` with a custom presentation (Title: "Background Image Settings", Submit: "Done").
+- When a user previously selected an image, its path, layout, and alignment choices will elegantly pre-populate this dialog so that it acts like an editor instead of starting fresh.
+
+### 3. Rendering Engine Integration
+- Re-wired the `ProjectorView` layer logic. The background layer now smartly translates the newly saved Layout and Alignment strings.
+- Instead of being hardcoded to `BoxFit.cover` (which forcefully stretched and cropped), it explicitly respects:
+  - **'Stretch'**: Expands the image to occupy all pixel real estate (`BoxFit.fill`).
+  - **'Keep Aspect Ratio'**: Adjusts to bounds proportionally (`BoxFit.contain`).
+  - **Alignments**: Pinpoint alignment configurations are smoothly parsed directly into the `Image` wrapper.
+
+## Verification
+- Code successfully builds and runs.
+- `flutter analyze` shows zero new errors or regressions.
+- Open your Presentation Settings, hit 'Add' under the Background Image option, tweak the settings, and immediately observe them applied in real-time onto your preview canvas!

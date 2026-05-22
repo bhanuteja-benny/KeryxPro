@@ -1,0 +1,24 @@
+# Phase 31.2: Background Rendering Order Fix
+
+I've successfully updated the rendering engine in `projector_view.dart` to correctly manage the display order of the presentation background elements.
+
+## Overview of Changes
+
+> [!NOTE]
+> The background color and checkerboard now accurately display *underneath* transparent PNG background images, as expected.
+
+### 1. Stripped Container Decorations
+- Removed the `BoxDecoration` rendering rules that were drawing the solid background color and the background image at the bottom-most level of the main container. This was flawed because container decorations are painted behind all inner `child` widgets (like the Checkerboard and Lyrics).
+
+### 2. Implemented Layered Compositing
+- I shifted all background elements inside the main UI `Stack` so that their rendering depth (`z-index`) is strictly ordered from bottom to top:
+  1. **Solid Color Layer** (`Container`): Paints black, transparent, or your specific Preset color.
+  2. **Transparency Grid** (`CustomPaint`): Conditionally paints the checkerboard *over* the solid layer.
+  3. **Background Image Layer** (`Image.file`): Draws the preset background image *over* the checkerboard/color layers using `BoxFit.cover`. Because it now sits at Layer 3, any transparency naturally reveals the checkerboard or custom color underneath.
+  4. **Content Layer**: The actual slide content (Lyrics, Title, Image Slides) remains securely on top.
+
+## Verification
+- Run the KeryxPro desktop app.
+- Head to Preset Settings -> Background Image, and assign a transparent PNG file.
+- Check the 'Transparent' box. You should now see the checkerboard shining through the transparent gaps of the PNG image.
+- Uncheck the 'Transparent' box and specify a distinct background color (like hot pink). The pink color will now shine through the transparent gaps of the PNG image.

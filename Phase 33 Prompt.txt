@@ -1,0 +1,13 @@
+Phase 33
+
+Context:
+make sure (verify) that KeryxPro works in mac book as well (like mac book air, pro, mini etc)
+
+Refactoring:
+⁃ KeryxPro is developed in windows machine and till now every functionality is tested in windows machine only 
+- Verify the code and ensure that every functionality works as it is in the mac os as well 
+⁃ If any extra code changes are required to maintain the same functionality in mac os, then mention them in implementation plan.
+- every functionality should work in mac books as well (like presentation settings, typography, song and bible search functionalities, all shortcuts, setlist, slides, preview screens, live screens etc)
+
+Deliverables:
+- Implementation Plan file (containing required refactoring's and their approach) list every functionality which needs to be addressed/changed for it to work in mac os

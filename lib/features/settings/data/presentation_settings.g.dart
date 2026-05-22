@@ -18,413 +18,483 @@ const PresentationSettingsSchema = CollectionSchema(
   name: r'PresentationSettings',
   id: -4914357701520412616,
   properties: {
-    r'chapterAlignment': PropertySchema(
+    r'blankAspectRatio': PropertySchema(
       id: 0,
+      name: r'blankAspectRatio',
+      type: IsarType.string,
+    ),
+    r'blankBackgroundColor': PropertySchema(
+      id: 1,
+      name: r'blankBackgroundColor',
+      type: IsarType.long,
+    ),
+    r'blankBackgroundImage': PropertySchema(
+      id: 2,
+      name: r'blankBackgroundImage',
+      type: IsarType.string,
+    ),
+    r'blankBackgroundImageAlignment': PropertySchema(
+      id: 3,
+      name: r'blankBackgroundImageAlignment',
+      type: IsarType.string,
+    ),
+    r'blankBackgroundImageLayout': PropertySchema(
+      id: 4,
+      name: r'blankBackgroundImageLayout',
+      type: IsarType.string,
+    ),
+    r'blankCustomHeight': PropertySchema(
+      id: 5,
+      name: r'blankCustomHeight',
+      type: IsarType.double,
+    ),
+    r'blankCustomWidth': PropertySchema(
+      id: 6,
+      name: r'blankCustomWidth',
+      type: IsarType.double,
+    ),
+    r'chapterAlignment': PropertySchema(
+      id: 7,
       name: r'chapterAlignment',
       type: IsarType.string,
     ),
     r'chapterBold': PropertySchema(
-      id: 1,
+      id: 8,
       name: r'chapterBold',
       type: IsarType.bool,
     ),
     r'chapterFillColor': PropertySchema(
-      id: 2,
+      id: 9,
       name: r'chapterFillColor',
       type: IsarType.long,
     ),
     r'chapterFontColor': PropertySchema(
-      id: 3,
+      id: 10,
       name: r'chapterFontColor',
       type: IsarType.long,
     ),
     r'chapterFontFamily': PropertySchema(
-      id: 4,
+      id: 11,
       name: r'chapterFontFamily',
       type: IsarType.string,
     ),
     r'chapterFontSize': PropertySchema(
-      id: 5,
+      id: 12,
       name: r'chapterFontSize',
       type: IsarType.double,
     ),
     r'chapterHasFill': PropertySchema(
-      id: 6,
+      id: 13,
       name: r'chapterHasFill',
       type: IsarType.bool,
     ),
     r'chapterHasStroke': PropertySchema(
-      id: 7,
+      id: 14,
       name: r'chapterHasStroke',
       type: IsarType.bool,
     ),
     r'chapterItalic': PropertySchema(
-      id: 8,
+      id: 15,
       name: r'chapterItalic',
       type: IsarType.bool,
     ),
     r'chapterMarginBottom': PropertySchema(
-      id: 9,
+      id: 16,
       name: r'chapterMarginBottom',
       type: IsarType.double,
     ),
     r'chapterMarginLeft': PropertySchema(
-      id: 10,
+      id: 17,
       name: r'chapterMarginLeft',
       type: IsarType.double,
     ),
     r'chapterMarginRight': PropertySchema(
-      id: 11,
+      id: 18,
       name: r'chapterMarginRight',
       type: IsarType.double,
     ),
     r'chapterMarginTop': PropertySchema(
-      id: 12,
+      id: 19,
       name: r'chapterMarginTop',
       type: IsarType.double,
     ),
     r'chapterStrokeColor': PropertySchema(
-      id: 13,
+      id: 20,
       name: r'chapterStrokeColor',
       type: IsarType.long,
     ),
     r'chapterUnderline': PropertySchema(
-      id: 14,
+      id: 21,
       name: r'chapterUnderline',
       type: IsarType.bool,
     ),
     r'chapterVerticalAlignment': PropertySchema(
-      id: 15,
+      id: 22,
       name: r'chapterVerticalAlignment',
       type: IsarType.string,
     ),
+    r'isBlankImageEnabled': PropertySchema(
+      id: 23,
+      name: r'isBlankImageEnabled',
+      type: IsarType.bool,
+    ),
+    r'isBlankTransparent': PropertySchema(
+      id: 24,
+      name: r'isBlankTransparent',
+      type: IsarType.bool,
+    ),
     r'isDefault': PropertySchema(
-      id: 16,
+      id: 25,
       name: r'isDefault',
       type: IsarType.bool,
     ),
     r'isScriptureImageEnabled': PropertySchema(
-      id: 17,
+      id: 26,
       name: r'isScriptureImageEnabled',
       type: IsarType.bool,
     ),
     r'isScriptureTransparent': PropertySchema(
-      id: 18,
+      id: 27,
       name: r'isScriptureTransparent',
       type: IsarType.bool,
     ),
     r'isSongImageEnabled': PropertySchema(
-      id: 19,
+      id: 28,
       name: r'isSongImageEnabled',
       type: IsarType.bool,
     ),
     r'isSongTransparent': PropertySchema(
-      id: 20,
+      id: 29,
       name: r'isSongTransparent',
       type: IsarType.bool,
     ),
     r'lyricsAlignment': PropertySchema(
-      id: 21,
+      id: 30,
       name: r'lyricsAlignment',
       type: IsarType.string,
     ),
     r'lyricsBold': PropertySchema(
-      id: 22,
+      id: 31,
       name: r'lyricsBold',
       type: IsarType.bool,
     ),
     r'lyricsFillColor': PropertySchema(
-      id: 23,
+      id: 32,
       name: r'lyricsFillColor',
       type: IsarType.long,
     ),
     r'lyricsFontColor': PropertySchema(
-      id: 24,
+      id: 33,
       name: r'lyricsFontColor',
       type: IsarType.long,
     ),
     r'lyricsFontFamily': PropertySchema(
-      id: 25,
+      id: 34,
       name: r'lyricsFontFamily',
       type: IsarType.string,
     ),
     r'lyricsFontSize': PropertySchema(
-      id: 26,
+      id: 35,
       name: r'lyricsFontSize',
       type: IsarType.double,
     ),
     r'lyricsHasFill': PropertySchema(
-      id: 27,
+      id: 36,
       name: r'lyricsHasFill',
       type: IsarType.bool,
     ),
     r'lyricsHasStroke': PropertySchema(
-      id: 28,
+      id: 37,
       name: r'lyricsHasStroke',
       type: IsarType.bool,
     ),
     r'lyricsItalic': PropertySchema(
-      id: 29,
+      id: 38,
       name: r'lyricsItalic',
       type: IsarType.bool,
     ),
     r'lyricsMarginBottom': PropertySchema(
-      id: 30,
+      id: 39,
       name: r'lyricsMarginBottom',
       type: IsarType.double,
     ),
     r'lyricsMarginLeft': PropertySchema(
-      id: 31,
+      id: 40,
       name: r'lyricsMarginLeft',
       type: IsarType.double,
     ),
     r'lyricsMarginRight': PropertySchema(
-      id: 32,
+      id: 41,
       name: r'lyricsMarginRight',
       type: IsarType.double,
     ),
     r'lyricsMarginTop': PropertySchema(
-      id: 33,
+      id: 42,
       name: r'lyricsMarginTop',
       type: IsarType.double,
     ),
     r'lyricsStrokeColor': PropertySchema(
-      id: 34,
+      id: 43,
       name: r'lyricsStrokeColor',
       type: IsarType.long,
     ),
     r'lyricsUnderline': PropertySchema(
-      id: 35,
+      id: 44,
       name: r'lyricsUnderline',
       type: IsarType.bool,
     ),
     r'lyricsVerticalAlignment': PropertySchema(
-      id: 36,
+      id: 45,
       name: r'lyricsVerticalAlignment',
       type: IsarType.string,
     ),
     r'presetName': PropertySchema(
-      id: 37,
+      id: 46,
       name: r'presetName',
       type: IsarType.string,
     ),
     r'scriptureAspectRatio': PropertySchema(
-      id: 38,
+      id: 47,
       name: r'scriptureAspectRatio',
       type: IsarType.string,
     ),
     r'scriptureBackgroundColor': PropertySchema(
-      id: 39,
+      id: 48,
       name: r'scriptureBackgroundColor',
       type: IsarType.long,
     ),
     r'scriptureBackgroundImage': PropertySchema(
-      id: 40,
+      id: 49,
       name: r'scriptureBackgroundImage',
       type: IsarType.string,
     ),
+    r'scriptureBackgroundImageAlignment': PropertySchema(
+      id: 50,
+      name: r'scriptureBackgroundImageAlignment',
+      type: IsarType.string,
+    ),
+    r'scriptureBackgroundImageLayout': PropertySchema(
+      id: 51,
+      name: r'scriptureBackgroundImageLayout',
+      type: IsarType.string,
+    ),
     r'scriptureCustomHeight': PropertySchema(
-      id: 41,
+      id: 52,
       name: r'scriptureCustomHeight',
       type: IsarType.double,
     ),
     r'scriptureCustomWidth': PropertySchema(
-      id: 42,
+      id: 53,
       name: r'scriptureCustomWidth',
       type: IsarType.double,
     ),
     r'showChapter': PropertySchema(
-      id: 43,
+      id: 54,
       name: r'showChapter',
       type: IsarType.bool,
     ),
     r'showTitle': PropertySchema(
-      id: 44,
+      id: 55,
       name: r'showTitle',
       type: IsarType.bool,
     ),
     r'songAspectRatio': PropertySchema(
-      id: 45,
+      id: 56,
       name: r'songAspectRatio',
       type: IsarType.string,
     ),
     r'songBackgroundColor': PropertySchema(
-      id: 46,
+      id: 57,
       name: r'songBackgroundColor',
       type: IsarType.long,
     ),
     r'songBackgroundImage': PropertySchema(
-      id: 47,
+      id: 58,
       name: r'songBackgroundImage',
       type: IsarType.string,
     ),
+    r'songBackgroundImageAlignment': PropertySchema(
+      id: 59,
+      name: r'songBackgroundImageAlignment',
+      type: IsarType.string,
+    ),
+    r'songBackgroundImageLayout': PropertySchema(
+      id: 60,
+      name: r'songBackgroundImageLayout',
+      type: IsarType.string,
+    ),
     r'songCustomHeight': PropertySchema(
-      id: 48,
+      id: 61,
       name: r'songCustomHeight',
       type: IsarType.double,
     ),
     r'songCustomWidth': PropertySchema(
-      id: 49,
+      id: 62,
       name: r'songCustomWidth',
       type: IsarType.double,
     ),
+    r'syncId': PropertySchema(
+      id: 63,
+      name: r'syncId',
+      type: IsarType.string,
+    ),
     r'titleAlignment': PropertySchema(
-      id: 50,
+      id: 64,
       name: r'titleAlignment',
       type: IsarType.string,
     ),
     r'titleBold': PropertySchema(
-      id: 51,
+      id: 65,
       name: r'titleBold',
       type: IsarType.bool,
     ),
     r'titleFillColor': PropertySchema(
-      id: 52,
+      id: 66,
       name: r'titleFillColor',
       type: IsarType.long,
     ),
     r'titleFontColor': PropertySchema(
-      id: 53,
+      id: 67,
       name: r'titleFontColor',
       type: IsarType.long,
     ),
     r'titleFontFamily': PropertySchema(
-      id: 54,
+      id: 68,
       name: r'titleFontFamily',
       type: IsarType.string,
     ),
     r'titleFontSize': PropertySchema(
-      id: 55,
+      id: 69,
       name: r'titleFontSize',
       type: IsarType.double,
     ),
     r'titleHasFill': PropertySchema(
-      id: 56,
+      id: 70,
       name: r'titleHasFill',
       type: IsarType.bool,
     ),
     r'titleHasStroke': PropertySchema(
-      id: 57,
+      id: 71,
       name: r'titleHasStroke',
       type: IsarType.bool,
     ),
     r'titleItalic': PropertySchema(
-      id: 58,
+      id: 72,
       name: r'titleItalic',
       type: IsarType.bool,
     ),
     r'titleMarginBottom': PropertySchema(
-      id: 59,
+      id: 73,
       name: r'titleMarginBottom',
       type: IsarType.double,
     ),
     r'titleMarginLeft': PropertySchema(
-      id: 60,
+      id: 74,
       name: r'titleMarginLeft',
       type: IsarType.double,
     ),
     r'titleMarginRight': PropertySchema(
-      id: 61,
+      id: 75,
       name: r'titleMarginRight',
       type: IsarType.double,
     ),
     r'titleMarginTop': PropertySchema(
-      id: 62,
+      id: 76,
       name: r'titleMarginTop',
       type: IsarType.double,
     ),
     r'titleStrokeColor': PropertySchema(
-      id: 63,
+      id: 77,
       name: r'titleStrokeColor',
       type: IsarType.long,
     ),
     r'titleUnderline': PropertySchema(
-      id: 64,
+      id: 78,
       name: r'titleUnderline',
       type: IsarType.bool,
     ),
     r'titleVerticalAlignment': PropertySchema(
-      id: 65,
+      id: 79,
       name: r'titleVerticalAlignment',
       type: IsarType.string,
     ),
     r'verseAlignment': PropertySchema(
-      id: 66,
+      id: 80,
       name: r'verseAlignment',
       type: IsarType.string,
     ),
     r'verseBold': PropertySchema(
-      id: 67,
+      id: 81,
       name: r'verseBold',
       type: IsarType.bool,
     ),
     r'verseFillColor': PropertySchema(
-      id: 68,
+      id: 82,
       name: r'verseFillColor',
       type: IsarType.long,
     ),
     r'verseFontColor': PropertySchema(
-      id: 69,
+      id: 83,
       name: r'verseFontColor',
       type: IsarType.long,
     ),
     r'verseFontFamily': PropertySchema(
-      id: 70,
+      id: 84,
       name: r'verseFontFamily',
       type: IsarType.string,
     ),
     r'verseFontSize': PropertySchema(
-      id: 71,
+      id: 85,
       name: r'verseFontSize',
       type: IsarType.double,
     ),
     r'verseHasFill': PropertySchema(
-      id: 72,
+      id: 86,
       name: r'verseHasFill',
       type: IsarType.bool,
     ),
     r'verseHasStroke': PropertySchema(
-      id: 73,
+      id: 87,
       name: r'verseHasStroke',
       type: IsarType.bool,
     ),
     r'verseItalic': PropertySchema(
-      id: 74,
+      id: 88,
       name: r'verseItalic',
       type: IsarType.bool,
     ),
     r'verseMarginBottom': PropertySchema(
-      id: 75,
+      id: 89,
       name: r'verseMarginBottom',
       type: IsarType.double,
     ),
     r'verseMarginLeft': PropertySchema(
-      id: 76,
+      id: 90,
       name: r'verseMarginLeft',
       type: IsarType.double,
     ),
     r'verseMarginRight': PropertySchema(
-      id: 77,
+      id: 91,
       name: r'verseMarginRight',
       type: IsarType.double,
     ),
     r'verseMarginTop': PropertySchema(
-      id: 78,
+      id: 92,
       name: r'verseMarginTop',
       type: IsarType.double,
     ),
     r'verseStrokeColor': PropertySchema(
-      id: 79,
+      id: 93,
       name: r'verseStrokeColor',
       type: IsarType.long,
     ),
     r'verseUnderline': PropertySchema(
-      id: 80,
+      id: 94,
       name: r'verseUnderline',
       type: IsarType.bool,
     ),
     r'verseVerticalAlignment': PropertySchema(
-      id: 81,
+      id: 95,
       name: r'verseVerticalAlignment',
       type: IsarType.string,
     )
@@ -434,7 +504,21 @@ const PresentationSettingsSchema = CollectionSchema(
   deserialize: _presentationSettingsDeserialize,
   deserializeProp: _presentationSettingsDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'syncId': IndexSchema(
+      id: 7538593479801827566,
+      name: r'syncId',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'syncId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _presentationSettingsGetId,
@@ -449,6 +533,10 @@ int _presentationSettingsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.blankAspectRatio.length * 3;
+  bytesCount += 3 + object.blankBackgroundImage.length * 3;
+  bytesCount += 3 + object.blankBackgroundImageAlignment.length * 3;
+  bytesCount += 3 + object.blankBackgroundImageLayout.length * 3;
   bytesCount += 3 + object.chapterAlignment.length * 3;
   bytesCount += 3 + object.chapterFontFamily.length * 3;
   bytesCount += 3 + object.chapterVerticalAlignment.length * 3;
@@ -458,8 +546,13 @@ int _presentationSettingsEstimateSize(
   bytesCount += 3 + object.presetName.length * 3;
   bytesCount += 3 + object.scriptureAspectRatio.length * 3;
   bytesCount += 3 + object.scriptureBackgroundImage.length * 3;
+  bytesCount += 3 + object.scriptureBackgroundImageAlignment.length * 3;
+  bytesCount += 3 + object.scriptureBackgroundImageLayout.length * 3;
   bytesCount += 3 + object.songAspectRatio.length * 3;
   bytesCount += 3 + object.songBackgroundImage.length * 3;
+  bytesCount += 3 + object.songBackgroundImageAlignment.length * 3;
+  bytesCount += 3 + object.songBackgroundImageLayout.length * 3;
+  bytesCount += 3 + object.syncId.length * 3;
   bytesCount += 3 + object.titleAlignment.length * 3;
   bytesCount += 3 + object.titleFontFamily.length * 3;
   bytesCount += 3 + object.titleVerticalAlignment.length * 3;
@@ -475,88 +568,102 @@ void _presentationSettingsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.chapterAlignment);
-  writer.writeBool(offsets[1], object.chapterBold);
-  writer.writeLong(offsets[2], object.chapterFillColor);
-  writer.writeLong(offsets[3], object.chapterFontColor);
-  writer.writeString(offsets[4], object.chapterFontFamily);
-  writer.writeDouble(offsets[5], object.chapterFontSize);
-  writer.writeBool(offsets[6], object.chapterHasFill);
-  writer.writeBool(offsets[7], object.chapterHasStroke);
-  writer.writeBool(offsets[8], object.chapterItalic);
-  writer.writeDouble(offsets[9], object.chapterMarginBottom);
-  writer.writeDouble(offsets[10], object.chapterMarginLeft);
-  writer.writeDouble(offsets[11], object.chapterMarginRight);
-  writer.writeDouble(offsets[12], object.chapterMarginTop);
-  writer.writeLong(offsets[13], object.chapterStrokeColor);
-  writer.writeBool(offsets[14], object.chapterUnderline);
-  writer.writeString(offsets[15], object.chapterVerticalAlignment);
-  writer.writeBool(offsets[16], object.isDefault);
-  writer.writeBool(offsets[17], object.isScriptureImageEnabled);
-  writer.writeBool(offsets[18], object.isScriptureTransparent);
-  writer.writeBool(offsets[19], object.isSongImageEnabled);
-  writer.writeBool(offsets[20], object.isSongTransparent);
-  writer.writeString(offsets[21], object.lyricsAlignment);
-  writer.writeBool(offsets[22], object.lyricsBold);
-  writer.writeLong(offsets[23], object.lyricsFillColor);
-  writer.writeLong(offsets[24], object.lyricsFontColor);
-  writer.writeString(offsets[25], object.lyricsFontFamily);
-  writer.writeDouble(offsets[26], object.lyricsFontSize);
-  writer.writeBool(offsets[27], object.lyricsHasFill);
-  writer.writeBool(offsets[28], object.lyricsHasStroke);
-  writer.writeBool(offsets[29], object.lyricsItalic);
-  writer.writeDouble(offsets[30], object.lyricsMarginBottom);
-  writer.writeDouble(offsets[31], object.lyricsMarginLeft);
-  writer.writeDouble(offsets[32], object.lyricsMarginRight);
-  writer.writeDouble(offsets[33], object.lyricsMarginTop);
-  writer.writeLong(offsets[34], object.lyricsStrokeColor);
-  writer.writeBool(offsets[35], object.lyricsUnderline);
-  writer.writeString(offsets[36], object.lyricsVerticalAlignment);
-  writer.writeString(offsets[37], object.presetName);
-  writer.writeString(offsets[38], object.scriptureAspectRatio);
-  writer.writeLong(offsets[39], object.scriptureBackgroundColor);
-  writer.writeString(offsets[40], object.scriptureBackgroundImage);
-  writer.writeDouble(offsets[41], object.scriptureCustomHeight);
-  writer.writeDouble(offsets[42], object.scriptureCustomWidth);
-  writer.writeBool(offsets[43], object.showChapter);
-  writer.writeBool(offsets[44], object.showTitle);
-  writer.writeString(offsets[45], object.songAspectRatio);
-  writer.writeLong(offsets[46], object.songBackgroundColor);
-  writer.writeString(offsets[47], object.songBackgroundImage);
-  writer.writeDouble(offsets[48], object.songCustomHeight);
-  writer.writeDouble(offsets[49], object.songCustomWidth);
-  writer.writeString(offsets[50], object.titleAlignment);
-  writer.writeBool(offsets[51], object.titleBold);
-  writer.writeLong(offsets[52], object.titleFillColor);
-  writer.writeLong(offsets[53], object.titleFontColor);
-  writer.writeString(offsets[54], object.titleFontFamily);
-  writer.writeDouble(offsets[55], object.titleFontSize);
-  writer.writeBool(offsets[56], object.titleHasFill);
-  writer.writeBool(offsets[57], object.titleHasStroke);
-  writer.writeBool(offsets[58], object.titleItalic);
-  writer.writeDouble(offsets[59], object.titleMarginBottom);
-  writer.writeDouble(offsets[60], object.titleMarginLeft);
-  writer.writeDouble(offsets[61], object.titleMarginRight);
-  writer.writeDouble(offsets[62], object.titleMarginTop);
-  writer.writeLong(offsets[63], object.titleStrokeColor);
-  writer.writeBool(offsets[64], object.titleUnderline);
-  writer.writeString(offsets[65], object.titleVerticalAlignment);
-  writer.writeString(offsets[66], object.verseAlignment);
-  writer.writeBool(offsets[67], object.verseBold);
-  writer.writeLong(offsets[68], object.verseFillColor);
-  writer.writeLong(offsets[69], object.verseFontColor);
-  writer.writeString(offsets[70], object.verseFontFamily);
-  writer.writeDouble(offsets[71], object.verseFontSize);
-  writer.writeBool(offsets[72], object.verseHasFill);
-  writer.writeBool(offsets[73], object.verseHasStroke);
-  writer.writeBool(offsets[74], object.verseItalic);
-  writer.writeDouble(offsets[75], object.verseMarginBottom);
-  writer.writeDouble(offsets[76], object.verseMarginLeft);
-  writer.writeDouble(offsets[77], object.verseMarginRight);
-  writer.writeDouble(offsets[78], object.verseMarginTop);
-  writer.writeLong(offsets[79], object.verseStrokeColor);
-  writer.writeBool(offsets[80], object.verseUnderline);
-  writer.writeString(offsets[81], object.verseVerticalAlignment);
+  writer.writeString(offsets[0], object.blankAspectRatio);
+  writer.writeLong(offsets[1], object.blankBackgroundColor);
+  writer.writeString(offsets[2], object.blankBackgroundImage);
+  writer.writeString(offsets[3], object.blankBackgroundImageAlignment);
+  writer.writeString(offsets[4], object.blankBackgroundImageLayout);
+  writer.writeDouble(offsets[5], object.blankCustomHeight);
+  writer.writeDouble(offsets[6], object.blankCustomWidth);
+  writer.writeString(offsets[7], object.chapterAlignment);
+  writer.writeBool(offsets[8], object.chapterBold);
+  writer.writeLong(offsets[9], object.chapterFillColor);
+  writer.writeLong(offsets[10], object.chapterFontColor);
+  writer.writeString(offsets[11], object.chapterFontFamily);
+  writer.writeDouble(offsets[12], object.chapterFontSize);
+  writer.writeBool(offsets[13], object.chapterHasFill);
+  writer.writeBool(offsets[14], object.chapterHasStroke);
+  writer.writeBool(offsets[15], object.chapterItalic);
+  writer.writeDouble(offsets[16], object.chapterMarginBottom);
+  writer.writeDouble(offsets[17], object.chapterMarginLeft);
+  writer.writeDouble(offsets[18], object.chapterMarginRight);
+  writer.writeDouble(offsets[19], object.chapterMarginTop);
+  writer.writeLong(offsets[20], object.chapterStrokeColor);
+  writer.writeBool(offsets[21], object.chapterUnderline);
+  writer.writeString(offsets[22], object.chapterVerticalAlignment);
+  writer.writeBool(offsets[23], object.isBlankImageEnabled);
+  writer.writeBool(offsets[24], object.isBlankTransparent);
+  writer.writeBool(offsets[25], object.isDefault);
+  writer.writeBool(offsets[26], object.isScriptureImageEnabled);
+  writer.writeBool(offsets[27], object.isScriptureTransparent);
+  writer.writeBool(offsets[28], object.isSongImageEnabled);
+  writer.writeBool(offsets[29], object.isSongTransparent);
+  writer.writeString(offsets[30], object.lyricsAlignment);
+  writer.writeBool(offsets[31], object.lyricsBold);
+  writer.writeLong(offsets[32], object.lyricsFillColor);
+  writer.writeLong(offsets[33], object.lyricsFontColor);
+  writer.writeString(offsets[34], object.lyricsFontFamily);
+  writer.writeDouble(offsets[35], object.lyricsFontSize);
+  writer.writeBool(offsets[36], object.lyricsHasFill);
+  writer.writeBool(offsets[37], object.lyricsHasStroke);
+  writer.writeBool(offsets[38], object.lyricsItalic);
+  writer.writeDouble(offsets[39], object.lyricsMarginBottom);
+  writer.writeDouble(offsets[40], object.lyricsMarginLeft);
+  writer.writeDouble(offsets[41], object.lyricsMarginRight);
+  writer.writeDouble(offsets[42], object.lyricsMarginTop);
+  writer.writeLong(offsets[43], object.lyricsStrokeColor);
+  writer.writeBool(offsets[44], object.lyricsUnderline);
+  writer.writeString(offsets[45], object.lyricsVerticalAlignment);
+  writer.writeString(offsets[46], object.presetName);
+  writer.writeString(offsets[47], object.scriptureAspectRatio);
+  writer.writeLong(offsets[48], object.scriptureBackgroundColor);
+  writer.writeString(offsets[49], object.scriptureBackgroundImage);
+  writer.writeString(offsets[50], object.scriptureBackgroundImageAlignment);
+  writer.writeString(offsets[51], object.scriptureBackgroundImageLayout);
+  writer.writeDouble(offsets[52], object.scriptureCustomHeight);
+  writer.writeDouble(offsets[53], object.scriptureCustomWidth);
+  writer.writeBool(offsets[54], object.showChapter);
+  writer.writeBool(offsets[55], object.showTitle);
+  writer.writeString(offsets[56], object.songAspectRatio);
+  writer.writeLong(offsets[57], object.songBackgroundColor);
+  writer.writeString(offsets[58], object.songBackgroundImage);
+  writer.writeString(offsets[59], object.songBackgroundImageAlignment);
+  writer.writeString(offsets[60], object.songBackgroundImageLayout);
+  writer.writeDouble(offsets[61], object.songCustomHeight);
+  writer.writeDouble(offsets[62], object.songCustomWidth);
+  writer.writeString(offsets[63], object.syncId);
+  writer.writeString(offsets[64], object.titleAlignment);
+  writer.writeBool(offsets[65], object.titleBold);
+  writer.writeLong(offsets[66], object.titleFillColor);
+  writer.writeLong(offsets[67], object.titleFontColor);
+  writer.writeString(offsets[68], object.titleFontFamily);
+  writer.writeDouble(offsets[69], object.titleFontSize);
+  writer.writeBool(offsets[70], object.titleHasFill);
+  writer.writeBool(offsets[71], object.titleHasStroke);
+  writer.writeBool(offsets[72], object.titleItalic);
+  writer.writeDouble(offsets[73], object.titleMarginBottom);
+  writer.writeDouble(offsets[74], object.titleMarginLeft);
+  writer.writeDouble(offsets[75], object.titleMarginRight);
+  writer.writeDouble(offsets[76], object.titleMarginTop);
+  writer.writeLong(offsets[77], object.titleStrokeColor);
+  writer.writeBool(offsets[78], object.titleUnderline);
+  writer.writeString(offsets[79], object.titleVerticalAlignment);
+  writer.writeString(offsets[80], object.verseAlignment);
+  writer.writeBool(offsets[81], object.verseBold);
+  writer.writeLong(offsets[82], object.verseFillColor);
+  writer.writeLong(offsets[83], object.verseFontColor);
+  writer.writeString(offsets[84], object.verseFontFamily);
+  writer.writeDouble(offsets[85], object.verseFontSize);
+  writer.writeBool(offsets[86], object.verseHasFill);
+  writer.writeBool(offsets[87], object.verseHasStroke);
+  writer.writeBool(offsets[88], object.verseItalic);
+  writer.writeDouble(offsets[89], object.verseMarginBottom);
+  writer.writeDouble(offsets[90], object.verseMarginLeft);
+  writer.writeDouble(offsets[91], object.verseMarginRight);
+  writer.writeDouble(offsets[92], object.verseMarginTop);
+  writer.writeLong(offsets[93], object.verseStrokeColor);
+  writer.writeBool(offsets[94], object.verseUnderline);
+  writer.writeString(offsets[95], object.verseVerticalAlignment);
 }
 
 PresentationSettings _presentationSettingsDeserialize(
@@ -566,89 +673,103 @@ PresentationSettings _presentationSettingsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PresentationSettings();
-  object.chapterAlignment = reader.readString(offsets[0]);
-  object.chapterBold = reader.readBool(offsets[1]);
-  object.chapterFillColor = reader.readLong(offsets[2]);
-  object.chapterFontColor = reader.readLong(offsets[3]);
-  object.chapterFontFamily = reader.readString(offsets[4]);
-  object.chapterFontSize = reader.readDouble(offsets[5]);
-  object.chapterHasFill = reader.readBool(offsets[6]);
-  object.chapterHasStroke = reader.readBool(offsets[7]);
-  object.chapterItalic = reader.readBool(offsets[8]);
-  object.chapterMarginBottom = reader.readDouble(offsets[9]);
-  object.chapterMarginLeft = reader.readDouble(offsets[10]);
-  object.chapterMarginRight = reader.readDouble(offsets[11]);
-  object.chapterMarginTop = reader.readDouble(offsets[12]);
-  object.chapterStrokeColor = reader.readLong(offsets[13]);
-  object.chapterUnderline = reader.readBool(offsets[14]);
-  object.chapterVerticalAlignment = reader.readString(offsets[15]);
+  object.blankAspectRatio = reader.readString(offsets[0]);
+  object.blankBackgroundColor = reader.readLong(offsets[1]);
+  object.blankBackgroundImage = reader.readString(offsets[2]);
+  object.blankBackgroundImageAlignment = reader.readString(offsets[3]);
+  object.blankBackgroundImageLayout = reader.readString(offsets[4]);
+  object.blankCustomHeight = reader.readDouble(offsets[5]);
+  object.blankCustomWidth = reader.readDouble(offsets[6]);
+  object.chapterAlignment = reader.readString(offsets[7]);
+  object.chapterBold = reader.readBool(offsets[8]);
+  object.chapterFillColor = reader.readLong(offsets[9]);
+  object.chapterFontColor = reader.readLong(offsets[10]);
+  object.chapterFontFamily = reader.readString(offsets[11]);
+  object.chapterFontSize = reader.readDouble(offsets[12]);
+  object.chapterHasFill = reader.readBool(offsets[13]);
+  object.chapterHasStroke = reader.readBool(offsets[14]);
+  object.chapterItalic = reader.readBool(offsets[15]);
+  object.chapterMarginBottom = reader.readDouble(offsets[16]);
+  object.chapterMarginLeft = reader.readDouble(offsets[17]);
+  object.chapterMarginRight = reader.readDouble(offsets[18]);
+  object.chapterMarginTop = reader.readDouble(offsets[19]);
+  object.chapterStrokeColor = reader.readLong(offsets[20]);
+  object.chapterUnderline = reader.readBool(offsets[21]);
+  object.chapterVerticalAlignment = reader.readString(offsets[22]);
   object.id = id;
-  object.isDefault = reader.readBool(offsets[16]);
-  object.isScriptureImageEnabled = reader.readBool(offsets[17]);
-  object.isScriptureTransparent = reader.readBool(offsets[18]);
-  object.isSongImageEnabled = reader.readBool(offsets[19]);
-  object.isSongTransparent = reader.readBool(offsets[20]);
-  object.lyricsAlignment = reader.readString(offsets[21]);
-  object.lyricsBold = reader.readBool(offsets[22]);
-  object.lyricsFillColor = reader.readLong(offsets[23]);
-  object.lyricsFontColor = reader.readLong(offsets[24]);
-  object.lyricsFontFamily = reader.readString(offsets[25]);
-  object.lyricsFontSize = reader.readDouble(offsets[26]);
-  object.lyricsHasFill = reader.readBool(offsets[27]);
-  object.lyricsHasStroke = reader.readBool(offsets[28]);
-  object.lyricsItalic = reader.readBool(offsets[29]);
-  object.lyricsMarginBottom = reader.readDouble(offsets[30]);
-  object.lyricsMarginLeft = reader.readDouble(offsets[31]);
-  object.lyricsMarginRight = reader.readDouble(offsets[32]);
-  object.lyricsMarginTop = reader.readDouble(offsets[33]);
-  object.lyricsStrokeColor = reader.readLong(offsets[34]);
-  object.lyricsUnderline = reader.readBool(offsets[35]);
-  object.lyricsVerticalAlignment = reader.readString(offsets[36]);
-  object.presetName = reader.readString(offsets[37]);
-  object.scriptureAspectRatio = reader.readString(offsets[38]);
-  object.scriptureBackgroundColor = reader.readLong(offsets[39]);
-  object.scriptureBackgroundImage = reader.readString(offsets[40]);
-  object.scriptureCustomHeight = reader.readDouble(offsets[41]);
-  object.scriptureCustomWidth = reader.readDouble(offsets[42]);
-  object.showChapter = reader.readBool(offsets[43]);
-  object.showTitle = reader.readBool(offsets[44]);
-  object.songAspectRatio = reader.readString(offsets[45]);
-  object.songBackgroundColor = reader.readLong(offsets[46]);
-  object.songBackgroundImage = reader.readString(offsets[47]);
-  object.songCustomHeight = reader.readDouble(offsets[48]);
-  object.songCustomWidth = reader.readDouble(offsets[49]);
-  object.titleAlignment = reader.readString(offsets[50]);
-  object.titleBold = reader.readBool(offsets[51]);
-  object.titleFillColor = reader.readLong(offsets[52]);
-  object.titleFontColor = reader.readLong(offsets[53]);
-  object.titleFontFamily = reader.readString(offsets[54]);
-  object.titleFontSize = reader.readDouble(offsets[55]);
-  object.titleHasFill = reader.readBool(offsets[56]);
-  object.titleHasStroke = reader.readBool(offsets[57]);
-  object.titleItalic = reader.readBool(offsets[58]);
-  object.titleMarginBottom = reader.readDouble(offsets[59]);
-  object.titleMarginLeft = reader.readDouble(offsets[60]);
-  object.titleMarginRight = reader.readDouble(offsets[61]);
-  object.titleMarginTop = reader.readDouble(offsets[62]);
-  object.titleStrokeColor = reader.readLong(offsets[63]);
-  object.titleUnderline = reader.readBool(offsets[64]);
-  object.titleVerticalAlignment = reader.readString(offsets[65]);
-  object.verseAlignment = reader.readString(offsets[66]);
-  object.verseBold = reader.readBool(offsets[67]);
-  object.verseFillColor = reader.readLong(offsets[68]);
-  object.verseFontColor = reader.readLong(offsets[69]);
-  object.verseFontFamily = reader.readString(offsets[70]);
-  object.verseFontSize = reader.readDouble(offsets[71]);
-  object.verseHasFill = reader.readBool(offsets[72]);
-  object.verseHasStroke = reader.readBool(offsets[73]);
-  object.verseItalic = reader.readBool(offsets[74]);
-  object.verseMarginBottom = reader.readDouble(offsets[75]);
-  object.verseMarginLeft = reader.readDouble(offsets[76]);
-  object.verseMarginRight = reader.readDouble(offsets[77]);
-  object.verseMarginTop = reader.readDouble(offsets[78]);
-  object.verseStrokeColor = reader.readLong(offsets[79]);
-  object.verseUnderline = reader.readBool(offsets[80]);
-  object.verseVerticalAlignment = reader.readString(offsets[81]);
+  object.isBlankImageEnabled = reader.readBool(offsets[23]);
+  object.isBlankTransparent = reader.readBool(offsets[24]);
+  object.isDefault = reader.readBool(offsets[25]);
+  object.isScriptureImageEnabled = reader.readBool(offsets[26]);
+  object.isScriptureTransparent = reader.readBool(offsets[27]);
+  object.isSongImageEnabled = reader.readBool(offsets[28]);
+  object.isSongTransparent = reader.readBool(offsets[29]);
+  object.lyricsAlignment = reader.readString(offsets[30]);
+  object.lyricsBold = reader.readBool(offsets[31]);
+  object.lyricsFillColor = reader.readLong(offsets[32]);
+  object.lyricsFontColor = reader.readLong(offsets[33]);
+  object.lyricsFontFamily = reader.readString(offsets[34]);
+  object.lyricsFontSize = reader.readDouble(offsets[35]);
+  object.lyricsHasFill = reader.readBool(offsets[36]);
+  object.lyricsHasStroke = reader.readBool(offsets[37]);
+  object.lyricsItalic = reader.readBool(offsets[38]);
+  object.lyricsMarginBottom = reader.readDouble(offsets[39]);
+  object.lyricsMarginLeft = reader.readDouble(offsets[40]);
+  object.lyricsMarginRight = reader.readDouble(offsets[41]);
+  object.lyricsMarginTop = reader.readDouble(offsets[42]);
+  object.lyricsStrokeColor = reader.readLong(offsets[43]);
+  object.lyricsUnderline = reader.readBool(offsets[44]);
+  object.lyricsVerticalAlignment = reader.readString(offsets[45]);
+  object.presetName = reader.readString(offsets[46]);
+  object.scriptureAspectRatio = reader.readString(offsets[47]);
+  object.scriptureBackgroundColor = reader.readLong(offsets[48]);
+  object.scriptureBackgroundImage = reader.readString(offsets[49]);
+  object.scriptureBackgroundImageAlignment = reader.readString(offsets[50]);
+  object.scriptureBackgroundImageLayout = reader.readString(offsets[51]);
+  object.scriptureCustomHeight = reader.readDouble(offsets[52]);
+  object.scriptureCustomWidth = reader.readDouble(offsets[53]);
+  object.showChapter = reader.readBool(offsets[54]);
+  object.showTitle = reader.readBool(offsets[55]);
+  object.songAspectRatio = reader.readString(offsets[56]);
+  object.songBackgroundColor = reader.readLong(offsets[57]);
+  object.songBackgroundImage = reader.readString(offsets[58]);
+  object.songBackgroundImageAlignment = reader.readString(offsets[59]);
+  object.songBackgroundImageLayout = reader.readString(offsets[60]);
+  object.songCustomHeight = reader.readDouble(offsets[61]);
+  object.songCustomWidth = reader.readDouble(offsets[62]);
+  object.syncId = reader.readString(offsets[63]);
+  object.titleAlignment = reader.readString(offsets[64]);
+  object.titleBold = reader.readBool(offsets[65]);
+  object.titleFillColor = reader.readLong(offsets[66]);
+  object.titleFontColor = reader.readLong(offsets[67]);
+  object.titleFontFamily = reader.readString(offsets[68]);
+  object.titleFontSize = reader.readDouble(offsets[69]);
+  object.titleHasFill = reader.readBool(offsets[70]);
+  object.titleHasStroke = reader.readBool(offsets[71]);
+  object.titleItalic = reader.readBool(offsets[72]);
+  object.titleMarginBottom = reader.readDouble(offsets[73]);
+  object.titleMarginLeft = reader.readDouble(offsets[74]);
+  object.titleMarginRight = reader.readDouble(offsets[75]);
+  object.titleMarginTop = reader.readDouble(offsets[76]);
+  object.titleStrokeColor = reader.readLong(offsets[77]);
+  object.titleUnderline = reader.readBool(offsets[78]);
+  object.titleVerticalAlignment = reader.readString(offsets[79]);
+  object.verseAlignment = reader.readString(offsets[80]);
+  object.verseBold = reader.readBool(offsets[81]);
+  object.verseFillColor = reader.readLong(offsets[82]);
+  object.verseFontColor = reader.readLong(offsets[83]);
+  object.verseFontFamily = reader.readString(offsets[84]);
+  object.verseFontSize = reader.readDouble(offsets[85]);
+  object.verseHasFill = reader.readBool(offsets[86]);
+  object.verseHasStroke = reader.readBool(offsets[87]);
+  object.verseItalic = reader.readBool(offsets[88]);
+  object.verseMarginBottom = reader.readDouble(offsets[89]);
+  object.verseMarginLeft = reader.readDouble(offsets[90]);
+  object.verseMarginRight = reader.readDouble(offsets[91]);
+  object.verseMarginTop = reader.readDouble(offsets[92]);
+  object.verseStrokeColor = reader.readLong(offsets[93]);
+  object.verseUnderline = reader.readBool(offsets[94]);
+  object.verseVerticalAlignment = reader.readString(offsets[95]);
   return object;
 }
 
@@ -662,57 +783,57 @@ P _presentationSettingsDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
       return (reader.readDouble(offset)) as P;
     case 6:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 7:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 10:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 11:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 12:
       return (reader.readDouble(offset)) as P;
     case 13:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 14:
       return (reader.readBool(offset)) as P;
     case 15:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 16:
-      return (reader.readBool(offset)) as P;
-    case 17:
-      return (reader.readBool(offset)) as P;
-    case 18:
-      return (reader.readBool(offset)) as P;
-    case 19:
-      return (reader.readBool(offset)) as P;
-    case 20:
-      return (reader.readBool(offset)) as P;
-    case 21:
-      return (reader.readString(offset)) as P;
-    case 22:
-      return (reader.readBool(offset)) as P;
-    case 23:
-      return (reader.readLong(offset)) as P;
-    case 24:
-      return (reader.readLong(offset)) as P;
-    case 25:
-      return (reader.readString(offset)) as P;
-    case 26:
       return (reader.readDouble(offset)) as P;
+    case 17:
+      return (reader.readDouble(offset)) as P;
+    case 18:
+      return (reader.readDouble(offset)) as P;
+    case 19:
+      return (reader.readDouble(offset)) as P;
+    case 20:
+      return (reader.readLong(offset)) as P;
+    case 21:
+      return (reader.readBool(offset)) as P;
+    case 22:
+      return (reader.readString(offset)) as P;
+    case 23:
+      return (reader.readBool(offset)) as P;
+    case 24:
+      return (reader.readBool(offset)) as P;
+    case 25:
+      return (reader.readBool(offset)) as P;
+    case 26:
+      return (reader.readBool(offset)) as P;
     case 27:
       return (reader.readBool(offset)) as P;
     case 28:
@@ -720,108 +841,136 @@ P _presentationSettingsDeserializeProp<P>(
     case 29:
       return (reader.readBool(offset)) as P;
     case 30:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 31:
-      return (reader.readDouble(offset)) as P;
-    case 32:
-      return (reader.readDouble(offset)) as P;
-    case 33:
-      return (reader.readDouble(offset)) as P;
-    case 34:
-      return (reader.readLong(offset)) as P;
-    case 35:
       return (reader.readBool(offset)) as P;
-    case 36:
-      return (reader.readString(offset)) as P;
-    case 37:
-      return (reader.readString(offset)) as P;
-    case 38:
-      return (reader.readString(offset)) as P;
-    case 39:
+    case 32:
       return (reader.readLong(offset)) as P;
-    case 40:
+    case 33:
+      return (reader.readLong(offset)) as P;
+    case 34:
       return (reader.readString(offset)) as P;
+    case 35:
+      return (reader.readDouble(offset)) as P;
+    case 36:
+      return (reader.readBool(offset)) as P;
+    case 37:
+      return (reader.readBool(offset)) as P;
+    case 38:
+      return (reader.readBool(offset)) as P;
+    case 39:
+      return (reader.readDouble(offset)) as P;
+    case 40:
+      return (reader.readDouble(offset)) as P;
     case 41:
       return (reader.readDouble(offset)) as P;
     case 42:
       return (reader.readDouble(offset)) as P;
     case 43:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 44:
       return (reader.readBool(offset)) as P;
     case 45:
       return (reader.readString(offset)) as P;
     case 46:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 47:
       return (reader.readString(offset)) as P;
     case 48:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 49:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 50:
       return (reader.readString(offset)) as P;
     case 51:
-      return (reader.readBool(offset)) as P;
-    case 52:
-      return (reader.readLong(offset)) as P;
-    case 53:
-      return (reader.readLong(offset)) as P;
-    case 54:
       return (reader.readString(offset)) as P;
+    case 52:
+      return (reader.readDouble(offset)) as P;
+    case 53:
+      return (reader.readDouble(offset)) as P;
+    case 54:
+      return (reader.readBool(offset)) as P;
     case 55:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 56:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 57:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 58:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 59:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 60:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 61:
       return (reader.readDouble(offset)) as P;
     case 62:
       return (reader.readDouble(offset)) as P;
     case 63:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 64:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 65:
-      return (reader.readString(offset)) as P;
-    case 66:
-      return (reader.readString(offset)) as P;
-    case 67:
       return (reader.readBool(offset)) as P;
+    case 66:
+      return (reader.readLong(offset)) as P;
+    case 67:
+      return (reader.readLong(offset)) as P;
     case 68:
-      return (reader.readLong(offset)) as P;
-    case 69:
-      return (reader.readLong(offset)) as P;
-    case 70:
       return (reader.readString(offset)) as P;
-    case 71:
+    case 69:
       return (reader.readDouble(offset)) as P;
+    case 70:
+      return (reader.readBool(offset)) as P;
+    case 71:
+      return (reader.readBool(offset)) as P;
     case 72:
       return (reader.readBool(offset)) as P;
     case 73:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 74:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 75:
       return (reader.readDouble(offset)) as P;
     case 76:
       return (reader.readDouble(offset)) as P;
     case 77:
-      return (reader.readDouble(offset)) as P;
-    case 78:
-      return (reader.readDouble(offset)) as P;
-    case 79:
       return (reader.readLong(offset)) as P;
-    case 80:
+    case 78:
       return (reader.readBool(offset)) as P;
+    case 79:
+      return (reader.readString(offset)) as P;
+    case 80:
+      return (reader.readString(offset)) as P;
     case 81:
+      return (reader.readBool(offset)) as P;
+    case 82:
+      return (reader.readLong(offset)) as P;
+    case 83:
+      return (reader.readLong(offset)) as P;
+    case 84:
+      return (reader.readString(offset)) as P;
+    case 85:
+      return (reader.readDouble(offset)) as P;
+    case 86:
+      return (reader.readBool(offset)) as P;
+    case 87:
+      return (reader.readBool(offset)) as P;
+    case 88:
+      return (reader.readBool(offset)) as P;
+    case 89:
+      return (reader.readDouble(offset)) as P;
+    case 90:
+      return (reader.readDouble(offset)) as P;
+    case 91:
+      return (reader.readDouble(offset)) as P;
+    case 92:
+      return (reader.readDouble(offset)) as P;
+    case 93:
+      return (reader.readLong(offset)) as P;
+    case 94:
+      return (reader.readBool(offset)) as P;
+    case 95:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -840,6 +989,62 @@ List<IsarLinkBase<dynamic>> _presentationSettingsGetLinks(
 void _presentationSettingsAttach(
     IsarCollection<dynamic> col, Id id, PresentationSettings object) {
   object.id = id;
+}
+
+extension PresentationSettingsByIndex on IsarCollection<PresentationSettings> {
+  Future<PresentationSettings?> getBySyncId(String syncId) {
+    return getByIndex(r'syncId', [syncId]);
+  }
+
+  PresentationSettings? getBySyncIdSync(String syncId) {
+    return getByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<bool> deleteBySyncId(String syncId) {
+    return deleteByIndex(r'syncId', [syncId]);
+  }
+
+  bool deleteBySyncIdSync(String syncId) {
+    return deleteByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<List<PresentationSettings?>> getAllBySyncId(
+      List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'syncId', values);
+  }
+
+  List<PresentationSettings?> getAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'syncId', values);
+  }
+
+  Future<int> deleteAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'syncId', values);
+  }
+
+  int deleteAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'syncId', values);
+  }
+
+  Future<Id> putBySyncId(PresentationSettings object) {
+    return putByIndex(r'syncId', object);
+  }
+
+  Id putBySyncIdSync(PresentationSettings object, {bool saveLinks = true}) {
+    return putByIndexSync(r'syncId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllBySyncId(List<PresentationSettings> objects) {
+    return putAllByIndex(r'syncId', objects);
+  }
+
+  List<Id> putAllBySyncIdSync(List<PresentationSettings> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'syncId', objects, saveLinks: saveLinks);
+  }
 }
 
 extension PresentationSettingsQueryWhereSort
@@ -921,10 +1126,799 @@ extension PresentationSettingsQueryWhere
       ));
     });
   }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterWhereClause>
+      syncIdEqualTo(String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'syncId',
+        value: [syncId],
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterWhereClause>
+      syncIdNotEqualTo(String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
 }
 
 extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
     PresentationSettings, QFilterCondition> {
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankAspectRatio',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankAspectRatioContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'blankAspectRatio',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankAspectRatioMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'blankAspectRatio',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankAspectRatio',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankAspectRatioIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'blankAspectRatio',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundColorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundColorGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankBackgroundColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundColorLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankBackgroundColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundColorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankBackgroundColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankBackgroundImage',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'blankBackgroundImage',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'blankBackgroundImage',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImage',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'blankBackgroundImage',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankBackgroundImageAlignment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageAlignmentContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'blankBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageAlignmentMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'blankBackgroundImageAlignment',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageAlignmentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'blankBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankBackgroundImageLayout',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageLayoutContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'blankBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      blankBackgroundImageLayoutMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'blankBackgroundImageLayout',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankBackgroundImageLayoutIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'blankBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomHeightEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankCustomHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomHeightGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankCustomHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomHeightLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankCustomHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomHeightBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankCustomHeight',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomWidthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'blankCustomWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomWidthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'blankCustomWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomWidthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'blankCustomWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> blankCustomWidthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'blankCustomWidth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
   QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> chapterAlignmentEqualTo(
     String value, {
@@ -1941,6 +2935,26 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> isBlankImageEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isBlankImageEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> isBlankTransparentEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isBlankTransparent',
+        value: value,
       ));
     });
   }
@@ -3432,6 +4446,286 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'scriptureBackgroundImageAlignment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      scriptureBackgroundImageAlignmentContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'scriptureBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      scriptureBackgroundImageAlignmentMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'scriptureBackgroundImageAlignment',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'scriptureBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageAlignmentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'scriptureBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'scriptureBackgroundImageLayout',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      scriptureBackgroundImageLayoutContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'scriptureBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      scriptureBackgroundImageLayoutMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'scriptureBackgroundImageLayout',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'scriptureBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> scriptureBackgroundImageLayoutIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'scriptureBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> scriptureCustomHeightEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -3916,6 +5210,286 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'songBackgroundImageAlignment',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      songBackgroundImageAlignmentContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'songBackgroundImageAlignment',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      songBackgroundImageAlignmentMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'songBackgroundImageAlignment',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageAlignmentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'songBackgroundImageAlignment',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'songBackgroundImageLayout',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      songBackgroundImageLayoutContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'songBackgroundImageLayout',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      songBackgroundImageLayoutMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'songBackgroundImageLayout',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> songBackgroundImageLayoutIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'songBackgroundImageLayout',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> songCustomHeightEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -4043,6 +5617,144 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'syncId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      syncIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+          QAfterFilterCondition>
+      syncIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'syncId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> syncIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'syncId',
+        value: '',
       ));
     });
   }
@@ -5985,6 +7697,104 @@ extension PresentationSettingsQueryLinks on QueryBuilder<PresentationSettings,
 extension PresentationSettingsQuerySortBy
     on QueryBuilder<PresentationSettings, PresentationSettings, QSortBy> {
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankAspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankAspectRatio', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImage', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankCustomHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankCustomHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomHeight', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankCustomWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByBlankCustomWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomWidth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByChapterAlignment() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterAlignment', Sort.asc);
@@ -6205,6 +8015,34 @@ extension PresentationSettingsQuerySortBy
       sortByChapterVerticalAlignmentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterVerticalAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByIsBlankImageEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankImageEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByIsBlankImageEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankImageEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByIsBlankTransparent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankTransparent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByIsBlankTransparentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankTransparent', Sort.desc);
     });
   }
 
@@ -6559,6 +8397,34 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByScriptureBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByScriptureBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByScriptureBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByScriptureBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByScriptureCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'scriptureCustomHeight', Sort.asc);
@@ -6657,6 +8523,34 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySongBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySongBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySongBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySongBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortBySongCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'songCustomHeight', Sort.asc);
@@ -6681,6 +8575,20 @@ extension PresentationSettingsQuerySortBy
       sortBySongCustomWidthDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'songCustomWidth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
     });
   }
 
@@ -7136,6 +9044,104 @@ extension PresentationSettingsQuerySortBy
 extension PresentationSettingsQuerySortThenBy
     on QueryBuilder<PresentationSettings, PresentationSettings, QSortThenBy> {
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankAspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankAspectRatio', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImage', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankCustomHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankCustomHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomHeight', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankCustomWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByBlankCustomWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'blankCustomWidth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByChapterAlignment() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterAlignment', Sort.asc);
@@ -7370,6 +9376,34 @@ extension PresentationSettingsQuerySortThenBy
       thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByIsBlankImageEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankImageEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByIsBlankImageEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankImageEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByIsBlankTransparent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankTransparent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByIsBlankTransparentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBlankTransparent', Sort.desc);
     });
   }
 
@@ -7724,6 +9758,34 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByScriptureBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByScriptureBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByScriptureBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByScriptureBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'scriptureBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByScriptureCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'scriptureCustomHeight', Sort.asc);
@@ -7822,6 +9884,34 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySongBackgroundImageAlignment() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageAlignment', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySongBackgroundImageAlignmentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageAlignment', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySongBackgroundImageLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySongBackgroundImageLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songBackgroundImageLayout', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenBySongCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'songCustomHeight', Sort.asc);
@@ -7846,6 +9936,20 @@ extension PresentationSettingsQuerySortThenBy
       thenBySongCustomWidthDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'songCustomWidth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
     });
   }
 
@@ -8301,6 +10405,59 @@ extension PresentationSettingsQuerySortThenBy
 extension PresentationSettingsQueryWhereDistinct
     on QueryBuilder<PresentationSettings, PresentationSettings, QDistinct> {
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankAspectRatio({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankAspectRatio',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankBackgroundColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankBackgroundColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankBackgroundImage({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankBackgroundImage',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankBackgroundImageAlignment({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankBackgroundImageAlignment',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankBackgroundImageLayout({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankBackgroundImageLayout',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankCustomHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankCustomHeight');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByBlankCustomWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'blankCustomWidth');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByChapterAlignment({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterAlignment',
@@ -8412,6 +10569,20 @@ extension PresentationSettingsQueryWhereDistinct
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterVerticalAlignment',
           caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByIsBlankImageEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isBlankImageEnabled');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByIsBlankTransparent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isBlankTransparent');
     });
   }
 
@@ -8596,6 +10767,22 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByScriptureBackgroundImageAlignment({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'scriptureBackgroundImageAlignment',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByScriptureBackgroundImageLayout({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'scriptureBackgroundImageLayout',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByScriptureCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'scriptureCustomHeight');
@@ -8647,6 +10834,22 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctBySongBackgroundImageAlignment({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'songBackgroundImageAlignment',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctBySongBackgroundImageLayout({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'songBackgroundImageLayout',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctBySongCustomHeight() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'songCustomHeight');
@@ -8657,6 +10860,13 @@ extension PresentationSettingsQueryWhereDistinct
       distinctBySongCustomWidth() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'songCustomWidth');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctBySyncId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'syncId', caseSensitive: caseSensitive);
     });
   }
 
@@ -8900,6 +11110,55 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, String, QQueryOperations>
+      blankAspectRatioProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankAspectRatio');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, int, QQueryOperations>
+      blankBackgroundColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankBackgroundColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      blankBackgroundImageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankBackgroundImage');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      blankBackgroundImageAlignmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankBackgroundImageAlignment');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      blankBackgroundImageLayoutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankBackgroundImageLayout');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      blankCustomHeightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankCustomHeight');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      blankCustomWidthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'blankCustomWidth');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
       chapterAlignmentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterAlignment');
@@ -9008,6 +11267,20 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       chapterVerticalAlignmentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterVerticalAlignment');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      isBlankImageEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isBlankImageEnabled');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      isBlankTransparentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isBlankTransparent');
     });
   }
 
@@ -9186,6 +11459,20 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      scriptureBackgroundImageAlignmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'scriptureBackgroundImageAlignment');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      scriptureBackgroundImageLayoutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'scriptureBackgroundImageLayout');
+    });
+  }
+
   QueryBuilder<PresentationSettings, double, QQueryOperations>
       scriptureCustomHeightProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -9235,6 +11522,20 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      songBackgroundImageAlignmentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'songBackgroundImageAlignment');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      songBackgroundImageLayoutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'songBackgroundImageLayout');
+    });
+  }
+
   QueryBuilder<PresentationSettings, double, QQueryOperations>
       songCustomHeightProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -9246,6 +11547,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       songCustomWidthProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'songCustomWidth');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, String, QQueryOperations>
+      syncIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'syncId');
     });
   }
 

@@ -155,9 +155,26 @@ bool FlutterWindow::OnCreate() {
           UINT flags = SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE;
           if (noMove) flags |= SWP_NOMOVE;
 
+          LONG style = GetWindowLong(target, GWL_STYLE);
+          LONG exStyle = GetWindowLong(target, GWL_EXSTYLE);
+
+          // Adjust window rect so the client area is exactly w x h
+          RECT rect = { 0, 0, w, h };
+          AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+          int adjustedW = rect.right - rect.left;
+          int adjustedH = rect.bottom - rect.top;
+
+          // Only make Monitor 1 layered (transparent to clicks/desktop). 
+          // Monitor 2 should be a solid window so title bar buttons work and OBS can capture cleanly.
+          if (monitorIndex == 1) {
+            exStyle |= WS_EX_LAYERED;
+            SetWindowLong(target, GWL_EXSTYLE, exStyle);
+            SetLayeredWindowAttributes(target, RGB(0, 0, 0), 0, LWA_COLORKEY);
+          }
+
           // Monitor 2 = normal z-order; Monitor 1 = always-on-top
           HWND insertAfter = (monitorIndex == 2) ? HWND_NOTOPMOST : HWND_TOPMOST;
-          SetWindowPos(target, insertAfter, x, y, w, h, flags);
+          SetWindowPos(target, insertAfter, x, y, adjustedW, adjustedH, flags);
 
           SetForegroundWindow(mainHwnd);
           result->Success();
@@ -207,9 +224,14 @@ bool FlutterWindow::OnCreate() {
           style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
           SetWindowLong(target, GWL_STYLE, style);
 
-          LONG exStyle = GetWindowLong(target, GWL_EXSTYLE);
-          exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-          SetWindowLong(target, GWL_EXSTYLE, exStyle);
+          LONG exStyle2 = GetWindowLong(target, GWL_EXSTYLE);
+          exStyle2 &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+          
+          // Make it a layered window with black as transparent key
+          exStyle2 |= WS_EX_LAYERED;
+          
+          SetWindowLong(target, GWL_EXSTYLE, exStyle2);
+          SetLayeredWindowAttributes(target, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
           SetWindowPos(target, HWND_TOPMOST, x, y, w, h,
                        SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);

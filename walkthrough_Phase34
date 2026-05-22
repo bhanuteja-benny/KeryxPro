@@ -1,0 +1,40 @@
+# Database Sync (Dropbox/OneDrive) Walkthrough
+
+I have fully implemented the requested serverless database sync across machines using Dropbox/OneDrive! Here is a summary of the changes and how you can test them.
+
+## 1. Setup & Configuration UI
+* A new **"Database Sync Settings"** dialog has been added to the `Settings` menu in the Top Application Bar.
+* **To begin syncing:** Open this menu, click "Browse" to select your `Dropbox` or `OneDrive` sync folder, and toggle "Enable Sync" to ON.
+* You only need to do this once per machine.
+
+## 2. Global Sync Indicator
+* A new **Global Sync Button (↺)** has been added to the Top Application Bar next to the window control buttons.
+* It will automatically display a **red notification badge** whenever the app detects new changes in the Dropbox folder created by other machines.
+* **To apply changes:** Click the sync button. The app will immediately read the new data and update your local database.
+
+## 3. How the Data Syncs Granularly
+Instead of moving the entire Isar database file (which would cause lock issues and conflicts), the app now exports tiny `event_xxx.json` files to the Dropbox folder whenever a change happens.
+
+* **Songs:** Adding, editing, or deleting a song immediately writes a JSON file.
+* **SetLists:** Saving or modifying a SetList writes a JSON file.
+* **Presentation Settings (Presets):** Creating or changing a Preset writes a JSON file.
+
+When Machine B clicks the Global Sync Button, it reads these JSON files, updates its local Isar database, and records that it has processed those events (so it doesn't process them again).
+
+## 4. Background Bible Syncing
+* When you import a new Bible version (e.g., KJV.xml) on Machine A, the `.xml` file is automatically copied into `[Sync Folder]\Bibles\`.
+* The app sends a lightweight `BIBLE_IMPORT` event.
+* Machine B has a **background watcher**. As soon as Dropbox downloads the event and the `.xml` file, Machine B will *automatically* import the new Bible in the background. You do not need to click the Sync button to receive new Bibles!
+
+## 5. Under-the-Hood Schema Changes
+* I successfully added `uuid` and `shared_preferences` to your `pubspec.yaml`.
+* The Isar schemas for `Song`, `SavedSetlist`, `PresentationSettings`, and `BibleVersion` have been updated to include a globally unique `syncId`. This guarantees there are no ID collisions when two offline machines create a new song simultaneously.
+
+> [!TIP]
+> **How to Test**
+> 1. Launch KeryxPro on Machine A, enable sync, and point it to a Dropbox folder.
+> 2. Create a new song or modify a SetList on Machine A.
+> 3. Verify that a `.json` file appears in the Dropbox folder.
+> 4. Launch KeryxPro on Machine B, enable sync, and point it to the *same* Dropbox folder.
+> 5. Wait a few seconds for Dropbox to download the JSON. You will see a red badge appear on the Global Sync Button!
+> 6. Click the Sync button on Machine B to instantly see the new Song/SetList appear.

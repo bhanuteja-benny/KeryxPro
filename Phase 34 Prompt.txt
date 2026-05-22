@@ -1,0 +1,42 @@
+Phase 34
+
+Context:
+⁃ Database sync over different installations of KeryxPro on different machines (including windows and mac)
+
+Requirement:
+⁃ A single church may have 2 or more machines (desktops, laptops both windows and mac 
+⁃ KeryxPro can be installed on all those machies 
+⁃ There should be a KeryxPro database sync between those machines Whenever a new song is added or edited, or a new SetList is saved or modified, immediately those should be notified and synced with other machines as well 
+⁃ Only that church machines should be in sync, they should not interfere with another church's KeryxPro databases 
+
+Example:
+- when a new song is added then only that song should be notified, sent and synced with the other machines BUT not the whole database As KeryxPro is using Isar and it is storing all the data in one file, adding one song should not send the entire database file to other machines.
+
+Example of OpenSong:
+⁃ There is no sync feature in OpenSong, but users are using below approach for that 
+⁃ Users are creating a dropbox (or one drive or etc), and mapping it as a drive
+⁃ And configuring the OpenSong storage location to that drive 
+⁃ As the OpenSong storing the data in individual xml files, whenever user creating a song or creating a setlist or modifying a setlist, the corresponding xml file is getting created or changed and the same is automatically getting synced through out all machines (because of dropbox functionality)
+
+Syncing required for:
+- Song add/edit/delete
+- Preset add/delete and preset settings changes for song/bible/blank screen
+- Bible import
+- SetList add/edit/delete
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Questions:
+- Plan/suggestions on how we can achieve this sync between different installations of KeryxPro on different machines (which belong to single church - we can rely on internet (not intranet)
+- if any url required, I can create it, I have a windows hosting
+
+Deliverables:
+Implementation Plan file

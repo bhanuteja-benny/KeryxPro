@@ -37,8 +37,13 @@ const SongSchema = CollectionSchema(
       name: r'lyrics',
       type: IsarType.string,
     ),
-    r'title': PropertySchema(
+    r'syncId': PropertySchema(
       id: 4,
+      name: r'syncId',
+      type: IsarType.string,
+    ),
+    r'title': PropertySchema(
+      id: 5,
       name: r'title',
       type: IsarType.string,
     )
@@ -49,6 +54,19 @@ const SongSchema = CollectionSchema(
   deserializeProp: _songDeserializeProp,
   idName: r'id',
   indexes: {
+    r'syncId': IndexSchema(
+      id: 7538593479801827566,
+      name: r'syncId',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'syncId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
     r'title': IndexSchema(
       id: -7636685945352118059,
       name: r'title',
@@ -103,6 +121,7 @@ int _songEstimateSize(
     }
   }
   bytesCount += 3 + object.lyrics.length * 3;
+  bytesCount += 3 + object.syncId.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
 }
@@ -117,7 +136,8 @@ void _songSerialize(
   writer.writeString(offsets[1], object.backgroundUrl);
   writer.writeDateTime(offsets[2], object.lastModified);
   writer.writeString(offsets[3], object.lyrics);
-  writer.writeString(offsets[4], object.title);
+  writer.writeString(offsets[4], object.syncId);
+  writer.writeString(offsets[5], object.title);
 }
 
 Song _songDeserialize(
@@ -132,7 +152,8 @@ Song _songDeserialize(
   object.id = id;
   object.lastModified = reader.readDateTime(offsets[2]);
   object.lyrics = reader.readString(offsets[3]);
-  object.title = reader.readString(offsets[4]);
+  object.syncId = reader.readString(offsets[4]);
+  object.title = reader.readString(offsets[5]);
   return object;
 }
 
@@ -153,6 +174,8 @@ P _songDeserializeProp<P>(
       return (reader.readString(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -168,6 +191,60 @@ List<IsarLinkBase<dynamic>> _songGetLinks(Song object) {
 
 void _songAttach(IsarCollection<dynamic> col, Id id, Song object) {
   object.id = id;
+}
+
+extension SongByIndex on IsarCollection<Song> {
+  Future<Song?> getBySyncId(String syncId) {
+    return getByIndex(r'syncId', [syncId]);
+  }
+
+  Song? getBySyncIdSync(String syncId) {
+    return getByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<bool> deleteBySyncId(String syncId) {
+    return deleteByIndex(r'syncId', [syncId]);
+  }
+
+  bool deleteBySyncIdSync(String syncId) {
+    return deleteByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<List<Song?>> getAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'syncId', values);
+  }
+
+  List<Song?> getAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'syncId', values);
+  }
+
+  Future<int> deleteAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'syncId', values);
+  }
+
+  int deleteAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'syncId', values);
+  }
+
+  Future<Id> putBySyncId(Song object) {
+    return putByIndex(r'syncId', object);
+  }
+
+  Id putBySyncIdSync(Song object, {bool saveLinks = true}) {
+    return putByIndexSync(r'syncId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllBySyncId(List<Song> objects) {
+    return putAllByIndex(r'syncId', objects);
+  }
+
+  List<Id> putAllBySyncIdSync(List<Song> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'syncId', objects, saveLinks: saveLinks);
+  }
 }
 
 extension SongQueryWhereSort on QueryBuilder<Song, Song, QWhere> {
@@ -257,6 +334,49 @@ extension SongQueryWhere on QueryBuilder<Song, Song, QWhereClause> {
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterWhereClause> syncIdEqualTo(String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'syncId',
+        value: [syncId],
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterWhereClause> syncIdNotEqualTo(String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 
@@ -1053,6 +1173,134 @@ extension SongQueryFilter on QueryBuilder<Song, Song, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'syncId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'syncId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterFilterCondition> syncIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Song, Song, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1235,6 +1483,18 @@ extension SongQuerySortBy on QueryBuilder<Song, Song, QSortBy> {
     });
   }
 
+  QueryBuilder<Song, Song, QAfterSortBy> sortBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterSortBy> sortBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Song, Song, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -1309,6 +1569,18 @@ extension SongQuerySortThenBy on QueryBuilder<Song, Song, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Song, Song, QAfterSortBy> thenBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Song, Song, QAfterSortBy> thenBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Song, Song, QAfterSortBy> thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -1351,6 +1623,13 @@ extension SongQueryWhereDistinct on QueryBuilder<Song, Song, QDistinct> {
     });
   }
 
+  QueryBuilder<Song, Song, QDistinct> distinctBySyncId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'syncId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Song, Song, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1387,6 +1666,12 @@ extension SongQueryProperty on QueryBuilder<Song, Song, QQueryProperty> {
   QueryBuilder<Song, String, QQueryOperations> lyricsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lyrics');
+    });
+  }
+
+  QueryBuilder<Song, String, QQueryOperations> syncIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'syncId');
     });
   }
 

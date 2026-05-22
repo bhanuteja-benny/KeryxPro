@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../main.dart';
 import '../data/presentation_settings.dart';
 import 'package:isar/isar.dart';
+import '../../../../core/sync/sync_service.dart';
 
 final presetsListProvider = FutureProvider<List<PresentationSettings>>((ref) async {
   final isar = await ref.watch(isarServiceProvider).db;
@@ -76,6 +77,9 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
   if (!settings.scriptureCustomWidth.isFinite || settings.scriptureCustomWidth <= 0) settings.scriptureCustomWidth = 1920.0;
   if (!settings.scriptureCustomHeight.isFinite || settings.scriptureCustomHeight <= 0) settings.scriptureCustomHeight = 1080.0;
 
+  if (!settings.blankCustomWidth.isFinite || settings.blankCustomWidth <= 0) settings.blankCustomWidth = 1920.0;
+  if (!settings.blankCustomHeight.isFinite || settings.blankCustomHeight <= 0) settings.blankCustomHeight = 1080.0;
+
   // Strings Fallback
   if (settings.presetName.isEmpty) {
     settings.presetName = (settings.isDefault || settings.id == 1) ? 'Default' : 'Preset ${settings.id}';
@@ -86,6 +90,7 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
 
   if (settings.songAspectRatio.isEmpty) settings.songAspectRatio = '16:9';
   if (settings.scriptureAspectRatio.isEmpty) settings.scriptureAspectRatio = '16:9';
+  if (settings.blankAspectRatio.isEmpty) settings.blankAspectRatio = '16:9';
   if (settings.titleAlignment.isEmpty) settings.titleAlignment = 'center';
   if (settings.titleVerticalAlignment.isEmpty) settings.titleVerticalAlignment = 'bottom';
   if (settings.chapterAlignment.isEmpty) settings.chapterAlignment = 'center';
@@ -98,9 +103,16 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
   if (settings.lyricsFontFamily.isEmpty) settings.lyricsFontFamily = 'Arial';
   if (settings.titleFontFamily.isEmpty) settings.titleFontFamily = 'Arial';
 
-  // Colors Fallback
+  if (settings.songBackgroundImageLayout.isEmpty) settings.songBackgroundImageLayout = 'stretch';
+  if (settings.songBackgroundImageAlignment.isEmpty) settings.songBackgroundImageAlignment = 'center';
+  if (settings.scriptureBackgroundImageLayout.isEmpty) settings.scriptureBackgroundImageLayout = 'stretch';
+  if (settings.scriptureBackgroundImageAlignment.isEmpty) settings.scriptureBackgroundImageAlignment = 'center';
+  if (settings.blankBackgroundImageLayout.isEmpty) settings.blankBackgroundImageLayout = 'stretch';
+  if (settings.blankBackgroundImageAlignment.isEmpty) settings.blankBackgroundImageAlignment = 'center';
+
   if (settings.songBackgroundColor == 0) settings.songBackgroundColor = 0xFF000000;
   if (settings.scriptureBackgroundColor == 0) settings.scriptureBackgroundColor = 0xFF000000;
+  if (settings.blankBackgroundColor == 0) settings.blankBackgroundColor = 0xFF000000;
   if ((settings.lyricsFontColor & 0xFF000000) == 0) settings.lyricsFontColor = 0xFFFFFFFF;
   if ((settings.titleFontColor & 0xFF000000) == 0) settings.titleFontColor = 0x8FFFFFFF;
   if ((settings.chapterFontColor & 0xFF000000) == 0) settings.chapterFontColor = 0x8FFFFFFF;
@@ -126,9 +138,16 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
 
   Future<void> deletePreset(int id) async {
     final isar = await _dbFuture;
+    final existing = await isar.presentationSettings.get(id);
+    
     await isar.writeTxn(() async {
       await isar.presentationSettings.delete(id);
     });
+    
+    if (existing != null) {
+      _ref.read(syncServiceProvider).exportPresetDelete(existing.syncId);
+    }
+    
     _ref.invalidate(presetsListProvider);
     
     // If the active preset was deleted, fall back to default
@@ -155,6 +174,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     await isar.writeTxn(() async {
       await isar.presentationSettings.put(newPreset);
     });
+    
+    _ref.read(syncServiceProvider).exportPresentationSettings(newPreset);
     _ref.invalidate(presetsListProvider);
   }
 
@@ -163,6 +184,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     await isar.writeTxn(() async {
       await isar.presentationSettings.put(state);
     });
+    
+    _ref.read(syncServiceProvider).exportPresentationSettings(state);
     _ref.invalidate(presetsListProvider);
     
     final currentActive = _ref.read(presentationSettingsProvider);
@@ -172,70 +195,92 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   }
 
   // --- Update Methods without auto-save ---
-  void updateAspectRatio(String ratio, bool isSong) {
-    if (isSong) {
+  void updateAspectRatio(String ratio, int tabIndex) {
+    if (tabIndex == 0) {
       state = cloneState(state)..songAspectRatio = ratio;
-    } else {
+    } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureAspectRatio = ratio;
+    } else if (tabIndex == 2) {
+      state = cloneState(state)..blankAspectRatio = ratio;
     }
   }
 
-  void updateCustomWidth(double w, bool isSong) {
-    if (isSong) {
+  void updateCustomWidth(double w, int tabIndex) {
+    if (tabIndex == 0) {
       state = cloneState(state)..songCustomWidth = w;
-    } else {
+    } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureCustomWidth = w;
+    } else if (tabIndex == 2) {
+      state = cloneState(state)..blankCustomWidth = w;
     }
   }
 
-  void updateCustomHeight(double h, bool isSong) {
-    if (isSong) {
+  void updateCustomHeight(double h, int tabIndex) {
+    if (tabIndex == 0) {
       state = cloneState(state)..songCustomHeight = h;
-    } else {
+    } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureCustomHeight = h;
+    } else if (tabIndex == 2) {
+      state = cloneState(state)..blankCustomHeight = h;
     }
   }
-  // Background updates now take a boolean to distinguish song/scripture
-  void updateBackgroundColor(int color, bool isSong) {
+  // Background updates now take an int to distinguish song/scripture/blank
+  void updateBackgroundColor(int color, int tabIndex) {
     final s = cloneState(state);
-    if (isSong) {
+    if (tabIndex == 0) {
       s.songBackgroundColor = color;
       s.isSongTransparent = false;
-    } else {
+    } else if (tabIndex == 1) {
       s.scriptureBackgroundColor = color;
       s.isScriptureTransparent = false;
+    } else if (tabIndex == 2) {
+      s.blankBackgroundColor = color;
+      s.isBlankTransparent = false;
     }
     state = s;
   }
   
-  void updateBackgroundImage(String path, bool isSong) {
+  void updateBackgroundImage(String path, String layout, String alignment, int tabIndex) {
     final s = cloneState(state);
-    if (isSong) {
+    if (tabIndex == 0) {
       s.songBackgroundImage = path;
+      s.songBackgroundImageLayout = layout;
+      s.songBackgroundImageAlignment = alignment;
       s.isSongImageEnabled = true;
-    } else {
+    } else if (tabIndex == 1) {
       s.scriptureBackgroundImage = path;
+      s.scriptureBackgroundImageLayout = layout;
+      s.scriptureBackgroundImageAlignment = alignment;
       s.isScriptureImageEnabled = true;
+    } else if (tabIndex == 2) {
+      s.blankBackgroundImage = path;
+      s.blankBackgroundImageLayout = layout;
+      s.blankBackgroundImageAlignment = alignment;
+      s.isBlankImageEnabled = true;
     }
     state = s;
   }
 
-  void updateIsImageEnabled(bool enabled, bool isSong) {
+  void updateIsImageEnabled(bool enabled, int tabIndex) {
     final s = cloneState(state);
-    if (isSong) {
+    if (tabIndex == 0) {
       s.isSongImageEnabled = enabled;
-    } else {
+    } else if (tabIndex == 1) {
       s.isScriptureImageEnabled = enabled;
+    } else if (tabIndex == 2) {
+      s.isBlankImageEnabled = enabled;
     }
     state = s;
   }
   
-  void updateIsTransparent(bool transparent, bool isSong) {
+  void updateIsTransparent(bool transparent, int tabIndex) {
     final s = cloneState(state);
-    if (isSong) {
+    if (tabIndex == 0) {
       s.isSongTransparent = transparent;
-    } else {
+    } else if (tabIndex == 1) {
       s.isScriptureTransparent = transparent;
+    } else if (tabIndex == 2) {
+      s.isBlankTransparent = transparent;
     }
     state = s;
   }
@@ -337,10 +382,23 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..isSongTransparent = src.isSongTransparent
       ..songBackgroundColor = src.songBackgroundColor
       ..songBackgroundImage = src.songBackgroundImage
+      ..songBackgroundImageLayout = src.songBackgroundImageLayout
+      ..songBackgroundImageAlignment = src.songBackgroundImageAlignment
       ..isScriptureImageEnabled = src.isScriptureImageEnabled
       ..isScriptureTransparent = src.isScriptureTransparent
       ..scriptureBackgroundColor = src.scriptureBackgroundColor
       ..scriptureBackgroundImage = src.scriptureBackgroundImage
+      ..scriptureBackgroundImageLayout = src.scriptureBackgroundImageLayout
+      ..scriptureBackgroundImageAlignment = src.scriptureBackgroundImageAlignment
+      ..blankAspectRatio = src.blankAspectRatio
+      ..blankCustomWidth = src.blankCustomWidth
+      ..blankCustomHeight = src.blankCustomHeight
+      ..isBlankImageEnabled = src.isBlankImageEnabled
+      ..isBlankTransparent = src.isBlankTransparent
+      ..blankBackgroundColor = src.blankBackgroundColor
+      ..blankBackgroundImage = src.blankBackgroundImage
+      ..blankBackgroundImageLayout = src.blankBackgroundImageLayout
+      ..blankBackgroundImageAlignment = src.blankBackgroundImageAlignment
       ..showTitle = src.showTitle
       ..titleAlignment = src.titleAlignment
       ..titleVerticalAlignment = src.titleVerticalAlignment

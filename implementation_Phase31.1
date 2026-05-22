@@ -1,0 +1,28 @@
+# Implementation Plan for Phase 31.1 - Image Slide Settings
+
+## Objective
+Fix the layout settings ('Stretch' and 'Keep Aspect Ratio') for Image slides so they apply correctly in the preview and live projector screens, and remove the unnecessary 'Fit' option. 
+
+## Proposed Changes
+
+### 1. UI Updates
+#### [MODIFY] [image_slide_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/image_slide_dialog.dart)
+- **Remove 'Fit' Layout Option**: Remove the `('fit', 'Fit to Window', Icons.fit_screen)` entry from the `_layouts` constant list. This ensures users can only select 'Stretch' or 'Keep Aspect Ratio'.
+
+### 2. Image Rendering Logic
+#### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- **Fix Constraints**: Currently, the `Image` widget for the slide determines its own size up to the canvas bounds, which ignores the 'stretch' behavior since it is wrapped in an unbounded `Align` widget.
+- **Pass Canvas Dimensions**: Update `_buildImageWidget()` to receive `canvasWidth` and `canvasHeight`.
+- **Apply Size & Alignment to Image**: Instead of relying on the outer `Align` widget for sizing, explicitly set `width: canvasWidth` and `height: canvasHeight` on the `Image.file` widget itself. This forces the image to map directly to the presentation canvas size.
+- **Image Fit Behaviors**: 
+    - When **'Stretch'** is selected (`BoxFit.fill`), the image will forcefully expand to exactly match the screen's canvas dimensions, satisfying the stretch requirement.
+    - When **'Keep Aspect Ratio'** (`contain`) is selected (`BoxFit.contain`), the image will size itself optimally within the canvas bounds while keeping its natural proportions. 
+- **Internal Alignment**: Apply the selected alignment settings directly to the `alignment:` property of the `Image.file` widget, which perfectly manages alignment when the image uses 'Keep Aspect Ratio'.
+
+## Verification Plan
+1. Launch KeryxPro and open the Dashboard.
+2. Select an Image Slide to add to the Setlist.
+3. Observe that only 'Stretch' and 'Keep Aspect Ratio' are present.
+4. Verify that 'Stretch' completely fills the presentation bounds, ignoring the image's original aspect ratio.
+5. Verify that 'Keep Aspect Ratio' retains the image proportions but spans up to the canvas bounds.
+6. Check that alignments (e.g., Top Left, Bottom Right) work accurately in 'Keep Aspect Ratio' mode.

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../setlist/presentation/image_slide_dialog.dart';
+import '../../../setlist/data/setlist_item.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:keryxpro/features/presentation/presentation/widgets/projector_view.dart';
 import '../presentation_settings_provider.dart';
@@ -37,8 +39,9 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
   void _updateControllers() {
     final settings = ref.read(editingPresetProvider);
     final isSong = _editTabIndex == 0;
-    _widthCtrl.text = (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth).toStringAsFixed(0);
-    _heightCtrl.text = (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight).toStringAsFixed(0);
+    final isBlank = _editTabIndex == 2;
+    _widthCtrl.text = (isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)).toStringAsFixed(0);
+    _heightCtrl.text = (isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)).toStringAsFixed(0);
   }
 
   @override
@@ -122,6 +125,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               segments: const [
                 ButtonSegment(value: 0, label: Text('Song')),
                 ButtonSegment(value: 1, label: Text('Scripture')),
+                ButtonSegment(value: 2, label: Text('Blank Screen')),
               ],
               selected: {_editTabIndex},
               onSelectionChanged: (set) {
@@ -410,39 +414,41 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
-                    child: _buildTitleSettings(),
+                    child: _editTabIndex == 2 ? const SizedBox.shrink() : _buildTitleSettings(),
                   ),
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: _buildBodySettings(),
+                    child: _editTabIndex == 2 ? const SizedBox.shrink() : _buildBodySettings(),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.save),
-                    label: Text('Save ${_editTabIndex == 0 ? 'Song' : 'Scripture'} Settings'),
+                    label: Text('Save ${_editTabIndex == 0 ? 'Song' : _editTabIndex == 1 ? 'Scripture' : 'Blank Screen'} Settings'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(48),
                     ),
                     onPressed: () {
                       final s = ref.read(editingPresetProvider);
                       // Validation
-                      bool isValid = s.titleFontFamily.isNotEmpty && s.titleFontSize > 0 &&
-                                    s.lyricsFontFamily.isNotEmpty && s.lyricsFontSize > 0 &&
-                                    s.chapterFontFamily.isNotEmpty && s.chapterFontSize > 0 &&
-                                    s.verseFontFamily.isNotEmpty && s.verseFontSize > 0;
-                      
-                      if (!isValid) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please ensure Font and Size are selected for all sections.'),
-                            backgroundColor: Colors.red,
-                          )
-                        );
-                        return;
+                      if (_editTabIndex != 2) {
+                        bool isValid = s.titleFontFamily.isNotEmpty && s.titleFontSize > 0 &&
+                                      s.lyricsFontFamily.isNotEmpty && s.lyricsFontSize > 0 &&
+                                      s.chapterFontFamily.isNotEmpty && s.chapterFontSize > 0 &&
+                                      s.verseFontFamily.isNotEmpty && s.verseFontSize > 0;
+                        
+                        if (!isValid) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please ensure Font and Size are selected for all sections.'),
+                              backgroundColor: Colors.red,
+                            )
+                          );
+                          return;
+                        }
                       }
 
                       ref.read(editingPresetProvider.notifier).saveSettings();
@@ -689,8 +695,9 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
+    final isBlank = _editTabIndex == 2;
 
-    final aspectRatio = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+    final aspectRatio = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
 
     return Row(
       children: [
@@ -699,7 +706,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           label: const Text('Aspect Ratio'),
           onSelected: (val) {
             if (val != null) {
-              notifier.updateAspectRatio(val, isSong);
+              notifier.updateAspectRatio(val, _editTabIndex);
               if (val == 'Custom') {
                 _updateControllers();
               }
@@ -723,7 +730,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               keyboardType: TextInputType.number,
               onChanged: (v) {
                 final parsed = double.tryParse(v);
-                if (parsed != null) notifier.updateCustomWidth(parsed, isSong);
+                if (parsed != null) notifier.updateCustomWidth(parsed, _editTabIndex);
               },
             ),
           ),
@@ -737,7 +744,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               keyboardType: TextInputType.number,
               onChanged: (v) {
                 final parsed = double.tryParse(v);
-                if (parsed != null) notifier.updateCustomHeight(parsed, isSong);
+                if (parsed != null) notifier.updateCustomHeight(parsed, _editTabIndex);
               },
             ),
           ),
@@ -750,11 +757,14 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
+    final isBlank = _editTabIndex == 2;
     
-    final isTransparent = isSong ? settings.isSongTransparent : settings.isScriptureTransparent;
-    final backgroundColor = isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor;
-    final isImageEnabled = isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled;
-    final backgroundImage = isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage;
+    final isTransparent = isBlank ? settings.isBlankTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent);
+    final backgroundColor = isBlank ? settings.blankBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor);
+    final isImageEnabled = isBlank ? settings.isBlankImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled);
+    final backgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
+    final backgroundImageLayout = isBlank ? settings.blankBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout);
+    final backgroundImageAlignment = isBlank ? settings.blankBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -763,12 +773,12 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           children: [
             Checkbox(
               value: !isTransparent,
-              onChanged: (_) => notifier.updateIsTransparent(false, isSong),
+              onChanged: (_) => notifier.updateIsTransparent(false, _editTabIndex),
             ),
             const Text('Background Color'),
             const SizedBox(width: 8),
             InkWell(
-              onTap: isTransparent ? null : () => _showColorPicker(context, Color(backgroundColor), (c) => notifier.updateBackgroundColor(c.value, isSong)),
+              onTap: isTransparent ? null : () => _showColorPicker(context, Color(backgroundColor), (c) => notifier.updateBackgroundColor(c.value, _editTabIndex)),
               child: Container(
                 width: 48, height: 24,
                 decoration: BoxDecoration(
@@ -784,7 +794,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           children: [
             Checkbox(
               value: isTransparent,
-              onChanged: (_) => notifier.updateIsTransparent(true, isSong),
+              onChanged: (_) => notifier.updateIsTransparent(true, _editTabIndex),
             ),
             const Text('Transparent'),
           ],
@@ -794,19 +804,27 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
             Checkbox(
               value: isImageEnabled,
               onChanged: (val) {
-                if (val != null) notifier.updateIsImageEnabled(val, isSong);
+                if (val != null) notifier.updateIsImageEnabled(val, _editTabIndex);
               },
             ),
             const Text('Image'),
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () async {
-                FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image);
-                if (result != null && result.files.single.path != null) {
-                  notifier.updateBackgroundImage(result.files.single.path!, isSong);
+                final result = await showDialog<ImageSetlistItem>(
+                  context: context,
+                  builder: (context) => ImageSlideDialog(
+                    isForBackground: true,
+                    initialImagePath: backgroundImage,
+                    initialLayout: backgroundImageLayout.isEmpty ? 'stretch' : backgroundImageLayout,
+                    initialAlignment: backgroundImageAlignment.isEmpty ? 'center' : backgroundImageAlignment,
+                  ),
+                );
+                if (result != null && result.imagePath.isNotEmpty) {
+                  notifier.updateBackgroundImage(result.imagePath, result.layout, result.alignment, _editTabIndex);
                 }
               },
-              child: const Text('Browse'),
+              child: const Text('Add'),
             ),
             if (backgroundImage.isNotEmpty) ...[
               const SizedBox(width: 8),
@@ -1172,11 +1190,12 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
   Widget _buildPreviewPane() {
     final settings = ref.watch(editingPresetProvider);
     final isSong = _editTabIndex == 0;
+    final isBlank = _editTabIndex == 2;
     
     final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
-    final previewText = isSong 
+    final previewText = isBlank ? "" : (isSong 
       ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
-      : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
+      : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.");
 
     return ProjectorView(
       settings: settings,

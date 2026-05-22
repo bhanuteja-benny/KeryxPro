@@ -238,7 +238,8 @@ class _Monitor1View extends ConsumerWidget {
                         (p) => p.id == currentId,
                         orElse: () => PresentationSettings(),
                       );
-                      final aspectRatio = _getAspectRatio(settings, isSong);
+                      final isBlank = activeSlideText == "";
+                      final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank);
 
                       return AspectRatio(
                         aspectRatio: aspectRatio,
@@ -253,6 +254,7 @@ class _Monitor1View extends ConsumerWidget {
                               activeSlideText: activeSlideText,
                               titleText: activeTitle,
                               isSong: isSong,
+                              showCheckerboard: true,
                             ),
                           ),
                         ),
@@ -370,7 +372,8 @@ class _Monitor2View extends ConsumerWidget {
                     (p) => p.id == currentId,
                     orElse: () => PresentationSettings(),
                   );
-                  final aspectRatio = _getAspectRatio(settings, isSong);
+                  final isBlank = activeSlideText == "";
+                  final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank);
 
                   return AspectRatio(
                     aspectRatio: aspectRatio,
@@ -385,6 +388,7 @@ class _Monitor2View extends ConsumerWidget {
                           activeSlideText: activeSlideText,
                           titleText: activeTitle,
                           isSong: isSong,
+                          showCheckerboard: true,
                         ),
                       ),
                     ),
@@ -403,16 +407,16 @@ class _Monitor2View extends ConsumerWidget {
 
 // ─── Helpers ───
 
-double _getAspectRatio(PresentationSettings settings, bool isSong) {
-  final ratio = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank = false}) {
+  final ratio = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
   switch (ratio) {
     case '4:3':
       return 4 / 3;
     case '4:1':
       return 4 / 1;
     case 'Custom':
-      final w = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
-      final h = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
+      final w = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
+      final h = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
       return (w > 0 && h > 0) ? w / h : 16 / 9;
     case '16:9':
     default:

@@ -3,6 +3,7 @@ import '../../../main.dart';
 import '../data/bible_repository.dart';
 import '../data/bible.dart';
 import '../data/bible_import_service.dart';
+import '../../../core/sync/sync_service.dart';
 
 final bibleRepositoryProvider = Provider<BibleRepository>((ref) {
   final isarService = ref.watch(isarServiceProvider);
@@ -16,8 +17,9 @@ final bibleVersionsProvider = FutureProvider<List<BibleVersion>>((ref) async {
 
 class BibleImportNotifier extends StateNotifier<AsyncValue<void>> {
   final BibleRepository _repository;
+  final SyncService _syncService;
 
-  BibleImportNotifier(this._repository) : super(const AsyncValue.data(null));
+  BibleImportNotifier(this._repository, this._syncService) : super(const AsyncValue.data(null));
 
   Future<int> importBibleFiles(List<String> filePaths) async {
     state = const AsyncValue.loading();
@@ -29,6 +31,9 @@ class BibleImportNotifier extends StateNotifier<AsyncValue<void>> {
         if (result != null && result.verses.isNotEmpty) {
           await _repository.saveBible(result.version, result.verses);
           importedCount++;
+          
+          // Export event
+          await _syncService.exportBible(result.version, path);
         }
       }
       state = const AsyncValue.data(null);
@@ -42,5 +47,6 @@ class BibleImportNotifier extends StateNotifier<AsyncValue<void>> {
 
 final bibleImportProvider = StateNotifierProvider<BibleImportNotifier, AsyncValue<void>>((ref) {
   final repo = ref.watch(bibleRepositoryProvider);
-  return BibleImportNotifier(repo);
+  final syncService = ref.watch(syncServiceProvider);
+  return BibleImportNotifier(repo, syncService);
 });

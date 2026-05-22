@@ -1,0 +1,25 @@
+Phase 31.1
+
+Context:
+- Image slide settings issue
+
+Problems:
+- while adding the image slide, if user selects 'stretch', the setting is not getting applied to the image view in preview screens and live screens
+- when stretch is selected the image width and height should be adjusted according to the aspect ratio (to fit to the entire screen)
+- when keep aspect ratio is selected then the image should be fit to the screen but image aspect ration should be maintained (width and height should be adjusted with keeping the aspect ratio) 
+- remove the 'Fit' option. 'Stretch' and 'Keep Aspect Ratio' are enough
+- alignment option is working fine (no need to change it)
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan file

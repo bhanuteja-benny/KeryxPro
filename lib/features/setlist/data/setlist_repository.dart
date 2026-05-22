@@ -1,19 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import '../../../core/database/isar_service.dart';
+import '../../../core/sync/sync_service.dart';
+import '../../../main.dart';
 import '../../songs/data/song.dart';
 import 'saved_setlist.dart';
 import 'setlist_item.dart';
 
-final isarServiceProvider = Provider<IsarService>((ref) => IsarService());
-
 final setlistRepositoryProvider = Provider<SetlistRepository>((ref) {
-  return SetlistRepository(ref.read(isarServiceProvider).db);
+  return SetlistRepository(
+    ref.read(isarServiceProvider).db,
+    ref.read(syncServiceProvider),
+  );
 });
 
 class SetlistRepository {
   final Future<Isar> _db;
-  SetlistRepository(this._db);
+  final SyncService _syncService;
+  
+  SetlistRepository(this._db, this._syncService);
 
   Future<List<String>> getAllNames() async {
     final isar = await _db;
@@ -120,15 +125,31 @@ class SetlistRepository {
       ..favorites = favorites
       ..lastModified = DateTime.now();
 
+    // Populate songSyncIds
+    final songSyncIds = <String>[];
+    for (final id in songIds) {
+      final s = await isar.songs.get(id);
+      if (s != null) songSyncIds.add(s.syncId);
+    }
+    saved.songSyncIds = songSyncIds;
+
     await isar.writeTxn(() async {
       await isar.savedSetlists.put(saved);
     });
+
+    // Export sync event
+    _syncService.exportSetlist(saved);
   }
 
   Future<void> deleteByName(String name) async {
     final isar = await _db;
+    final existing = await isar.savedSetlists.where().nameEqualTo(name).findFirst();
+    if (existing == null) return;
+
     await isar.writeTxn(() async {
-      await isar.savedSetlists.where().nameEqualTo(name).deleteAll();
+      await isar.savedSetlists.delete(existing.id);
     });
+
+    _syncService.exportSetlist(existing, deleted: true);
   }
 }

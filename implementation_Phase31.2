@@ -1,0 +1,23 @@
+# Implementation Plan for Phase 31.2 - Background Rendering Fix
+
+## Objective
+Fix the z-index rendering order of the background elements so that the background color/checkerboard correctly sits *behind* the background image, allowing transparent parts of PNG backgrounds to reveal the color or checkerboard underneath.
+
+## Root Cause Analysis
+Currently, the background color and background image are applied as a `BoxDecoration` on a parent `Container`. However, the transparency Checkerboard is injected inside the child `Stack` of that container. In Flutter, a container's decoration is painted *before* its children. Because the Checkerboard is a child, it is painted *on top of* the background image, completely covering it up when transparency is active.
+
+## Proposed Changes
+
+### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+We will restructure the layout of the virtual canvas (`content`) to explicitly order the layers within the `Stack` from bottom to top, ensuring accurate compositing:
+
+1. **Remove Decoration**: Remove the `color` and `image` properties from the parent `Container`'s `BoxDecoration`.
+2. **Layer 1 (Bottom) - Solid Color**: Add a base layer to the `Stack` using a `Container` that paints the selected background color (or `Colors.transparent` if transparent is checked, or `Colors.black` if no text is active).
+3. **Layer 2 - Checkerboard**: Leave the existing Checkerboard painter here. It will only render if `isTransparent` is true. Because it sits on top of Layer 1, it provides the transparent grid.
+4. **Layer 3 - Background Image**: Introduce a new layer in the `Stack` using `Image.file(..., fit: BoxFit.cover)`. This will render the background image (if enabled and present). Because it sits on top of Layer 2, any transparency in the PNG image will correctly show the Checkerboard or solid color underneath!
+5. **Layer 4 (Top) - Content**: The existing logic for the text layers (lyrics/title/image slide content) will remain exactly as-is.
+
+## Verification Plan
+1. Open the Presentation Settings.
+2. **Test 1**: Set the background to **Transparent** and select a PNG image with transparency as the **Background Image**. Verify in the preview screen that the checkerboard is visible *through* the transparent areas of the image.
+3. **Test 2**: Uncheck Transparent, choose a **Background Color** (e.g., Red), and select the same PNG image. Verify that the Red color is visible *through* the transparent areas of the image.

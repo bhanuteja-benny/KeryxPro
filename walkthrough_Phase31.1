@@ -1,0 +1,25 @@
+# Phase 31.1: Image Slide Settings Fix
+
+I've successfully updated the image slide layout options and fixed the rendering behavior for 'Stretch' and 'Keep Aspect Ratio'.
+
+## Overview of Changes
+
+> [!NOTE]
+> The 'Fit to Window' option has been completely removed to streamline options, and Image slides now perfectly obey layout constraints set during their addition.
+
+### 1. Simplified Layout Options
+- Removed the 'Fit' (`Fit to Window`) option from the Image slide configuration dialog in `image_slide_dialog.dart`.
+- The interface now provides only two deliberate choices: **'Stretch'** and **'Keep Aspect Ratio'**.
+
+### 2. Precise Rendering Constraints
+- Modified how `projector_view.dart` constructs the underlying `Image` component. 
+- Previously, the image was contained within a boundless `Align` wrapper, causing the inner constraints (`BoxFit.fill`) to be ineffective because the box simply snapped to the image's inherent resolution bounds.
+- I refactored `_buildImageWidget` to directly receive the exact `canvasWidth` and `canvasHeight` boundaries.
+- **Stretch**: Now stretches fully to the provided `canvasWidth` and `canvasHeight`, overriding the native aspect ratio entirely using `BoxFit.fill`.
+- **Keep Aspect Ratio**: Effectively aligns and sizes within the total bounds using `BoxFit.contain`.
+- **Alignments**: Integrated the custom user-defined align settings directly into the `Image` widget natively for precise alignment when using 'Keep Aspect Ratio'.
+
+## Verification
+- Run the KeryxPro desktop app.
+- Open the Image slide addition dialog and confirm only 'Stretch' and 'Keep Aspect Ratio' are visible.
+- Add two distinct image slides using both layouts. Validate that 'Stretch' completely fills the live screen output without borders, and that 'Keep Aspect Ratio' respects original proportions and your selected alignments.

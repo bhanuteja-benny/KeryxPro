@@ -1,0 +1,64 @@
+# Blank Screen Settings (Phase 31)
+
+This plan outlines the changes to introduce a "Blank Screen" settings tab alongside the existing "Song" and "Scripture" tabs under Preset Settings, and to correctly apply these settings when displaying a blank slide.
+
+## User Review Required
+
+Please review the following changes to ensure they meet your requirements. No hidden assumptions have been made, and only the specified UI and functionality changes are planned. 
+
+## Proposed Changes
+
+---
+
+### Data Models & State Providers
+
+We need to add the Blank Screen configuration to our `PresentationSettings` Isar model and its corresponding Riverpod providers.
+
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- **Add Fields:** Add properties for `blankAspectRatio`, `blankCustomWidth`, `blankCustomHeight`, `blankBackgroundColor`, `blankBackgroundImage`, `isBlankImageEnabled`, and `isBlankTransparent`.
+- **Serialization:** Update `toMap` and `fromMap` to persist these new properties.
+
+#### [MODIFY] [presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- **Fallbacks:** Update `_processFallbacks()` to provide defaults for the new blank settings (e.g. Aspect ratio '16:9', background color `0xFF000000`, etc.).
+- **Clone:** Update `cloneState()` to handle copying the new properties.
+- **Update Methods:** Modify methods like `updateAspectRatio()`, `updateCustomWidth()`, `updateBackgroundColor()`, `updateBackgroundImage()`, `updateIsImageEnabled()`, and `updateIsTransparent()` to accept an `int tabIndex` (0: Song, 1: Scripture, 2: Blank) instead of `bool isSong`, allowing updates to the newly added Blank settings without duplicating functions.
+
+---
+
+### UI Settings Dialog
+
+We need to add the third tab and its specific options.
+
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- **Tabs:** Add a third `ButtonSegment` for "Blank Screen" (`value: 2`) in the `SegmentedButton`.
+- **Controllers:** Update `_updateControllers()` to correctly read blank screen variables when `_editTabIndex == 2`.
+- **Edit View Logic:** Modify `_buildEditPresetView()` to hide typography settings (`_buildTitleSettings` and `_buildBodySettings`) when on the Blank tab. The "Save Settings" button label will dynamically change to "Save Blank Screen Settings".
+- **Previews:** Update `_buildPreviewPane()` to pass `activeSlideText: ""` when the Blank tab is selected so the live preview renders the blank screen correctly.
+- **Control Handlers:** Update the aspect ratio and background control widgets to pass `_editTabIndex` to the updated provider functions.
+
+---
+
+### Presentation Rendering (Live & Preview)
+
+We need to apply the blank screen settings (aspect ratio, custom dimensions, background properties) whenever a blank slide is requested.
+
+#### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- **Blank Detection:** Introduce a `bool isBlank = activeSlideText == "";` check.
+- **Visual Styles:** If `isBlank` is true, map `canvasWidth`, `canvasHeight`, `aspectRatioStr`, `isTransparent`, `backgroundColorValue`, `isImageEnabled`, and `backgroundImage` to use the settings' `blank` prefixed properties instead of `song` or `scripture`. 
+- This will automatically adjust how the `ProjectorView` builds its virtual letterbox canvas and what background it renders, fully supporting Monitor 1 and Monitor 2 preview and live projector output automatically.
+
+#### [MODIFY] [live_projector_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/widgets/live_projector_pane.dart)
+- **Aspect Ratio Helper:** Update the `_getAspectRatio()` helper function to accept a `bool isBlank` argument. If `isBlank` is true, return the aspect ratio calculated from the blank screen properties instead of song or scripture.
+- **Live Preview Tabs:** Update `_Monitor1View` and `_Monitor2View` to check `final isBlank = activeSlideText == "";` and pass it into `_getAspectRatio()`.
+
+## Verification Plan
+
+### Automated Tests
+- Run `flutter analyze` and `flutter test` to ensure there are no build regressions.
+
+### Manual Verification
+1. **Settings Dialog**: Open "Settings -> Presentation Settings". Add a preset and confirm that the "Blank Screen" tab is visible.
+2. **Options Verification**: Select the Blank Screen tab. Confirm that Aspect Ratio and Background Settings (Color, Transparent, Image) are present, but Typography (Title/Body) options are absent.
+3. **Saving**: Change a setting for the blank screen, press "Save Blank Screen Settings", and confirm the data persists when reopening.
+4. **Previewing**: In the settings dialog, changing the Blank Screen properties dynamically updates the preview window correctly.
+5. **Live Output**: Open Monitor 1/Monitor 2. Select a Blank Slide in the Dashboard. Verify that the correct blank screen settings (background color, image, aspect ratio) are applied to both the live preview pane and the external output window (Monitor 1/Monitor 2).

@@ -1,0 +1,55 @@
+# Database Sync Implementation Plan
+
+This document outlines the proposed solution for syncing KeryxPro data across multiple machines within a single church, ensuring only granular changes are transmitted.
+
+> [!WARNING]
+> **Mandatory Schema Change Required**
+> Local Isar databases use simple auto-incrementing integer IDs. If Machine A and Machine B both create a new song while offline, both will assign it `ID = 1`. When they sync, there will be a collision. 
+> **To solve this:** We MUST add a `syncId` (a globally unique UUID string) to all synced entities (`Song`, `SavedSetlist`, `PresentationSettings`, etc.). The local Isar `id` will remain, but the sync mechanism will always match records based on their `syncId`. This is a mandatory functional change required for any distributed sync system.
+
+## Architectural Options
+
+Since KeryxPro uses a single Isar database file, we cannot directly sync the `.isar` file via Dropbox without causing file locks or data corruption. Instead, we must sync the *data events* (e.g., "Song X updated"). 
+
+Please review the following three approaches and let me know your preference:
+
+### Approach A: Cloud Backend-as-a-Service (Firebase or Supabase) - **RECOMMENDED**
+Use a free tier of a Cloud BaaS like Supabase (PostgreSQL + Realtime WebSockets) or Firebase.
+* **How it works:** You create a free project. KeryxPro pushes changes to the Cloud database. Other machines maintain a lightweight, open WebSocket connection and instantly receive the changes to update their local Isar DB.
+* **Pros:** Instant real-time sync, no backend server code to write or maintain, extremely reliable, built-in file storage for large Bible XML files.
+* **Cons:** Requires you to create a third-party account.
+
+### Approach B: Custom Backend API (Your Windows Hosting)
+We build a custom backend API that you will host on your Windows hosting.
+* **How it works:** I will write a simple backend script (e.g., PHP or Node.js). KeryxPro sends HTTP requests to your URL when a change is made. Other machines will periodically poll the server (e.g., every 5 seconds) to check for new changes and apply them.
+* **Pros:** Hosted entirely on your own infrastructure.
+* **Cons:** We must build and deploy the backend. Periodic polling is slightly less "instant" than WebSockets, though still very effective.
+
+### Approach C: Dropbox/OneDrive Event Sync (Serverless)
+If you prefer the "OpenSong" approach without any web server:
+* **How it works:** Users configure a "Sync Folder" in KeryxPro (mapped to a local Dropbox/OneDrive drive). Whenever KeryxPro saves a song, it writes a tiny `change_event.json` to this folder. Dropbox automatically syncs this small file to other machines. The other KeryxPro machines watch the folder, read the JSON, apply the change to Isar, and archive the event.
+* **Pros:** Exactly matches the OpenSong peer-to-peer cloud folder workflow. No web APIs needed.
+* **Cons:** Sync speed relies entirely on how fast the Dropbox desktop client syncs files.
+
+## Proposed Core Changes (Regardless of Architecture)
+
+### 1. Multi-Tenancy (Church Isolation)
+* We will add a **"Sync Key"** (or Church ID) in the Settings. 
+* Only KeryxPro machines configured with the exact same Sync Key will share data. They will not interfere with any other church's database.
+
+### 2. Granular Sync Interceptors
+* **Songs, SetLists, Presets:** When the user clicks "Save" or "Delete" on these entities, we will save to local Isar normally, and then immediately pass the payload to a new `SyncService` to transmit to other machines.
+* **Offline Support:** If the machine has no internet, changes will be saved to a local Isar `SyncQueue`. Once the internet is restored, the queue will process and sync the pending changes.
+
+### 3. Bible Syncing Mechanism
+* Bibles can have tens of thousands of verses. Sending individual verses over the sync network is inefficient.
+* **Solution:** When a user imports a Bible, KeryxPro will upload the raw Bible file to the sync server/folder. It will then send a lightweight sync notification: `"New Bible Available: KJV"`. Other machines will receive this notification, download the file in the background, and perform a local Isar import automatically.
+
+## User Review Required & Open Questions
+
+> [!IMPORTANT]
+> Please provide your feedback on the following:
+> 1. **Which architectural approach (A, B, or C) do you prefer?** 
+>    *If B, what backend technologies does your Windows hosting support (PHP, Node.js, ASP.NET)?*
+> 2. **Do you approve the mandatory schema change** of adding a UUID `syncId` to the database models?
+> 3. **Sync Settings UI:** I will need to add a small section in the Settings screen to enter the "Sync Key" (to isolate churches) and potentially a "Sync Status" indicator. Do you approve this minor UI addition?

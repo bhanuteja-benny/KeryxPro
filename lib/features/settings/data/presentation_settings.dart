@@ -1,10 +1,15 @@
 import 'package:isar/isar.dart';
+import 'package:uuid/uuid.dart';
 
 part 'presentation_settings.g.dart';
 
 @collection
 class PresentationSettings {
   Id id = Isar.autoIncrement; 
+
+  @Index(unique: true, replace: true)
+  String syncId = const Uuid().v4();
+
 
   String presetName = 'Default';
   bool isDefault = false;
@@ -22,13 +27,29 @@ class PresentationSettings {
   // Background Options
   int songBackgroundColor = 0xFF000000;
   String songBackgroundImage = '';
+  String songBackgroundImageLayout = 'stretch';
+  String songBackgroundImageAlignment = 'center';
   bool isSongImageEnabled = false;
   bool isSongTransparent = false;
 
   int scriptureBackgroundColor = 0xFF000000;
   String scriptureBackgroundImage = '';
+  String scriptureBackgroundImageLayout = 'stretch';
+  String scriptureBackgroundImageAlignment = 'center';
   bool isScriptureImageEnabled = false;
   bool isScriptureTransparent = false;
+
+  // View Settings (Blank)
+  String blankAspectRatio = '16:9'; // '16:9', '4:3', '4:1', 'Custom'
+  double blankCustomWidth = 1920.0;
+  double blankCustomHeight = 1080.0;
+
+  int blankBackgroundColor = 0xFF000000;
+  String blankBackgroundImage = '';
+  String blankBackgroundImageLayout = 'stretch';
+  String blankBackgroundImageAlignment = 'center';
+  bool isBlankImageEnabled = false;
+  bool isBlankTransparent = false;
 
   // Title Settings
   bool showTitle = true;
@@ -107,6 +128,7 @@ class PresentationSettings {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'syncId': syncId,
       'presetName': presetName,
       'isDefault': isDefault,
       'songAspectRatio': songAspectRatio,
@@ -117,12 +139,25 @@ class PresentationSettings {
       'scriptureCustomHeight': scriptureCustomHeight,
       'songBackgroundColor': songBackgroundColor,
       'songBackgroundImage': songBackgroundImage,
+      'songBackgroundImageLayout': songBackgroundImageLayout,
+      'songBackgroundImageAlignment': songBackgroundImageAlignment,
       'isSongImageEnabled': isSongImageEnabled,
       'isSongTransparent': isSongTransparent,
       'scriptureBackgroundColor': scriptureBackgroundColor,
       'scriptureBackgroundImage': scriptureBackgroundImage,
+      'scriptureBackgroundImageLayout': scriptureBackgroundImageLayout,
+      'scriptureBackgroundImageAlignment': scriptureBackgroundImageAlignment,
       'isScriptureImageEnabled': isScriptureImageEnabled,
       'isScriptureTransparent': isScriptureTransparent,
+      'blankAspectRatio': blankAspectRatio,
+      'blankCustomWidth': blankCustomWidth,
+      'blankCustomHeight': blankCustomHeight,
+      'blankBackgroundColor': blankBackgroundColor,
+      'blankBackgroundImage': blankBackgroundImage,
+      'blankBackgroundImageLayout': blankBackgroundImageLayout,
+      'blankBackgroundImageAlignment': blankBackgroundImageAlignment,
+      'isBlankImageEnabled': isBlankImageEnabled,
+      'isBlankTransparent': isBlankTransparent,
       'showTitle': showTitle,
       'titleAlignment': titleAlignment,
       'titleVerticalAlignment': titleVerticalAlignment,
@@ -195,6 +230,7 @@ class PresentationSettings {
   static PresentationSettings fromMap(Map<String, dynamic> map) {
     return PresentationSettings()
       ..id = map['id'] as int? ?? Isar.autoIncrement
+      ..syncId = map['syncId'] as String? ?? const Uuid().v4()
       ..presetName = map['presetName'] as String? ?? 'Default'
       ..isDefault = map['isDefault'] as bool? ?? false
       ..songAspectRatio = map['songAspectRatio'] as String? ?? '16:9'
@@ -205,12 +241,25 @@ class PresentationSettings {
       ..scriptureCustomHeight = (map['scriptureCustomHeight'] as num?)?.toDouble() ?? 1080.0
       ..songBackgroundColor = map['songBackgroundColor'] as int? ?? 0xFF000000
       ..songBackgroundImage = map['songBackgroundImage'] as String? ?? ''
+      ..songBackgroundImageLayout = map['songBackgroundImageLayout'] as String? ?? 'stretch'
+      ..songBackgroundImageAlignment = map['songBackgroundImageAlignment'] as String? ?? 'center'
       ..isSongImageEnabled = map['isSongImageEnabled'] as bool? ?? false
       ..isSongTransparent = map['isSongTransparent'] as bool? ?? false
       ..scriptureBackgroundColor = map['scriptureBackgroundColor'] as int? ?? 0xFF000000
       ..scriptureBackgroundImage = map['scriptureBackgroundImage'] as String? ?? ''
+      ..scriptureBackgroundImageLayout = map['scriptureBackgroundImageLayout'] as String? ?? 'stretch'
+      ..scriptureBackgroundImageAlignment = map['scriptureBackgroundImageAlignment'] as String? ?? 'center'
       ..isScriptureImageEnabled = map['isScriptureImageEnabled'] as bool? ?? false
       ..isScriptureTransparent = map['isScriptureTransparent'] as bool? ?? false
+      ..blankAspectRatio = map['blankAspectRatio'] as String? ?? '16:9'
+      ..blankCustomWidth = (map['blankCustomWidth'] as num?)?.toDouble() ?? 1920.0
+      ..blankCustomHeight = (map['blankCustomHeight'] as num?)?.toDouble() ?? 1080.0
+      ..blankBackgroundColor = map['blankBackgroundColor'] as int? ?? 0xFF000000
+      ..blankBackgroundImage = map['blankBackgroundImage'] as String? ?? ''
+      ..blankBackgroundImageLayout = map['blankBackgroundImageLayout'] as String? ?? 'stretch'
+      ..blankBackgroundImageAlignment = map['blankBackgroundImageAlignment'] as String? ?? 'center'
+      ..isBlankImageEnabled = map['isBlankImageEnabled'] as bool? ?? false
+      ..isBlankTransparent = map['isBlankTransparent'] as bool? ?? false
       ..showTitle = map['showTitle'] as bool? ?? true
       ..titleAlignment = map['titleAlignment'] as String? ?? 'center'
       ..titleVerticalAlignment = map['titleVerticalAlignment'] as String? ?? 'bottom'

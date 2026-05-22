@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:uuid/uuid.dart';
 
 part 'saved_setlist.g.dart';
 
@@ -8,11 +9,18 @@ part 'saved_setlist.g.dart';
 class SavedSetlist {
   Id id = Isar.autoIncrement;
 
+  @Index(unique: true, replace: true)
+  String syncId = const Uuid().v4();
+
   @Index(type: IndexType.value, unique: true, replace: true)
   late String name;
 
   /// Ordered list of song IDs in this setlist.
   late List<int> songIds;
+
+  /// Ordered list of song sync IDs. Used for resolving across different machines.
+  List<String> songSyncIds = [];
+
 
   /// JSON-serialized image items. Stored as a JSON string list for Isar compatibility.
   /// Format per entry: "path|layout|alignment"

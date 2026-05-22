@@ -7,6 +7,7 @@ import '../../features/bible/data/bible.dart';
 import '../../features/settings/data/presentation_settings.dart';
 import '../../features/settings/data/projection_config.dart';
 import '../../features/setlist/data/saved_setlist.dart';
+import '../sync/data/processed_sync_event.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -18,7 +19,7 @@ class IsarService {
   Future<Isar> openDB() async {
     if (Isar.instanceNames.isEmpty) {
       final appDocDir = await getApplicationDocumentsDirectory();
-      final dbDir = Directory('${appDocDir.path}\\KeryxPro');
+      final dbDir = Directory('${appDocDir.path}${Platform.pathSeparator}KeryxPro');
       if (!await dbDir.exists()) {
         await dbDir.create(recursive: true);
       }
@@ -31,6 +32,7 @@ class IsarService {
           PresentationSettingsSchema,
           ProjectionConfigSchema,
           SavedSetlistSchema,
+          ProcessedSyncEventSchema,
         ],
         directory: dbDir.path,
         inspector: true,

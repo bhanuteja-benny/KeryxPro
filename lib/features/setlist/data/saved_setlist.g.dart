@@ -46,6 +46,16 @@ const SavedSetlistSchema = CollectionSchema(
       id: 5,
       name: r'songIds',
       type: IsarType.longList,
+    ),
+    r'songSyncIds': PropertySchema(
+      id: 6,
+      name: r'songSyncIds',
+      type: IsarType.stringList,
+    ),
+    r'syncId': PropertySchema(
+      id: 7,
+      name: r'syncId',
+      type: IsarType.string,
     )
   },
   estimateSize: _savedSetlistEstimateSize,
@@ -54,6 +64,19 @@ const SavedSetlistSchema = CollectionSchema(
   deserializeProp: _savedSetlistDeserializeProp,
   idName: r'id',
   indexes: {
+    r'syncId': IndexSchema(
+      id: 7538593479801827566,
+      name: r'syncId',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'syncId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
     r'name': IndexSchema(
       id: 879695947855722453,
       name: r'name',
@@ -99,6 +122,14 @@ int _savedSetlistEstimateSize(
   }
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.songIds.length * 8;
+  bytesCount += 3 + object.songSyncIds.length * 3;
+  {
+    for (var i = 0; i < object.songSyncIds.length; i++) {
+      final value = object.songSyncIds[i];
+      bytesCount += value.length * 3;
+    }
+  }
+  bytesCount += 3 + object.syncId.length * 3;
   return bytesCount;
 }
 
@@ -114,6 +145,8 @@ void _savedSetlistSerialize(
   writer.writeDateTime(offsets[3], object.lastModified);
   writer.writeString(offsets[4], object.name);
   writer.writeLongList(offsets[5], object.songIds);
+  writer.writeStringList(offsets[6], object.songSyncIds);
+  writer.writeString(offsets[7], object.syncId);
 }
 
 SavedSetlist _savedSetlistDeserialize(
@@ -130,6 +163,8 @@ SavedSetlist _savedSetlistDeserialize(
   object.lastModified = reader.readDateTime(offsets[3]);
   object.name = reader.readString(offsets[4]);
   object.songIds = reader.readLongList(offsets[5]) ?? [];
+  object.songSyncIds = reader.readStringList(offsets[6]) ?? [];
+  object.syncId = reader.readString(offsets[7]);
   return object;
 }
 
@@ -152,6 +187,10 @@ P _savedSetlistDeserializeProp<P>(
       return (reader.readString(offset)) as P;
     case 5:
       return (reader.readLongList(offset) ?? []) as P;
+    case 6:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -171,6 +210,59 @@ void _savedSetlistAttach(
 }
 
 extension SavedSetlistByIndex on IsarCollection<SavedSetlist> {
+  Future<SavedSetlist?> getBySyncId(String syncId) {
+    return getByIndex(r'syncId', [syncId]);
+  }
+
+  SavedSetlist? getBySyncIdSync(String syncId) {
+    return getByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<bool> deleteBySyncId(String syncId) {
+    return deleteByIndex(r'syncId', [syncId]);
+  }
+
+  bool deleteBySyncIdSync(String syncId) {
+    return deleteByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<List<SavedSetlist?>> getAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'syncId', values);
+  }
+
+  List<SavedSetlist?> getAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'syncId', values);
+  }
+
+  Future<int> deleteAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'syncId', values);
+  }
+
+  int deleteAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'syncId', values);
+  }
+
+  Future<Id> putBySyncId(SavedSetlist object) {
+    return putByIndex(r'syncId', object);
+  }
+
+  Id putBySyncIdSync(SavedSetlist object, {bool saveLinks = true}) {
+    return putByIndexSync(r'syncId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllBySyncId(List<SavedSetlist> objects) {
+    return putAllByIndex(r'syncId', objects);
+  }
+
+  List<Id> putAllBySyncIdSync(List<SavedSetlist> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'syncId', objects, saveLinks: saveLinks);
+  }
+
   Future<SavedSetlist?> getByName(String name) {
     return getByIndex(r'name', [name]);
   }
@@ -308,6 +400,51 @@ extension SavedSetlistQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterWhereClause> syncIdEqualTo(
+      String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'syncId',
+        value: [syncId],
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterWhereClause> syncIdNotEqualTo(
+      String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 
@@ -1386,6 +1523,366 @@ extension SavedSetlistQueryFilter
       );
     });
   }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'songSyncIds',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'songSyncIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'songSyncIds',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songSyncIds',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'songSyncIds',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      songSyncIdsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'songSyncIds',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition> syncIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition> syncIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'syncId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition> syncIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'syncId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterFilterCondition>
+      syncIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension SavedSetlistQueryObject
@@ -1418,6 +1915,18 @@ extension SavedSetlistQuerySortBy
   QueryBuilder<SavedSetlist, SavedSetlist, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterSortBy> sortBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterSortBy> sortBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
     });
   }
 }
@@ -1460,6 +1969,18 @@ extension SavedSetlistQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterSortBy> thenBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QAfterSortBy> thenBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
+    });
+  }
 }
 
 extension SavedSetlistQueryWhereDistinct
@@ -1498,6 +2019,19 @@ extension SavedSetlistQueryWhereDistinct
   QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> distinctBySongIds() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'songIds');
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> distinctBySongSyncIds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'songSyncIds');
+    });
+  }
+
+  QueryBuilder<SavedSetlist, SavedSetlist, QDistinct> distinctBySyncId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'syncId', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1546,6 +2080,19 @@ extension SavedSetlistQueryProperty
   QueryBuilder<SavedSetlist, List<int>, QQueryOperations> songIdsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'songIds');
+    });
+  }
+
+  QueryBuilder<SavedSetlist, List<String>, QQueryOperations>
+      songSyncIdsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'songSyncIds');
+    });
+  }
+
+  QueryBuilder<SavedSetlist, String, QQueryOperations> syncIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'syncId');
     });
   }
 }

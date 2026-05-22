@@ -1,0 +1,55 @@
+# Implementation Plan for Phase 32 - Background Image Settings
+
+## Objective
+Update the Presentation Settings dialog to allow users to configure the layout and alignment of background images using a dedicated popup dialog, similar to adding an image slide.
+
+## User Review Required & Open Questions
+
+**Question:** Are the settings like stretch, keep aspect ratio (fit) and alignments work for background images?
+**Answer:** Currently, NO. The background images are hardcoded to use `BoxFit.cover` (which stretches and crops the image to fill the screen), and the database only stores the image file path. 
+
+To make Layout and Alignment work for background images, we MUST introduce a database schema change to store these new settings, and update the rendering engine. 
+
+**I have proposed the necessary UI and database changes below to make this work. Please let me know if you approve.**
+
+## Proposed Changes
+
+### 1. Reusable Image Dialog
+#### [MODIFY] [image_slide_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/image_slide_dialog.dart)
+- **Add a Constructor Parameter**: Add `final bool isForBackground;` (default `false`) to the dialog.
+- **Dynamic Titles**: If `isForBackground` is true, change the title to 'Background Image Settings', and change the submit button from 'Add to SetList' to 'Done'.
+- **Initial Data**: Add initial parameters so that if the user edits an existing background image, the dialog remembers their previous path, layout, and alignment selections.
+
+### 2. Database & State Models
+#### [MODIFY] [presentation_settings.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/data/presentation_settings.dart)
+- **Add Fields**: Add `Layout` (String) and `Alignment` (String) fields for the Song, Scripture, and Blank background images:
+    - `songBackgroundImageLayout` / `songBackgroundImageAlignment`
+    - `scriptureBackgroundImageLayout` / `scriptureBackgroundImageAlignment`
+    - `blankBackgroundImageLayout` / `blankBackgroundImageAlignment`
+- **Serialization**: Update `toMap` and `fromMap` to persist these new fields.
+
+#### [MODIFY] [presentation_settings_provider.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/presentation_settings_provider.dart)
+- **Fallbacks**: Provide default fallbacks (`'stretch'` and `'center'`) in `_processFallbacks`.
+- **Clone Logic**: Update `cloneState()` to copy the new fields.
+- **Update Methods**: Update `updateBackgroundImage()` to accept `String layout` and `String alignment` along with the file path.
+
+### 3. Preset Settings UI
+#### [MODIFY] [presentation_settings_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/settings/presentation/widgets/presentation_settings_dialog.dart)
+- **Change Button**: In `_buildBackgroundControls()`, change the 'Browse' `ElevatedButton` to an 'Add' `ElevatedButton`.
+- **Open Dialog**: On press, it will show `ImageSlideDialog(isForBackground: true)` instead of `FilePicker.pickFiles`.
+- **Save Result**: Extract the path, layout, and alignment from the dialog result and pass it to `updateBackgroundImage()`.
+
+### 4. Background Rendering Engine
+#### [MODIFY] [projector_view.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/presentation/presentation/widgets/projector_view.dart)
+- **Extract Styles**: In the `build()` method, resolve the specific background layout and background alignment values depending on whether it is a Blank, Song, or Scripture slide.
+- **Convert Layout**: Map the background layout string to a `BoxFit` (`stretch` -> `BoxFit.fill`, `contain` -> `BoxFit.contain`).
+- **Convert Alignment**: Map the background alignment string to a Flutter `Alignment` object using the existing helper.
+- **Apply to Image**: Apply the `fit` and `alignment` properties to the Layer 3 background `Image.file` in the `Stack`.
+
+## Verification Plan
+1. Open Preset Settings for a Song.
+2. Check "Image" and click "Add".
+3. Verify the "Background Image Settings" dialog appears with "Browse", layout, and alignment options, and the "Done" button.
+4. Select an image, choose "Keep Aspect Ratio", and "Bottom Right". Click "Done".
+5. Save the preset, and observe the preview screen updating correctly.
+6. Verify the live projector also respects these new layout rules.

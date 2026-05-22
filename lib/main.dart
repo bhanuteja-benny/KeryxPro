@@ -7,8 +7,10 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 
 import 'core/database/isar_service.dart';
 import 'features/dashboard/presentation/pages/main_dashboard_page.dart';
-import 'features/presentation/presentation/widgets/projector_view.dart';
 import 'features/settings/data/presentation_settings.dart';
+import 'features/presentation/presentation/widgets/projector_view.dart';
+import 'core/sync/sync_config.dart';
+import 'core/sync/sync_service.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,11 +45,13 @@ void main(List<String> args) async {
 
   // Init foundational services
   final isarService = IsarService();
+  final syncConfig = await SyncConfig.init();
 
   runApp(
     ProviderScope(
       overrides: [
         isarServiceProvider.overrideWithValue(isarService),
+        syncConfigProvider.overrideWithValue(syncConfig),
       ],
       child: const DashboardApp(),
     ),
@@ -159,7 +163,7 @@ class _ProjectorAppState extends State<ProjectorApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
         body: view,
       ),
     );

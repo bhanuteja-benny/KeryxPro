@@ -1,10 +1,15 @@
 import 'package:isar/isar.dart';
+import 'package:uuid/uuid.dart';
 
 part 'bible.g.dart';
 
 @collection
 class BibleVersion {
   Id id = Isar.autoIncrement;
+
+  @Index(unique: true, replace: true)
+  String syncId = const Uuid().v4();
+
 
   @Index(unique: true)
   late String abbreviation; // e.g., "KJV"

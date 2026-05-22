@@ -21,16 +21,20 @@ class ProjectorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTransparent = isSong ? settings.isSongTransparent : settings.isScriptureTransparent;
-    final backgroundColorValue = Color(isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor);
-    final isImageEnabled = isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled;
-    final backgroundImage = isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage;
+    final bool isBlank = activeSlideText == "";
+
+    final isTransparent = isBlank ? settings.isBlankTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent);
+    final backgroundColorValue = Color(isBlank ? settings.blankBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor));
+    final isImageEnabled = isBlank ? settings.isBlankImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled);
+    final backgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
+    final backgroundLayout = isBlank ? settings.blankBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout);
+    final backgroundAlignment = isBlank ? settings.blankBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment);
 
     final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
     
     // Determine the reference canvas size
-    final aspectRatioStr = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
     double canvasWidth = 1920;
     double canvasHeight = 1080;
 
@@ -41,8 +45,8 @@ class ProjectorView extends StatelessWidget {
       canvasWidth = 1920;
       canvasHeight = 480;
     } else if (aspectRatioStr == 'Custom') {
-      canvasWidth = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
-      canvasHeight = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
+      canvasWidth = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
+      canvasHeight = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
       // Safety fallbacks
       if (canvasWidth <= 0) canvasWidth = 1920;
       if (canvasHeight <= 0) canvasHeight = 1080;
@@ -104,40 +108,43 @@ class ProjectorView extends StatelessWidget {
     Widget content = Container(
       width: canvasWidth,
       height: canvasHeight,
-      decoration: BoxDecoration(
-        color: (activeSlideText == null || isBlankScreen) ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
-        image: !isBlankScreen && activeSlideText != null && !isImageSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync()
-          ? DecorationImage(
-              image: FileImage(File(backgroundImage)),
-              fit: BoxFit.cover,
-            )
-          : null,
-      ),
-      child: isBlankScreen 
-        ? const SizedBox.shrink()
-        : Stack(
-            fit: StackFit.expand,
-            children: [
-              if (isTransparent && showCheckerboard)
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: _CheckerboardPainter(),
-                  ),
-                ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Layer: Background Color
+          Container(
+            color: activeSlideText == null ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
+          ),
+          
+          // 2. Layer: Checkerboard
+          if (isTransparent && showCheckerboard)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _CheckerboardPainter(),
+              ),
+            ),
+
+          // 3. Layer: Background Image
+          if (activeSlideText != null && !isImageSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync())
+            Positioned.fill(
+              child: Image.file(
+                File(backgroundImage),
+                fit: backgroundLayout == 'stretch' ? BoxFit.fill : BoxFit.contain,
+                alignment: _parseAlignmentStr(backgroundAlignment),
+              ),
+            ),
+          if (!isBlankScreen) ...[
               // Body Layer
-              Align(
-                alignment: isImageSlide 
-                    ? _getImageAlignment(activeSlideText!)
-                    : _getAlignmentGeometry(alignStr, vAlignStr),
-                child: Padding(
-                  padding: isImageSlide 
-                      ? EdgeInsets.zero 
-                      : EdgeInsets.fromLTRB(lyricsMarginLeftValue, lyricsMarginTopValue, lyricsMarginRightValue, lyricsMarginBottomValue),
-                  child: isImageSlide
-                      ? _buildImageWidget(activeSlideText!)
-                      : activeSlideText == null || activeSlideText!.isEmpty
-                          ? AutoSizeText(
-                              'KeryxPro Worship',
+              if (isImageSlide)
+                _buildImageWidget(activeSlideText!, canvasWidth, canvasHeight)
+              else
+                Align(
+                  alignment: _getAlignmentGeometry(alignStr, vAlignStr),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(lyricsMarginLeftValue, lyricsMarginTopValue, lyricsMarginRightValue, lyricsMarginBottomValue),
+                    child: activeSlideText == null || activeSlideText!.isEmpty
+                        ? AutoSizeText(
+                            'KeryxPro Worship',
                               style: TextStyle(
                                 color: lyricsFontColorValue.withValues(alpha: 0.2),
                                 fontSize: lyricsFontSizeValue,
@@ -195,7 +202,7 @@ class ProjectorView extends StatelessWidget {
               ),
 
               // Title Layer
-              if (showTitle && titleText != null)
+              if (showTitle && titleText != null && !isImageSlide)
                 Align(
                   alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
                   child: Padding(
@@ -236,13 +243,14 @@ class ProjectorView extends StatelessWidget {
                     ),
                   ),
                 ),
-            ],
-          ),
+          ],
+        ],
+      ),
     );
 
     // Use FittedBox to scale the virtual canvas to the actual display window
     return Container(
-      color: Colors.black, // Background fill for letterboxing
+      color: Colors.transparent, // Background fill for letterboxing
       child: Center(
         child: FittedBox(
           fit: BoxFit.contain,
@@ -276,7 +284,7 @@ class ProjectorView extends StatelessWidget {
     return Alignment(x, y);
   }
 
-  Widget _buildImageWidget(String content) {
+  Widget _buildImageWidget(String content, double width, double height) {
     final rest = content.substring(6);
     final parts = rest.split('|');
     final path = parts[0];
@@ -285,7 +293,6 @@ class ProjectorView extends StatelessWidget {
     BoxFit fit;
     switch (layout) {
       case 'stretch': fit = BoxFit.fill; break;
-      case 'fit': fit = BoxFit.cover; break;
       case 'contain': default: fit = BoxFit.contain; break;
     }
 
@@ -296,6 +303,9 @@ class ProjectorView extends StatelessWidget {
     return Image.file(
       File(path),
       fit: fit,
+      width: width,
+      height: height,
+      alignment: _getImageAlignment(content),
     );
   }
 
@@ -303,7 +313,10 @@ class ProjectorView extends StatelessWidget {
     final rest = content.substring(6);
     final parts = rest.split('|');
     final alignment = parts.length > 2 ? parts[2] : 'center';
-    
+    return _parseAlignmentStr(alignment);
+  }
+
+  Alignment _parseAlignmentStr(String alignment) {
     switch (alignment) {
       case 'topLeft': return Alignment.topLeft;
       case 'topCenter': return Alignment.topCenter;

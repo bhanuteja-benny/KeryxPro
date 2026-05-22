@@ -1,0 +1,25 @@
+Phase 32
+
+Context:
+- adding more settings for background image in song/scripture/blank screen settings
+
+UI Requirements:
+- in preset settings of song/scripture/blank screen, instead of browse button give 'Add' button
+- when 'Add' button is clicked then open the similar settings popup which is for adding image slide
+- but here the button name should be 'Done' instead of 'Add to setList'
+
+Questions:
+- are the settings like stretch, keep aspect ration (fit) and alignments work for background images?
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan file

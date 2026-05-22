@@ -31,6 +31,11 @@ const BibleVersionSchema = CollectionSchema(
       id: 2,
       name: r'name',
       type: IsarType.string,
+    ),
+    r'syncId': PropertySchema(
+      id: 3,
+      name: r'syncId',
+      type: IsarType.string,
     )
   },
   estimateSize: _bibleVersionEstimateSize,
@@ -39,6 +44,19 @@ const BibleVersionSchema = CollectionSchema(
   deserializeProp: _bibleVersionDeserializeProp,
   idName: r'id',
   indexes: {
+    r'syncId': IndexSchema(
+      id: 7538593479801827566,
+      name: r'syncId',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'syncId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
     r'abbreviation': IndexSchema(
       id: 8242173811669365471,
       name: r'abbreviation',
@@ -70,6 +88,7 @@ int _bibleVersionEstimateSize(
   bytesCount += 3 + object.abbreviation.length * 3;
   bytesCount += 3 + object.language.length * 3;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.syncId.length * 3;
   return bytesCount;
 }
 
@@ -82,6 +101,7 @@ void _bibleVersionSerialize(
   writer.writeString(offsets[0], object.abbreviation);
   writer.writeString(offsets[1], object.language);
   writer.writeString(offsets[2], object.name);
+  writer.writeString(offsets[3], object.syncId);
 }
 
 BibleVersion _bibleVersionDeserialize(
@@ -95,6 +115,7 @@ BibleVersion _bibleVersionDeserialize(
   object.id = id;
   object.language = reader.readString(offsets[1]);
   object.name = reader.readString(offsets[2]);
+  object.syncId = reader.readString(offsets[3]);
   return object;
 }
 
@@ -110,6 +131,8 @@ P _bibleVersionDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -130,6 +153,59 @@ void _bibleVersionAttach(
 }
 
 extension BibleVersionByIndex on IsarCollection<BibleVersion> {
+  Future<BibleVersion?> getBySyncId(String syncId) {
+    return getByIndex(r'syncId', [syncId]);
+  }
+
+  BibleVersion? getBySyncIdSync(String syncId) {
+    return getByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<bool> deleteBySyncId(String syncId) {
+    return deleteByIndex(r'syncId', [syncId]);
+  }
+
+  bool deleteBySyncIdSync(String syncId) {
+    return deleteByIndexSync(r'syncId', [syncId]);
+  }
+
+  Future<List<BibleVersion?>> getAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'syncId', values);
+  }
+
+  List<BibleVersion?> getAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'syncId', values);
+  }
+
+  Future<int> deleteAllBySyncId(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'syncId', values);
+  }
+
+  int deleteAllBySyncIdSync(List<String> syncIdValues) {
+    final values = syncIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'syncId', values);
+  }
+
+  Future<Id> putBySyncId(BibleVersion object) {
+    return putByIndex(r'syncId', object);
+  }
+
+  Id putBySyncIdSync(BibleVersion object, {bool saveLinks = true}) {
+    return putByIndexSync(r'syncId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllBySyncId(List<BibleVersion> objects) {
+    return putAllByIndex(r'syncId', objects);
+  }
+
+  List<Id> putAllBySyncIdSync(List<BibleVersion> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'syncId', objects, saveLinks: saveLinks);
+  }
+
   Future<BibleVersion?> getByAbbreviation(String abbreviation) {
     return getByIndex(r'abbreviation', [abbreviation]);
   }
@@ -261,6 +337,51 @@ extension BibleVersionQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterWhereClause> syncIdEqualTo(
+      String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'syncId',
+        value: [syncId],
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterWhereClause> syncIdNotEqualTo(
+      String syncId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [syncId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'syncId',
+              lower: [],
+              upper: [syncId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 
@@ -770,6 +891,141 @@ extension BibleVersionQueryFilter
       ));
     });
   }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition> syncIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition> syncIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'syncId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'syncId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition> syncIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'syncId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      syncIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'syncId',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension BibleVersionQueryObject
@@ -814,6 +1070,18 @@ extension BibleVersionQuerySortBy
   QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
     });
   }
 }
@@ -868,6 +1136,18 @@ extension BibleVersionQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> thenBySyncId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> thenBySyncIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncId', Sort.desc);
+    });
+  }
 }
 
 extension BibleVersionQueryWhereDistinct
@@ -890,6 +1170,13 @@ extension BibleVersionQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QDistinct> distinctBySyncId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'syncId', caseSensitive: caseSensitive);
     });
   }
 }
@@ -917,6 +1204,12 @@ extension BibleVersionQueryProperty
   QueryBuilder<BibleVersion, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<BibleVersion, String, QQueryOperations> syncIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'syncId');
     });
   }
 }

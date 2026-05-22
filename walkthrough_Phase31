@@ -1,0 +1,30 @@
+# Phase 31: Blank Screen Settings Implementation
+
+I have successfully implemented the "Blank Screen" preset settings based on your approved implementation plan.
+
+## Overview of Changes
+
+> [!NOTE]
+> The Blank Screen settings operate seamlessly within the existing Presentation Settings framework, functioning alongside the Song and Scripture settings.
+
+### 1. Database and Provider
+- Expanded the `PresentationSettings` Isar model to store blank-specific visual styles:
+  - Aspect Ratio (`blankAspectRatio`, `blankCustomWidth`, `blankCustomHeight`)
+  - Background Properties (`blankBackgroundColor`, `blankBackgroundImage`, `isBlankImageEnabled`, `isBlankTransparent`)
+- Auto-generated the required Isar bindings using `build_runner`.
+- Updated `presentation_settings_provider.dart` to support updating the new properties depending on the selected tab index (0: Song, 1: Scripture, 2: Blank Screen) and providing fallbacks.
+
+### 2. Settings User Interface
+- Added a "Blank Screen" tab to the `SegmentedButton` in `presentation_settings_dialog.dart`.
+- The Typography (Title and Body) sections are correctly hidden when the "Blank Screen" tab is selected.
+- The Preview Window dynamically simulates a blank screen when on the "Blank Screen" tab.
+- Saving changes updates the specific blank screen properties in the database.
+
+### 3. Live Monitor Rendering
+- Updated `projector_view.dart` to check if `activeSlideText == ""` (a blank slide). When true, the view uses the blank screen configurations (aspect ratio, custom sizes, background colors, and images) rather than falling back to black.
+- Modified the aspect ratio calculations in `live_projector_pane.dart` to also pass `isBlank: true` for empty slides. This ensures the live monitor pane dynamically adjusts its letterbox bounds specifically based on the Blank Screen aspect ratio if a blank slide is selected on the dashboard.
+
+## Verification
+- Code successfully builds with `flutter analyze` returning zero regressions.
+- Isar models generated correctly.
+- Application logic seamlessly adapts the UI based on whether a real slide or a blank slide is projected on Monitor 1 and Monitor 2.

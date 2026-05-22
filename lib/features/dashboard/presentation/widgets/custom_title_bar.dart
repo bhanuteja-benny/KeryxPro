@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../settings/presentation/widgets/presentation_settings_dialog.dart';
+import '../../../settings/presentation/widgets/database_sync_settings_dialog.dart';
 import '../../../songs/presentation/song_providers.dart';
 import '../../../songs/data/song_import_service.dart';
 import '../../../bible/presentation/widgets/bible_import_dialog.dart';
+import '../../../../core/sync/sync_service.dart';
 
 class CustomTitleBar extends ConsumerWidget {
   const CustomTitleBar({super.key});
@@ -54,7 +56,7 @@ class CustomTitleBar extends ConsumerWidget {
       child: Row(
         children: [
           // Drag area for the icon part
-          const SizedBox(width: 8),
+          SizedBox(width: Platform.isMacOS ? 80 : 8),
           const Icon(Icons.auto_awesome, size: 16, color: Colors.deepPurpleAccent), // App Logo
           const SizedBox(width: 8),
           
@@ -94,6 +96,15 @@ class CustomTitleBar extends ConsumerWidget {
                     },
                     child: const Text('Presentation Settings'),
                   ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const DatabaseSyncSettingsDialog(),
+                      );
+                    },
+                    child: const Text('Data Sync Settings'),
+                  ),
                 ],
                 child: const Text('Settings', style: TextStyle(fontSize: 12)),
               ),
@@ -131,8 +142,29 @@ class CustomTitleBar extends ConsumerWidget {
             ),
           ),
           
+          // Global Sync Button
+          if (ref.watch(syncConfigProvider).syncEnabled)
+            Tooltip(
+              message: 'Sync Changes',
+              child: _WindowButton(
+                iconWidget: Badge(
+                  isLabelVisible: ref.watch(hasPendingSyncProvider),
+                  child: const Icon(Icons.sync, size: 16, color: Colors.white70),
+                ),
+                onPressed: () async {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Syncing data...'), duration: Duration(seconds: 1)),
+                  );
+                  await ref.read(syncServiceProvider).syncPendingEvents();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Sync complete!'), duration: Duration(seconds: 1)),
+                  );
+                },
+              ),
+            ),
+
           // System Window Controls
-          const WindowButtons(),
+          if (!Platform.isMacOS) const WindowButtons(),
         ],
       ),
     );
@@ -171,12 +203,14 @@ class WindowButtons extends StatelessWidget {
 }
 
 class _WindowButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? iconWidget;
   final VoidCallback onPressed;
   final bool isClose;
 
   const _WindowButton({
-    required this.icon,
+    this.icon,
+    this.iconWidget,
     required this.onPressed,
     this.isClose = false,
   });
@@ -194,7 +228,7 @@ class _WindowButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
           ),
-          child: Icon(icon, size: 16, color: Colors.white70),
+          child: iconWidget ?? Icon(icon, size: 16, color: Colors.white70),
         ),
       ),
     );

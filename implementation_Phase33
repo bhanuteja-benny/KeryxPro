@@ -1,0 +1,37 @@
+# Implementation Plan for Phase 33 - macOS Compatibility
+
+## Objective
+Refactor KeryxPro to ensure full cross-platform compatibility and stability on macOS architectures (MacBook Air, Pro, Mac mini) while preserving the current Windows functionality.
+
+## Verification & Assessment
+I have comprehensively reviewed the KeryxPro codebase across Presentation Settings, Keybindings, Database layers, UI modules, and Multi-window management to assess macOS compatibility. Here are the findings:
+
+1. **Global Shortcuts**: KeryxPro's shortcuts (`S`, `Q`, `L`, `F`, `ESC`, arrow keys, tab, etc.) trigger using `KeyDownEvent` without relying on strict `Ctrl` vs `Cmd` modifiers. They are natively cross-platform and will work perfectly on macOS as-is.
+2. **File Picker & Database Engine**: Both `file_picker` and `Isar` fully support macOS binaries natively.
+3. **Multi-Window projection**: The `desktop_multi_window` plugin supports macOS, and we are correctly skipping the initialization conflict loop in `main.dart`. 
+
+However, there are **two critical issues** that will break on macOS and require refactoring:
+
+## Proposed Refactoring
+
+### 1. File Path Resolution (Critical Bug)
+Windows relies on the backslash `\` as a directory separator, while macOS uses the forward slash `/`. 
+
+#### [MODIFY] [isar_service.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/core/database/isar_service.dart)
+- **Current Code**: `Directory('${appDocDir.path}\\KeryxPro')`
+- **Issue**: On macOS, this will literally create a folder named `Documents\KeryxPro` (with the slash as part of the name) instead of nesting a directory, which will likely crash the database initialization.
+- **Fix**: Import the `path` package and use `p.join(appDocDir.path, 'KeryxPro')`. The `path.join` utility automatically uses the correct system separator natively (`\` for Windows, `/` for macOS).
+
+### 2. Window Title Bar & Traffic Lights (UI Overlap Bug)
+Because KeryxPro uses a completely custom title bar, macOS behaves differently than Windows when dealing with hidden title bars. 
+
+#### [MODIFY] [custom_title_bar.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/custom_title_bar.dart)
+- **Issue 1 (Redundant Buttons)**: The custom `WindowButtons()` block explicitly draws Windows-style Minimize/Maximize/Close buttons on the far right. macOS will *still* draw its native "Traffic Light" buttons natively on the top-left, meaning Mac users would see two sets of close buttons.
+- **Fix 1**: Wrap `WindowButtons()` so it is only rendered if `!Platform.isMacOS`.
+- **Issue 2 (Overlap)**: Since macOS native traffic lights sit on the left, they will overlap directly with our 'File/Settings/Imports' menu bar. 
+- **Fix 2**: Prepend a `SizedBox(width: 70)` to the far left of the `CustomTitleBar` Row *only* if `Platform.isMacOS` to provide safe clearance for the traffic lights.
+
+## Verification Plan
+- Execute the path fix and UI checks.
+- Verify `flutter run -d windows` still works perfectly without UI regressions.
+- The user can then pull these changes to their MacBook and verify the database initializes successfully, the window borders render cleanly without overlapping buttons, and shortcuts function flawlessly.
