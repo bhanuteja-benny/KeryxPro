@@ -11,6 +11,8 @@ import '../../../songs/data/song.dart';
 import '../../../songs/presentation/song_selection_providers.dart';
 import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/data/setlist_item.dart';
+import '../../../../main.dart';
+import 'package:isar/isar.dart';
 
 class BibleSearchTab extends ConsumerStatefulWidget {
   const BibleSearchTab({super.key});
@@ -52,11 +54,10 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     super.dispose();
   }
 
-  void _handleSearch(String query, WidgetRef ref) {
+  Future<void> _handleSearch(String query, WidgetRef ref) async {
     if (query.isEmpty) return;
 
-    // Regex to match "book chapter:verse-verse" e.g., "1 pet 2:12-14", "gen 1:3", "John 3:1"
-    final regex = RegExp(r'^(\d?\s*[a-zA-Z\s]+)\s+(\d+):(\d+)(?:-(\d+))?$');
+    final regex = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;](\d+)(?:-(\d+))?(?:\s+([a-zA-Z0-9]+))?$');
     final match = regex.firstMatch(query.trim());
 
     if (match != null) {
@@ -64,35 +65,90 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
       final chapterStr = match.group(2) ?? '';
       final verseStartStr = match.group(3) ?? '';
       final verseEndStr = match.group(4);
+      final versionStr = match.group(5);
 
       final normalizedBook = BibleConstants.normalizeBookName(bookStr);
       if (normalizedBook != null) {
-        ref.read(selectedBookProvider.notifier).state = normalizedBook;
-        
         final chapter = int.tryParse(chapterStr);
         if (chapter != null) {
-          ref.read(selectedChapterProvider.notifier).state = chapter;
-          
           final startVerse = int.tryParse(verseStartStr);
           if (startVerse != null) {
             final endVerse = verseEndStr != null ? int.tryParse(verseEndStr) : startVerse;
             
-            final Set<int> versesToSelect = {};
-            if (endVerse != null && endVerse >= startVerse) {
-              for (int i = startVerse; i <= endVerse; i++) {
-                versesToSelect.add(i);
-              }
-            } else {
-              versesToSelect.add(startVerse);
+            final versionsAsync = ref.read(bibleVersionsProvider);
+            final versions = versionsAsync.valueOrNull ?? [];
+            
+            BibleVersion? targetVersion;
+            if (versionStr != null) {
+              targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == versionStr.toLowerCase()).firstOrNull;
             }
-            ref.read(selectedVersesProvider.notifier).state = versesToSelect;
-            setState(() {
-              _lastVerseToggled = endVerse ?? startVerse;
-            });
+            targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+
+            if (targetVersion != null) {
+              final isar = await ref.read(isarServiceProvider).db;
+              final chapters = await isar.bibleVerses
+                  .filter()
+                  .bibleVersionIdEqualTo(targetVersion.id)
+                  .bookNameEqualTo(normalizedBook)
+                  .chapterNumberProperty()
+                  .findAll();
+
+              if (chapters.contains(chapter)) {
+                final verses = await isar.bibleVerses
+                    .filter()
+                    .bibleVersionIdEqualTo(targetVersion.id)
+                    .bookNameEqualTo(normalizedBook)
+                    .chapterNumberEqualTo(chapter)
+                    .verseNumberProperty()
+                    .findAll();
+                
+                final verseNumbers = verses.toSet();
+                bool versesValid = true;
+                for (int i = startVerse; i <= (endVerse ?? startVerse); i++) {
+                  if (!verseNumbers.contains(i)) {
+                    versesValid = false;
+                    break;
+                  }
+                }
+
+                if (versesValid) {
+                  // ALL VALID
+                  if (targetVersion != ref.read(selectedBibleVersionProvider)) {
+                    ref.read(selectedBibleVersionProvider.notifier).state = targetVersion;
+                  }
+                  ref.read(selectedBookProvider.notifier).state = normalizedBook;
+                  ref.read(selectedChapterProvider.notifier).state = chapter;
+                  
+                  final Set<int> versesToSelect = {};
+                  for (int i = startVerse; i <= (endVerse ?? startVerse); i++) {
+                    versesToSelect.add(i);
+                  }
+                  ref.read(selectedVersesProvider.notifier).state = versesToSelect;
+                  if (mounted) {
+                    setState(() {
+                      _lastVerseToggled = endVerse ?? startVerse;
+                    });
+                  }
+
+                  ref.read(bibleVerseListFocusNodeProvider).requestFocus();
+                  return; // SUCCESS
+                }
+              }
+            }
           }
         }
       }
     }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Reference not found'), duration: Duration(seconds: 2)),
+      );
+    }
+    ref.read(selectedBookProvider.notifier).state = null;
+    ref.read(selectedChapterProvider.notifier).state = null;
+    ref.read(selectedVersesProvider.notifier).state = <int>{};
+    ref.read(bibleSearchFocusNodeProvider).requestFocus();
   }
 
   void _addToSetlist(List<BibleVerse> verses, BibleVersion version, WidgetRef ref, {bool goLive = true}) {
@@ -180,8 +236,6 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   focusNode: ref.read(bibleSearchFocusNodeProvider),
                   onSubmitted: (val) {
                     _handleSearch(val, ref);
-                    // Shift focus to Verse listbox after search
-                    ref.read(bibleVerseListFocusNodeProvider).requestFocus();
                   },
                   style: const TextStyle(fontSize: 11),
                   decoration: InputDecoration(
@@ -471,37 +525,40 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
           child: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white70)),
         ),
         Expanded(
-          child: asyncItems.when(
-            data: (items) {
-              return Focus(
-                focusNode: focusNode,
-                onKeyEvent: (node, event) {
-                  if (event is! KeyDownEvent) return KeyEventResult.ignored;
+          child: Focus(
+            focusNode: focusNode,
+            onKeyEvent: (node, event) {
+              if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-                  if (event.logicalKey == LogicalKeyboardKey.enter && onEnter != null) {
-                    onEnter();
-                    return KeyEventResult.handled;
+              if (event.logicalKey == LogicalKeyboardKey.enter && onEnter != null) {
+                onEnter();
+                return KeyEventResult.handled;
+              }
+
+              final items = asyncItems.valueOrNull;
+              if (items != null && items.isNotEmpty) {
+                if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  final currentIndex = items.indexOf(selectedValue as dynamic);
+                  if (currentIndex < items.length - 1) {
+                    onSelected(items[currentIndex + 1]);
+                  } else if (currentIndex == -1) {
+                    onSelected(items[0]);
                   }
-
-                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                    final currentIndex = items.indexOf(selectedValue as dynamic);
-                    if (currentIndex < items.length - 1) {
-                      onSelected(items[currentIndex + 1]);
-                    } else if (currentIndex == -1 && items.isNotEmpty) {
-                      onSelected(items[0]);
-                    }
-                    return KeyEventResult.handled;
-                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                    final currentIndex = items.indexOf(selectedValue as dynamic);
-                    if (currentIndex > 0) {
-                      onSelected(items[currentIndex - 1]);
-                    }
-                    return KeyEventResult.handled;
+                  return KeyEventResult.handled;
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  final currentIndex = items.indexOf(selectedValue as dynamic);
+                  if (currentIndex > 0) {
+                    onSelected(items[currentIndex - 1]);
                   }
+                  return KeyEventResult.handled;
+                }
+              }
 
-                  return KeyEventResult.ignored;
-                },
-                child: ListView.builder(
+              return KeyEventResult.ignored;
+            },
+            child: asyncItems.when(
+              data: (items) {
+                return ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
@@ -518,11 +575,11 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                       ),
                     );
                   },
-                ),
-              );
-            },
-            loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
+                );
+              },
+              loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
+              error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
+            ),
           ),
         ),
       ],
@@ -547,43 +604,46 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
           child: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white70)),
         ),
         Expanded(
-          child: asyncItems.when(
-            data: (items) {
-              return Focus(
-                focusNode: focusNode,
-                onKeyEvent: (node, event) {
-                  if (event is! KeyDownEvent) return KeyEventResult.ignored;
+          child: Focus(
+            focusNode: focusNode,
+            onKeyEvent: (node, event) {
+              if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-                  if (event.logicalKey == LogicalKeyboardKey.enter && onEnter != null) {
-                    onEnter();
-                    return KeyEventResult.handled;
+              if (event.logicalKey == LogicalKeyboardKey.enter && onEnter != null) {
+                onEnter();
+                return KeyEventResult.handled;
+              }
+
+              if (event.logicalKey == LogicalKeyboardKey.tab && onTab != null) {
+                onTab();
+                return KeyEventResult.handled;
+              }
+
+              final items = asyncItems.valueOrNull;
+              if (items != null && items.isNotEmpty) {
+                if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  // Get the last selected item or the first one
+                  final lastItem = _lastVerseToggled as T?;
+                  final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
+                  if (currentIndex < items.length - 1) {
+                    onSelected(items[currentIndex + 1], true, items);
                   }
-
-                  if (event.logicalKey == LogicalKeyboardKey.tab && onTab != null) {
-                    onTab();
-                    return KeyEventResult.handled;
+                  return KeyEventResult.handled;
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  final lastItem = _lastVerseToggled as T?;
+                  final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
+                  if (currentIndex > 0) {
+                    onSelected(items[currentIndex - 1], true, items);
                   }
+                  return KeyEventResult.handled;
+                }
+              }
 
-                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                    // Get the last selected item or the first one
-                    final lastItem = _lastVerseToggled as T?;
-                    final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
-                    if (currentIndex < items.length - 1) {
-                      onSelected(items[currentIndex + 1], true, items);
-                    }
-                    return KeyEventResult.handled;
-                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                    final lastItem = _lastVerseToggled as T?;
-                    final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
-                    if (currentIndex > 0) {
-                      onSelected(items[currentIndex - 1], true, items);
-                    }
-                    return KeyEventResult.handled;
-                  }
-
-                  return KeyEventResult.ignored;
-                },
-                child: ListView.builder(
+              return KeyEventResult.ignored;
+            },
+            child: asyncItems.when(
+              data: (items) {
+                return ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
@@ -600,11 +660,11 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                       ),
                     );
                   },
-                ),
-              );
-            },
-            loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
+                );
+              },
+              loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
+              error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
+            ),
           ),
         ),
       ],
@@ -650,11 +710,18 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 ),
                 ElevatedButton.icon(
                   focusNode: _addButtonFocusNode,
-                  onPressed: previewAsync.valueOrNull?.isNotEmpty == true && selectedVersion != null
-                      ? () {
-                          _addToSetlist(previewAsync.value!, selectedVersion, ref, goLive: false);
-                        }
-                      : null,
+                  onPressed: () {
+                    final verses = previewAsync.valueOrNull;
+                    if (verses == null || verses.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No verse selected'), duration: Duration(seconds: 2))
+                      );
+                      return;
+                    }
+                    if (selectedVersion != null) {
+                      _addToSetlist(verses, selectedVersion, ref, goLive: false);
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,

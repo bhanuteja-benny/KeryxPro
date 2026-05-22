@@ -1,0 +1,45 @@
+Phase 30
+
+Context:
+Bible search refinement
+
+Interactions:
+1) Bible search functionality issue
+- user typed '1 kin 1:1' but the search is not working. it is supposed to open '1 Kings 1:1' (not working for Kings and Thessalonians). But it is working for Samuel, Chronicles, Corinthians, Timothy, Peter, John etc like "1 chr 1:1" is opening '1 chronicles 1:1' 
+- verify if the bible version is also working in reference like 'Gen 2:1 KJV' should open KJV version and etc
+- verify if the multiple verse search is working like 'Gen 3:1-5' should select verses from 1 to 5
+2) Bible search extension
+- Accept 2 letters as well for book name like 'ge 1:1' is Genesis, '1 pe 1:2' is 1 Peter etc. 
+- if any duplicate book is there like jud is common for Judges and Jude then consider first in the list i.e. Judges. 
+- Accept search without spaces as well like 'gen1:1', '1co2:1' etc 
+⁃ Accept semi colon ";' also in place of colon ':', because sometimes user enters ';' instead ':' due to typing mistake.
+3) when bible reference is not found
+- when user typed a reference which is not found (or not matched with any book or chapter or verse number) 
+-- then let the focus remain in search textbox 
+-- show a message 'Reference not found'.
+-- clear the selections in old testament books list box, new testament books list box and clear chapters listbox and verses listbox
+4) when bible reference is found
+- when user typed reference is found (i.e., when user clicked enter button)
+-- continue the current search and selection functionality (no change)
+-- and shift the focus to verses list box
+5) search textbox 'tab' shortcut
+- when user clicks 'tab' in bible search textbox, then shift the focus to 'add' button
+6) verses listbox 'tab' shortcut
+- when user clicks 'tab' in verses list box, then shift the focus to 'add' button
+7) when user clicks 'add' button without any selection in the verses listbox, then show a message 'No verse selected'
+8) no changes in the below functionalities
+- when user clicks enter button while the focus is on books or chapters or verses listboxes then the reference verse(s) should be added in setlist, slides should be added in slides and should be displayed immediately
+- when user clicks the 'add' button or clicks 'enter' button while focus is on 'add' button, then the selected verse(s) should be added in setlist, slides should be added in slides but not display immediately 
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan file

@@ -37,15 +37,34 @@ class BibleConstants {
 
   static String? normalizeBookName(String input) {
     String lower = input.toLowerCase().trim();
-    if (oldTestamentBooks.map((e) => e.toLowerCase()).contains(lower)) {
-      return oldTestamentBooks.firstWhere((e) => e.toLowerCase() == lower);
+    String lowerNoSpace = lower.replaceAll(' ', '');
+
+    // 1. Exact match (ignoring spaces)
+    for (String book in oldTestamentBooks) {
+      if (book.toLowerCase().replaceAll(' ', '') == lowerNoSpace) return book;
     }
-    if (newTestamentBooks.map((e) => e.toLowerCase()).contains(lower)) {
-      return newTestamentBooks.firstWhere((e) => e.toLowerCase() == lower);
+    for (String book in newTestamentBooks) {
+      if (book.toLowerCase().replaceAll(' ', '') == lowerNoSpace) return book;
     }
+
+    // 2. Abbreviations map
     if (bookAbbreviations.containsKey(lower)) {
       return bookAbbreviations[lower];
     }
+    for (var key in bookAbbreviations.keys) {
+      if (key.replaceAll(' ', '') == lowerNoSpace) {
+        return bookAbbreviations[key];
+      }
+    }
+
+    // 3. Prefix match
+    for (String book in oldTestamentBooks) {
+      if (book.toLowerCase().replaceAll(' ', '').startsWith(lowerNoSpace)) return book;
+    }
+    for (String book in newTestamentBooks) {
+      if (book.toLowerCase().replaceAll(' ', '').startsWith(lowerNoSpace)) return book;
+    }
+
     return null; // Not found
   }
 }

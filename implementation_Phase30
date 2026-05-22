@@ -1,0 +1,54 @@
+# Bible Search Refinement
+
+The goal of this phase is to refine the Bible search functionality to correctly parse user input, handle different search formats (including versions, 2-letter abbreviations, and spaces/no-spaces), validate references, and improve the user experience with meaningful error messages.
+
+## User Review Required
+
+No mandatory UI changes beyond the requested snackbar messages. Please review the proposed regex and logic changes.
+
+## Open Questions
+
+None.
+
+## Proposed Changes
+
+### Bible Domain Layer
+
+#### [MODIFY] `bible_constants.dart`
+- Refactor `normalizeBookName` to use a more robust matching algorithm:
+  - Remove spaces from the input string to match inputs like `1co` identically to `1 co`.
+  - Add prefix matching: iterate through `oldTestamentBooks` and then `newTestamentBooks` and check if the book name (without spaces) starts with the user's input. Since `oldTestamentBooks` is checked first, `jud` will correctly map to `Judges` instead of `Jude`.
+  - This handles the 2-letter minimum (e.g., `ge` for Genesis) and fixes the issues with `Kings` and `Thessalonians`.
+
+### Bible Presentation Layer
+
+#### [MODIFY] `bible_search_tab.dart`
+- **Regex Update**: Update the regex in `_handleSearch` to `r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;](\d+)(?:-(\d+))?(?:\s+([a-zA-Z0-9]+))?$'`. This regex will:
+  - Support semicolon `;` in place of colon `:`.
+  - Correctly extract the Bible version if provided at the end (e.g., `Gen 2:1 KJV`).
+  - Tolerate missing spaces between the book, chapter, and verses (e.g., `gen1:1`).
+- **Asynchronous Search & Validation**: Convert `_handleSearch` to `async`.
+  - If the regex matches and the book is found, query the `Isar` database directly to verify if the extracted chapter and all verses in the range actually exist.
+  - **Success Case**: If everything is valid, update the selected book, chapter, verses, and version providers. Then, explicitly shift focus to the verses listbox.
+  - **Failure Case**: If the regex fails, the book is invalid, or the chapter/verses are not found in the database, show a `SnackBar` with the text "Reference not found". Then, clear the selections for the book, chapter, and verses providers, and keep focus on the search textbox.
+- **Add Button Validation**:
+  - Make the `Add` button always enabled (i.e., `onPressed` is never `null`). This fixes an issue where the `Add` button could not receive focus via the `Tab` key when no verses were selected.
+  - Inside the `onPressed` handler, check if there are selected verses. If there are none, show a `SnackBar` with the text "No verse selected".
+  - If verses are selected, call `_addToSetlist` with `goLive: false` as before.
+
+## Verification Plan
+
+### Manual Verification
+1. Run KeryxPro locally.
+2. Navigate to the Bible search tab.
+3. Test search `1 kin 1:1` -> verifies 1 Kings is selected.
+4. Test search `Gen 2:1 KJV` -> verifies Genesis 2:1 is selected and version shifts to KJV.
+5. Test search `Gen 3:1-5` -> verifies verses 1 through 5 are selected.
+6. Test search `ge 1:1` -> verifies Genesis is selected.
+7. Test search `1 pe 1:2` -> verifies 1 Peter is selected.
+8. Test search `jud 1:1` -> verifies Judges is selected.
+9. Test search `gen1:1`, `1co2:1` -> verifies Genesis and 1 Corinthians.
+10. Test search `gen 1;1` -> verifies Genesis 1:1 is selected.
+11. Test search `xyz 1:1` -> verifies "Reference not found" snackbar is shown and selections clear.
+12. Press `Tab` from search box when no verses are selected -> verifies focus moves to Add button.
+13. Press Enter/Space on Add button when no verses selected -> verifies "No verse selected" snackbar is shown.

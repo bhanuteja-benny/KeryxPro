@@ -1,0 +1,21 @@
+# Bible Search Focus Refinement Completed
+
+The Phase 30.1 patch to fix the focus loss issue when transitioning between different books or chapters in the Bible search has been successfully implemented.
+
+## Changes Made
+
+### Listbox Focus Restructuring (`bible_search_tab.dart`)
+- **Verses Listbox:** The `Focus` widget in `_buildMultiSelectAsyncListBox` has been extracted and moved *outside* of the `asyncItems.when` block. It now permanently encompasses the entire verses listbox UI area, regardless of whether it is currently displaying verses, an error, or the loading spinner.
+- **Chapters Listbox:** Applied the same structural fix to `_buildAsyncListBox` (Chapters) to ensure consistent focus handling across the application and prevent similar focus loss bugs from occurring in the future.
+- **Event Handler Safety:** The `onKeyEvent` logic for handling arrow key navigation has been updated to safely fetch `asyncItems.valueOrNull`. It ensures the keyboard navigation logic degrades gracefully during the loading state when actual list items are temporarily unavailable, while maintaining focus integrity.
+
+## How it works now
+Because the `Focus` node is no longer conditionally destroyed when the listboxes enter their loading state, the `requestFocus()` command issued by the `_handleSearch` function will securely attach and persist through the asynchronous data fetch. 
+
+## Testing Your Changes
+You can verify the fix by running the application and testing the following:
+1. Search for a reference that changes the currently selected Book or Chapter, such as `gen 3:1`, and hit Enter.
+2. Verify that focus is smoothly handed over to the Verses listbox even after the loading spinner completes.
+3. Immediately use the Up/Down arrow keys to verify the listbox is focused and keyboard navigation works correctly.
+4. Press Tab to confirm focus proceeds to the "Add" button.
+5. Perform another search that changes the Book, such as `exo 1:1`, and hit Enter to verify it works reliably on consecutive searches.

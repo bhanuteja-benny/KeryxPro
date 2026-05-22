@@ -1,0 +1,24 @@
+# Bible Search Focus Refinement
+
+The goal of this phase is to resolve a focus loss bug that occurs when the Bible search functionality triggers an asynchronous reload of the verses (or chapters) listboxes.
+
+## Issue Analysis
+When a user searches for a reference that changes the currently selected Book or Chapter, the `availableVersesProvider` transitions to a loading state. 
+Currently, the `Focus` widget for the verses listbox is rendered *inside* the `asyncItems.when(data: ...)` block. This means that during the loading state, the `Focus` widget is temporarily removed from the widget tree and replaced by a `CircularProgressIndicator`.
+When `_handleSearch` calls `requestFocus()`, the focus is granted, but it is immediately lost upon the next frame when the `Focus` widget is unmounted. Once the verses load and the `Focus` widget is recreated, it does not automatically regain the focus it lost.
+
+## Proposed Changes
+
+### [MODIFY] `lib/features/bible/presentation/widgets/bible_search_tab.dart`
+- **Refactor `_buildMultiSelectAsyncListBox`:**
+  - Move the `Focus` widget outside of the `asyncItems.when()` block so it persistently wraps the entire content area, including the loading and error states.
+  - Update the `onKeyEvent` logic to safely access `asyncItems.valueOrNull` when handling arrow keys, since the items are no longer passed down as a guaranteed synchronous parameter to the `Focus` widget.
+- **Refactor `_buildAsyncListBox`:**
+  - Apply the exact same structural fix to the Chapters listbox (`_buildAsyncListBox`) to prevent identical focus loss bugs in the future if focus routing is modified.
+
+## Verification Plan
+1. Launch the KeryxPro application.
+2. Navigate to the Bible search tab.
+3. Perform a search that alters the Book or Chapter (e.g., `gen 3:1`) and press `Enter`.
+4. Verify that the focus correctly shifts to the verses listbox, allowing immediate keyboard navigation (arrow keys to move, tab to go to 'Add').
+5. Perform another search that changes the reference again (e.g., `exo 1:1`) and verify focus behaves correctly again.
