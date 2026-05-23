@@ -1,0 +1,75 @@
+# KeryxPro Phase 38: Setup and Installation Plan
+
+## Objective
+To create self-contained, user-friendly installation packages for KeryxPro on both Windows and macOS, completely eliminating the need for manual file copying.
+
+## 1. Windows Installation Strategy
+**Tool**: Inno Setup (Free, industry-standard installer creator for Windows)
+**Output**: `KeryxPro_Setup.exe`
+
+### End-User Prerequisites
+- **OS**: Windows 10 (64-bit) or Windows 11
+- **Hardware**: Minimum 4GB RAM, dual-core processor, secondary display output (for projection).
+- **Dependencies**: None. The installer will package all necessary Flutter engine `.dll` files and data folders natively alongside the `.exe`.
+
+### Developer Prerequisites (To build the installer)
+- Windows 10/11
+- Visual Studio 2022 (with "Desktop development with C++" workload)
+- Flutter SDK (latest stable)
+- **Inno Setup 6** (to compile the installer script)
+
+### Packaging Process
+1. Run `flutter build windows --release` to compile the app.
+2. This generates a complete executable and required DLLs inside `build\windows\x64\runner\Release\`.
+3. Create an Inno Setup Script (`keryxpro_installer.iss`) that:
+   - Copies the entire `Release` folder to `C:\Program Files\KeryxPro`.
+   - Creates a Start Menu shortcut and an optional Desktop shortcut.
+   - Registers a native Windows uninstaller.
+4. Compile the script using Inno Setup Compiler to generate the final standalone `setup.exe`.
+
+---
+
+## 2. macOS Installation Strategy
+**Tool**: `hdiutil` (Native macOS disk image tool) or `create-dmg`
+**Output**: `KeryxPro_Mac.dmg`
+
+### End-User Prerequisites
+- **OS**: macOS 11 (Big Sur) or newer.
+- **Hardware**: Minimum 4GB RAM, Apple Silicon (M1/M2/M3) or Intel processor, secondary display output.
+- **Dependencies**: None. The `.app` bundle contains the entire Flutter framework natively.
+
+### Developer Prerequisites (To build the installer)
+- macOS (macOS 12+ recommended)
+- Xcode (latest version from Mac App Store)
+- CocoaPods
+- Flutter SDK (latest stable)
+
+### Packaging Process
+1. Run `flutter build macos --release`.
+2. This generates a self-contained `keryxpro.app` bundle inside `build/macos/Build/Products/Release/`.
+3. Create a `.dmg` disk image that contains:
+   - The `keryxpro.app` file.
+   - A symbolic link shortcut to the macOS `/Applications` folder.
+   - A custom background image instructing the user to "Drag KeryxPro to Applications".
+4. (Optional but recommended for distribution) Sign the `.app` bundle using an Apple Developer ID to prevent "Unidentified Developer / App is damaged" Gatekeeper warnings on the user's machine.
+
+---
+
+## 3. Proposed Implementation Steps for this Phase
+
+**Step 1: Windows Installer Generation**
+- Create a `packaging/windows/` directory in the repository.
+- Write the `keryxpro_installer.iss` script with proper app GUIDs, icons, and file paths.
+
+**Step 2: macOS Installer Generation**
+- Create a `packaging/macos/` directory.
+- Add a bash script `build_dmg.sh` to automate the DMG creation.
+
+**Step 3: User Documentation**
+- Add a `USER_GUIDE.md` containing simple installation instructions for end-users (e.g., double-click EXE on Windows, drag-to-Applications on Mac).
+- Add a `BUILD_GUIDE.md` for developers detailing the exact commands to generate the release files on both operating systems.
+
+---
+
+## Approval Request
+Please review this plan. Using **Inno Setup** for Windows is the most reliable way to create a professional `.exe` installer for Flutter desktop apps, and `.dmg` is the standard for Mac. If this approach aligns with your vision for Phase 38, let me know to proceed!
