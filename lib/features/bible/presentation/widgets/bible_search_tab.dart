@@ -30,6 +30,11 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   final FocusNode _chFocusNode = FocusNode();
   final FocusNode _addButtonFocusNode = FocusNode(debugLabel: 'BibleAddButton');
 
+  final ScrollController _otScrollController = ScrollController();
+  final ScrollController _ntScrollController = ScrollController();
+  final ScrollController _chScrollController = ScrollController();
+  final ScrollController _vsScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +56,25 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     _ntFocusNode.dispose();
     _chFocusNode.dispose();
     _addButtonFocusNode.dispose();
+    _otScrollController.dispose();
+    _ntScrollController.dispose();
+    _chScrollController.dispose();
+    _vsScrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToEnsureVisible(ScrollController controller, int index) {
+    if (!controller.hasClients) return;
+    final itemTop = index * 24.0;
+    final itemBottom = itemTop + 24.0;
+    final viewportTop = controller.position.pixels;
+    final viewportBottom = viewportTop + controller.position.viewportDimension;
+
+    if (itemTop < viewportTop) {
+      controller.jumpTo(itemTop);
+    } else if (itemBottom > viewportBottom) {
+      controller.jumpTo(itemBottom - controller.position.viewportDimension);
+    }
   }
 
   Future<void> _handleSearch(String query, WidgetRef ref) async {
@@ -131,6 +154,29 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   }
 
                   ref.read(bibleVerseListFocusNodeProvider).requestFocus();
+
+                  // Auto scroll
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (BibleConstants.oldTestamentBooks.contains(normalizedBook)) {
+                      final index = BibleConstants.oldTestamentBooks.indexOf(normalizedBook);
+                      _scrollToEnsureVisible(_otScrollController, index);
+                    } else if (BibleConstants.newTestamentBooks.contains(normalizedBook)) {
+                      final index = BibleConstants.newTestamentBooks.indexOf(normalizedBook);
+                      _scrollToEnsureVisible(_ntScrollController, index);
+                    }
+
+                    // For async list boxes, they might not be populated immediately, delay slightly
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      final chItems = ref.read(availableChaptersProvider).valueOrNull ?? [];
+                      final chIndex = chItems.indexOf(chapter);
+                      if (chIndex != -1) _scrollToEnsureVisible(_chScrollController, chIndex);
+                      
+                      final vsItems = ref.read(availableVersesProvider).valueOrNull ?? [];
+                      final vsIndex = vsItems.indexOf(startVerse);
+                      if (vsIndex != -1) _scrollToEnsureVisible(_vsScrollController, vsIndex);
+                    });
+                  });
+
                   return; // SUCCESS
                 }
               }
@@ -312,6 +358,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 child: _buildListBox(
                   title: 'OT',
                   focusNode: _otFocusNode,
+                  scrollController: _otScrollController,
                   items: BibleConstants.oldTestamentBooks,
                   selectedValue: ref.watch(selectedBookProvider),
                   onSelected: (val) {
@@ -320,6 +367,8 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
+                    if (_chScrollController.hasClients) _chScrollController.jumpTo(0);
+                    if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
@@ -336,6 +385,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 child: _buildListBox(
                   title: 'NT',
                   focusNode: _ntFocusNode,
+                  scrollController: _ntScrollController,
                   items: BibleConstants.newTestamentBooks,
                   selectedValue: ref.watch(selectedBookProvider),
                   onSelected: (val) {
@@ -344,6 +394,8 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
+                    if (_chScrollController.hasClients) _chScrollController.jumpTo(0);
+                    if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
@@ -360,6 +412,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 child: _buildAsyncListBox(
                   title: 'Ch',
                   focusNode: _chFocusNode,
+                  scrollController: _chScrollController,
                   asyncItems: ref.watch(availableChaptersProvider),
                   selectedValue: ref.watch(selectedChapterProvider),
                   onSelected: (val) {
@@ -367,6 +420,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     // Default select 1st verse
                     ref.read(selectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
+                    if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
                   },
                   onEnter: () {
                     final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
@@ -383,6 +437,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 child: _buildMultiSelectAsyncListBox<int>(
                   title: 'Vs',
                   focusNode: ref.read(bibleVerseListFocusNodeProvider),
+                  scrollController: _vsScrollController,
                   asyncItems: ref.watch(availableVersesProvider),
                   selectedValues: ref.watch(selectedVersesProvider),
                   onEnter: () {
@@ -394,6 +449,12 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   },
                   onTab: () {
                     _addButtonFocusNode.requestFocus();
+                  },
+                  onSelectAll: () {
+                    final items = ref.read(availableVersesProvider).valueOrNull;
+                    if (items != null && items.isNotEmpty) {
+                      ref.read(selectedVersesProvider.notifier).state = items.toSet();
+                    }
                   },
                   onSelected: (val, isSelected, allItems) {
                   final current = Set<int>.from(ref.read(selectedVersesProvider));
@@ -445,6 +506,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     required T? selectedValue,
     required Function(T) onSelected,
     required FocusNode focusNode,
+    ScrollController? scrollController,
     VoidCallback? onEnter,
   }) {
     return Column(
@@ -470,14 +532,17 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 final currentIndex = items.indexOf(selectedValue as dynamic);
                 if (currentIndex < items.length - 1) {
                   onSelected(items[currentIndex + 1]);
+                  if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex + 1);
                 } else if (currentIndex == -1 && items.isNotEmpty) {
                   onSelected(items[0]);
+                  if (scrollController != null) _scrollToEnsureVisible(scrollController, 0);
                 }
                 return KeyEventResult.handled;
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 final currentIndex = items.indexOf(selectedValue as dynamic);
                 if (currentIndex > 0) {
                   onSelected(items[currentIndex - 1]);
+                  if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex - 1);
                 }
                 return KeyEventResult.handled;
               }
@@ -485,6 +550,8 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
               return KeyEventResult.ignored;
             },
             child: ListView.builder(
+              controller: scrollController,
+              itemExtent: 24.0,
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
@@ -514,6 +581,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     required T? selectedValue,
     required Function(T) onSelected,
     required FocusNode focusNode,
+    ScrollController? scrollController,
     VoidCallback? onEnter,
   }) {
     return Column(
@@ -541,14 +609,17 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   final currentIndex = items.indexOf(selectedValue as dynamic);
                   if (currentIndex < items.length - 1) {
                     onSelected(items[currentIndex + 1]);
+                    if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex + 1);
                   } else if (currentIndex == -1) {
                     onSelected(items[0]);
+                    if (scrollController != null) _scrollToEnsureVisible(scrollController, 0);
                   }
                   return KeyEventResult.handled;
                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                   final currentIndex = items.indexOf(selectedValue as dynamic);
                   if (currentIndex > 0) {
                     onSelected(items[currentIndex - 1]);
+                    if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex - 1);
                   }
                   return KeyEventResult.handled;
                 }
@@ -559,6 +630,8 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
             child: asyncItems.when(
               data: (items) {
                 return ListView.builder(
+                  controller: scrollController,
+                  itemExtent: 24.0,
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
@@ -592,8 +665,10 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     required Set<T> selectedValues,
     required Function(T, bool, List<T>) onSelected,
     FocusNode? focusNode,
+    ScrollController? scrollController,
     VoidCallback? onEnter,
     VoidCallback? onTab,
+    VoidCallback? onSelectAll,
   }) {
     return Column(
       children: [
@@ -619,6 +694,13 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                 return KeyEventResult.handled;
               }
 
+              if (HardwareKeyboard.instance.isControlPressed && event.logicalKey == LogicalKeyboardKey.keyA) {
+                if (onSelectAll != null) {
+                  onSelectAll();
+                  return KeyEventResult.handled;
+                }
+              }
+
               final items = asyncItems.valueOrNull;
               if (items != null && items.isNotEmpty) {
                 if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -627,6 +709,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
                   if (currentIndex < items.length - 1) {
                     onSelected(items[currentIndex + 1], true, items);
+                    if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex + 1);
                   }
                   return KeyEventResult.handled;
                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -634,6 +717,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                   final currentIndex = lastItem != null ? items.indexOf(lastItem) : -1;
                   if (currentIndex > 0) {
                     onSelected(items[currentIndex - 1], true, items);
+                    if (scrollController != null) _scrollToEnsureVisible(scrollController, currentIndex - 1);
                   }
                   return KeyEventResult.handled;
                 }
@@ -644,6 +728,8 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
             child: asyncItems.when(
               data: (items) {
                 return ListView.builder(
+                  controller: scrollController,
+                  itemExtent: 24.0,
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];

@@ -1,0 +1,20 @@
+# Added Help Menu and Dialog
+
+The Help Menu and Dialog feature has been successfully implemented according to Phase 37 requirements. 
+
+## Changes Made
+- **Help Dialog Creation**: Created a new UI component `HelpDialog` in `lib/features/dashboard/presentation/widgets/help_dialog.dart`. This dialog properly categorizes and lists all keyboard shortcuts and general application usage instructions clearly under descriptive headers.
+- **Title Bar Integration**: Modified `lib/features/dashboard/presentation/widgets/custom_title_bar.dart` to include a new 'Help' `MenuItemButton` situated right after the 'Manage Setlists' button in the title bar drop-down. 
+- **Dialog Wiring**: Wired the new 'Help' button to trigger the `HelpDialog` pop-up so users can quickly see a list of application shortcuts.
+
+## Verification
+- Verified that clicking the "Help" menu opens a well-formatted dialog pop-up.
+- Verified that the pop-up includes sections for:
+    - Main Shortcuts
+    - Bible Search Shortcuts
+    - SetList Shortcuts
+    - Slides Shortcuts
+    - General Usage
+- Verified that styling adheres to the application's overall design system, using consistent headers and styled shortcut tags. 
+
+You can run the application, navigate to the `Help` button in the top menu bar (next to Manage Setlists), and check out the new help dialog!

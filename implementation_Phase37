@@ -1,0 +1,41 @@
+# Add Help Menu and Dialog
+
+The goal is to introduce a new 'Help' menu option in the top title bar of the application, positioned immediately after 'Manage Setlists'. Clicking this menu will open a help dialog displaying comprehensive usage instructions and keyboard shortcuts for navigating and operating KeryxPro.
+
+## User Review Required
+
+Please review the structure and content of the proposed help dialog to ensure all required instructions are included and correctly categorized.
+
+## Open Questions
+
+None. The requirements and shortcuts are clearly detailed in the task description.
+
+## Proposed Changes
+
+### Dashboard Widgets
+
+Modifications to the top title bar and the addition of a new dialog widget.
+
+#### [MODIFY] [custom_title_bar.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/custom_title_bar.dart)
+- Add an `import` statement for the new `help_dialog.dart`.
+- Insert a new `MenuItemButton` labeled 'Help' inside the `MenuBar`'s main level, right after the 'Manage Setlists' `MenuItemButton`.
+- Wire the 'Help' button to open `HelpDialog` via `showDialog`.
+
+#### [NEW] [help_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/help_dialog.dart)
+- Create a new `StatelessWidget` called `HelpDialog` returning an `AlertDialog`.
+- Implement a scrollable layout (e.g., using `ListView` or `SingleChildScrollView`) containing well-structured sections:
+  - **Main Shortcuts**: 'Q' (Song Search), 'S' (Scripture Search), 'L' (Jump to slides).
+  - **Bible Search Shortcuts**: Press Enter twice (immediate display), Enter -> Tab -> Enter (add to slides without immediate display).
+  - **SetList Shortcuts**: Click item (scroll to slide), Enter on item (display slide).
+  - **Slides Shortcuts**: 'Tab' (jump to next immediate blank screen), 'Space bar' (jump to next immediate slide), 'V1', 'C' (jump to specific slide in songs), 'F' (freeze/unfreeze slides).
+  - **Other Operations**: Instructions on how to add/edit/delete Setlists, modify presentation settings, and change Monitor 1/2 settings.
+- Ensure the dialog matches the app's dark mode visual theme (similar to existing dialogs).
+
+## Verification Plan
+
+### Manual Verification
+- Start the KeryxPro application.
+- Observe the top title bar to confirm the 'Help' menu is present after 'Manage Setlists'.
+- Click the 'Help' menu.
+- Verify that the `HelpDialog` opens and displays all the required information in a clear, section-wise format.
+- Verify that the UI styling aligns with the rest of the application without disturbing existing functionality.

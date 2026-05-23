@@ -1,0 +1,8 @@
+Phase 37.1
+
+Context:
+- small visual correction in slides pane
+
+Visual Style:
+- Currently in the slides pane, the title/chapter column is display small font with grey color, but the lyrics or verse or image path is displaying in bigger font with bright white color.
+- Please use the same font style as title/chapter for verse/lyrics/image path as well.

@@ -11,6 +11,7 @@ import '../../../songs/data/song_import_service.dart';
 import '../../../bible/presentation/widgets/bible_import_dialog.dart';
 import '../../../../core/sync/sync_service.dart';
 import '../../../setlist/presentation/manage_setlists_dialog.dart';
+import 'help_dialog.dart';
 
 class CustomTitleBar extends ConsumerWidget {
   const CustomTitleBar({super.key});
@@ -62,7 +63,6 @@ class CustomTitleBar extends ConsumerWidget {
           const Icon(Icons.auto_awesome, size: 16, color: Colors.deepPurpleAccent), // App Logo
           const SizedBox(width: 8),
           
-          // Menu Area
           MenuBar(
             style: const MenuStyle(
               elevation: WidgetStatePropertyAll(0),
@@ -71,6 +71,10 @@ class CustomTitleBar extends ConsumerWidget {
             ),
             children: [
               SubmenuButton(
+                style: const ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(Size.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                ),
                 menuStyle: const MenuStyle(
                   backgroundColor: WidgetStatePropertyAll(Color(0xFF4A4A4A)),
                   elevation: WidgetStatePropertyAll(4),
@@ -84,6 +88,10 @@ class CustomTitleBar extends ConsumerWidget {
                 child: const Text('File', style: TextStyle(fontSize: 12)),
               ),
               SubmenuButton(
+                style: const ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(Size.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                ),
                 menuStyle: const MenuStyle(
                   backgroundColor: WidgetStatePropertyAll(Color(0xFF4A4A4A)),
                   elevation: WidgetStatePropertyAll(4),
@@ -120,6 +128,10 @@ class CustomTitleBar extends ConsumerWidget {
                 child: const Text('Settings', style: TextStyle(fontSize: 12)),
               ),
               SubmenuButton(
+                style: const ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(Size.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                ),
                 menuStyle: const MenuStyle(
                   backgroundColor: WidgetStatePropertyAll(Color(0xFF4A4A4A)),
                   elevation: WidgetStatePropertyAll(4),
@@ -142,6 +154,10 @@ class CustomTitleBar extends ConsumerWidget {
                 child: const Text('Imports', style: TextStyle(fontSize: 12)),
               ),
               MenuItemButton(
+                style: const ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(Size.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                ),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -149,6 +165,19 @@ class CustomTitleBar extends ConsumerWidget {
                   );
                 },
                 child: const Text('Manage Setlists', style: TextStyle(fontSize: 12)),
+              ),
+              MenuItemButton(
+                style: const ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(Size.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const HelpDialog(),
+                  );
+                },
+                child: const Text('Help', style: TextStyle(fontSize: 12)),
               ),
             ],
           ),

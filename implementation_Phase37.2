@@ -1,0 +1,23 @@
+# Add Ctrl+A Shortcut for Verses Listbox
+
+The goal is to allow users to select all verses in the verses listbox by pressing the 'Ctrl + A' keyboard shortcut.
+
+## User Review Required
+
+Please review the proposed change below. It strictly implements the requested shortcut without altering existing UI or design.
+
+## Proposed Changes
+
+### [MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)
+- Update the `_buildMultiSelectAsyncListBox` widget signature to accept a new optional parameter: `VoidCallback? onSelectAll`.
+- Within the `onKeyEvent` handler of the `Focus` widget inside `_buildMultiSelectAsyncListBox`, add a condition to detect when `HardwareKeyboard.instance.isControlPressed` is true and `event.logicalKey == LogicalKeyboardKey.keyA`.
+- If the 'Ctrl + A' combination is detected and `onSelectAll` is provided, call `onSelectAll()` and return `KeyEventResult.handled`.
+- In the instantiation of `_buildMultiSelectAsyncListBox` for the "Vs" (verses) column, pass an `onSelectAll` callback that retrieves the currently available verses from `availableVersesProvider` and updates the `selectedVersesProvider` state with all of them as a `Set`.
+
+## Verification Plan
+
+- Navigate to the Bible search tab.
+- Select an OT/NT book and a chapter so that verses are populated in the Verses listbox.
+- Focus the Verses listbox and press 'Ctrl + A'.
+- Verify that all verses in the chapter are instantly selected.
+- Verify that the preview pane reflects all selected verses.

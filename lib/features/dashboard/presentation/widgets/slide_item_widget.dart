@@ -36,7 +36,7 @@ class SlideItemWidget extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 9,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.normal,
                   fontStyle: FontStyle.italic,
                   letterSpacing: 1.2,
                 ),
@@ -60,7 +60,7 @@ class SlideItemWidget extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: Colors.grey[200],
                             fontSize: 10,
                           ),
                         ),
@@ -99,9 +99,9 @@ class SlideItemWidget extends StatelessWidget {
                     slide.content.replaceAll('\n', ' '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 10,
                     ),
                   ),
                 ),
