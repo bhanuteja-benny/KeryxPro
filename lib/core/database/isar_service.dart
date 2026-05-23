@@ -6,6 +6,7 @@ import '../../features/songs/data/song.dart';
 import '../../features/bible/data/bible.dart';
 import '../../features/settings/data/presentation_settings.dart';
 import '../../features/settings/data/projection_config.dart';
+import '../../features/settings/data/app_settings.dart';
 import '../../features/setlist/data/saved_setlist.dart';
 import '../sync/data/processed_sync_event.dart';
 
@@ -31,6 +32,7 @@ class IsarService {
           BibleVerseSchema,
           PresentationSettingsSchema,
           ProjectionConfigSchema,
+          AppSettingsSchema,
           SavedSetlistSchema,
           ProcessedSyncEventSchema,
         ],

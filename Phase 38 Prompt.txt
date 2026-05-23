@@ -1,0 +1,15 @@
+Phase 38 Plan
+
+Context:
+installation file for windows and mac
+
+Installation/Setup:
+- executable/setup files for installation of KeryxPro for windows and mac
+- the setup should be a full package (no extra files needs to be copy pasted manually into the target machine
+- Installation guide for each OS (windows and mac Pre-requesites document for both windows and mac book like OS requirements, SDK requirements etc)
+
+Deliverables
+Plan for Setup and Installation
+
+
+

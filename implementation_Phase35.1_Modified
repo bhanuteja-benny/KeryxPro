@@ -1,0 +1,53 @@
+# Image Sync Implementation Plan (Modified)
+
+## Problem Addressed
+When an image is added as a background or image slide, its absolute local path (e.g., `C:\Users\John\Pictures\bg.jpg`) is saved. If synced, this path is broken on other machines.
+
+## Proposed Solution: Tokenized Media Folders
+
+We will use tokenized relative paths and automatically copy images to the Sync Folder.
+
+1.  **Managed Media Directories (Updated):**
+    We will create a `Media` folder inside the Sync Folder. Inside `Media`, we will create two subdirectories to keep things organized:
+    *   `Background Images`
+    *   `Image Slides`
+    
+2.  **Copy on Selection:**
+    When a user picks an image for a background, it will be copied to `SyncFolder/Media/Background Images/`. When picked for an image slide, it will be copied to `SyncFolder/Media/Image Slides/`.
+
+3.  **Tokenized Storage:**
+    Instead of the absolute path, we save a tokenized path: `[SYNC_MEDIA]\Background Images\my_bg.jpg`. This is what gets synced via JSON.
+
+4.  **Runtime Resolution:**
+    When the app needs to display the image, it intercepts the path. If it starts with `[SYNC_MEDIA]\`, it dynamically replaces the token with the current machine's absolute sync folder path. 
+
+## Addressing: "What if user not yet configured sync folder?"
+
+If the user selects an image *before* setting up the database sync folder, we have two options. Please review and choose one:
+
+### Option A: Fallback to Absolute Paths (Recommended for Simplicity)
+*   **How it works:** If sync is disabled/unconfigured, the app behaves exactly as it does today. It saves the absolute path (`C:\...\bg.jpg`). 
+*   **What happens when sync is enabled later:** Those images will remain as absolute paths and will not sync. The user will need to re-select the image (just like pre-existing images) so it gets copied to the sync folder.
+
+### Option B: Local Media Caching
+*   **How it works:** We always copy selected images to a hidden app-specific local folder (e.g., `AppData/Roaming/KeryxPro/Media`) and use a `[LOCAL_MEDIA]` token.
+*   **What happens when sync is enabled later:** We would need to build a migration tool that scans the database for `[LOCAL_MEDIA]` tokens, copies the files over to the newly configured `SyncFolder/Media`, and updates the database to `[SYNC_MEDIA]`. 
+*   **Pros/Cons:** More robust, but significantly more complex to implement and test without disturbing existing functionality.
+
+## Proposed Changes
+
+### Core Data / Services Layer
+#### [NEW] `lib/core/sync/media_sync_manager.dart`
+*   Create `MediaSyncManager` with methods: `importBackgroundImage(String originalPath)`, `importImageSlide(String originalPath)`, and `resolveMediaPath(String path)`.
+*   Implement logic to handle the unconfigured sync state based on your choice above.
+
+### Presentation Layer Updates
+#### [MODIFY] `lib/features/settings/presentation/widgets/presentation_settings_dialog.dart`
+*   Pass picked background images through `MediaSyncManager.importBackgroundImage()`.
+*   Resolve paths before previewing.
+
+#### [MODIFY] `lib/features/setlist/presentation/image_slide_dialog.dart`
+*   Pass picked slides through `MediaSyncManager.importImageSlide()`.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/preview_pane.dart` & `lib/features/live_controller/presentation/widgets/live_projector_pane.dart`
+*   Resolve `imagePath` and `backgroundUrl` using `MediaSyncManager.resolveMediaPath()` before rendering.

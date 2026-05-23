@@ -1,0 +1,11 @@
+Phase 35.2
+
+Context:
+Issue in image sync and sync folder
+
+Problem:
+- when user selected a sync folder, two files default.isar and default.isar-lck are created in parent folder. why is this happened?
+- when user added an image slide and saved, an event json file is created in sync folder as expected but there is no Media folder and image folders and images. (user configured the sync folder and enabled the sync as well)
+
+Deliverables:
+- fix the issue

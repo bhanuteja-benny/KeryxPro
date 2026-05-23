@@ -1,0 +1,27 @@
+# Phase 35: Bulk Delete Setlists
+
+The bulk delete functionality for setlists has been fully implemented based on your feedback. Here is what has been accomplished:
+
+## Changes Implemented
+
+1.  **"Manage Setlists" Access Point**
+    *   Added a `Manage Setlists` button right beside `Imports` in the main title bar (within `CustomTitleBar`), preventing clutter near the main dropdown.
+
+2.  **Manage Setlists Dialog**
+    *   Created `ManageSetlistsDialog`, which provides a clean interface to list all your saved setlists along with their last modified date.
+    *   You can manually multi-select setlists using checkboxes.
+    *   Includes a `Select Older Than...` button that defaults to 1 month ago. It opens a date picker, and automatically selects all setlists modified before the chosen date.
+    *   Includes `Select All` and `Clear` helper buttons for quick bulk operations.
+
+3.  **Data Operations**
+    *   Updated the `SetlistRepository` with a `deleteMultipleByName` method, which utilizes Isar's bulk database operations (`deleteAll`) to efficiently process multiple deletions at once.
+    *   Any setlists you delete are also exported as "deleted" sync events to ensure connected instances drop the setlists accordingly.
+    *   If the currently active setlist is deleted, the active view is cleared gracefully.
+
+## Validation Steps Performed
+
+*   Compiled the project successfully.
+*   Verified that the deprecation warning for `withOpacity` was replaced with the modern `withValues(alpha: ...)`.
+*   Verified that the "Manage Setlists" button correctly launches the new dialog.
+
+You can now click the `Manage Setlists` option next to the Imports menu in the top bar to easily filter out your old Sunday setlists!

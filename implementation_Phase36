@@ -1,0 +1,51 @@
+# Phase 36: Global Exception and Error Handling
+
+This phase focuses on ensuring smooth performance and gracefully handling exceptions across the KeryxPro application so it never crashes, hangs, or displays raw error overlays to the users (especially critical for live projector environments).
+
+## Goal
+Implement a robust global error handling architecture that catches all synchronous and asynchronous errors, completely hides Flutter's default "Red Screen of Death" error widgets, and provides a user-configurable mechanism to log these exceptions to a local `error.log` file in the database directory.
+
+## Proposed Changes
+
+### Core Architecture & App Settings
+We will introduce a new Isar collection for general application settings, specifically to track whether error logging is enabled.
+
+#### [NEW] `lib/features/settings/data/app_settings.dart`
+- Create an `AppSettings` Isar collection with a boolean `isErrorLoggingEnabled` (defaulting to `false`).
+
+#### [MODIFY] `lib/core/database/isar_service.dart`
+- Register `AppSettingsSchema` in the `openDB()` initialization.
+
+#### [NEW] `lib/core/error/logger_service.dart`
+- Create a simple service that checks `AppSettings` via `Isar.getInstance()`.
+- If logging is enabled, it will asynchronously append the timestamp, error message, and stack trace to `error.log` located in the KeryxPro `getApplicationDocumentsDirectory` (same folder as the database).
+
+### Global Error Handlers
+We will intercept all unhandled exceptions at the highest levels of the application.
+
+#### [MODIFY] `lib/main.dart`
+- **Synchronous Errors**: Override `FlutterError.onError` to route all framework-level errors to `LoggerService.logError()`.
+- **Asynchronous Errors**: Override `PlatformDispatcher.instance.onError` to catch all unhandled asynchronous Dart exceptions.
+- **UI Error Widget**: Override `ErrorWidget.builder` with a safe, transparent `SizedBox.shrink()` (or an extremely minimal, non-disruptive widget) so that if a widget fails to build, it fails invisibly without disrupting the live projection or displaying stack traces on-screen.
+
+### Settings Interface
+We will add a simple toggle for users to control the error logging behavior.
+
+#### [NEW] `lib/features/settings/presentation/widgets/general_settings_dialog.dart`
+- Create a standard dialog (following the existing design patterns) that provides a switch/checkbox for "Enable Error Logging".
+- Read and update the `AppSettings` collection when toggled.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/custom_title_bar.dart`
+- Add a new "General Settings" menu item under the existing "Settings" dropdown menu to launch the `GeneralSettingsDialog`.
+
+## User Review Required
+> [!IMPORTANT]  
+> 1. Is there a specific format you would like the log file to use (e.g., standard text with timestamps, or JSON formatted)?
+> 2. Are you okay with the default behavior for a UI crash being complete invisibility (a blank/empty space where the widget would be)? This is standard for production apps to avoid scaring users with red screens.
+
+## Verification Plan
+### Automated & Manual Testing
+- Intentionally trigger a UI error (e.g., throwing an exception inside a `build` method) to ensure the app does not crash and the red screen is hidden.
+- Intentionally trigger an asynchronous error (e.g., a delayed future that throws) to verify `PlatformDispatcher` catches it without hanging.
+- Verify that toggling the "Error Log" in General Settings properly updates the database.
+- Confirm that `error.log` is generated in the correct AppData folder and contains formatted stack traces only when the setting is enabled.

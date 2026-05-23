@@ -1,0 +1,10 @@
+Phase 35.3
+
+Context:
+Issue in disabling shortcuts while typing in textboxes
+
+Problem:
+- shortcuts 's','q','l' should be disabled while typing in textboxes, it is working fine for song search textbox and bible search textbox and setlist name textbox, but it is not working for 'New Preset Name', 'Font Family' in presentation settings and 'Add New Song' - title, author and lyrics textboxes, when 's','q' or 'l' is typed in these boxes, the focus is shifting accordingly.
+
+Deliverables:
+- fix the issue

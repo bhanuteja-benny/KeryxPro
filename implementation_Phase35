@@ -1,0 +1,63 @@
+# Bulk Delete Setlists Plan
+
+The goal is to provide a user-friendly way to manage and bulk-delete old setlists, either by manually selecting multiple setlists via checkboxes or by automatically selecting setlists created before a specific date.
+
+## Proposed User Experience
+
+1.  **Access Point**: Add a small "Manage" button (e.g., `Icons.manage_search` or `Icons.checklist`) next to the SetList dropdown menu in the `SetlistPane` header.
+2.  **Manage Setlists Dialog**: Clicking the button opens a new `ManageSetlistsDialog`.
+3.  **Features of the Dialog**:
+    *   **List View**: Displays all saved setlists, showing their name and their last modified date.
+    *   **Multi-select Checkboxes**: Each setlist has a checkbox for manual selection.
+    *   **Select by Date**: A prominent button (e.g., "Select Older Than...") that opens a calendar date picker. Upon selecting a date, the dialog automatically checks all setlists last modified before that date.
+    *   **Select All / Clear**: Quick toggle buttons for convenience.
+    *   **Delete Action**: A "Delete Selected (N)" button that requires a final confirmation before permanently removing the chosen setlists.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Data Deletion Confirmation:** The bulk delete will be permanent (it will also trigger a sync event to delete them from connected devices). Does the proposed "Manage Setlists Dialog" approach fit your workflow, or would you prefer a simpler, automatic "Keep only last X days" setting in the app settings instead?
+
+## Open Questions
+
+> [!WARNING]
+> *   Should the "Select Older Than..." date picker default to a certain timeframe (e.g., 1 month ago, 3 months ago) to make it quicker for you?
+> *   Do you want the ability to search by name within the Manage Setlists dialog?
+
+## Proposed Changes
+
+---
+
+### UI / Presentation Layer
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+*   Wrap the existing `DropdownMenu` in the header inside a `Row`.
+*   Add an `IconButton` next to it to open the `ManageSetlistsDialog`.
+
+#### [NEW] `lib/features/setlist/presentation/manage_setlists_dialog.dart`
+*   Create a new StatefulWidget representing the dialog.
+*   Implement state for tracking selected setlist names (`Set<String>`).
+*   Add UI for the list of setlists, checkboxes, the "Select Older Than..." action using Flutter's `showDatePicker`, and the "Delete Selected" button.
+
+#### [NEW] `lib/features/setlist/presentation/manage_setlists_providers.dart`
+*   Create a provider `allSavedSetlistsProvider` that fetches a `List<SavedSetlist>` (so we have access to both the `name` and `lastModified` properties for the UI to display dates).
+
+---
+
+### Data Layer
+
+#### [MODIFY] `lib/features/setlist/data/setlist_repository.dart`
+*   Add `Future<List<SavedSetlist>> getAllSetlists()` to retrieve full setlist objects.
+*   Add `Future<void> deleteMultipleByName(List<String> names)` to handle bulk deletions efficiently using a single Isar transaction (`writeTxn`).
+*   Ensure the sync service is notified for each deleted setlist to keep connected devices in sync.
+
+## Verification Plan
+
+### Automated/Manual Testing
+1.  Open the application and create several dummy setlists.
+2.  Click the new "Manage" button next to the setlist dropdown.
+3.  Verify that all setlists are listed with their respective modification dates.
+4.  Test manual checkbox selection and ensure the "Delete Selected" count updates accurately.
+5.  Test the "Select Older Than..." date picker and verify that only setlists older than the selected date are automatically checked.
+6.  Click "Delete Selected", confirm the deletion, and verify that the setlists disappear from both the dialog and the main dropdown list.
+7.  Check that the bulk deletion correctly emits sync events (if multiple devices are connected, the setlists should be removed from them as well).

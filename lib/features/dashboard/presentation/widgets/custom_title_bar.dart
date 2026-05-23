@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../settings/presentation/widgets/presentation_settings_dialog.dart';
 import '../../../settings/presentation/widgets/database_sync_settings_dialog.dart';
+import '../../../settings/presentation/widgets/general_settings_dialog.dart';
 import '../../../songs/presentation/song_providers.dart';
 import '../../../songs/data/song_import_service.dart';
 import '../../../bible/presentation/widgets/bible_import_dialog.dart';
 import '../../../../core/sync/sync_service.dart';
+import '../../../setlist/presentation/manage_setlists_dialog.dart';
 
 class CustomTitleBar extends ConsumerWidget {
   const CustomTitleBar({super.key});
@@ -105,6 +107,15 @@ class CustomTitleBar extends ConsumerWidget {
                     },
                     child: const Text('Data Sync Settings'),
                   ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const GeneralSettingsDialog(),
+                      );
+                    },
+                    child: const Text('General Settings'),
+                  ),
                 ],
                 child: const Text('Settings', style: TextStyle(fontSize: 12)),
               ),
@@ -129,6 +140,15 @@ class CustomTitleBar extends ConsumerWidget {
                   ),
                 ],
                 child: const Text('Imports', style: TextStyle(fontSize: 12)),
+              ),
+              MenuItemButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ManageSetlistsDialog(),
+                  );
+                },
+                child: const Text('Manage Setlists', style: TextStyle(fontSize: 12)),
               ),
             ],
           ),

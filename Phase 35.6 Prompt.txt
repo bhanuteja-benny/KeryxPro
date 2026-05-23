@@ -1,0 +1,10 @@
+Phase 35.6
+
+Context:
+font family issue in typography settings
+
+Problem:
+- in song preset settings, body typography is showing 'Roboto', but in Font family list box it is not there. 'Roboto' is not there in any font family list (title, body, chapter, verse) in typography settings
+
+Deliverables:
+- fix the issue

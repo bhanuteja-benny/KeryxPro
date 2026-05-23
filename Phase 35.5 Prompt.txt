@@ -1,0 +1,10 @@
+Phase 35.5
+
+Context:
+improvements in fill option in typography settings
+
+Visual style improvement:
+- when user selects 'fill' in typography settings, it is working fine, text background is getting filled. but when there are multiple lines, a thin line is appearing between the lines. can we avoid this and display multiple lines as attached by fill?
+
+Deliverables:
+- visual improvisation 

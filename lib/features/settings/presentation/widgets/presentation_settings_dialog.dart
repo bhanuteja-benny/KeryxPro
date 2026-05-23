@@ -13,7 +13,7 @@ const List<String> kCommonSystemFonts = [
   'Arial', 'Arial Black', 'Calibri', 'Cambria', 'Candara', 'Century Gothic',
   'Comic Sans MS', 'Consolas', 'Courier New', 'Franklin Gothic Medium',
   'Garamond', 'Georgia', 'Impact', 'Lucida Console', 'Lucida Sans Unicode',
-  'Microsoft Sans Serif', 'Palatino Linotype', 'Segoe UI', 'Tahoma',
+  'Microsoft Sans Serif', 'Palatino Linotype', 'Roboto', 'Segoe UI', 'Tahoma',
   'Times New Roman', 'Trebuchet MS', 'Verdana'
 ];
 
@@ -508,6 +508,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
                 onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                  final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateTitleFontFamily(fontFamily) : notifier.updateChapterFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateTitleFontSize(fontSize) : notifier.updateChapterFontSize(fontSize);
                   if (fontColor != null) isSong ? notifier.updateTitleFontColor(fontColor) : notifier.updateChapterFontColor(fontColor);
@@ -515,13 +516,13 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                   if (italic != null) isSong ? notifier.updateTitleItalic(italic) : notifier.updateChapterItalic(italic);
                   if (underline != null) isSong ? notifier.updateTitleUnderline(underline) : notifier.updateChapterUnderline(underline);
                   if (hasFill != null || fillColor != null) {
-                    final f = hasFill ?? (isSong ? settings.titleHasFill : settings.chapterHasFill);
-                    final fc = fillColor ?? (isSong ? settings.titleFillColor : settings.chapterFillColor);
+                    final f = hasFill ?? (isSong ? currentSettings.titleHasFill : currentSettings.chapterHasFill);
+                    final fc = fillColor ?? (isSong ? currentSettings.titleFillColor : currentSettings.chapterFillColor);
                     isSong ? notifier.updateTitleFill(f, fc) : notifier.updateChapterFill(f, fc);
                   }
                   if (hasStroke != null || strokeColor != null) {
-                    final s = hasStroke ?? (isSong ? settings.titleHasStroke : settings.chapterHasStroke);
-                    final sc = strokeColor ?? (isSong ? settings.titleStrokeColor : settings.chapterStrokeColor);
+                    final s = hasStroke ?? (isSong ? currentSettings.titleHasStroke : currentSettings.chapterHasStroke);
+                    final sc = strokeColor ?? (isSong ? currentSettings.titleStrokeColor : currentSettings.chapterStrokeColor);
                     isSong ? notifier.updateTitleStroke(s, sc) : notifier.updateChapterStroke(s, sc);
                   }
                 },
@@ -628,6 +629,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
                 onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                  final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateLyricsFontFamily(fontFamily) : notifier.updateVerseFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateLyricsFontSize(fontSize) : notifier.updateVerseFontSize(fontSize);
                   if (fontColor != null) isSong ? notifier.updateLyricsFontColor(fontColor) : notifier.updateVerseFontColor(fontColor);
@@ -635,13 +637,13 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                   if (italic != null) isSong ? notifier.updateLyricsItalic(italic) : notifier.updateVerseItalic(italic);
                   if (underline != null) isSong ? notifier.updateLyricsUnderline(underline) : notifier.updateVerseUnderline(underline);
                   if (hasFill != null || fillColor != null) {
-                    final f = hasFill ?? (isSong ? settings.lyricsHasFill : settings.verseHasFill);
-                    final fc = fillColor ?? (isSong ? settings.lyricsFillColor : settings.verseFillColor);
+                    final f = hasFill ?? (isSong ? currentSettings.lyricsHasFill : currentSettings.verseHasFill);
+                    final fc = fillColor ?? (isSong ? currentSettings.lyricsFillColor : currentSettings.verseFillColor);
                     isSong ? notifier.updateLyricsFill(f, fc) : notifier.updateVerseFill(f, fc);
                   }
                   if (hasStroke != null || strokeColor != null) {
-                    final s = hasStroke ?? (isSong ? settings.lyricsHasStroke : settings.verseHasStroke);
-                    final sc = strokeColor ?? (isSong ? settings.lyricsStrokeColor : settings.verseStrokeColor);
+                    final s = hasStroke ?? (isSong ? currentSettings.lyricsHasStroke : currentSettings.verseHasStroke);
+                    final sc = strokeColor ?? (isSong ? currentSettings.lyricsStrokeColor : currentSettings.verseStrokeColor);
                     isSong ? notifier.updateLyricsStroke(s, sc) : notifier.updateVerseStroke(s, sc);
                   }
                 },

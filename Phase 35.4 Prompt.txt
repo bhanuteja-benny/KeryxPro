@@ -1,0 +1,11 @@
+Phase 35.4
+
+Context:
+Issue in stroke and fill in typography settings in song and scripture settings
+
+Problem:
+- when first time selecting stroke or fill in typography settings, they are not getting applied (not even changes are reflecting in preview of preset settings). if user again clicking typography and selecting stroke and fill then they are getting applied.
+- increase the default stroke (it is looking very thin)
+
+Deliverables:
+- fix the issue

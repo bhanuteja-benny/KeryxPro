@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../settings/data/presentation_settings.dart';
+import '../../../../core/sync/media_sync_manager.dart';
 
-class ProjectorView extends StatelessWidget {
+class ProjectorView extends ConsumerWidget {
   final PresentationSettings settings;
   final String? activeSlideText;
   final String? titleText;
@@ -20,13 +22,15 @@ class ProjectorView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mediaSync = ref.watch(mediaSyncManagerProvider);
     final bool isBlank = activeSlideText == "";
 
     final isTransparent = isBlank ? settings.isBlankTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent);
     final backgroundColorValue = Color(isBlank ? settings.blankBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor));
     final isImageEnabled = isBlank ? settings.isBlankImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled);
-    final backgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
+    final rawBackgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
+    final backgroundImage = rawBackgroundImage.isNotEmpty ? mediaSync.resolveMediaPath(rawBackgroundImage) : '';
     final backgroundLayout = isBlank ? settings.blankBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout);
     final backgroundAlignment = isBlank ? settings.blankBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment);
 
@@ -136,7 +140,7 @@ class ProjectorView extends StatelessWidget {
           if (!isBlankScreen) ...[
               // Body Layer
               if (isImageSlide)
-                _buildImageWidget(activeSlideText!, canvasWidth, canvasHeight)
+                _buildImageWidget(activeSlideText!, canvasWidth, canvasHeight, mediaSync)
               else
                 Align(
                   alignment: _getAlignmentGeometry(alignStr, vAlignStr),
@@ -164,12 +168,14 @@ class ProjectorView extends StatelessWidget {
                                       fontFamily: lyricsFontFamilyValue,
                                       fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
                                       fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
-                                      height: 1.2,
+                                      height: 1.4,                                      
                                       decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                                       backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 2.0
+                                        ..strokeWidth = lyricsFontSizeValue * 0.08
+                                        ..strokeJoin = StrokeJoin.round
+                                        ..strokeCap = StrokeCap.round
                                         ..color = lyricsStrokeColorValue,
                                     ),
                                     textAlign: _getTextAlign(alignStr),
@@ -186,7 +192,7 @@ class ProjectorView extends StatelessWidget {
                                     fontFamily: lyricsFontFamilyValue,
                                     fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
                                     fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
-                                    height: 1.2,
+                                    height: 1.4,                                    
                                     decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                                     backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
                                   ),
@@ -218,11 +224,14 @@ class ProjectorView extends StatelessWidget {
                               fontFamily: titleFontFamilyValue,
                               fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
                               fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
+                              height: 1.2,
                               decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                               backgroundColor: titleHasFillValue ? titleFillColorValue : null,
                               foreground: Paint()
                                 ..style = PaintingStyle.stroke
-                                ..strokeWidth = 2.0
+                                ..strokeWidth = titleFontSizeValue * 0.08
+                                ..strokeJoin = StrokeJoin.round
+                                ..strokeCap = StrokeCap.round
                                 ..color = titleStrokeColorValue,
                             ),
                           ),
@@ -235,6 +244,7 @@ class ProjectorView extends StatelessWidget {
                             fontFamily: titleFontFamilyValue,
                             fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
                             fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
+                            height: 1.2,
                             decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                             backgroundColor: titleHasFillValue ? titleFillColorValue : null,
                           ),
@@ -268,6 +278,14 @@ class ProjectorView extends StatelessWidget {
     }
   }
 
+  CrossAxisAlignment _getCrossAxisAlignment(String alignment) {
+    switch (alignment) {
+      case 'left': return CrossAxisAlignment.start;
+      case 'right': return CrossAxisAlignment.end;
+      case 'center': default: return CrossAxisAlignment.center;
+    }
+  }
+
   Alignment _getAlignmentGeometry(String horizontal, String vertical) {
     double x = 0;
     double y = 0;
@@ -284,10 +302,11 @@ class ProjectorView extends StatelessWidget {
     return Alignment(x, y);
   }
 
-  Widget _buildImageWidget(String content, double width, double height) {
+  Widget _buildImageWidget(String content, double width, double height, MediaSyncManager mediaSync) {
     final rest = content.substring(6);
     final parts = rest.split('|');
-    final path = parts[0];
+    final rawPath = parts[0];
+    final path = mediaSync.resolveMediaPath(rawPath);
     final layout = parts.length > 1 ? parts[1] : 'contain';
     
     BoxFit fit;

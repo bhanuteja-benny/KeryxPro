@@ -11,9 +11,27 @@ import 'features/settings/data/presentation_settings.dart';
 import 'features/presentation/presentation/widgets/projector_view.dart';
 import 'core/sync/sync_config.dart';
 import 'core/sync/sync_service.dart';
+import 'core/error/logger_service.dart';
+import 'dart:ui';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Global Error Handlers
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    LoggerService.logError(details.exception, details.stack);
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    LoggerService.logError(error, stack);
+    return true;
+  };
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    // Return an invisible widget instead of the Red Screen of Death
+    return const SizedBox.shrink();
+  };
 
   // If this is a spawned sub-window, handle projector UI
   if (args.firstOrNull == 'multi_window') {
@@ -21,8 +39,12 @@ void main(List<String> args) async {
     // window_manager is auto-registered for sub-windows via RegisterPlugins.
     // Calling ensureInitialized() conflicts with desktop_multi_window's channel.
     final windowController = await WindowController.fromCurrentEngine();
+    final syncConfig = await SyncConfig.init();
     runApp(
       ProviderScope(
+        overrides: [
+          syncConfigProvider.overrideWithValue(syncConfig),
+        ],
         child: ProjectorApp(windowController: windowController),
       ),
     );

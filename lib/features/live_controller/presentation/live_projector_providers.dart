@@ -21,8 +21,9 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
         allSlides.addAll(SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite));
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         // Image items produce one special "image" slide
+        final title = imagePath.split(RegExp(r'[/\\]')).last;
         allSlides.add(Slide(
-          title: imagePath.split(RegExp(r'[/\\]')).last,
+          title: title,
           shortcut: 'IMG',
           content: 'IMAGE:$imagePath|$layout|$alignment',
           type: SlideType.other,
@@ -30,6 +31,8 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
           isSong: false,
           isFavorite: isFavorite,
         ));
+        // Ensure a blank slide follows the image to prevent grouping with subsequent items
+        allSlides.add(Slide.blank(title: title, isSong: false, isFavorite: isFavorite));
     }
   }
   return allSlides;

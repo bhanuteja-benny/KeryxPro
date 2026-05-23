@@ -52,16 +52,20 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
 
     // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
     final primaryFocus = FocusManager.instance.primaryFocus;
-    if (primaryFocus != null) {
-      final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
-      // Check for editable fields or our specifically labeled search boxes
-      if (label.contains('editable') || label.contains('field') || label.contains('search') || label.contains('setlistname')) {
-        return false;
-      }
+    if (primaryFocus != null && primaryFocus.context != null) {
+      final context = primaryFocus.context!;
       
-      // Double check the context widget as a backup
-      final widget = primaryFocus.context?.widget;
-      if (widget is EditableText || widget is TextField) {
+      // Robustly check if the focused widget is or is inside a text input field
+      bool isTextInput = context.widget is EditableText || 
+                         context.widget is TextField ||
+                         context.findAncestorWidgetOfExactType<EditableText>() != null ||
+                         context.findAncestorWidgetOfExactType<TextField>() != null;
+                         
+      if (isTextInput) return false;
+
+      // Fallback label checks
+      final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
+      if (label.contains('editable') || label.contains('field') || label.contains('search') || label.contains('setlistname') || label.contains('title') || label.contains('author') || label.contains('lyrics') || label.contains('preset')) {
         return false;
       }
     }

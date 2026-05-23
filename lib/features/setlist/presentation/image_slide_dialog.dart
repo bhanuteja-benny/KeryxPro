@@ -1,8 +1,10 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/setlist_item.dart';
+import '../../../core/sync/media_sync_manager.dart';
 
-class ImageSlideDialog extends StatefulWidget {
+class ImageSlideDialog extends ConsumerStatefulWidget {
   final bool isForBackground;
   final String initialImagePath;
   final String initialLayout;
@@ -17,11 +19,12 @@ class ImageSlideDialog extends StatefulWidget {
   });
 
   @override
-  State<ImageSlideDialog> createState() => _ImageSlideDialogState();
+  ConsumerState<ImageSlideDialog> createState() => _ImageSlideDialogState();
 }
 
-class _ImageSlideDialogState extends State<ImageSlideDialog> {
+class _ImageSlideDialogState extends ConsumerState<ImageSlideDialog> {
   late String _imagePath;
+  late String _displayPath;
   late String _layout;
   late String _alignment;
 
@@ -29,6 +32,7 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
   void initState() {
     super.initState();
     _imagePath = widget.initialImagePath;
+    _displayPath = widget.initialImagePath;
     _layout = widget.initialLayout;
     _alignment = widget.initialAlignment;
   }
@@ -53,7 +57,10 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
   Future<void> _browse() async {
     final result = await FilePicker.pickFiles(type: FileType.image);
     if (result != null && result.files.single.path != null) {
-      setState(() => _imagePath = result.files.single.path!);
+      setState(() {
+        _imagePath = result.files.single.path!;
+        _displayPath = result.files.single.path!;
+      });
     }
   }
 
@@ -82,7 +89,7 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
                       border: Border.all(color: Colors.white24),
                     ),
                     child: Text(
-                      hasImage ? _imagePath.split(RegExp(r'[/\\]')).last : 'No image selected',
+                      hasImage ? _displayPath.split(RegExp(r'[/\\]')).last : 'No image selected',
                       style: TextStyle(
                         color: hasImage ? Colors.white70 : Colors.white24,
                         fontSize: 12,
@@ -200,15 +207,30 @@ class _ImageSlideDialogState extends State<ImageSlideDialog> {
         ),
         ElevatedButton(
           onPressed: hasImage
-              ? () {
-                  Navigator.pop(
-                    context,
-                    ImageSetlistItem(
-                      imagePath: _imagePath,
-                      layout: _layout,
-                      alignment: _alignment,
-                    ),
+              ? () async {
+                  // Show loading indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (c) => const Center(child: CircularProgressIndicator()),
                   );
+
+                  final syncManager = ref.read(mediaSyncManagerProvider);
+                  final finalPath = widget.isForBackground
+                      ? await syncManager.importBackgroundImage(_imagePath)
+                      : await syncManager.importImageSlide(_imagePath);
+
+                  if (context.mounted) {
+                    Navigator.pop(context); // Close loading indicator
+                    Navigator.pop(
+                      context,
+                      ImageSetlistItem(
+                        imagePath: finalPath,
+                        layout: _layout,
+                        alignment: _alignment,
+                      ),
+                    );
+                  }
                 }
               : null,
           style: ElevatedButton.styleFrom(

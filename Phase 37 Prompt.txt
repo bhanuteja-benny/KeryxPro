@@ -1,0 +1,42 @@
+Phase 37 Plan
+
+Context:
+- Help menu required
+
+UI Requirement:
+- show a help menu in the top title bar (after 'Manage Setlist')
+- a popup should open listing how to use application, section wise
+- first and foremost, shortcuts should be mentioned
+-- Main Shortcuts
+--- press 'Q' to open song search
+--- press 'S' to open scripture search
+--- press 'L' to jump to slides section
+-- Bible Search Shortcuts
+--- type the reference and press enter two times to immediately display the searched verse (if exists)
+--- type the reference and press enter -> tab -> enter to add the verse to slides but avoid immediate display
+-- SetList shortcuts
+--- click the SetList item to move the scroll to related slide in slides pane
+--- press enter on the SetList item to display the related slide in live screens
+-- Slides shortcuts
+--- use 'tab' to jump to next immediate blank screens and next blank screens
+--- use 'space bar' to jump to next immediate slide
+--- use the shortcuts mentioned like 'V1', 'C' etc to jump to specific slide in the songs
+--- press 'f' to freeze and unfreeze slides
+- how to add/edit/delete SetList names and SetList options
+- how to modify presentation settings
+- how to change settings of Monitors (monitor 1 and 2)
+- if I missed any please add
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

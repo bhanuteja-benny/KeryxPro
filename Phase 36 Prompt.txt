@@ -1,0 +1,27 @@
+Phase 36 Plan
+
+Context:
+- exception and error handling. ensuring smooth performance.
+
+Refactoring:
+- Need proper exception and error handling
+- Application should not hang or crash when any exception or unhandled situation occurs (everything should be handled)
+- Application should not display exceptions in windows as now it is doing
+- ensure smooth performance and proper messages. 
+- these exceptions can be logged in a log file (if user enables error logging)
+- we can give an option in settings -> 'Error log' and a option to enable or disable it. and log file can be saved in same location as database location
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take
+approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file
+

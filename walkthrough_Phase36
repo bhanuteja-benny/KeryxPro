@@ -1,0 +1,24 @@
+# Phase 36 Walkthrough: Global Exception and Error Handling
+
+We have successfully implemented a global, seamless error handling mechanism across the KeryxPro application, ensuring maximum stability, avoiding disruptions during live projection, and offering an optional file logging system.
+
+## What Was Accomplished
+
+### 1. Zero-Disruption UI Error Handling
+- **No More Red Screens**: Overrode Flutter's default `ErrorWidget.builder`. If a widget ever crashes or throws an error while trying to build (for instance, an unexpected state in a projector preview window), it will now simply render as an invisible box (`SizedBox.shrink()`). 
+- **Live Event Safety**: The application will no longer display a glaring red error stack trace overlay, which is critical for an application running on stage projectors.
+
+### 2. Global Exception Catching
+- **Synchronous Errors**: Captured all framework-level errors by overriding `FlutterError.onError`.
+- **Asynchronous Errors**: Captured unhandled Future/async exceptions by tapping into `PlatformDispatcher.instance.onError`.
+- **No Freezing**: Both of these overrides prevent the application's main thread from freezing or crashing unexpectedly by silently forwarding the errors to our new `LoggerService`.
+
+### 3. Error Logging & Settings
+- **New `AppSettings` Database**: Created a new `AppSettings` schema in Isar to safely persist top-level application configurations.
+- **File System Integration**: Built a `LoggerService` that formats stack traces seamlessly. When logging is enabled, it automatically appends detailed, timestamped records directly into `C:\Users\[User]\Documents\KeryxPro\error.log` (alongside the database).
+- **User Settings Interface**: Designed and integrated a new "General Settings" dialog. You can access this via the main toolbar: **Settings -> General Settings**. Here you can easily toggle the error logging behavior on or off dynamically.
+
+## Validation Results
+- The build succeeded perfectly.
+- All new database schemas correctly generated via the `build_runner`.
+- Settings persist successfully across application restarts, and the UI layout aligns exactly with your other settings dialogs.

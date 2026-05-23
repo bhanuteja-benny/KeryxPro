@@ -26,6 +26,11 @@ class SetlistRepository {
     return lists.map((s) => s.name).toList();
   }
 
+  Future<List<SavedSetlist>> getAllSetlists() async {
+    final isar = await _db;
+    return await isar.savedSetlists.where().findAll();
+  }
+
   Future<List<SetlistItem>> loadByName(String name) async {
     final isar = await _db;
     final saved = await isar.savedSetlists.where().nameEqualTo(name).findFirst();
@@ -151,5 +156,25 @@ class SetlistRepository {
     });
 
     _syncService.exportSetlist(existing, deleted: true);
+  }
+
+  Future<void> deleteMultipleByName(List<String> names) async {
+    final isar = await _db;
+    final toDelete = await isar.savedSetlists
+        .where()
+        .anyOf(names, (q, String name) => q.nameEqualTo(name))
+        .findAll();
+
+    if (toDelete.isEmpty) return;
+
+    final idsToDelete = toDelete.map((s) => s.id).toList();
+
+    await isar.writeTxn(() async {
+      await isar.savedSetlists.deleteAll(idsToDelete);
+    });
+
+    for (final existing in toDelete) {
+      _syncService.exportSetlist(existing, deleted: true);
+    }
   }
 }

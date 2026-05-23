@@ -1,0 +1,69 @@
+# Image Sync Implementation Plan
+
+## Problem Addressed
+Currently, when a user selects a background image or image slide, the absolute local path (e.g., `C:\Users\John\Pictures\bg.jpg`) is saved. When this is synced to another machine, the path is broken because the file does not exist there or the username/drive letter is different.
+
+## Proposed Solution: Tokenized Media Folder
+
+To fix this seamlessly without altering the user interface, we will leverage the existing Sync Folder architecture.
+
+1.  **Managed Media Directory:**
+    We will establish a `Media` subdirectory within the user's configured Sync Folder (just like the `Bibles` directory).
+    
+2.  **Copy on Selection:**
+    When a user picks an image (for a Presentation Background or an Image Slide), the application will automatically copy that image file into the `SyncFolder/Media` directory behind the scenes.
+
+3.  **Tokenized Storage:**
+    Instead of saving the absolute path to the database, we will save a tokenized relative path, such as `[SYNC_MEDIA]\my_background.jpg`. 
+    This tokenized string is what gets exported in the JSON sync events.
+
+4.  **Runtime Resolution:**
+    When the application needs to display an image (in the preview, live projector, or settings dialog), it will intercept the path. If the path starts with `[SYNC_MEDIA]\`, it will dynamically replace the token with the absolute path of the *current* machine's sync folder. 
+    Because the underlying cloud service (Google Drive, Dropbox, etc.) automatically syncs the `Media` folder across machines, Machine B will successfully locate the file in its own `SyncFolder/Media` directory.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Pre-existing Images:** 
+> Images that were added *before* this update (or before Sync was enabled) will still have their old absolute paths. They will not magically sync to other machines. **You will need to re-select those images** in the settings/setlists so they get copied into the new sync media folder. Is this acceptable?
+
+> [!WARNING]
+> **Orphaned Files:**
+> If you delete an image slide or change a presentation background, the actual image file will remain in the `SyncFolder/Media` folder to prevent accidentally deleting an image that might be used by a different setlist. It will cost a tiny bit of storage over time. Is this acceptable?
+
+## Proposed Changes
+
+---
+
+### Core Data / Services Layer
+
+#### [NEW] `lib/core/sync/media_sync_manager.dart`
+*   Create a simple utility class to handle copying files into the `Media` folder and resolving tokenized paths back to absolute paths.
+
+---
+
+### Presentation Layer Updates
+
+#### [MODIFY] `lib/features/settings/presentation/widgets/presentation_settings_dialog.dart`
+*   Update the `FilePicker` logic for the background image. After picking, pass the path to `MediaSyncManager.importMedia()` and save the returned tokenized path to the preset settings.
+*   When previewing the background, pass the path through `MediaSyncManager.resolveMediaPath()` so it renders correctly.
+
+#### [MODIFY] `lib/features/setlist/presentation/image_slide_dialog.dart`
+*   Update the `FilePicker` logic. After picking, import the media and store the tokenized path in the `ImageSetlistItem`.
+*   Resolve the path before displaying the thumbnail preview.
+
+#### [MODIFY] `lib/features/dashboard/presentation/widgets/preview_pane.dart` & `lib/features/live_controller/presentation/widgets/live_projector_pane.dart`
+*   Update the `Image.file` calls to pass the `imagePath` and `backgroundUrl` through the `MediaSyncManager.resolveMediaPath()` function before rendering.
+
+#### [MODIFY] `lib/features/songs/presentation/song_editor_pane.dart` (If applicable)
+*   Ensure that any custom song backgrounds follow the same import/resolve logic.
+
+## Verification Plan
+
+### Manual Verification
+1.  Enable Database Sync and set a sync folder.
+2.  Add a new Image Slide to a SetList.
+3.  Verify that the image file is physically copied into `[SyncFolder]/Media/`.
+4.  Verify that the image successfully renders in the preview and live projector panes on the current machine.
+5.  Check the exported JSON event file in the sync folder and confirm the `imagePath` uses the `[SYNC_MEDIA]` token rather than `C:\...`.
+6.  (Mental Check) A secondary machine reading this JSON will see `[SYNC_MEDIA]`, resolve it to its own Sync Folder, and find the file that Google Drive/Dropbox synced over.

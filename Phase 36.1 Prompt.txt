@@ -1,0 +1,11 @@
+Phase 36.1 Plan
+
+Context:
+- good everything working fine in Phase 36. But noticed an issue in slide addition in slides pane.
+
+Problem:
+- when a verse or song slide is added immediately after an image slide, the slides of the new verse or song is grouping with the image slide instead of inserting blank screen and adding slide after it.
+
+
+Deliverables:
+- fix the issue
