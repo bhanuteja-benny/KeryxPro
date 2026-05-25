@@ -20,6 +20,7 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\..\build\windows\installer
 OutputBaseFilename=KeryxPro_Setup_v{#MyAppVersion}
+SetupIconFile=..\..\windows\runner\resources\app_icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

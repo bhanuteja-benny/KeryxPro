@@ -60,7 +60,7 @@ class CustomTitleBar extends ConsumerWidget {
         children: [
           // Drag area for the icon part
           SizedBox(width: Platform.isMacOS ? 80 : 8),
-          const Icon(Icons.auto_awesome, size: 16, color: Colors.deepPurpleAccent), // App Logo
+          Image.asset('assets/icons/app_icon.png', width: 18, height: 18), // App Logo
           const SizedBox(width: 8),
           
           MenuBar(
