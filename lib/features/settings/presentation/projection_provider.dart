@@ -340,7 +340,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       } catch (e) {
         print("Error closing Monitor 2 window natively: $e");
         try {
-          await WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('close_window');
+          await WindowController.fromWindowId(state.monitor2WindowId!).close();
         } catch (err) {
           print("Error calling fallback close: $err");
         }
@@ -442,7 +442,11 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
         });
       } catch (e) {
         print("Error closing Monitor 1 window natively: $e");
-        await WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('close_window');
+        try {
+          await WindowController.fromWindowId(state.monitor1WindowId!).close();
+        } catch (err) {
+          print("Error calling fallback close: $err");
+        }
       }
       state = state.copyWith(clearMonitor1: true);
     }

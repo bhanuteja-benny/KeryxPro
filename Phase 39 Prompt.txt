@@ -1,0 +1,35 @@
+Phase 39 Plan
+
+Context: 
+- 90% of functionalities not working in macbook air
+
+Testing/Trail on macbook air:
+- using Git Hub workflow, built and created KeryxPro.app file 
+- Downloaded the .app file into macbook air laptop and copied app file into Application Folder 
+- When double clicked to open, OS said 'app is from unknown publisher' and gave options to 'Move to Bin' and 'Cancel 
+- Then clicked 'Command + Right Click + Open', then OS gave options to 'Open', 'Move to Bin' and 'Cancel 
+⁃ clicked 'Open', and the app opened. Designed looked as per the app design.
+
+Observations and issues:
+- Presentation Settings
+-- when user clicked on 'Settings' -> "Presentation Settings', no pop-up is being opened. But the background blur (layer) is coming. when pressed 'esc' the layer is hiding 
+- Import Songs or Import Bible 
+-- Pop is opening but when user click on 'Select File', nothing is happening 
+- Add Song worked, so user added a song manually 
+-- when user closed and opened the app again, the song was still there (so it is working properly)
+-- user was able to add the song to setlist and slides 
+- when user clicked on 'Launch' button of Monitor 2 (OBS capture), a separate is opened (working as expected) 
+- when user clicked on 'Launch' button of Monitor 1 (Extended), a separate window is opened on main monitor 
+-- after few seconds the separate window should be moved to extended monitor as per the functionality but it remained on the main monitor 
+-- the Extended monitor connectivity was showing as 'connected' in green text (in fact extended monitor was connected) 
+-- when clicked 'stop' button, the separate window didn't get close. 
+- Enable Error Logging
+-- when user clicked Settings -> General Settings, pop opened and user could able to enable the logging (working), but don't know if really logging is happening.
+
+Challenges:
+- I could not able to get the error log file as I could not able to find it. It would be useful to solve above issues if I can get the error log file. 
+- where should I search for this log file? 
+- where can I find the database file? (as per the testing, we can be sure that the database file was created, because the added song was saved and persisted)
+
+Deliverables:
+- Plan for fixing above issues

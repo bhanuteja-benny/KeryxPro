@@ -7,6 +7,15 @@ import '../../../../core/sync/sync_service.dart';
 final presetsListProvider = FutureProvider<List<PresentationSettings>>((ref) async {
   final isar = await ref.watch(isarServiceProvider).db;
   final results = await isar.presentationSettings.where().findAll();
+  if (results.isEmpty) {
+    final defaultP = PresentationSettings()
+      ..presetName = 'Default'
+      ..isDefault = true;
+    await isar.writeTxn(() async {
+      await isar.presentationSettings.put(defaultP);
+    });
+    return [_processFallbacks(defaultP)];
+  }
   return results.map((e) => _processFallbacks(e)).toList();
 });
 
