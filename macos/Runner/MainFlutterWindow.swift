@@ -62,7 +62,20 @@ class MainFlutterWindow: NSWindow {
         }
         target.title = "KeryxPro Monitor 1"
         
+        // IMPORTANT: On macOS, changing styleMask to .borderless destroys
+        // and recreates the window backing, which detaches the
+        // FlutterViewController and causes a blank screen.
+        // We must save and restore the contentViewController around this change.
+        let savedController = target.contentViewController
+        let savedContentView = target.contentView
         target.styleMask = [.borderless]
+        // Restore the Flutter content after styleMask change
+        if let controller = savedController {
+          target.contentViewController = controller
+        } else if let view = savedContentView {
+          target.contentView = view
+        }
+        
         target.isOpaque = false
         target.backgroundColor = .clear
         target.level = .floating
