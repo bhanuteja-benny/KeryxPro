@@ -44,11 +44,11 @@ void _broadcastContentM1(Ref ref, String? text) {
       'title': title,
       'isSong': isSong,
     };
-    try {
-      WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('update_content', args);
-    } catch (e) {
-      print('Error broadcasting to Monitor 1: $e');
-    }
+    WindowController.fromWindowId(state.monitor1WindowId!)
+        .invokeMethod('update_content', args)
+        .catchError((e, stack) {
+      print('[KeryxPro-v2] Error broadcasting to Monitor 1 (async): $e\n$stack');
+    });
   }
 }
 
@@ -65,11 +65,11 @@ void _broadcastContentM2(Ref ref, String? text) {
       'title': title,
       'isSong': isSong,
     };
-    try {
-      WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
-    } catch (e) {
-      print('Error broadcasting to Monitor 2: $e');
-    }
+    WindowController.fromWindowId(state.monitor2WindowId!)
+        .invokeMethod('update_content', args)
+        .catchError((e, stack) {
+      print('[KeryxPro-v2] Error broadcasting to Monitor 2 (async): $e\n$stack');
+    });
     ref.read(projectionProvider.notifier).resizeMonitor2Window(isSong);
   }
 }

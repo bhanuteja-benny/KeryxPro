@@ -443,14 +443,12 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
   }
 
   void _syncToWindow(String windowId, PresentationSettings? settings) {
-    try {
-      WindowController.fromWindowId(windowId).invokeMethod('update_preset', {
-        'presetId': settings?.id,
-        'settings': settings?.toMap(),
-      });
-    } catch (e) {
-      print('Error syncing preset to window $windowId: $e');
-    }
+    WindowController.fromWindowId(windowId).invokeMethod('update_preset', {
+      'presetId': settings?.id,
+      'settings': settings?.toMap(),
+    }).catchError((e, stack) {
+      print('[KeryxPro-v2] Error syncing preset to window $windowId (async): $e\n$stack');
+    });
   }
 }
 
