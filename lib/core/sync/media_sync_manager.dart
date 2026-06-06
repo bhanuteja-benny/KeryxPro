@@ -4,16 +4,23 @@ import 'package:path/path.dart' as p;
 import 'sync_service.dart';
 import 'sync_config.dart';
 
+final appDocumentsDirectoryPathProvider = Provider<String>((ref) {
+  throw UnimplementedError('appDocumentsDirectoryPathProvider not overridden');
+});
+
 final mediaSyncManagerProvider = Provider<MediaSyncManager>((ref) {
   final config = ref.watch(syncConfigProvider);
-  return MediaSyncManager(config);
+  final docDirPath = ref.watch(appDocumentsDirectoryPathProvider);
+  return MediaSyncManager(config, docDirPath);
 });
 
 class MediaSyncManager {
   static const String _syncMediaToken = '[SYNC_MEDIA]';
+  static const String _localMediaToken = '[LOCAL_MEDIA]';
   final SyncConfig _config;
+  final String _docDirPath;
 
-  MediaSyncManager(this._config);
+  MediaSyncManager(this._config, this._docDirPath);
 
   bool get _isSyncConfigured {
     final path = _config.syncFolderPath;
@@ -34,11 +41,16 @@ class MediaSyncManager {
       return originalPath; // Fallback if file doesn't exist
     }
 
-    if (!_isSyncConfigured) {
-      return originalPath; // Keep absolute path if sync folder is not configured
+    String baseDir;
+    bool isSyncPath = false;
+    if (_isSyncConfigured) {
+      baseDir = _config.syncFolderPath!;
+      isSyncPath = true;
+    } else {
+      baseDir = p.join(_docDirPath, 'KeryxPro', 'LocalMedia');
     }
 
-    final targetDir = Directory(p.join(_config.syncFolderPath!, 'Media', subFolder));
+    final targetDir = Directory(p.join(baseDir, 'Media', subFolder));
     if (!targetDir.existsSync()) {
       targetDir.createSync(recursive: true);
     }
@@ -52,9 +64,11 @@ class MediaSyncManager {
     final targetFile = File(p.join(targetDir.path, newFileName));
     await sourceFile.copy(targetFile.path);
 
-    // Return the tokenized path, using a standardized separator (forward slash) 
-    // to avoid cross-platform issues when stored in JSON.
-    return '$_syncMediaToken/$subFolder/$newFileName';
+    if (isSyncPath) {
+      return '$_syncMediaToken/$subFolder/$newFileName';
+    } else {
+      return '$_localMediaToken/$subFolder/$newFileName';
+    }
   }
 
   String resolveMediaPath(String path) {
@@ -69,6 +83,9 @@ class MediaSyncManager {
       
       // Re-join with the current platform's separator
       return p.join(_config.syncFolderPath!, 'Media', p.normalize(relativePath));
+    } else if (path.startsWith(_localMediaToken)) {
+      final relativePath = path.substring(_localMediaToken.length + 1); // +1 for the slash
+      return p.join(_docDirPath, 'KeryxPro', 'LocalMedia', 'Media', p.normalize(relativePath));
     }
     return path; // It's an absolute path
   }

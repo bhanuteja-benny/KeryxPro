@@ -447,7 +447,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       'presetId': settings?.id,
       'settings': settings?.toMap(),
     }).catchError((e, stack) {
-      print('[KeryxPro-v2] Error syncing preset to window $windowId (async): $e\n$stack');
+      print('[KeryxPro-v3] Error syncing preset to window $windowId (async): $e\n$stack');
     });
   }
 }

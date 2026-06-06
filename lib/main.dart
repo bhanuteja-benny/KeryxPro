@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'core/database/isar_service.dart';
 import 'features/dashboard/presentation/pages/main_dashboard_page.dart';
@@ -11,6 +13,7 @@ import 'features/settings/data/presentation_settings.dart';
 import 'features/presentation/presentation/widgets/projector_view.dart';
 import 'core/sync/sync_config.dart';
 import 'core/sync/sync_service.dart';
+import 'core/sync/media_sync_manager.dart';
 import 'core/error/logger_service.dart';
 import 'dart:ui';
 
@@ -33,6 +36,9 @@ void main(List<String> args) async {
     return const SizedBox.shrink();
   };
 
+  final appDocDir = await getApplicationDocumentsDirectory();
+  final appDocDirPath = appDocDir.path;
+
   // If this is a spawned sub-window, handle projector UI
   if (args.firstOrNull == 'multi_window') {
     // NOTE: Do NOT call windowManager.ensureInitialized() here.
@@ -44,6 +50,7 @@ void main(List<String> args) async {
       ProviderScope(
         overrides: [
           syncConfigProvider.overrideWithValue(syncConfig),
+          appDocumentsDirectoryPathProvider.overrideWithValue(appDocDirPath),
         ],
         child: ProjectorApp(windowController: windowController),
       ),
@@ -74,6 +81,7 @@ void main(List<String> args) async {
       overrides: [
         isarServiceProvider.overrideWithValue(isarService),
         syncConfigProvider.overrideWithValue(syncConfig),
+        appDocumentsDirectoryPathProvider.overrideWithValue(appDocDirPath),
       ],
       child: const DashboardApp(),
     ),
@@ -182,10 +190,18 @@ class _ProjectorAppState extends State<ProjectorApp> {
       isSong: _isSong,
     );
 
+    final bool isBlank = _activeSlideText == "";
+    final isTransparent = isBlank
+        ? _settings.isBlankTransparent
+        : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent);
+    final Color scaffoldBgColor = isTransparent
+        ? (Platform.isWindows ? const Color(0xFF010001) : Colors.transparent)
+        : Colors.black;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: scaffoldBgColor,
         body: view,
       ),
     );

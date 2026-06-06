@@ -47,7 +47,7 @@ void _broadcastContentM1(Ref ref, String? text) {
     WindowController.fromWindowId(state.monitor1WindowId!)
         .invokeMethod('update_content', args)
         .catchError((e, stack) {
-      print('[KeryxPro-v2] Error broadcasting to Monitor 1 (async): $e\n$stack');
+      print('[KeryxPro-v3] Error broadcasting to Monitor 1 (async): $e\n$stack');
     });
   }
 }
@@ -68,7 +68,7 @@ void _broadcastContentM2(Ref ref, String? text) {
     WindowController.fromWindowId(state.monitor2WindowId!)
         .invokeMethod('update_content', args)
         .catchError((e, stack) {
-      print('[KeryxPro-v2] Error broadcasting to Monitor 2 (async): $e\n$stack');
+      print('[KeryxPro-v3] Error broadcasting to Monitor 2 (async): $e\n$stack');
     });
     ref.read(projectionProvider.notifier).resizeMonitor2Window(isSong);
   }
