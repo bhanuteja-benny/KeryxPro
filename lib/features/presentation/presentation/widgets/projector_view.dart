@@ -6,6 +6,12 @@ import '../../../settings/data/presentation_settings.dart';
 import '../../../../core/sync/media_sync_manager.dart';
 
 class ProjectorView extends ConsumerWidget {
+  // On Windows, LWA_COLORKEY uses RGB(1,0,1) as the chroma key.
+  // Flutter must render this exact color for those pixels to become transparent.
+  // On macOS, native window transparency works directly with Colors.transparent.
+  static final Color _transparencyColor = Platform.isWindows
+      ? const Color(0xFF010001) // Matches RGB(1,0,1) chroma key
+      : Colors.transparent;
   final PresentationSettings settings;
   final String? activeSlideText;
   final String? titleText;
@@ -117,7 +123,7 @@ class ProjectorView extends ConsumerWidget {
         children: [
           // 1. Layer: Background Color
           Container(
-            color: activeSlideText == null ? Colors.black : (isTransparent ? Colors.transparent : backgroundColorValue),
+            color: activeSlideText == null ? Colors.black : (isTransparent ? _transparencyColor : backgroundColorValue),
           ),
           
           // 2. Layer: Checkerboard
@@ -258,9 +264,14 @@ class ProjectorView extends ConsumerWidget {
       ),
     );
 
+    // Determine the outer fill color for letterboxing areas
+    final outerFillColor = activeSlideText == null
+        ? Colors.black
+        : (isTransparent ? _transparencyColor : backgroundColorValue);
+
     // Use FittedBox to scale the virtual canvas to the actual display window
     return Container(
-      color: Colors.transparent, // Background fill for letterboxing
+      color: outerFillColor, // Background fill for letterboxing
       child: Center(
         child: FittedBox(
           fit: BoxFit.contain,

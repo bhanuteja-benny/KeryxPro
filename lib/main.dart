@@ -185,7 +185,7 @@ class _ProjectorAppState extends State<ProjectorApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         body: view,
       ),
     );

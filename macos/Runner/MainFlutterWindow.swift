@@ -45,11 +45,14 @@ class MainFlutterWindow: NSWindow {
         frame.size = CGSize(width: CGFloat(w), height: CGFloat(h))
         target.setFrame(frame, display: true)
         
+        // Both monitors need transparency support so the Flutter-side
+        // transparent background renders correctly through the native window.
+        target.isOpaque = false
+        target.backgroundColor = .clear
+        target.hasShadow = false
+        
         if monitorIndex == 1 {
-           target.isOpaque = false
-           target.backgroundColor = .clear
            target.level = .floating
-           target.hasShadow = false
         } else {
            target.level = .normal
         }
@@ -62,19 +65,23 @@ class MainFlutterWindow: NSWindow {
         }
         target.title = "KeryxPro Monitor 1"
         
-        // IMPORTANT: On macOS, changing styleMask to .borderless destroys
-        // and recreates the window backing, which detaches the
-        // FlutterViewController and causes a blank screen.
-        // We must save and restore the contentViewController around this change.
-        let savedController = target.contentViewController
-        let savedContentView = target.contentView
-        target.styleMask = [.borderless]
-        // Restore the Flutter content after styleMask change
-        if let controller = savedController {
-          target.contentViewController = controller
-        } else if let view = savedContentView {
-          target.contentView = view
-        }
+        // IMPORTANT: Do NOT set styleMask = [.borderless].
+        // Changing styleMask destroys the window backing and invalidates
+        // the FlutterEngine's plugin registrations (including WindowChannel),
+        // causing CHANNEL_UNREGISTERED errors when the main window tries
+        // to communicate with the sub-window.
+        //
+        // Instead, we hide the titlebar elements individually and add
+        // .fullSizeContentView so the Flutter content fills the entire window.
+        target.titlebarAppearsTransparent = true
+        target.titleVisibility = .hidden
+        target.styleMask.insert(.fullSizeContentView)
+        // Hide all standard window buttons (close, minimize, zoom)
+        target.standardWindowButton(.closeButton)?.isHidden = true
+        target.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        target.standardWindowButton(.zoomButton)?.isHidden = true
+        // Remove toolbar if present
+        target.toolbar = nil
         
         target.isOpaque = false
         target.backgroundColor = .clear

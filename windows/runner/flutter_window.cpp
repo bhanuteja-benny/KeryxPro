@@ -164,13 +164,12 @@ bool FlutterWindow::OnCreate() {
           int adjustedW = rect.right - rect.left;
           int adjustedH = rect.bottom - rect.top;
 
-          // Only make Monitor 1 layered (transparent to clicks/desktop). 
-          // Monitor 2 should be a solid window so title bar buttons work and OBS can capture cleanly.
-          if (monitorIndex == 1) {
-            exStyle |= WS_EX_LAYERED;
-            SetWindowLong(target, GWL_EXSTYLE, exStyle);
-            SetLayeredWindowAttributes(target, RGB(0, 0, 0), 0, LWA_COLORKEY);
-          }
+          // Apply layered window with chroma key for transparency support.
+          // Both monitors use RGB(1,0,1) as the chroma key — the Flutter side
+          // renders this exact color when transparency is desired.
+          exStyle |= WS_EX_LAYERED;
+          SetWindowLong(target, GWL_EXSTYLE, exStyle);
+          SetLayeredWindowAttributes(target, RGB(1, 0, 1), 0, LWA_COLORKEY);
 
           // Monitor 2 = normal z-order; Monitor 1 = always-on-top
           HWND insertAfter = (monitorIndex == 2) ? HWND_NOTOPMOST : HWND_TOPMOST;
@@ -226,12 +225,15 @@ bool FlutterWindow::OnCreate() {
 
           LONG exStyle2 = GetWindowLong(target, GWL_EXSTYLE);
           exStyle2 &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-          
-          // Make it a layered window with black as transparent key
+          // Use WS_EX_LAYERED with a NON-BLACK chroma key color.
+          // RGB(1,0,1) is a near-invisible magenta that won't conflict with
+          // normal content. The Flutter side renders this exact color when
+          // transparency is desired, and the OS makes those pixels transparent.
+          // Using RGB(0,0,0) would make ALL black pixels transparent, breaking
+          // black backgrounds.
           exStyle2 |= WS_EX_LAYERED;
-          
           SetWindowLong(target, GWL_EXSTYLE, exStyle2);
-          SetLayeredWindowAttributes(target, RGB(0, 0, 0), 0, LWA_COLORKEY);
+          SetLayeredWindowAttributes(target, RGB(1, 0, 1), 0, LWA_COLORKEY);
 
           SetWindowPos(target, HWND_TOPMOST, x, y, w, h,
                        SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);

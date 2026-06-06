@@ -44,7 +44,11 @@ void _broadcastContentM1(Ref ref, String? text) {
       'title': title,
       'isSong': isSong,
     };
-    WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('update_content', args);
+    try {
+      WindowController.fromWindowId(state.monitor1WindowId!).invokeMethod('update_content', args);
+    } catch (e) {
+      print('Error broadcasting to Monitor 1: $e');
+    }
   }
 }
 
@@ -61,7 +65,11 @@ void _broadcastContentM2(Ref ref, String? text) {
       'title': title,
       'isSong': isSong,
     };
-    WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
+    try {
+      WindowController.fromWindowId(state.monitor2WindowId!).invokeMethod('update_content', args);
+    } catch (e) {
+      print('Error broadcasting to Monitor 2: $e');
+    }
     ref.read(projectionProvider.notifier).resizeMonitor2Window(isSong);
   }
 }
