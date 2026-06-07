@@ -1,0 +1,57 @@
+# Implementation Plan - Phase 40.1
+
+This plan addresses two specific issues identified in Phase 40:
+1. The slide list not scrolling to the bottom when the last slide is selected and a new item is added.
+2. Setlist item row alignment shift where non-displaying items were moved to the right.
+
+---
+
+## 1. Solutions
+
+### 1.1 Defer scroll offset calculations to next frame
+- **Issue**: When a new item is added and `activeSlideIndexProvider` updates, the list height changes. At the moment the listener fires, the layout pass has not completed. Thus, `maxScrollExtent` is still based on the previous list height, and clamping prevents scrolling to the bottom.
+- **Solution**: Wrap the scroll controller call inside `WidgetsBinding.instance.addPostFrameCallback`. This ensures the layout rebuild has finished, updating the scroll viewport and allowing exact scroll centering to the bottom of the list.
+
+### 1.2 Remove reserved space for non-displaying items
+- **Issue**: Renders a fixed-width `SizedBox(width: 14)` for every item to accommodate the play icon, causing all items to shift right.
+- **Solution**: Remove the `SizedBox` wrapper. Only render the play arrow icon using a conditional `if (isDisplaying)` statement inside the `Row`. Non-displaying items will have no placeholder space and will align normally to the left.
+
+---
+
+## 2. Code Changes
+
+### 2.1 Preview Slide Scroll Listener
+**File**: `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- Wrap the scroll centering logic in `addPostFrameCallback`:
+  ```dart
+  ref.listen(activeSlideIndexProvider, (previous, next) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        const itemHeight = 28.0;
+        final viewportHeight = scrollController.position.viewportDimension;
+        final maxScroll = scrollController.position.maxScrollExtent;
+        final centerOffset = (next * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
+        
+        scrollController.animateTo(
+          centerOffset.clamp(0.0, maxScroll),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  });
+  ```
+
+### 2.2 Scroll Item & Arrow Icon Alignment
+**File**: `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+- Wrap `_scrollToItem` logic in `addPostFrameCallback` to align with the preview pane's lifecycle.
+- Update the item `Row` in `ListView.builder` to conditionally render the arrow icon without placeholder spacing:
+  ```dart
+  // Remove the SizedBox wrapper, use conditional rendering:
+  if (isDisplaying)
+    const Icon(
+      Icons.play_arrow_rounded,
+      size: 14,
+      color: Colors.blueAccent,
+    ),
+  ```

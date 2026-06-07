@@ -1,0 +1,208 @@
+# Implementation Plan - Phase 40
+
+This plan outlines the enhancements to the setlist pane, slide list scrolling/selection behavior, visual highlights, and new item/slide insertion modes.
+
+---
+
+## 1. Objectives & UI Interactions
+
+### 1.1 Scrolling Center Alignment
+- **Problem**: When a setlist item is selected, the preview scroll bar moves the associated slide to the top edge, causing it to hide behind the header bar.
+- **Solution**: Adjust the list scroll animation calculations in both the setlist list tap handler and the slide active index listener to position the target slide at the vertical **center** of the viewport.
+- **Centering formula**:
+  $$TargetOffset = (Index \times ItemHeight) - (ViewportHeight / 2) + (ItemHeight / 2)$$
+  The resulting offset will be clamped between `0.0` and the maximum scroll extent to prevent invalid bounds.
+
+### 1.2 Setlist Item & Slide Highlighting Rules
+We define three states of setlist items:
+1. **Selected**: The item is in `setlistSelectionProvider`. Highlighted with a **purple background** (`Colors.deepPurpleAccent.withValues(alpha: 0.3)`). This takes precedence over display highlights.
+2. **Displaying**: The active slide belongs to this item (`index == currentDisplayItemIndex`), and the active slide is **not** a blank screen. Highlighted with a **blue background** (`Colors.blue.withValues(alpha: 0.2)`) and shows a `play_arrow` type icon on the left.
+3. **Blank screen display**: If the active slide is blank, remove the blue highlight and arrow icon from the displaying item. The setlist item containing the slide *directly above* the blank slide (`slideToSetlistItemIndex[activeIndex - 1]`) will have its bottom border highlighted with a thick blue border (`3px`).
+
+Slide items under a selected setlist item will be highlighted in **light purple** (`Colors.deepPurpleAccent.withValues(alpha: 0.15)`) **unless** that setlist item is the one currently displaying (in which case it follows normal active/inactive blue highlights).
+
+### 1.3 New Item Addition & 'Stack' Toggle
+Replace the 'refresh' icon on the setlist toolbar with a toggleable 'stack' (`layers_rounded`) icon with tooltip `'append new item at EOL'`.
+- When the stack toggle is **unselected** (default):
+  - Every added item (Song, Image, Verse) is inserted just below the currently displaying setlist item.
+- When the stack toggle is **selected**:
+  - Songs and images are appended at the end of the list (EOL).
+  - Verses added with direct display (`goLive = true`) are inserted below the displaying item.
+  - Verses added without direct display (`goLive = false`) are appended at the EOL.
+
+---
+
+## 2. Detailed Code Changes
+
+### 2.1 Setlist State and Providers
+**File**: `lib/features/setlist/presentation/setlist_providers.dart`
+- Add a state provider for the stack toggle:
+  ```dart
+  final appendAtEndOfListProvider = StateProvider<bool>((ref) => false);
+  ```
+- Add a slide-to-setlist mapping provider to match slide index to setlist item index:
+  ```dart
+  final slideToSetlistItemIndexProvider = Provider<List<int>>((ref) {
+    final setlist = ref.watch(setlistProvider);
+    if (setlist.isEmpty) return [];
+    final List<int> mapping = [];
+    for (int itemIdx = 0; itemIdx < setlist.length; itemIdx++) {
+      final item = setlist[itemIdx];
+      if (item is SongSetlistItem) {
+        final isSong = item.song.author != 'Bible';
+        final count = SlideUtils.parseLyrics(item.song.lyrics, item.song.title, isSong: isSong, isFavorite: item.isFavorite).length;
+        for (int i = 0; i < count; i++) mapping.add(itemIdx);
+      } else if (item is ImageSetlistItem) {
+        mapping.add(itemIdx); // Image slide
+        mapping.add(itemIdx); // Trailing blank slide
+      }
+    }
+    return mapping;
+  });
+  ```
+- Add a provider to get the currently displaying setlist item index:
+  ```dart
+  final currentDisplayItemIndexProvider = Provider<int?>((ref) {
+    final slides = ref.watch(currentSlidesProvider);
+    if (slides.isEmpty) return null;
+    final activeIndex = ref.watch(activeSlideIndexProvider);
+    final mapping = ref.watch(slideToSetlistItemIndexProvider);
+    if (activeIndex < 0 || activeIndex >= mapping.length) return null;
+    return mapping[activeIndex];
+  });
+  ```
+- Add a helper to compute slide indices:
+  ```dart
+  int getSlideCountForItems(List<SetlistItem> items, int upToIndex) {
+    int count = 0;
+    for (int i = 0; i <= upToIndex; i++) {
+      if (i >= items.length) break;
+      final item = items[i];
+      if (item is SongSetlistItem) {
+        final isSong = item.song.author != 'Bible';
+        count += SlideUtils.parseLyrics(item.song.lyrics, item.song.title, isSong: isSong, isFavorite: item.isFavorite).length;
+      } else if (item is ImageSetlistItem) {
+        count += 2;
+      }
+    }
+    return count;
+  }
+  ```
+
+### 2.2 Scroll Centering & Highlights on Slide List
+**File**: `lib/features/dashboard/presentation/widgets/preview_pane.dart`
+- Modify the `activeSlideIndexProvider` listener to center scroll alignment:
+  ```dart
+  ref.listen(activeSlideIndexProvider, (previous, next) {
+    if (scrollController.hasClients) {
+      const itemHeight = 28.0;
+      final viewportHeight = scrollController.position.viewportDimension;
+      final maxScroll = scrollController.position.maxScrollExtent;
+      final centerOffset = (next * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
+      scrollController.animateTo(
+        centerOffset.clamp(0.0, maxScroll),
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    }
+  });
+  ```
+- Pass purple highlight status to `SlideItemWidget`:
+  ```dart
+  final slideToItemMapping = ref.watch(slideToSetlistItemIndexProvider);
+  final slideItemIndex = index < slideToItemMapping.length ? slideToItemMapping[index] : null;
+  final selectedItems = ref.watch(setlistSelectionProvider);
+  final isItemCurrentlySelected = slideItemIndex != null && selectedItems.contains(slideItemIndex);
+  
+  final activeIndex = ref.watch(activeSlideIndexProvider);
+  final currentDisplayItemIndex = activeIndex < slideToItemMapping.length ? slideToItemMapping[activeIndex] : null;
+  
+  final isPurpleHighlighted = isItemCurrentlySelected && slideItemIndex != currentDisplayItemIndex;
+  ```
+
+### 2.3 Slide Item Widget UI
+**File**: `lib/features/dashboard/presentation/widgets/slide_item_widget.dart`
+- Update constructor to accept `isPurpleHighlighted`.
+- Style container background color:
+  ```dart
+  color: isActive 
+      ? Colors.blue.withValues(alpha: 0.2) 
+      : (isPurpleHighlighted ? Colors.deepPurpleAccent.withValues(alpha: 0.15) : Colors.transparent)
+  ```
+
+### 2.4 Setlist Item UI & Stack Toolbar Button
+**File**: `lib/features/dashboard/presentation/widgets/setlist_pane.dart`
+- In `_SetlistPaneState._scrollToItem(int index)`, apply the centering scroll offset animation.
+- Update `_SetlistToolbarButton` to accept and render stateful `isSelected` styling (change background to a darker/selected color, and icon to `Colors.blueAccent`).
+- Replace `refresh` button with a `layers_rounded` button toggle linked to `appendAtEndOfListProvider`.
+- Set item row borders and backgrounds:
+  ```dart
+  final activeIndex = ref.watch(activeSlideIndexProvider);
+  final slides = ref.watch(currentSlidesProvider);
+  final slideToItemMapping = ref.watch(slideToSetlistItemIndexProvider);
+  final currentActiveSlide = activeIndex < slides.length ? slides[activeIndex] : null;
+  final currentDisplayItemIndex = activeIndex < slideToItemMapping.length ? slideToItemMapping[activeIndex] : null;
+  
+  final isDisplaying = index == currentDisplayItemIndex && currentActiveSlide != null && !currentActiveSlide.isBlank;
+  final isBlankActive = currentActiveSlide != null && currentActiveSlide.isBlank;
+  final aboveItemIndex = (isBlankActive && activeIndex > 0 && (activeIndex - 1) < slideToItemMapping.length)
+      ? slideToItemMapping[activeIndex - 1]
+      : null;
+  final isBorderBottomHighlighted = index == aboveItemIndex;
+  
+  final bgColor = isSelected
+      ? Colors.deepPurpleAccent.withValues(alpha: 0.3)
+      : (isDisplaying ? Colors.blue.withValues(alpha: 0.2) : Colors.transparent);
+  ```
+- Structure container decoration:
+  ```dart
+  decoration: BoxDecoration(
+    color: bgColor,
+    border: Border(
+      bottom: BorderSide(
+        color: isBorderBottomHighlighted ? Colors.blueAccent : Colors.white10,
+        width: isBorderBottomHighlighted ? 3.0 : 1.0,
+      ),
+    ),
+  )
+  ```
+- Remove `separatorBuilder` divider from the `ListView.separated` or make it transparent since each item now renders its own bottom border.
+- Insert the arrow icon on the left of row contents if `isDisplaying` is true (contained in a fixed-width `SizedBox(width: 14)` to prevent text shifts).
+
+### 2.5 New Item Additions
+- **Song Addition** (`lib/features/songs/presentation/song_library_tab.dart`):
+  ```dart
+  final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+  final displayIndex = ref.read(currentDisplayItemIndexProvider);
+  final insertIndex = appendAtEndOfList ? null : displayIndex;
+  ref.read(setlistProvider.notifier).insertSong(song, insertIndex);
+  ```
+- **Image Addition** (`lib/features/dashboard/presentation/widgets/setlist_pane.dart`):
+  ```dart
+  final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+  final displayIndex = ref.read(currentDisplayItemIndexProvider);
+  final insertIndex = appendAtEndOfList ? null : displayIndex;
+  ref.read(setlistProvider.notifier).insertImage(result, insertIndex);
+  ```
+- **Verse Addition** (`lib/features/bible/presentation/widgets/bible_search_tab.dart`):
+  ```dart
+  final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+  final displayIndex = ref.read(currentDisplayItemIndexProvider);
+  final insertIndex = (goLive || !appendAtEndOfList) ? displayIndex : null;
+  
+  // Calculate correct start slide index for new items inserted mid-list
+  final setlist = ref.read(setlistProvider);
+  final int nextIndex;
+  if (insertIndex == null) {
+    nextIndex = previousSlides.length;
+  } else {
+    nextIndex = getSlideCountForItems(setlist, insertIndex);
+  }
+  ```
+
+---
+
+## 3. Constraints & Rules
+- Do not add any new screens, standalone pages, or buttons except replacing the existing refresh icon with the stack button.
+- Maintain visual design consistency, fonts, and borders.
+- Keep the light blue border active slide logic untouched.

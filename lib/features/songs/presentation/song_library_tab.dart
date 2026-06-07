@@ -6,7 +6,7 @@ import 'song_selection_providers.dart';
 import '../data/song.dart';
 import '../../dashboard/presentation/global_ui_providers.dart';
 import '../../setlist/presentation/setlist_providers.dart';
-import '../../setlist/data/setlist_item.dart';
+import '../../live_controller/presentation/live_projector_providers.dart';
 
 final librarySelectedIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -146,8 +146,9 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                     return KeyEventResult.handled;
                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                     if (songs.isNotEmpty && currentIndex >= 0 && currentIndex < songs.length) {
-                      final selection = ref.read(setlistSelectionProvider);
-                      final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+                      final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+                      final displayIndex = ref.read(currentDisplayItemIndexProvider);
+                      final insertIndex = appendAtEndOfList ? null : displayIndex;
                       ref.read(setlistProvider.notifier).insertSong(songs[currentIndex], insertIndex);
                     }
                     return KeyEventResult.handled;
@@ -174,8 +175,9 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            final selection = ref.read(setlistSelectionProvider);
-                            final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+                            final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+                            final displayIndex = ref.read(currentDisplayItemIndexProvider);
+                            final insertIndex = appendAtEndOfList ? null : displayIndex;
                             ref.read(setlistProvider.notifier).insertSong(song, insertIndex);
                           },
                           child: Container(

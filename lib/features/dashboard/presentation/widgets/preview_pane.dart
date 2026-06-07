@@ -165,30 +165,22 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final borderActiveIndices = ref.watch(borderActiveSlideIndicesProvider);
     final slides = ref.watch(currentSlidesProvider);
 
-    // Scroll to active index only if not already visible
+    // Scroll to active index and center it
     ref.listen(activeSlideIndexProvider, (previous, next) {
-      if (scrollController.hasClients) {
-        const itemHeight = 28.0; // height of SlideItemWidget
-        final targetOffset = next * itemHeight;
-        final currentOffset = scrollController.offset;
-        final viewportHeight = scrollController.position.viewportDimension;
-
-        if (targetOffset < currentOffset) {
-          // Slide is above the visible area, scroll up to show it at the top
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          const itemHeight = 28.0; // height of SlideItemWidget
+          final viewportHeight = scrollController.position.viewportDimension;
+          final maxScroll = scrollController.position.maxScrollExtent;
+          final centerOffset = (next * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
+          
           scrollController.animateTo(
-            targetOffset,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-          );
-        } else if (targetOffset + itemHeight > currentOffset + viewportHeight) {
-          // Slide is below the visible area, scroll down to show it at the bottom
-          scrollController.animateTo(
-            targetOffset + itemHeight - viewportHeight,
+            centerOffset.clamp(0.0, maxScroll),
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
           );
         }
-      }
+      });
     });
 
     // Auto-focus when a new song is added to the setlist
@@ -236,11 +228,22 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                     final slide = slides[index];
                     final isActive = activeIndices.contains(index);
                     final isBorderActive = borderActiveIndices.contains(index);
+
+                    final slideToItemMapping = ref.watch(slideToSetlistItemIndexProvider);
+                    final slideItemIndex = index < slideToItemMapping.length ? slideToItemMapping[index] : null;
+                    final selectedItems = ref.watch(setlistSelectionProvider);
+                    final isItemCurrentlySelected = slideItemIndex != null && selectedItems.contains(slideItemIndex);
                     
+                    final activeIndex = ref.watch(activeSlideIndexProvider);
+                    final currentDisplayItemIndex = activeIndex < slideToItemMapping.length ? slideToItemMapping[activeIndex] : null;
+                    
+                    final isPurpleHighlighted = isItemCurrentlySelected && slideItemIndex != currentDisplayItemIndex;
+
                     return SlideItemWidget(
                       slide: slide,
                       isActive: isActive,
                       isBorderActive: isBorderActive,
+                      isPurpleHighlighted: isPurpleHighlighted,
                       onTap: () {
                         ref.read(activeSlideIndexProvider.notifier).state = index;
                         focusNode.requestFocus();

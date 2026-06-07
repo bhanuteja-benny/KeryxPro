@@ -151,6 +151,8 @@ final setlistSelectionProvider =
 // Active Saved SetList Name & Signature
 // ─────────────────────────────────────────────────────────
 
+final appendAtEndOfListProvider = StateProvider<bool>((ref) => false);
+
 final activeSetlistNameProvider = StateProvider<String?>((ref) => null);
 
 /// Stores the signature of the currently active list as it was loaded/saved

@@ -247,12 +247,18 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
       ..author = 'Bible'
       ..lyrics = lyrics;
 
-    // Calculate the index where the new song's slides will start
-    final previousSlides = ref.read(currentSlidesProvider);
-    final nextIndex = previousSlides.length;
+    final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+    final displayIndex = ref.read(currentDisplayItemIndexProvider);
+    final insertIndex = (goLive || !appendAtEndOfList) ? displayIndex : null;
 
-    final selection = ref.read(setlistSelectionProvider);
-    final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+    final previousSlides = ref.read(currentSlidesProvider);
+    final setlist = ref.read(setlistProvider);
+    final int nextIndex;
+    if (insertIndex == null) {
+      nextIndex = previousSlides.length;
+    } else {
+      nextIndex = getSlideCountForItems(setlist, insertIndex);
+    }
 
     ref.read(setlistProvider.notifier).insertSong(mockSong, insertIndex);
 

@@ -242,8 +242,9 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
       builder: (context) => const ImageSlideDialog(),
     );
     if (result != null) {
-      final selection = ref.read(setlistSelectionProvider);
-      final insertIndex = selection.isEmpty ? null : selection.reduce((a, b) => a < b ? a : b);
+      final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
+      final displayIndex = ref.read(currentDisplayItemIndexProvider);
+      final insertIndex = appendAtEndOfList ? null : displayIndex;
       ref.read(setlistProvider.notifier).insertImage(result, insertIndex);
     }
   }
@@ -328,31 +329,23 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
 
   // ── Scroll slide list to item only if not visible ─────────────────────
   void _scrollToItem(int index) {
-    int slideStartIndex = _getSlideStartIndex(index);
-    
-    final scrollController = ref.read(slideListScrollControllerProvider);
-    if (scrollController.hasClients) {
-      const itemHeight = 28.0;
-      final targetOffset = slideStartIndex * itemHeight;
-      final currentOffset = scrollController.offset;
-      final viewportHeight = scrollController.position.viewportDimension;
-
-      if (targetOffset < currentOffset) {
-        // Slide is above visible area
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      int slideStartIndex = _getSlideStartIndex(index);
+      
+      final scrollController = ref.read(slideListScrollControllerProvider);
+      if (scrollController.hasClients) {
+        const itemHeight = 28.0;
+        final viewportHeight = scrollController.position.viewportDimension;
+        final maxScroll = scrollController.position.maxScrollExtent;
+        final centerOffset = (slideStartIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
+        
         scrollController.animateTo(
-          targetOffset,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      } else if (targetOffset + itemHeight > currentOffset + viewportHeight) {
-        // Slide is below visible area
-        scrollController.animateTo(
-          targetOffset + itemHeight - viewportHeight,
+          centerOffset.clamp(0.0, maxScroll),
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
-    }
+    });
   }
 
   // ── Segmented Control Style Button Helper ────────────────────────────
@@ -361,12 +354,14 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     required String tooltip,
     required VoidCallback? onPressed,
     bool showBorder = true,
+    bool isSelected = false,
   }) {
     return _SetlistToolbarButton(
       icon: icon,
       tooltip: tooltip,
       onPressed: onPressed,
       showBorder: showBorder,
+      isSelected: isSelected,
     );
   }
 
@@ -468,14 +463,31 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                         style: TextStyle(color: Colors.white24, fontSize: 11),
                       ),
                     )
-                  : ListView.separated(
+                  : ListView.builder(
                       padding: EdgeInsets.zero,
                       itemCount: items.length,
-                      separatorBuilder: (_, __) =>
-                          const Divider(height: 1, color: Colors.white10),
                       itemBuilder: (context, index) {
                         final item = items[index];
                         final isSelected = selection.contains(index);
+
+                        final activeIndex = ref.watch(activeSlideIndexProvider);
+                        final slides = ref.watch(currentSlidesProvider);
+                        final slideToItemMapping = ref.watch(slideToSetlistItemIndexProvider);
+                        
+                        final currentActiveSlide = activeIndex < slides.length ? slides[activeIndex] : null;
+                        final currentDisplayItemIndex = activeIndex < slideToItemMapping.length ? slideToItemMapping[activeIndex] : null;
+                        
+                        final isDisplaying = index == currentDisplayItemIndex && currentActiveSlide != null && !currentActiveSlide.isBlank;
+                        
+                        final isBlankActive = currentActiveSlide != null && currentActiveSlide.isBlank;
+                        final aboveItemIndex = (isBlankActive && activeIndex > 0 && (activeIndex - 1) < slideToItemMapping.length)
+                            ? slideToItemMapping[activeIndex - 1]
+                            : null;
+                        final isBorderBottomHighlighted = index == aboveItemIndex;
+
+                        final bgColor = isSelected
+                            ? Colors.deepPurpleAccent.withValues(alpha: 0.3)
+                            : (isDisplaying ? Colors.blue.withValues(alpha: 0.2) : Colors.transparent);
 
                         return GestureDetector(
                           onTap: () {
@@ -485,12 +497,27 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 120),
-                            color: isSelected
-                                ? Colors.deepPurpleAccent.withValues(alpha: 0.3)
-                                : Colors.transparent,
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: isBorderBottomHighlighted ? Colors.blueAccent : Colors.white10,
+                                  width: isBorderBottomHighlighted ? 3.0 : 1.0,
+                                ),
+                              ),
+                            ),
                             child: Row(
                               children: [
+                                if (isDisplaying)
+                                  const Padding(
+                                    padding: EdgeInsets.only(right: 2),
+                                    child: Icon(
+                                      Icons.play_arrow_rounded,
+                                      size: 14,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ),
                                 if (item.isFavorite)
                                   Padding(
                                     padding: const EdgeInsets.only(right: 4),
@@ -592,10 +619,13 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                       onPressed: hasSelection ? _toggleFavorite : null,
                     ),
                     _segmentedButton(
-                      icon: Icons.refresh_rounded,
-                      tooltip: 'Refresh',
-                      onPressed: _refresh,
+                      icon: Icons.layers_rounded,
+                      tooltip: 'append new item at EOL',
+                      onPressed: () {
+                        ref.read(appendAtEndOfListProvider.notifier).update((state) => !state);
+                      },
                       showBorder: false,
+                      isSelected: ref.watch(appendAtEndOfListProvider),
                     ),
                   ],
                 ),
@@ -613,12 +643,14 @@ class _SetlistToolbarButton extends StatefulWidget {
   final String tooltip;
   final VoidCallback? onPressed;
   final bool showBorder;
+  final bool isSelected;
 
   const _SetlistToolbarButton({
     required this.icon,
     required this.tooltip,
     this.onPressed,
     this.showBorder = true,
+    this.isSelected = false,
   });
 
   @override
@@ -630,6 +662,14 @@ class _SetlistToolbarButtonState extends State<_SetlistToolbarButton> {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = widget.isSelected
+        ? (_isHovered ? const Color(0xFF3D3D5E) : const Color(0xFF2D2D4E))
+        : (_isHovered ? const Color(0xFF3D3D4E) : const Color(0xFF2D2D3E));
+
+    final iconColor = widget.isSelected
+        ? Colors.blueAccent
+        : const Color(0xFF757575);
+
     return Expanded(
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
@@ -642,7 +682,7 @@ class _SetlistToolbarButtonState extends State<_SetlistToolbarButton> {
             child: Container(
               height: 28,
               decoration: BoxDecoration(
-                color: _isHovered ? const Color(0xFF3D3D4E) : const Color(0xFF2D2D3E),
+                color: bgColor,
                 border: widget.showBorder
                     ? const Border(
                         right: BorderSide(color: Colors.black12, width: 1),
@@ -653,7 +693,7 @@ class _SetlistToolbarButtonState extends State<_SetlistToolbarButton> {
                 child: Icon(
                   widget.icon,
                   size: 16,
-                  color: const Color(0xFF757575),
+                  color: iconColor,
                 ),
               ),
             ),

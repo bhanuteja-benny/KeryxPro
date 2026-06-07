@@ -5,6 +5,7 @@ class SlideItemWidget extends StatelessWidget {
   final Slide slide;
   final bool isActive;
   final bool isBorderActive;
+  final bool isPurpleHighlighted;
   final VoidCallback onTap;
 
   const SlideItemWidget({
@@ -12,6 +13,7 @@ class SlideItemWidget extends StatelessWidget {
     required this.slide,
     required this.isActive,
     required this.isBorderActive,
+    this.isPurpleHighlighted = false,
     required this.onTap,
   });
 
@@ -23,9 +25,11 @@ class SlideItemWidget extends StatelessWidget {
         height: slide.isBlank ? 24 : 28,
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+          color: isActive 
+              ? Colors.blue.withValues(alpha: 0.2) 
+              : (isPurpleHighlighted ? Colors.deepPurpleAccent.withValues(alpha: 0.15) : Colors.transparent),
           border: Border(
-            bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
             left: BorderSide(color: isBorderActive ? Colors.blue : Colors.transparent, width: 3),
           ),
         ),

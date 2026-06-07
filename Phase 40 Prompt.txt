@@ -1,0 +1,67 @@
+Phase 40 Plan
+
+Context:
+- Improvising set list pane and slides scrolling and selection, and new item/slide addition
+
+UI Interactions:
+- Scrolling issue
+-- when user selects an item in setlist pane, the slides scroll bar is moving to the associated slide. but the slide is displaying very top end that literally it is hiding behind the top bar.
+-- set the scroll position of the slide towards middle instead of top.
+-- also while moving between the slides (upwards or downwards), adjust the scrolling so that selected slide remains in the middle (scroll should keep on moving based on selection)
+- when a setlist item is selected
+-- along with slide scroll functionality, add below visual style
+-- highlight the corresponding slides in light purple color background (highlighting) (and don't change the light blue color highlighting of current slide which is being displayed)
+-- if the user selects an item whose slides are currently being displayed (then no need of purple highlighting of the slides)
+-- if not, when user clicks 'enter' on the selected item, then as already doing, change the current slide to corresponding selected item's slide. and change the highlighting of slide to that of current slide (instead of purple) (but the setlist item should remain selected and highlighted in purple)
+-- also add an arrow type of icon to the left of the setlist item (to indicate the item's slide is being currently displayed)
+- when a blank screen is selected
+-- remove the blue highlighting of setlist items (remove the arrow type of icon as well) (if it selected one, then the purple highlighting should remain)
+-- the setlist item of the slide which is just above the blank screen slide, should have its border bottom highlighted (thick border)
+- when a slide is selected (changed)
+-- if its corresponding setlist item is not a selected one, then highlight the item with blue background which is being used for the current slide highlighting.
+-- if its corresponding setlist item is already selected by user, then don't change the purple highlight background.
+-- add the arrow type of icon to the left of the setlist item.
+-- whenever the slides are changing, change the highlighting of setlist item as well (along with arrow type of icon)
+- Changes in new item/slide addition
+-- current functionality
+--- as of now the addition of new item/slide is according to the setlist item selection
+--- when an item is selected in the setlist, and a new item (song/verse) is added then the item is added just below the selected item and it's slides
+--- if no item is selected in the setlist, then the new item is added at the end of the list
+-- changed functionality
+--- replace the 'refresh' icon (button) in the setlist pane with a 'stack' icon and change the hover (help) text to 'append new item at EOL'
+--- when user clicks on stack icon, it should be selected (highlighted). when user clicks it again it should be deselected.
+--- when stack icon is unselected
+---- whenever a new item is added, it should be added just below the current group of slides which is being displayed (along with blank screen)
+--- when stack icon is selected
+---- when a song item is added it should be added at the end of the list (EOL)
+---- when a verse item is added (add + direct display), then it should be added below the current displaying item/slide (no change)
+---- when a verse item is added (just add but not display), then add the item/slide at end of list (EOL)
+
+
+Scenarios to handle:
+- don't forget, whenever the current slide is changing, adjust the scroll bar position accordingly (to maintain the current slide mostly at middle)
+- when a verse is directly added and displayed, then also scroll the slides scroll bar to new slide which is being displayed (not to the EOL)
+- setlist item which is being displayed should be highlighted same as current slide with a arrow type of icon at the left
+- setlist item which is selected (even if it is displaying) should be highlighted with purple background (as already existing)
+- the setlist item which is being displayed is highlighted same as current slide
+- the setlist item which is selected is highlighted with purple background (as already existing) 
+- when both selected and current display item is same, then the purple background should remain
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file
+
+
+
+
+

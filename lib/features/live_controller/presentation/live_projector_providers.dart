@@ -315,3 +315,53 @@ final slideNavigationProvider = Provider<SlideNavigationState>((ref) {
     prevSecondaryIndex: getPrev(secondaryGroups),
   );
 });
+
+/// Maps each slide index to its corresponding setlist item index.
+final slideToSetlistItemIndexProvider = Provider<List<int>>((ref) {
+  final setlist = ref.watch(setlistProvider);
+  if (setlist.isEmpty) return [];
+
+  final List<int> mapping = [];
+  for (int itemIdx = 0; itemIdx < setlist.length; itemIdx++) {
+    final item = setlist[itemIdx];
+    switch (item) {
+      case SongSetlistItem(:final song, :final isFavorite):
+        final isSong = song.author != 'Bible';
+        final count = SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite).length;
+        for (int i = 0; i < count; i++) {
+          mapping.add(itemIdx);
+        }
+      case ImageSetlistItem():
+        mapping.add(itemIdx); // Image slide
+        mapping.add(itemIdx); // Blank slide that follows
+    }
+  }
+  return mapping;
+});
+
+/// Holds the setlist item index containing the currently active slide.
+final currentDisplayItemIndexProvider = Provider<int?>((ref) {
+  final slides = ref.watch(currentSlidesProvider);
+  if (slides.isEmpty) return null;
+  final activeIndex = ref.watch(activeSlideIndexProvider);
+  final mapping = ref.watch(slideToSetlistItemIndexProvider);
+  if (activeIndex < 0 || activeIndex >= mapping.length) return null;
+  return mapping[activeIndex];
+});
+
+/// Computes the total slide count for setlist items up to a given index (inclusive).
+int getSlideCountForItems(List<SetlistItem> items, int upToIndex) {
+  int count = 0;
+  for (int i = 0; i <= upToIndex; i++) {
+    if (i >= items.length) break;
+    final item = items[i];
+    switch (item) {
+      case SongSetlistItem(:final song, :final isFavorite):
+        final isSong = song.author != 'Bible';
+        count += SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite).length;
+      case ImageSetlistItem():
+        count += 2;
+    }
+  }
+  return count;
+}
