@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../presentation/presentation/projection_broadcaster.dart';
 import '../widgets/library_pane.dart';
@@ -11,6 +12,13 @@ import '../../../live_controller/presentation/widgets/live_projector_pane.dart';
 import '../widgets/custom_title_bar.dart';
 import '../../../songs/presentation/song_editor_pane.dart';
 import '../../../songs/presentation/song_selection_providers.dart';
+import '../../../settings/data/presentation_settings.dart';
+import '../../../presentation/presentation/widgets/projector_view.dart';
+import '../../../live_controller/domain/slide.dart';
+import '../../../live_controller/presentation/live_projector_providers.dart';
+import '../../../settings/presentation/presentation_settings_provider.dart';
+import '../../../../core/sync/media_sync_manager.dart';
+import '../../../settings/presentation/projection_provider.dart';
 
 import 'package:flutter/services.dart';
 import '../global_ui_providers.dart';
@@ -93,8 +101,122 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
     return false;
   }
 
+  void _precachePresetBackgrounds(BuildContext context, PresentationSettings preset, MediaSyncManager mediaSync) {
+    // 1. Blank background
+    if (preset.isBlankImageEnabled && preset.blankBackgroundImage.isNotEmpty) {
+      final path = mediaSync.resolveMediaPath(preset.blankBackgroundImage);
+      if (path.isNotEmpty && File(path).existsSync()) {
+        final size = ProjectorView.getCanvasSize(preset, isSong: false, isBlank: true);
+        precacheImage(
+          ProjectorView.getImageProvider(path: path, canvasWidth: size.width, canvasHeight: size.height),
+          context,
+        );
+      }
+    }
+
+    // 2. Song background
+    if (preset.isSongImageEnabled && preset.songBackgroundImage.isNotEmpty) {
+      final path = mediaSync.resolveMediaPath(preset.songBackgroundImage);
+      if (path.isNotEmpty && File(path).existsSync()) {
+        final size = ProjectorView.getCanvasSize(preset, isSong: true, isBlank: false);
+        precacheImage(
+          ProjectorView.getImageProvider(path: path, canvasWidth: size.width, canvasHeight: size.height),
+          context,
+        );
+      }
+    }
+
+    // 3. Scripture background
+    if (preset.isScriptureImageEnabled && preset.scriptureBackgroundImage.isNotEmpty) {
+      final path = mediaSync.resolveMediaPath(preset.scriptureBackgroundImage);
+      if (path.isNotEmpty && File(path).existsSync()) {
+        final size = ProjectorView.getCanvasSize(preset, isSong: false, isBlank: false);
+        precacheImage(
+          ProjectorView.getImageProvider(path: path, canvasWidth: size.width, canvasHeight: size.height),
+          context,
+        );
+      }
+    }
+  }
+
+  void _precacheSlideImages(BuildContext context, List<Slide> slides, MediaSyncManager mediaSync) {
+    // Extract active presets for Monitor 1 and Monitor 2
+    final projectionState = ref.read(projectionProvider);
+    final presetsAsync = ref.read(presetsListProvider);
+    final presets = presetsAsync.value ?? [];
+
+    final m1PresetId = projectionState.config.monitor1PresetId;
+    final m2PresetId = projectionState.config.monitor2PresetId;
+
+    final m1Preset = presets.firstWhere((p) => p.id == m1PresetId, orElse: () => presets.firstOrNull ?? PresentationSettings());
+    final m2Preset = presets.firstWhere((p) => p.id == m2PresetId, orElse: () => presets.firstOrNull ?? PresentationSettings());
+
+    final m1Size = ProjectorView.getCanvasSize(m1Preset, isSong: false, isBlank: false);
+    final m2Size = ProjectorView.getCanvasSize(m2Preset, isSong: false, isBlank: false);
+
+    for (final slide in slides) {
+      if (slide.content.startsWith('IMAGE:')) {
+        final rest = slide.content.substring(6);
+        final parts = rest.split('|');
+        final rawPath = parts[0];
+        final path = mediaSync.resolveMediaPath(rawPath);
+
+        if (path.isNotEmpty && File(path).existsSync()) {
+          // Precache for Monitor 1 canvas size
+          precacheImage(
+            ProjectorView.getImageProvider(path: path, canvasWidth: m1Size.width, canvasHeight: m1Size.height),
+            context,
+          );
+          // Precache for Monitor 2 canvas size
+          precacheImage(
+            ProjectorView.getImageProvider(path: path, canvasWidth: m2Size.width, canvasHeight: m2Size.height),
+            context,
+          );
+        }
+      }
+    }
+  }
+
+  void _setupPrecaching(BuildContext context) {
+    final mediaSync = ref.watch(mediaSyncManagerProvider);
+
+    // 1. Listen to presets changes to precache background images
+    ref.listen<AsyncValue<List<PresentationSettings>>>(
+      presetsListProvider,
+      (previous, next) {
+        next.whenData((presets) {
+          for (final preset in presets) {
+            _precachePresetBackgrounds(context, preset, mediaSync);
+          }
+        });
+      },
+    );
+
+    // 2. Listen to slides changes to precache slide images
+    ref.listen<List<Slide>>(
+      currentSlidesProvider,
+      (previous, next) {
+        _precacheSlideImages(context, next, mediaSync);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _setupPrecaching(context);
+
+    // Initial precaching after the first frame and subsequent changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      final mediaSync = ref.read(mediaSyncManagerProvider);
+      ref.read(presetsListProvider).whenData((presets) {
+        for (final preset in presets) {
+          _precachePresetBackgrounds(context, preset, mediaSync);
+        }
+      });
+      _precacheSlideImages(context, ref.read(currentSlidesProvider), mediaSync);
+    });
+
     // Initialize broadcaster
     ref.watch(projectionBroadcasterProvider);
     final isEditorOpen = ref.watch(isSongEditorOpenProvider);

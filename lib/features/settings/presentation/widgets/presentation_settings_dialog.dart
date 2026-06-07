@@ -1199,12 +1199,34 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
       ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
       : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.");
 
-    return ProjectorView(
-      settings: settings,
-      activeSlideText: previewText,
-      titleText: previewTitle,
-      isSong: isSong,
-      showCheckerboard: true,
+    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+    double aspectRatio = 16 / 9;
+    if (aspectRatioStr == '4:3') {
+      aspectRatio = 4 / 3;
+    } else if (aspectRatioStr == '4:1') {
+      aspectRatio = 4 / 1;
+    } else if (aspectRatioStr == 'Custom') {
+      final w = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
+      final h = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+      aspectRatio = (w > 0 && h > 0) ? w / h : 16 / 9;
+    }
+
+    return Center(
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white10),
+          ),
+          child: ProjectorView(
+            settings: settings,
+            activeSlideText: previewText,
+            titleText: previewTitle,
+            isSong: isSong,
+            showCheckerboard: true,
+          ),
+        ),
+      ),
     );
   }
 }

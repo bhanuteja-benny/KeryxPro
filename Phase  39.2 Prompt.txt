@@ -1,0 +1,24 @@
+Phase  39.2
+
+Context:
+- UI visual issue in Presentations
+
+Issue:
+- when a very high resolution (large) image is selected as background for song or scripture or blank screen
+- when that slide is displayed, it is taking time (delay) to apply that background in Monitor 1 and 2 preview screens as well as in the presentation screens (extended monitor and OBS)
+- there is more than 1 sec delay
+- the same issue for image slide as well
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- there should be 0 delay. there is no compromise on speed of presentation. 
+- what can we do so that it loads without any delay (like remaining slides display or change instantly)

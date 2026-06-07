@@ -14,7 +14,17 @@ class IsarService {
   late Future<Isar> db;
 
   IsarService() {
-    db = openDB();
+    db = openDB().then((isar) {
+      _warmUp(isar);
+      return isar;
+    });
+  }
+
+  void _warmUp(Isar isar) async {
+    try {
+      await isar.bibleVerses.where().findFirst();
+      await isar.bibleVersions.where().findFirst();
+    } catch (_) {}
   }
 
   Future<Isar> openDB() async {

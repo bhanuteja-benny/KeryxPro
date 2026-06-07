@@ -1,0 +1,23 @@
+Phase  39.3
+
+Context:
+- Slowness issue while loading chapters and verse numbers list for first time in the bible search
+
+Issue:
+- when first time keryxpro is opened (after it is closed)
+- when the bible search is opened 
+- a loading symbol is coming in chapters and verse numbers list and it is taking few seconds to load the numbers
+- after that it is loading quickly only while searching (no problem while searching)
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- there should be 0 delay. can we avoid this first time delay as well?

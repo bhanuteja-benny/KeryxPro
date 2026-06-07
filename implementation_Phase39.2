@@ -1,0 +1,44 @@
+# Implementation Plan - Phase 39.2
+
+## Problem Description
+When very high-resolution images are selected as background images or image slides, there is a visible delay (often > 1 second) when displaying them. This delay affects the live monitor preview screens (Monitor 1 and Monitor 2) as well as the actual presentation screens (extended monitor and OBS). The delay is caused by the need to load and decode huge image files (e.g. 6000x4000 resolution) on-the-fly, which consumes significant CPU/GPU resources and disk I/O.
+
+## Proposed Solution
+We will implement three complementary performance optimizations to ensure instant, zero-delay image rendering:
+
+1. **Downscaled Decoding (ResizeImage)**:
+   - Introduce a static helper in `ProjectorView` to calculate the exact virtual canvas size (`getCanvasSize`) for any preset and slide type.
+   - Use `ResizeImage.resizeIfNeeded` to decode background images and slide images exactly to the target canvas resolution (e.g. 1920x1080) rather than full high-resolution raw size. This speeds up decoding by over 95%.
+
+2. **Proactive Background Precaching**:
+   - In `MainDashboardPage`, set up Riverpod listeners for `presetsListProvider` and `currentSlidesProvider`.
+   - When presets are updated, proactively load/precache background images for all presets (using the correct virtual canvas sizes).
+   - When slides are updated, proactively load/precache all image slides (using active monitor configuration sizes).
+   - This ensures that by the time a slide is selected/clicked, the decoded image is already waiting in memory.
+
+3. **Increased Image Cache Capacity**:
+   - In `main.dart`, increase the maximum size of Flutter's `ImageCache` to `500 MB` (up from default `100 MB`). This ensures that multiple high-resolution images can reside in the GPU/RAM cache simultaneously without being evicted.
+
+---
+
+### Detailed Code Changes
+
+#### 1. Modify `lib/features/presentation/presentation/widgets/projector_view.dart`
+- Add `getCanvasSize` static helper.
+- Add `getImageProvider` static helper.
+- Update `ProjectorView.build` to use `getImageProvider` for background images.
+- Update `_buildImageWidget` to use `getImageProvider` for image slides.
+
+#### 2. Modify `lib/features/dashboard/presentation/pages/main_dashboard_page.dart`
+- In `_MainDashboardPageState.build`, call a new `_setupPrecaching(context)` method.
+- Add helper methods to extract and precache backgrounds and slide images.
+
+#### 3. Modify `lib/main.dart`
+- Update `main()` to increase `imageCache.maximumSizeBytes` to `500 * 1024 * 1024` right after `WidgetsFlutterBinding.ensureInitialized()`.
+
+---
+
+## Constraints & Assumptions
+- We assume that the user's system has sufficient RAM to accommodate a 500MB image cache (standard for modern PCs/Macs running presentation software).
+- No new UI elements, fields, or buttons will be added.
+- The appearance of the images (layout, alignment, fit) remains completely identical.

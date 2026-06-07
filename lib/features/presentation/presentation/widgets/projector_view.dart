@@ -27,6 +27,38 @@ class ProjectorView extends ConsumerWidget {
     this.showCheckerboard = false,
   });
 
+  static Size getCanvasSize(PresentationSettings settings, {required bool isSong, required bool isBlank}) {
+    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+    double canvasWidth = 1920;
+    double canvasHeight = 1080;
+
+    if (aspectRatioStr == '4:3') {
+      canvasWidth = 1440;
+      canvasHeight = 1080;
+    } else if (aspectRatioStr == '4:1') {
+      canvasWidth = 1920;
+      canvasHeight = 480;
+    } else if (aspectRatioStr == 'Custom') {
+      canvasWidth = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
+      canvasHeight = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+      if (canvasWidth <= 0) canvasWidth = 1920;
+      if (canvasHeight <= 0) canvasHeight = 1080;
+    }
+    return Size(canvasWidth, canvasHeight);
+  }
+
+  static ImageProvider getImageProvider({
+    required String path,
+    required double canvasWidth,
+    required double canvasHeight,
+  }) {
+    return ResizeImage.resizeIfNeeded(
+      canvasWidth.round(),
+      canvasHeight.round(),
+      FileImage(File(path)),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaSync = ref.watch(mediaSyncManagerProvider);
@@ -44,23 +76,9 @@ class ProjectorView extends ConsumerWidget {
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
     
     // Determine the reference canvas size
-    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
-    double canvasWidth = 1920;
-    double canvasHeight = 1080;
-
-    if (aspectRatioStr == '4:3') {
-      canvasWidth = 1440;
-      canvasHeight = 1080;
-    } else if (aspectRatioStr == '4:1') {
-      canvasWidth = 1920;
-      canvasHeight = 480;
-    } else if (aspectRatioStr == 'Custom') {
-      canvasWidth = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
-      canvasHeight = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
-      // Safety fallbacks
-      if (canvasWidth <= 0) canvasWidth = 1920;
-      if (canvasHeight <= 0) canvasHeight = 1080;
-    }
+    final size = getCanvasSize(settings, isSong: isSong, isBlank: isBlank);
+    final double canvasWidth = size.width;
+    final double canvasHeight = size.height;
 
     final lyricsFontSizeValue = isSong 
         ? ((settings.lyricsFontSize.isNaN || settings.lyricsFontSize <= 0) ? 80.0 : settings.lyricsFontSize)
@@ -137,8 +155,12 @@ class ProjectorView extends ConsumerWidget {
           // 3. Layer: Background Image
           if (activeSlideText != null && !isImageSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync())
             Positioned.fill(
-              child: Image.file(
-                File(backgroundImage),
+              child: Image(
+                image: getImageProvider(
+                  path: backgroundImage,
+                  canvasWidth: canvasWidth,
+                  canvasHeight: canvasHeight,
+                ),
                 fit: backgroundLayout == 'stretch' ? BoxFit.fill : BoxFit.contain,
                 alignment: _parseAlignmentStr(backgroundAlignment),
               ),
@@ -330,8 +352,12 @@ class ProjectorView extends ConsumerWidget {
       return Center(child: Icon(Icons.broken_image, size: 64, color: Colors.red.withOpacity(0.5)));
     }
 
-    return Image.file(
-      File(path),
+    return Image(
+      image: getImageProvider(
+        path: path,
+        canvasWidth: width,
+        canvasHeight: height,
+      ),
       fit: fit,
       width: width,
       height: height,

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import '../../../main.dart';
 import '../data/bible.dart';
+import '../domain/bible_constants.dart';
 
 final selectedBibleVersionProvider = StateProvider<BibleVersion?>((ref) => null);
 final selectedBookProvider = StateProvider<String?>((ref) => null);
@@ -15,19 +16,12 @@ final availableChaptersProvider = FutureProvider<List<int>>((ref) async {
   
   if (version == null || book == null) return [];
 
-  final isar = await ref.read(isarServiceProvider).db;
+  final chapterCount = BibleConstants.getChapterCount(book);
+  if (chapterCount > 0) {
+    return List.generate(chapterCount, (i) => i + 1);
+  }
   
-  // Isar distinct() and property() on integer values to get unique chapters
-  final chapters = await isar.bibleVerses
-      .filter()
-      .bibleVersionIdEqualTo(version.id)
-      .bookNameEqualTo(book)
-      .chapterNumberProperty()
-      .findAll();
-      
-  final uniqueChapters = chapters.toSet().toList();
-  uniqueChapters.sort();
-  return uniqueChapters;
+  return [];
 });
 
 /// Fetches the available verses for the selected chapter, book, and version.

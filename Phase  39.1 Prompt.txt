@@ -1,0 +1,18 @@
+Phase  39.1
+
+Context:
+- UI visual issue in Presentation settings -> container box around preview screen (for song/scripture/blank screen)
+
+Issue:
+- A box (or container) is being displayed around the actual preview screen in preset presentation settings
+- can we avoid this container, as it is creating confusion about the screen resolution 
+- can the preview be similar to that in Monitor 1 and 2 without any container around?
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements

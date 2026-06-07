@@ -1,0 +1,62 @@
+# Implementation Plan - Phase 39.1
+
+## Problem Description
+In the Presentation Settings preset edit dialog (`presentation_settings_dialog.dart`), a letterboxing/container box (often black/transparent with a checkerboard) is displayed around the actual preview screen. This is confusing to the user because it does not represent the actual screen resolution boundaries. In contrast, Monitor 1 and Monitor 2 previews are constrained to their exact aspect ratios, showing the preview boundaries cleanly.
+
+## Proposed Solution
+Modify `presentation_settings_dialog.dart`'s `_buildPreviewPane` method to compute the current aspect ratio based on the preset's settings (just like Monitor 1 and 2 previews do) and wrap the `ProjectorView` in `Center` -> `AspectRatio` -> `Container` with a border. This will ensure that the preview is sized exactly to the selected aspect ratio (e.g. 16:9, 4:3, or custom), eliminating the confusing outer background-colored letterbox container around the preview.
+
+### Detailed Changes
+
+1. **Modify `_buildPreviewPane()` in `lib/features/settings/presentation/widgets/presentation_settings_dialog.dart`**:
+   - Determine the active aspect ratio (e.g., `'16:9'`, `'4:3'`, `'4:1'`, or `'Custom'`).
+   - If `'Custom'`, calculate the ratio from `customWidth` and `customHeight`.
+   - Wrap the returned `ProjectorView` widget inside a `Center` -> `AspectRatio` -> `Container` with `Border.all(color: Colors.white10)`.
+
+```dart
+  Widget _buildPreviewPane() {
+    final settings = ref.watch(editingPresetProvider);
+    final isSong = _editTabIndex == 0;
+    final isBlank = _editTabIndex == 2;
+    
+    final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
+    final previewText = isBlank ? "" : (isSong 
+      ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
+      : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.");
+
+    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+    double aspectRatio = 16 / 9;
+    if (aspectRatioStr == '4:3') {
+      aspectRatio = 4 / 3;
+    } else if (aspectRatioStr == '4:1') {
+      aspectRatio = 4 / 1;
+    } else if (aspectRatioStr == 'Custom') {
+      final w = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
+      final h = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+      aspectRatio = (w > 0 && h > 0) ? w / h : 16 / 9;
+    }
+
+    return Center(
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white10),
+          ),
+          child: ProjectorView(
+            settings: settings,
+            activeSlideText: previewText,
+            titleText: previewTitle,
+            isSong: isSong,
+            showCheckerboard: true,
+          ),
+        ),
+      ),
+    );
+  }
+```
+
+## Constraints & Assumptions
+- We assume that the user wants the preview to be centered in the left column space and fit it without drawing letterboxing container boundaries beyond the aspect ratio size.
+- No other fields, buttons, or UI elements will be modified or added.
+- The existing styling and functionality of `ProjectorView` is unchanged.

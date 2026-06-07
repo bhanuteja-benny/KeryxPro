@@ -627,8 +627,9 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
 
               return KeyEventResult.ignored;
             },
-            child: asyncItems.when(
-              data: (items) {
+            child: () {
+              final items = asyncItems.valueOrNull;
+              if (items != null) {
                 return ListView.builder(
                   controller: scrollController,
                   itemExtent: 24.0,
@@ -649,10 +650,12 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     );
                   },
                 );
-              },
-              loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
-              error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
-            ),
+              }
+              if (asyncItems.isLoading) {
+                return const SizedBox.shrink();
+              }
+              return const Center(child: Text('Error', style: TextStyle(fontSize: 10)));
+            }(),
           ),
         ),
       ],
@@ -725,8 +728,9 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
 
               return KeyEventResult.ignored;
             },
-            child: asyncItems.when(
-              data: (items) {
+            child: () {
+              final items = asyncItems.valueOrNull;
+              if (items != null) {
                 return ListView.builder(
                   controller: scrollController,
                   itemExtent: 24.0,
@@ -747,10 +751,12 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     );
                   },
                 );
-              },
-              loading: () => const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
-              error: (_, __) => const Center(child: Text('Error', style: TextStyle(fontSize: 10))),
-            ),
+              }
+              if (asyncItems.isLoading) {
+                return const SizedBox.shrink();
+              }
+              return const Center(child: Text('Error', style: TextStyle(fontSize: 10)));
+            }(),
           ),
         ),
       ],
