@@ -133,4 +133,18 @@ class MainFlutterWindow: NSWindow {
 
     super.awakeFromNib()
   }
+
+  override func becomeKey() {
+    super.becomeKey()
+    if let target = NSApp.windows.first(where: { $0.title == "KeryxPro Monitor 1" }) {
+      target.level = .floating
+    }
+  }
+
+  override func resignKey() {
+    super.resignKey()
+    if let target = NSApp.windows.first(where: { $0.title == "KeryxPro Monitor 1" }) {
+      target.level = .normal
+    }
+  }
 }

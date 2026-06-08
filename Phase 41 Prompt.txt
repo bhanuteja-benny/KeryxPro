@@ -1,0 +1,38 @@
+Phase 41 Plan
+
+Context:
+- Improvement of song slide presentation
+
+UI Requirements:
+- as per the current logic, in song slide (the lyrics), each line is displayed in single line by adjusting font size avoiding line breaks (unless it is too long text that font size cannot be reduced further or text is overflowing)
+- but when a line is too long, the font becoming too small and so much available space is being unused (in 16:9, 4:3 screen ratios
+- I tried to allow line break but the lyrics is breaking into multiple lines in jagged manner (which is not comfortable for following the tune or pauses)
+-- for example (lyrics) "I was a wretch, I remember who I was" is having two sentences in single line. It would look beautiful if the line breaks into two lines while each sentence remaining in single line like "I was a wretch, <break> I remember who I was", but it is breaking randomly like 'I was a wretch, I <break> remember who I was"
+- OpenSong has dealt with this excellently. I don't know what logic they used. But I could able to identify few.
+- Based on screen size and font size, OpenSong is applying the line break logic. for small text, it is displaying each line without breaking.
+-- it is breaking line based on long text (too many no. of words or characters in single line)
+-- if a line is too long without any comma's, it is breaking randomly
+-- if a line is too long and having comma's, it is breaking at comma. if one line is having multiple commas it is splitting only at any one comma based on length
+-- if a line is short and having comma's, it is not breaking into next line.
+- Can we apply above type of logic?
+- But let us apply this logic only when externally specified by user, using below setting
+- Give a checkbox option in presentation settings only for 'song' settings, in typography settings of lyrics.
+- Checkbox Option: Line Break (should be saved in database)
+-- If line break is not enabled then the present display logic remains same (each line should be displayed in single line by adjusting font size, it should not break unless it is too long text that font size cannot be reduced further or text is overflowing,.
+- if line break is enabled, then enable the logic to adjust the font and lines
+
+Note:
+- suggestions are allowed
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

@@ -507,7 +507,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
                   final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateTitleFontFamily(fontFamily) : notifier.updateChapterFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateTitleFontSize(fontSize) : notifier.updateChapterFontSize(fontSize);
@@ -628,7 +628,9 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor}) {
+                showLineBreakOption: isSong,
+                initialLineBreak: isSong ? settings.lyricsLineBreak : false,
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
                   final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateLyricsFontFamily(fontFamily) : notifier.updateVerseFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateLyricsFontSize(fontSize) : notifier.updateVerseFontSize(fontSize);
@@ -636,6 +638,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                   if (bold != null) isSong ? notifier.updateLyricsBold(bold) : notifier.updateVerseBold(bold);
                   if (italic != null) isSong ? notifier.updateLyricsItalic(italic) : notifier.updateVerseItalic(italic);
                   if (underline != null) isSong ? notifier.updateLyricsUnderline(underline) : notifier.updateVerseUnderline(underline);
+                  if (lineBreak != null && isSong) notifier.updateLyricsLineBreak(lineBreak);
                   if (hasFill != null || fillColor != null) {
                     final f = hasFill ?? (isSong ? currentSettings.lyricsHasFill : currentSettings.verseHasFill);
                     final fc = fillColor ?? (isSong ? currentSettings.lyricsFillColor : currentSettings.verseFillColor);
@@ -719,6 +722,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
             DropdownMenuEntry(value: '4:3', label: '4:3'),
             DropdownMenuEntry(value: '4:1', label: '4:1 (Banner)'),
             DropdownMenuEntry(value: 'Custom', label: 'Custom'),
+            DropdownMenuEntry(value: 'Fit to screen', label: 'Fit to screen'),
           ],
         ),
         if (aspectRatio == 'Custom') ...[
@@ -893,6 +897,8 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     required int initialFillColor,
     required bool initialHasStroke,
     required int initialStrokeColor,
+    bool showLineBreakOption = false,
+    bool initialLineBreak = false,
     required void Function({
       String? fontFamily,
       double? fontSize,
@@ -904,6 +910,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
       int? fillColor,
       bool? hasStroke,
       int? strokeColor,
+      bool? lineBreak,
     }) onChanged,
   }) {
     String fontFamily = initialFontFamily;
@@ -916,6 +923,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     int fillColor = initialFillColor;
     bool hasStroke = initialHasStroke;
     int strokeColor = initialStrokeColor;
+    bool lineBreak = initialLineBreak;
     
     final TextEditingController fontCtrl = TextEditingController(text: fontFamily);
     final TextEditingController sizeCtrl = TextEditingController(text: fontSize.toInt().toString());
@@ -1168,6 +1176,21 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                                 const Text('Italic'),
                               ],
                             ),
+                            if (showLineBreakOption)
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: lineBreak,
+                                    onChanged: (v) {
+                                      if (v != null) {
+                                        setState(() => lineBreak = v);
+                                        onChanged(lineBreak: v);
+                                      }
+                                    },
+                                  ),
+                                  const Text('Line Break'),
+                                ],
+                              ),
                           ],
                         ),
                       ),

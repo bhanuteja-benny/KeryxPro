@@ -237,7 +237,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                     final activeIndex = ref.watch(activeSlideIndexProvider);
                     final currentDisplayItemIndex = activeIndex < slideToItemMapping.length ? slideToItemMapping[activeIndex] : null;
                     
-                    final isPurpleHighlighted = isItemCurrentlySelected && slideItemIndex != currentDisplayItemIndex;
+                    final isPurpleHighlighted = isItemCurrentlySelected && slideItemIndex != currentDisplayItemIndex && !slide.isBlank;
 
                     return SlideItemWidget(
                       slide: slide,

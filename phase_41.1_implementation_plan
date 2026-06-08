@@ -1,0 +1,119 @@
+# Implementation Plan - Phase 41.1: Extended Monitor Presentation Conflict Resolution
+
+## Problem Statement
+When KeryxPro is presenting on the secondary/extended monitor (Monitor 1), its window is configured as topmost (`HWND_TOPMOST` on Windows, `.floating` level on macOS). While this ensures KeryxPro's presentation stays visible even when users click non-presenting applications on the primary monitor (e.g., File Explorer, Chrome), it also prevents other presentation applications (e.g., PowerPoint slideshows) from occupying the secondary monitor.
+
+The goal is to allow other presentation applications to display on the extended monitor when KeryxPro's main window is inactive, but bring KeryxPro's presentation back to the front as soon as the user focuses/clicks back on KeryxPro's main window. This needs to work on both **Windows** and **macOS**.
+
+---
+
+## Proposed Changes
+
+### 1. Windows Implementation (`windows/runner/flutter_window.cpp`)
+We will intercept the `WM_ACTIVATE` message inside the main window's `FlutterWindow::MessageHandler` callback:
+
+- **When Main Window is Deactivated (`WA_INACTIVE`)**:
+   - Search for the extended monitor window by its title: `L"KeryxPro Monitor 1"`.
+   - If found, change its Z-order to `HWND_NOTOPMOST` using `SetWindowPos` with the flags `SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE`.
+   - This keeps the window open on the secondary monitor, but allows other apps (like a PowerPoint slideshow running in fullscreen) to cover it.
+
+- **When Main Window is Activated (`WA_ACTIVE` or `WA_CLICKACTIVE`)**:
+   - Search for the extended monitor window: `L"KeryxPro Monitor 1"`.
+   - If found, restore its Z-order to `HWND_TOPMOST` using `SetWindowPos`.
+   - This brings KeryxPro's presentation back to the front, overlaying any other presenting app on that monitor.
+
+- **Message Fallthrough**:
+   - The message handler will pass the `WM_ACTIVATE` event to the base `Win32Window::MessageHandler` to preserve existing focus propagation and child window activation.
+
+### 2. macOS Implementation (`macos/Runner/MainFlutterWindow.swift`)
+We will override window focus lifecycle methods inside `MainFlutterWindow`:
+
+- **When Main Window Resigns Key Status (`resignKey()`)**:
+   - Search for the extended monitor window by its title: `"KeryxPro Monitor 1"`.
+   - If found, set its window level back to `.normal` (from `.floating`).
+   - This allows other active presentations on the secondary screen to render on top of KeryxPro.
+
+- **When Main Window Becomes Key Status (`becomeKey()`)**:
+   - Search for the extended monitor window: `"KeryxPro Monitor 1"`.
+   - If found, restore its level to `.floating`.
+   - This immediately brings KeryxPro's presentation window back to the front.
+
+---
+
+## Detailed Code Diff Design
+
+### Windows Diff (`windows/runner/flutter_window.cpp`)
+
+```cpp
+LRESULT
+FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
+                              WPARAM const wparam,
+                              LPARAM const lparam) noexcept {
+  if (flutter_controller_) {
+    std::optional<LRESULT> result =
+        flutter_controller_->HandleTopLevelWindowProc(hwnd, message, wparam,
+                                                      lparam);
+    if (result) {
+      return *result;
+    }
+  }
+
+  switch (message) {
+    case WM_ACTIVATE: {
+      WORD active_state = LOWORD(wparam);
+      HWND projector_wnd = FindNamedSubWindow(hwnd, L"KeryxPro Monitor 1");
+      if (projector_wnd) {
+        if (active_state == WA_INACTIVE) {
+          SetWindowPos(projector_wnd, HWND_NOTOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        } else {
+          SetWindowPos(projector_wnd, HWND_TOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+      }
+      break; // Fall through to base class message handler
+    }
+    case WM_FONTCHANGE:
+      flutter_controller_->engine()->ReloadSystemFonts();
+      break;
+  }
+
+  return Win32Window::MessageHandler(hwnd, message, wparam, lparam);
+}
+```
+
+### macOS Diff (`macos/Runner/MainFlutterWindow.swift`)
+
+```swift
+class MainFlutterWindow: NSWindow {
+  // Existing awakeFromNib() and other code...
+
+  override func becomeKey() {
+    super.becomeKey()
+    if let target = NSApp.windows.first(where: { $0.title == "KeryxPro Monitor 1" }) {
+      target.level = .floating
+    }
+  }
+
+  override func resignKey() {
+    super.resignKey()
+    if let target = NSApp.windows.first(where: { $0.title == "KeryxPro Monitor 1" }) {
+      target.level = .normal
+    }
+  }
+}
+```
+
+---
+
+## Assumptions & Dependencies
+- **Window Hierarchy**: PowerPoint and other presentation apps running on the extended monitor will display over KeryxPro's sub-window when it is set to `HWND_NOTOPMOST` / `.normal` level.
+
+---
+
+## Verification Plan
+1. Compile and run the application on Windows desktop (`flutter run -d windows`) and macOS desktop (if testable).
+2. Start presentation on the secondary monitor (Monitor 1).
+3. Focus a non-presenting app on the primary screen (e.g. VS Code or File Explorer). The secondary screen should still display the KeryxPro presentation.
+4. Launch a presentation from another app (e.g. PowerPoint slideshow) targeting the secondary screen. It should cover KeryxPro's presentation since KeryxPro's main window is inactive.
+5. Click back on KeryxPro's main window on the primary screen. The presentation window on the secondary screen should automatically pop back to the front, overlaying the PowerPoint presentation.

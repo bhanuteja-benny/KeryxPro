@@ -189,6 +189,7 @@ class _ProjectorAppState extends State<ProjectorApp> {
       activeSlideText: _activeSlideText,
       titleText: _titleText,
       isSong: _isSong,
+      monitorIndex: _monitorIndex,
     );
 
     final bool isBlank = _activeSlideText == "";

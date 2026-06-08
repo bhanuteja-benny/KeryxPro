@@ -326,6 +326,7 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateLyricsUnderline(bool v) => state = cloneState(state)..lyricsUnderline = v;
   void updateLyricsFill(bool hasFill, int color) => state = cloneState(state)..lyricsHasFill = hasFill..lyricsFillColor = color;
   void updateLyricsStroke(bool hasStroke, int color) => state = cloneState(state)..lyricsHasStroke = hasStroke..lyricsStrokeColor = color;
+  void updateLyricsLineBreak(bool value) => state = cloneState(state)..lyricsLineBreak = value;
   void updateLyricsMargins({double? top, double? bottom, double? left, double? right}) {
     final s = cloneState(state);
     if (top != null) s.lyricsMarginTop = top;
@@ -441,6 +442,7 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..lyricsMarginBottom = src.lyricsMarginBottom
       ..lyricsMarginLeft = src.lyricsMarginLeft
       ..lyricsMarginRight = src.lyricsMarginRight
+      ..lyricsLineBreak = src.lyricsLineBreak
       ..showChapter = src.showChapter
       ..chapterAlignment = src.chapterAlignment
       ..chapterVerticalAlignment = src.chapterVerticalAlignment

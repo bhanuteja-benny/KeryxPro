@@ -1,0 +1,38 @@
+Phase 41.2
+
+Context:
+- Dynamic screen resolution to fit the target screen (extended monitor or projector)
+
+Problem:
+- as of now, in presentation settings we are giving option to user to select aspect ratio (a fixed ratio)
+- when user selects '16:9' and connected to a projector, there is so much space left on top and bottom (usually projectors are 4:3)
+- but in OpenSong, there is no such setting as aspect ratio
+- the preview screen shows some default resolution like 16:9 or 4:3
+- but during presentation the screen fits to the target device resolution whether it is extended monitor (16:9) or projector (4:3) or any other
+
+Requirement:
+- can we given below option as well in aspect ratio which is in presentation settings (song/scripture/blank screen) along with the options 16:9, 4:3, Custom etc
+- Option: Fit to screen
+- when this option in aspect ratio is selected, display preview screens (both in presentation settings and monitor 1 and 2), in a default/common ratio (like 16:9 or 4:3 or in any common ratio)
+- when it is launched through Monitor 2, follow the same ratio as in preview screen
+- when it is launched through Monitor 1 (in extended monitor or projector), adjust/stretch/fit the presentation to target screen
+-- let me know if it is possible or not?
+
+Challenge:
+- in case of two screens/monitors are connected (using some multi connectors) through a single connection, and the screens are different resolutions (aspect
+ratios), will the presentation fit to each screen according to its resolution?
+- in case of those two screens/monitors are connected as two different extended monitors, and their resolutions are different, will the presentation fit to each screen according to its resolution?
+- Also this should work in both windows and mac os
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

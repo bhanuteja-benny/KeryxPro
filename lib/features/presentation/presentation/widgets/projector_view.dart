@@ -17,6 +17,7 @@ class ProjectorView extends ConsumerWidget {
   final String? titleText;
   final bool isSong;
   final bool showCheckerboard;
+  final int? monitorIndex;
 
   const ProjectorView({
     super.key,
@@ -25,9 +26,16 @@ class ProjectorView extends ConsumerWidget {
     this.titleText,
     this.isSong = true,
     this.showCheckerboard = false,
+    this.monitorIndex,
   });
 
-  static Size getCanvasSize(PresentationSettings settings, {required bool isSong, required bool isBlank}) {
+  static Size getCanvasSize(
+    PresentationSettings settings, {
+    required bool isSong,
+    required bool isBlank,
+    BuildContext? context,
+    int? monitorIndex,
+  }) {
     final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
     double canvasWidth = 1920;
     double canvasHeight = 1080;
@@ -43,6 +51,14 @@ class ProjectorView extends ConsumerWidget {
       canvasHeight = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
       if (canvasWidth <= 0) canvasWidth = 1920;
       if (canvasHeight <= 0) canvasHeight = 1080;
+    } else if (aspectRatioStr == 'Fit to screen') {
+      if (monitorIndex == 1 && context != null) {
+        final screenSize = MediaQuery.of(context).size;
+        if (screenSize.width > 0 && screenSize.height > 0) {
+          canvasWidth = screenSize.width;
+          canvasHeight = screenSize.height;
+        }
+      }
     }
     return Size(canvasWidth, canvasHeight);
   }
@@ -76,7 +92,13 @@ class ProjectorView extends ConsumerWidget {
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
     
     // Determine the reference canvas size
-    final size = getCanvasSize(settings, isSong: isSong, isBlank: isBlank);
+    final size = getCanvasSize(
+      settings,
+      isSong: isSong,
+      isBlank: isBlank,
+      context: context,
+      monitorIndex: monitorIndex,
+    );
     final double canvasWidth = size.width;
     final double canvasHeight = size.height;
 
@@ -131,6 +153,30 @@ class ProjectorView extends ConsumerWidget {
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
     final isImageSlide = activeSlideText?.startsWith('IMAGE:') ?? false;
+
+    String processedText = activeSlideText ?? "";
+    int finalLineCount = lineCount;
+    int finalMaxLines = (isSong && lineCount > 1) ? lineCount : 30;
+    bool shouldWrapWords = !isSong || lineCount == 1;
+
+    if (isSong && settings.lyricsLineBreak && processedText.isNotEmpty && !isImageSlide) {
+      final style = TextStyle(
+        fontSize: lyricsFontSizeValue,
+        fontFamily: lyricsFontFamilyValue,
+        fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+        fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+      );
+      final double availableWidth = canvasWidth - lyricsMarginLeftValue - lyricsMarginRightValue;
+      final lines = processedText.split('\n');
+      final newLines = <String>[];
+      for (final line in lines) {
+        newLines.addAll(_splitLineRecursively(line, style, availableWidth));
+      }
+      processedText = newLines.join('\n');
+      finalLineCount = newLines.length;
+      finalMaxLines = 30;
+      shouldWrapWords = true;
+    }
 
     // The inner content that is sized to the virtual canvas
     Widget content = Container(
@@ -190,7 +236,7 @@ class ProjectorView extends ConsumerWidget {
                               children: [
                                 if (lyricsHasStrokeValue)
                                   AutoSizeText(
-                                    activeSlideText!,
+                                    processedText,
                                     style: TextStyle(
                                       fontSize: lyricsFontSizeValue,
                                       fontFamily: lyricsFontFamilyValue,
@@ -207,13 +253,13 @@ class ProjectorView extends ConsumerWidget {
                                         ..color = lyricsStrokeColorValue,
                                     ),
                                     textAlign: _getTextAlign(alignStr),
-                                    maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
+                                    maxLines: finalMaxLines, 
                                     minFontSize: 8, 
-                                    wrapWords: !isSong || lineCount == 1,
+                                    wrapWords: shouldWrapWords,
                                     softWrap: true,
                                   ),
                                 AutoSizeText(
-                                  activeSlideText!,
+                                  processedText,
                                   style: TextStyle(
                                     color: lyricsFontColorValue,
                                     fontSize: lyricsFontSizeValue,
@@ -225,9 +271,9 @@ class ProjectorView extends ConsumerWidget {
                                     backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
                                   ),
                                   textAlign: _getTextAlign(alignStr),
-                                  maxLines: (isSong && lineCount > 1) ? lineCount : 30, 
+                                  maxLines: finalMaxLines, 
                                   minFontSize: 8, 
-                                  wrapWords: !isSong || lineCount == 1,
+                                  wrapWords: shouldWrapWords,
                                   softWrap: true,
                                 ),
                               ],
@@ -385,6 +431,60 @@ class ProjectorView extends ConsumerWidget {
       case 'bottomRight': return Alignment.bottomRight;
       default: return Alignment.center;
     }
+  }
+
+  bool _isLineTooLong(String line, TextStyle style, double availableWidth) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: line, style: style),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    return textPainter.width > availableWidth * 0.7;
+  }
+
+  int? _findBestCommaSplitIndex(String line) {
+    final commaIndices = <int>[];
+    for (int i = 0; i < line.length; i++) {
+      if (line[i] == ',') {
+        commaIndices.add(i);
+      }
+    }
+    if (commaIndices.isEmpty) return null;
+    
+    int bestIndex = commaIndices.first;
+    double minDiff = double.infinity;
+    
+    for (final index in commaIndices) {
+      final part1 = line.substring(0, index + 1).trim();
+      final part2 = line.substring(index + 1).trim();
+      final diff = (part1.length - part2.length).abs().toDouble();
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestIndex = index;
+      }
+    }
+    return bestIndex;
+  }
+
+  List<String> _splitLineRecursively(String line, TextStyle style, double availableWidth) {
+    if (!_isLineTooLong(line, style, availableWidth)) {
+      return [line];
+    }
+    final commaIndex = _findBestCommaSplitIndex(line);
+    if (commaIndex == null) {
+      return [line];
+    }
+    final part1 = line.substring(0, commaIndex + 1).trim();
+    final part2 = line.substring(commaIndex + 1).trim();
+    
+    if (part1 == line || part2 == line || part1.isEmpty || part2.isEmpty) {
+      return [line];
+    }
+    
+    return [
+      ..._splitLineRecursively(part1, style, availableWidth),
+      ..._splitLineRecursively(part2, style, availableWidth),
+    ];
   }
 }
 

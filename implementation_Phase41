@@ -1,0 +1,181 @@
+# Implementation Plan - Phase 41: Improvement of Song Slide Presentation
+
+This plan outlines the enhancements to the song slide lyrics presentation, introducing a toggleable "Line Break" option in presentation settings, saving it to the database, and dynamically processing lyrics to split long lines at commas to improve display aesthetics on various screen aspect ratios.
+
+---
+
+## 1. Objectives & UI Requirements
+
+### 1.1 Line Break Logic Requirements
+- **Goal**: When song lyrics lines are too long, avoid excessively shrinking the font size. Instead, wrap long lines elegantly.
+- **Specific comma-based splitting**:
+  - If a line is too long and contains commas (`,`), it should split at a comma. If multiple commas are present, split at the comma that yields the most balanced lengths (i.e., closest to the center character-wise).
+  - If a line is too long and does not contain commas, let it wrap naturally (at spaces / word boundaries) instead of forcing a comma-based split.
+  - If a line is short, do not break it.
+- **Constraint**: Only apply this new line break logic when the user enables the "Line Break" option in the presentation settings. Otherwise, maintain the current layout behavior (each line is forced on a single line by shrinking font size, unless too long to shrink further).
+
+### 1.2 Settings & Database Persistence
+- Add a new boolean field `lyricsLineBreak` (default `false`) to `PresentationSettings`.
+- Expose this option in the typography settings dialog for lyrics in the Song settings tab of the Presentation Settings dialog.
+- Persist the option in the Isar database and sync configuration.
+
+---
+
+## 2. Detailed Code Changes
+
+### 2.1 Settings Model changes
+**File**: `lib/features/settings/data/presentation_settings.dart`
+- Add a new property:
+  ```dart
+  bool lyricsLineBreak = false;
+  ```
+- Update `toMap()`:
+  ```dart
+  'lyricsLineBreak': lyricsLineBreak,
+  ```
+- Update `fromMap()`:
+  ```dart
+  ..lyricsLineBreak = map['lyricsLineBreak'] as bool? ?? false
+  ```
+
+### 2.2 Riverpod Notifier & State clone updates
+**File**: `lib/features/settings/presentation/presentation_settings_provider.dart`
+- In `EditingPresetNotifier.cloneState()`:
+  ```dart
+  ..lyricsLineBreak = src.lyricsLineBreak
+  ```
+- Add the update method to `EditingPresetNotifier`:
+  ```dart
+  void updateLyricsLineBreak(bool value) => state = cloneState(state)..lyricsLineBreak = value;
+  ```
+
+### 2.3 Settings UI changes
+**File**: `lib/features/settings/presentation/widgets/presentation_settings_dialog.dart`
+- Update `_showTypographyDialog(...)` parameters:
+  - Add `bool showLineBreakOption = false`
+  - Add `bool initialLineBreak = false`
+  - Add `bool? lineBreak` to the `onChanged` callback signature.
+- Inside `_showTypographyDialog(...)` build method:
+  - Initialize local state: `bool lineBreak = initialLineBreak;`
+  - Render a `Checkbox` row for the 'Line Break' option if `showLineBreakOption` is true (e.g. next to Bold/Italic formatting checklist):
+    ```dart
+    if (showLineBreakOption)
+      Row(
+        children: [
+          Checkbox(
+            value: lineBreak,
+            onChanged: (v) {
+              if (v != null) {
+                setState(() => lineBreak = v);
+                onChanged(lineBreak: v);
+              }
+            },
+          ),
+          const Text('Line Break'),
+        ],
+      )
+    ```
+- Update the call to `_showTypographyDialog(...)` inside `_buildBodySettings()`:
+  - Pass `showLineBreakOption: isSong`
+  - Pass `initialLineBreak: isSong ? settings.lyricsLineBreak : false`
+  - In `onChanged`, handle saving the value:
+    ```dart
+    if (lineBreak != null && isSong) notifier.updateLyricsLineBreak(lineBreak);
+    ```
+
+### 2.4 Projector view rendering adjustments
+**File**: `lib/features/presentation/presentation/widgets/projector_view.dart`
+- Define helper functions for comma-based line splitting:
+  ```dart
+  bool _isLineTooLong(String line, TextStyle style, double availableWidth) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: line, style: style),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    return textPainter.width > availableWidth;
+  }
+
+  int? _findBestCommaSplitIndex(String line) {
+    final commaIndices = <int>[];
+    for (int i = 0; i < line.length; i++) {
+      if (line[i] == ',') {
+        commaIndices.add(i);
+      }
+    }
+    if (commaIndices.isEmpty) return null;
+    
+    int bestIndex = commaIndices.first;
+    double minDiff = double.infinity;
+    
+    for (final index in commaIndices) {
+      final part1 = line.substring(0, index + 1).trim();
+      final part2 = line.substring(index + 1).trim();
+      final diff = (part1.length - part2.length).abs().toDouble();
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestIndex = index;
+      }
+    }
+    return bestIndex;
+  }
+
+  List<String> _splitLineRecursively(String line, TextStyle style, double availableWidth) {
+    if (!_isLineTooLong(line, style, availableWidth)) {
+      return [line];
+    }
+    final commaIndex = _findBestCommaSplitIndex(line);
+    if (commaIndex == null) {
+      return [line]; // Let standard wrapping handle it if no comma is found
+    }
+    final part1 = line.substring(0, commaIndex + 1).trim();
+    final part2 = line.substring(commaIndex + 1).trim();
+    
+    if (part1 == line || part2 == line || part1.isEmpty || part2.isEmpty) {
+      return [line];
+    }
+    
+    return [
+      ..._splitLineRecursively(part1, style, availableWidth),
+      ..._splitLineRecursively(part2, style, availableWidth),
+    ];
+  }
+  ```
+- Modify the lyrics display rendering logic in `ProjectorView.build()`:
+  - If `isSong` is true and `settings.lyricsLineBreak` is true, preprocess `activeSlideText` to dynamically compute line splits:
+    ```dart
+    String processedText = activeSlideText ?? "";
+    int finalLineCount = lineCount;
+    int finalMaxLines = (isSong && lineCount > 1) ? lineCount : 30;
+    bool shouldWrapWords = !isSong || lineCount == 1;
+
+    if (isSong && settings.lyricsLineBreak && processedText.isNotEmpty && !isImageSlide) {
+      final style = TextStyle(
+        fontSize: lyricsFontSizeValue,
+        fontFamily: lyricsFontFamilyValue,
+        fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
+        fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+      );
+      final double availableWidth = canvasWidth - lyricsMarginLeftValue - lyricsMarginRightValue;
+      final lines = processedText.split('\n');
+      final newLines = <String>[];
+      for (final line in lines) {
+        newLines.addAll(_splitLineRecursively(line, style, availableWidth));
+      }
+      processedText = newLines.join('\n');
+      finalLineCount = newLines.length;
+      finalMaxLines = 30; // Allow soft wrap space for too long lines without commas
+      shouldWrapWords = true;
+    }
+    ```
+  - Update `AutoSizeText` calls in `ProjectorView` to display `processedText` instead of `activeSlideText!`, using `finalMaxLines`, `finalLineCount`, and `shouldWrapWords`.
+
+### 2.5 Code Generation
+- Run `dart run build_runner build --delete-conflicting-outputs` to regenerate Isar schema support files after editing `presentation_settings.dart`.
+
+---
+
+## 3. Constraints & Rules
+
+- **Strict adherence**: Do not perform any UI layout modifications outside of the new Line Break checkbox in the lyrics typography settings dialog and the text preprocessing in `ProjectorView`.
+- **Backward compatibility**: The existing formatting, alignment, margins, text strokes/fills, and aspect ratio logic must remain completely untouched.

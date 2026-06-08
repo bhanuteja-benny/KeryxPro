@@ -341,6 +341,20 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
   }
 
   switch (message) {
+    case WM_ACTIVATE: {
+      WORD activeState = LOWORD(wparam);
+      HWND projectorWnd = FindNamedSubWindow(hwnd, L"KeryxPro Monitor 1");
+      if (projectorWnd) {
+        if (activeState == WA_INACTIVE) {
+          SetWindowPos(projectorWnd, HWND_NOTOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        } else {
+          SetWindowPos(projectorWnd, HWND_TOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+      }
+      break;
+    }
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;

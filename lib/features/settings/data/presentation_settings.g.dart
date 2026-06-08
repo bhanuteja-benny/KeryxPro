@@ -213,288 +213,293 @@ const PresentationSettingsSchema = CollectionSchema(
       name: r'lyricsItalic',
       type: IsarType.bool,
     ),
-    r'lyricsMarginBottom': PropertySchema(
+    r'lyricsLineBreak': PropertySchema(
       id: 39,
+      name: r'lyricsLineBreak',
+      type: IsarType.bool,
+    ),
+    r'lyricsMarginBottom': PropertySchema(
+      id: 40,
       name: r'lyricsMarginBottom',
       type: IsarType.double,
     ),
     r'lyricsMarginLeft': PropertySchema(
-      id: 40,
+      id: 41,
       name: r'lyricsMarginLeft',
       type: IsarType.double,
     ),
     r'lyricsMarginRight': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'lyricsMarginRight',
       type: IsarType.double,
     ),
     r'lyricsMarginTop': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'lyricsMarginTop',
       type: IsarType.double,
     ),
     r'lyricsStrokeColor': PropertySchema(
-      id: 43,
+      id: 44,
       name: r'lyricsStrokeColor',
       type: IsarType.long,
     ),
     r'lyricsUnderline': PropertySchema(
-      id: 44,
+      id: 45,
       name: r'lyricsUnderline',
       type: IsarType.bool,
     ),
     r'lyricsVerticalAlignment': PropertySchema(
-      id: 45,
+      id: 46,
       name: r'lyricsVerticalAlignment',
       type: IsarType.string,
     ),
     r'presetName': PropertySchema(
-      id: 46,
+      id: 47,
       name: r'presetName',
       type: IsarType.string,
     ),
     r'scriptureAspectRatio': PropertySchema(
-      id: 47,
+      id: 48,
       name: r'scriptureAspectRatio',
       type: IsarType.string,
     ),
     r'scriptureBackgroundColor': PropertySchema(
-      id: 48,
+      id: 49,
       name: r'scriptureBackgroundColor',
       type: IsarType.long,
     ),
     r'scriptureBackgroundImage': PropertySchema(
-      id: 49,
+      id: 50,
       name: r'scriptureBackgroundImage',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageAlignment': PropertySchema(
-      id: 50,
+      id: 51,
       name: r'scriptureBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageLayout': PropertySchema(
-      id: 51,
+      id: 52,
       name: r'scriptureBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'scriptureCustomHeight': PropertySchema(
-      id: 52,
+      id: 53,
       name: r'scriptureCustomHeight',
       type: IsarType.double,
     ),
     r'scriptureCustomWidth': PropertySchema(
-      id: 53,
+      id: 54,
       name: r'scriptureCustomWidth',
       type: IsarType.double,
     ),
     r'showChapter': PropertySchema(
-      id: 54,
+      id: 55,
       name: r'showChapter',
       type: IsarType.bool,
     ),
     r'showTitle': PropertySchema(
-      id: 55,
+      id: 56,
       name: r'showTitle',
       type: IsarType.bool,
     ),
     r'songAspectRatio': PropertySchema(
-      id: 56,
+      id: 57,
       name: r'songAspectRatio',
       type: IsarType.string,
     ),
     r'songBackgroundColor': PropertySchema(
-      id: 57,
+      id: 58,
       name: r'songBackgroundColor',
       type: IsarType.long,
     ),
     r'songBackgroundImage': PropertySchema(
-      id: 58,
+      id: 59,
       name: r'songBackgroundImage',
       type: IsarType.string,
     ),
     r'songBackgroundImageAlignment': PropertySchema(
-      id: 59,
+      id: 60,
       name: r'songBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'songBackgroundImageLayout': PropertySchema(
-      id: 60,
+      id: 61,
       name: r'songBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'songCustomHeight': PropertySchema(
-      id: 61,
+      id: 62,
       name: r'songCustomHeight',
       type: IsarType.double,
     ),
     r'songCustomWidth': PropertySchema(
-      id: 62,
+      id: 63,
       name: r'songCustomWidth',
       type: IsarType.double,
     ),
     r'syncId': PropertySchema(
-      id: 63,
+      id: 64,
       name: r'syncId',
       type: IsarType.string,
     ),
     r'titleAlignment': PropertySchema(
-      id: 64,
+      id: 65,
       name: r'titleAlignment',
       type: IsarType.string,
     ),
     r'titleBold': PropertySchema(
-      id: 65,
+      id: 66,
       name: r'titleBold',
       type: IsarType.bool,
     ),
     r'titleFillColor': PropertySchema(
-      id: 66,
+      id: 67,
       name: r'titleFillColor',
       type: IsarType.long,
     ),
     r'titleFontColor': PropertySchema(
-      id: 67,
+      id: 68,
       name: r'titleFontColor',
       type: IsarType.long,
     ),
     r'titleFontFamily': PropertySchema(
-      id: 68,
+      id: 69,
       name: r'titleFontFamily',
       type: IsarType.string,
     ),
     r'titleFontSize': PropertySchema(
-      id: 69,
+      id: 70,
       name: r'titleFontSize',
       type: IsarType.double,
     ),
     r'titleHasFill': PropertySchema(
-      id: 70,
+      id: 71,
       name: r'titleHasFill',
       type: IsarType.bool,
     ),
     r'titleHasStroke': PropertySchema(
-      id: 71,
+      id: 72,
       name: r'titleHasStroke',
       type: IsarType.bool,
     ),
     r'titleItalic': PropertySchema(
-      id: 72,
+      id: 73,
       name: r'titleItalic',
       type: IsarType.bool,
     ),
     r'titleMarginBottom': PropertySchema(
-      id: 73,
+      id: 74,
       name: r'titleMarginBottom',
       type: IsarType.double,
     ),
     r'titleMarginLeft': PropertySchema(
-      id: 74,
+      id: 75,
       name: r'titleMarginLeft',
       type: IsarType.double,
     ),
     r'titleMarginRight': PropertySchema(
-      id: 75,
+      id: 76,
       name: r'titleMarginRight',
       type: IsarType.double,
     ),
     r'titleMarginTop': PropertySchema(
-      id: 76,
+      id: 77,
       name: r'titleMarginTop',
       type: IsarType.double,
     ),
     r'titleStrokeColor': PropertySchema(
-      id: 77,
+      id: 78,
       name: r'titleStrokeColor',
       type: IsarType.long,
     ),
     r'titleUnderline': PropertySchema(
-      id: 78,
+      id: 79,
       name: r'titleUnderline',
       type: IsarType.bool,
     ),
     r'titleVerticalAlignment': PropertySchema(
-      id: 79,
+      id: 80,
       name: r'titleVerticalAlignment',
       type: IsarType.string,
     ),
     r'verseAlignment': PropertySchema(
-      id: 80,
+      id: 81,
       name: r'verseAlignment',
       type: IsarType.string,
     ),
     r'verseBold': PropertySchema(
-      id: 81,
+      id: 82,
       name: r'verseBold',
       type: IsarType.bool,
     ),
     r'verseFillColor': PropertySchema(
-      id: 82,
+      id: 83,
       name: r'verseFillColor',
       type: IsarType.long,
     ),
     r'verseFontColor': PropertySchema(
-      id: 83,
+      id: 84,
       name: r'verseFontColor',
       type: IsarType.long,
     ),
     r'verseFontFamily': PropertySchema(
-      id: 84,
+      id: 85,
       name: r'verseFontFamily',
       type: IsarType.string,
     ),
     r'verseFontSize': PropertySchema(
-      id: 85,
+      id: 86,
       name: r'verseFontSize',
       type: IsarType.double,
     ),
     r'verseHasFill': PropertySchema(
-      id: 86,
+      id: 87,
       name: r'verseHasFill',
       type: IsarType.bool,
     ),
     r'verseHasStroke': PropertySchema(
-      id: 87,
+      id: 88,
       name: r'verseHasStroke',
       type: IsarType.bool,
     ),
     r'verseItalic': PropertySchema(
-      id: 88,
+      id: 89,
       name: r'verseItalic',
       type: IsarType.bool,
     ),
     r'verseMarginBottom': PropertySchema(
-      id: 89,
+      id: 90,
       name: r'verseMarginBottom',
       type: IsarType.double,
     ),
     r'verseMarginLeft': PropertySchema(
-      id: 90,
+      id: 91,
       name: r'verseMarginLeft',
       type: IsarType.double,
     ),
     r'verseMarginRight': PropertySchema(
-      id: 91,
+      id: 92,
       name: r'verseMarginRight',
       type: IsarType.double,
     ),
     r'verseMarginTop': PropertySchema(
-      id: 92,
+      id: 93,
       name: r'verseMarginTop',
       type: IsarType.double,
     ),
     r'verseStrokeColor': PropertySchema(
-      id: 93,
+      id: 94,
       name: r'verseStrokeColor',
       type: IsarType.long,
     ),
     r'verseUnderline': PropertySchema(
-      id: 94,
+      id: 95,
       name: r'verseUnderline',
       type: IsarType.bool,
     ),
     r'verseVerticalAlignment': PropertySchema(
-      id: 95,
+      id: 96,
       name: r'verseVerticalAlignment',
       type: IsarType.string,
     )
@@ -607,63 +612,64 @@ void _presentationSettingsSerialize(
   writer.writeBool(offsets[36], object.lyricsHasFill);
   writer.writeBool(offsets[37], object.lyricsHasStroke);
   writer.writeBool(offsets[38], object.lyricsItalic);
-  writer.writeDouble(offsets[39], object.lyricsMarginBottom);
-  writer.writeDouble(offsets[40], object.lyricsMarginLeft);
-  writer.writeDouble(offsets[41], object.lyricsMarginRight);
-  writer.writeDouble(offsets[42], object.lyricsMarginTop);
-  writer.writeLong(offsets[43], object.lyricsStrokeColor);
-  writer.writeBool(offsets[44], object.lyricsUnderline);
-  writer.writeString(offsets[45], object.lyricsVerticalAlignment);
-  writer.writeString(offsets[46], object.presetName);
-  writer.writeString(offsets[47], object.scriptureAspectRatio);
-  writer.writeLong(offsets[48], object.scriptureBackgroundColor);
-  writer.writeString(offsets[49], object.scriptureBackgroundImage);
-  writer.writeString(offsets[50], object.scriptureBackgroundImageAlignment);
-  writer.writeString(offsets[51], object.scriptureBackgroundImageLayout);
-  writer.writeDouble(offsets[52], object.scriptureCustomHeight);
-  writer.writeDouble(offsets[53], object.scriptureCustomWidth);
-  writer.writeBool(offsets[54], object.showChapter);
-  writer.writeBool(offsets[55], object.showTitle);
-  writer.writeString(offsets[56], object.songAspectRatio);
-  writer.writeLong(offsets[57], object.songBackgroundColor);
-  writer.writeString(offsets[58], object.songBackgroundImage);
-  writer.writeString(offsets[59], object.songBackgroundImageAlignment);
-  writer.writeString(offsets[60], object.songBackgroundImageLayout);
-  writer.writeDouble(offsets[61], object.songCustomHeight);
-  writer.writeDouble(offsets[62], object.songCustomWidth);
-  writer.writeString(offsets[63], object.syncId);
-  writer.writeString(offsets[64], object.titleAlignment);
-  writer.writeBool(offsets[65], object.titleBold);
-  writer.writeLong(offsets[66], object.titleFillColor);
-  writer.writeLong(offsets[67], object.titleFontColor);
-  writer.writeString(offsets[68], object.titleFontFamily);
-  writer.writeDouble(offsets[69], object.titleFontSize);
-  writer.writeBool(offsets[70], object.titleHasFill);
-  writer.writeBool(offsets[71], object.titleHasStroke);
-  writer.writeBool(offsets[72], object.titleItalic);
-  writer.writeDouble(offsets[73], object.titleMarginBottom);
-  writer.writeDouble(offsets[74], object.titleMarginLeft);
-  writer.writeDouble(offsets[75], object.titleMarginRight);
-  writer.writeDouble(offsets[76], object.titleMarginTop);
-  writer.writeLong(offsets[77], object.titleStrokeColor);
-  writer.writeBool(offsets[78], object.titleUnderline);
-  writer.writeString(offsets[79], object.titleVerticalAlignment);
-  writer.writeString(offsets[80], object.verseAlignment);
-  writer.writeBool(offsets[81], object.verseBold);
-  writer.writeLong(offsets[82], object.verseFillColor);
-  writer.writeLong(offsets[83], object.verseFontColor);
-  writer.writeString(offsets[84], object.verseFontFamily);
-  writer.writeDouble(offsets[85], object.verseFontSize);
-  writer.writeBool(offsets[86], object.verseHasFill);
-  writer.writeBool(offsets[87], object.verseHasStroke);
-  writer.writeBool(offsets[88], object.verseItalic);
-  writer.writeDouble(offsets[89], object.verseMarginBottom);
-  writer.writeDouble(offsets[90], object.verseMarginLeft);
-  writer.writeDouble(offsets[91], object.verseMarginRight);
-  writer.writeDouble(offsets[92], object.verseMarginTop);
-  writer.writeLong(offsets[93], object.verseStrokeColor);
-  writer.writeBool(offsets[94], object.verseUnderline);
-  writer.writeString(offsets[95], object.verseVerticalAlignment);
+  writer.writeBool(offsets[39], object.lyricsLineBreak);
+  writer.writeDouble(offsets[40], object.lyricsMarginBottom);
+  writer.writeDouble(offsets[41], object.lyricsMarginLeft);
+  writer.writeDouble(offsets[42], object.lyricsMarginRight);
+  writer.writeDouble(offsets[43], object.lyricsMarginTop);
+  writer.writeLong(offsets[44], object.lyricsStrokeColor);
+  writer.writeBool(offsets[45], object.lyricsUnderline);
+  writer.writeString(offsets[46], object.lyricsVerticalAlignment);
+  writer.writeString(offsets[47], object.presetName);
+  writer.writeString(offsets[48], object.scriptureAspectRatio);
+  writer.writeLong(offsets[49], object.scriptureBackgroundColor);
+  writer.writeString(offsets[50], object.scriptureBackgroundImage);
+  writer.writeString(offsets[51], object.scriptureBackgroundImageAlignment);
+  writer.writeString(offsets[52], object.scriptureBackgroundImageLayout);
+  writer.writeDouble(offsets[53], object.scriptureCustomHeight);
+  writer.writeDouble(offsets[54], object.scriptureCustomWidth);
+  writer.writeBool(offsets[55], object.showChapter);
+  writer.writeBool(offsets[56], object.showTitle);
+  writer.writeString(offsets[57], object.songAspectRatio);
+  writer.writeLong(offsets[58], object.songBackgroundColor);
+  writer.writeString(offsets[59], object.songBackgroundImage);
+  writer.writeString(offsets[60], object.songBackgroundImageAlignment);
+  writer.writeString(offsets[61], object.songBackgroundImageLayout);
+  writer.writeDouble(offsets[62], object.songCustomHeight);
+  writer.writeDouble(offsets[63], object.songCustomWidth);
+  writer.writeString(offsets[64], object.syncId);
+  writer.writeString(offsets[65], object.titleAlignment);
+  writer.writeBool(offsets[66], object.titleBold);
+  writer.writeLong(offsets[67], object.titleFillColor);
+  writer.writeLong(offsets[68], object.titleFontColor);
+  writer.writeString(offsets[69], object.titleFontFamily);
+  writer.writeDouble(offsets[70], object.titleFontSize);
+  writer.writeBool(offsets[71], object.titleHasFill);
+  writer.writeBool(offsets[72], object.titleHasStroke);
+  writer.writeBool(offsets[73], object.titleItalic);
+  writer.writeDouble(offsets[74], object.titleMarginBottom);
+  writer.writeDouble(offsets[75], object.titleMarginLeft);
+  writer.writeDouble(offsets[76], object.titleMarginRight);
+  writer.writeDouble(offsets[77], object.titleMarginTop);
+  writer.writeLong(offsets[78], object.titleStrokeColor);
+  writer.writeBool(offsets[79], object.titleUnderline);
+  writer.writeString(offsets[80], object.titleVerticalAlignment);
+  writer.writeString(offsets[81], object.verseAlignment);
+  writer.writeBool(offsets[82], object.verseBold);
+  writer.writeLong(offsets[83], object.verseFillColor);
+  writer.writeLong(offsets[84], object.verseFontColor);
+  writer.writeString(offsets[85], object.verseFontFamily);
+  writer.writeDouble(offsets[86], object.verseFontSize);
+  writer.writeBool(offsets[87], object.verseHasFill);
+  writer.writeBool(offsets[88], object.verseHasStroke);
+  writer.writeBool(offsets[89], object.verseItalic);
+  writer.writeDouble(offsets[90], object.verseMarginBottom);
+  writer.writeDouble(offsets[91], object.verseMarginLeft);
+  writer.writeDouble(offsets[92], object.verseMarginRight);
+  writer.writeDouble(offsets[93], object.verseMarginTop);
+  writer.writeLong(offsets[94], object.verseStrokeColor);
+  writer.writeBool(offsets[95], object.verseUnderline);
+  writer.writeString(offsets[96], object.verseVerticalAlignment);
 }
 
 PresentationSettings _presentationSettingsDeserialize(
@@ -713,63 +719,64 @@ PresentationSettings _presentationSettingsDeserialize(
   object.lyricsHasFill = reader.readBool(offsets[36]);
   object.lyricsHasStroke = reader.readBool(offsets[37]);
   object.lyricsItalic = reader.readBool(offsets[38]);
-  object.lyricsMarginBottom = reader.readDouble(offsets[39]);
-  object.lyricsMarginLeft = reader.readDouble(offsets[40]);
-  object.lyricsMarginRight = reader.readDouble(offsets[41]);
-  object.lyricsMarginTop = reader.readDouble(offsets[42]);
-  object.lyricsStrokeColor = reader.readLong(offsets[43]);
-  object.lyricsUnderline = reader.readBool(offsets[44]);
-  object.lyricsVerticalAlignment = reader.readString(offsets[45]);
-  object.presetName = reader.readString(offsets[46]);
-  object.scriptureAspectRatio = reader.readString(offsets[47]);
-  object.scriptureBackgroundColor = reader.readLong(offsets[48]);
-  object.scriptureBackgroundImage = reader.readString(offsets[49]);
-  object.scriptureBackgroundImageAlignment = reader.readString(offsets[50]);
-  object.scriptureBackgroundImageLayout = reader.readString(offsets[51]);
-  object.scriptureCustomHeight = reader.readDouble(offsets[52]);
-  object.scriptureCustomWidth = reader.readDouble(offsets[53]);
-  object.showChapter = reader.readBool(offsets[54]);
-  object.showTitle = reader.readBool(offsets[55]);
-  object.songAspectRatio = reader.readString(offsets[56]);
-  object.songBackgroundColor = reader.readLong(offsets[57]);
-  object.songBackgroundImage = reader.readString(offsets[58]);
-  object.songBackgroundImageAlignment = reader.readString(offsets[59]);
-  object.songBackgroundImageLayout = reader.readString(offsets[60]);
-  object.songCustomHeight = reader.readDouble(offsets[61]);
-  object.songCustomWidth = reader.readDouble(offsets[62]);
-  object.syncId = reader.readString(offsets[63]);
-  object.titleAlignment = reader.readString(offsets[64]);
-  object.titleBold = reader.readBool(offsets[65]);
-  object.titleFillColor = reader.readLong(offsets[66]);
-  object.titleFontColor = reader.readLong(offsets[67]);
-  object.titleFontFamily = reader.readString(offsets[68]);
-  object.titleFontSize = reader.readDouble(offsets[69]);
-  object.titleHasFill = reader.readBool(offsets[70]);
-  object.titleHasStroke = reader.readBool(offsets[71]);
-  object.titleItalic = reader.readBool(offsets[72]);
-  object.titleMarginBottom = reader.readDouble(offsets[73]);
-  object.titleMarginLeft = reader.readDouble(offsets[74]);
-  object.titleMarginRight = reader.readDouble(offsets[75]);
-  object.titleMarginTop = reader.readDouble(offsets[76]);
-  object.titleStrokeColor = reader.readLong(offsets[77]);
-  object.titleUnderline = reader.readBool(offsets[78]);
-  object.titleVerticalAlignment = reader.readString(offsets[79]);
-  object.verseAlignment = reader.readString(offsets[80]);
-  object.verseBold = reader.readBool(offsets[81]);
-  object.verseFillColor = reader.readLong(offsets[82]);
-  object.verseFontColor = reader.readLong(offsets[83]);
-  object.verseFontFamily = reader.readString(offsets[84]);
-  object.verseFontSize = reader.readDouble(offsets[85]);
-  object.verseHasFill = reader.readBool(offsets[86]);
-  object.verseHasStroke = reader.readBool(offsets[87]);
-  object.verseItalic = reader.readBool(offsets[88]);
-  object.verseMarginBottom = reader.readDouble(offsets[89]);
-  object.verseMarginLeft = reader.readDouble(offsets[90]);
-  object.verseMarginRight = reader.readDouble(offsets[91]);
-  object.verseMarginTop = reader.readDouble(offsets[92]);
-  object.verseStrokeColor = reader.readLong(offsets[93]);
-  object.verseUnderline = reader.readBool(offsets[94]);
-  object.verseVerticalAlignment = reader.readString(offsets[95]);
+  object.lyricsLineBreak = reader.readBool(offsets[39]);
+  object.lyricsMarginBottom = reader.readDouble(offsets[40]);
+  object.lyricsMarginLeft = reader.readDouble(offsets[41]);
+  object.lyricsMarginRight = reader.readDouble(offsets[42]);
+  object.lyricsMarginTop = reader.readDouble(offsets[43]);
+  object.lyricsStrokeColor = reader.readLong(offsets[44]);
+  object.lyricsUnderline = reader.readBool(offsets[45]);
+  object.lyricsVerticalAlignment = reader.readString(offsets[46]);
+  object.presetName = reader.readString(offsets[47]);
+  object.scriptureAspectRatio = reader.readString(offsets[48]);
+  object.scriptureBackgroundColor = reader.readLong(offsets[49]);
+  object.scriptureBackgroundImage = reader.readString(offsets[50]);
+  object.scriptureBackgroundImageAlignment = reader.readString(offsets[51]);
+  object.scriptureBackgroundImageLayout = reader.readString(offsets[52]);
+  object.scriptureCustomHeight = reader.readDouble(offsets[53]);
+  object.scriptureCustomWidth = reader.readDouble(offsets[54]);
+  object.showChapter = reader.readBool(offsets[55]);
+  object.showTitle = reader.readBool(offsets[56]);
+  object.songAspectRatio = reader.readString(offsets[57]);
+  object.songBackgroundColor = reader.readLong(offsets[58]);
+  object.songBackgroundImage = reader.readString(offsets[59]);
+  object.songBackgroundImageAlignment = reader.readString(offsets[60]);
+  object.songBackgroundImageLayout = reader.readString(offsets[61]);
+  object.songCustomHeight = reader.readDouble(offsets[62]);
+  object.songCustomWidth = reader.readDouble(offsets[63]);
+  object.syncId = reader.readString(offsets[64]);
+  object.titleAlignment = reader.readString(offsets[65]);
+  object.titleBold = reader.readBool(offsets[66]);
+  object.titleFillColor = reader.readLong(offsets[67]);
+  object.titleFontColor = reader.readLong(offsets[68]);
+  object.titleFontFamily = reader.readString(offsets[69]);
+  object.titleFontSize = reader.readDouble(offsets[70]);
+  object.titleHasFill = reader.readBool(offsets[71]);
+  object.titleHasStroke = reader.readBool(offsets[72]);
+  object.titleItalic = reader.readBool(offsets[73]);
+  object.titleMarginBottom = reader.readDouble(offsets[74]);
+  object.titleMarginLeft = reader.readDouble(offsets[75]);
+  object.titleMarginRight = reader.readDouble(offsets[76]);
+  object.titleMarginTop = reader.readDouble(offsets[77]);
+  object.titleStrokeColor = reader.readLong(offsets[78]);
+  object.titleUnderline = reader.readBool(offsets[79]);
+  object.titleVerticalAlignment = reader.readString(offsets[80]);
+  object.verseAlignment = reader.readString(offsets[81]);
+  object.verseBold = reader.readBool(offsets[82]);
+  object.verseFillColor = reader.readLong(offsets[83]);
+  object.verseFontColor = reader.readLong(offsets[84]);
+  object.verseFontFamily = reader.readString(offsets[85]);
+  object.verseFontSize = reader.readDouble(offsets[86]);
+  object.verseHasFill = reader.readBool(offsets[87]);
+  object.verseHasStroke = reader.readBool(offsets[88]);
+  object.verseItalic = reader.readBool(offsets[89]);
+  object.verseMarginBottom = reader.readDouble(offsets[90]);
+  object.verseMarginLeft = reader.readDouble(offsets[91]);
+  object.verseMarginRight = reader.readDouble(offsets[92]);
+  object.verseMarginTop = reader.readDouble(offsets[93]);
+  object.verseStrokeColor = reader.readLong(offsets[94]);
+  object.verseUnderline = reader.readBool(offsets[95]);
+  object.verseVerticalAlignment = reader.readString(offsets[96]);
   return object;
 }
 
@@ -859,7 +866,7 @@ P _presentationSettingsDeserializeProp<P>(
     case 38:
       return (reader.readBool(offset)) as P;
     case 39:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 40:
       return (reader.readDouble(offset)) as P;
     case 41:
@@ -867,67 +874,67 @@ P _presentationSettingsDeserializeProp<P>(
     case 42:
       return (reader.readDouble(offset)) as P;
     case 43:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 44:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 45:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 46:
       return (reader.readString(offset)) as P;
     case 47:
       return (reader.readString(offset)) as P;
     case 48:
-      return (reader.readLong(offset)) as P;
-    case 49:
       return (reader.readString(offset)) as P;
+    case 49:
+      return (reader.readLong(offset)) as P;
     case 50:
       return (reader.readString(offset)) as P;
     case 51:
       return (reader.readString(offset)) as P;
     case 52:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 53:
       return (reader.readDouble(offset)) as P;
     case 54:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 55:
       return (reader.readBool(offset)) as P;
     case 56:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 57:
-      return (reader.readLong(offset)) as P;
-    case 58:
       return (reader.readString(offset)) as P;
+    case 58:
+      return (reader.readLong(offset)) as P;
     case 59:
       return (reader.readString(offset)) as P;
     case 60:
       return (reader.readString(offset)) as P;
     case 61:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 62:
       return (reader.readDouble(offset)) as P;
     case 63:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 64:
       return (reader.readString(offset)) as P;
     case 65:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 66:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 67:
       return (reader.readLong(offset)) as P;
     case 68:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 69:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 70:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 71:
       return (reader.readBool(offset)) as P;
     case 72:
       return (reader.readBool(offset)) as P;
     case 73:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 74:
       return (reader.readDouble(offset)) as P;
     case 75:
@@ -935,31 +942,31 @@ P _presentationSettingsDeserializeProp<P>(
     case 76:
       return (reader.readDouble(offset)) as P;
     case 77:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 78:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 79:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 80:
       return (reader.readString(offset)) as P;
     case 81:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 82:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 83:
       return (reader.readLong(offset)) as P;
     case 84:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 85:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 86:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 87:
       return (reader.readBool(offset)) as P;
     case 88:
       return (reader.readBool(offset)) as P;
     case 89:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 90:
       return (reader.readDouble(offset)) as P;
     case 91:
@@ -967,10 +974,12 @@ P _presentationSettingsDeserializeProp<P>(
     case 92:
       return (reader.readDouble(offset)) as P;
     case 93:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 94:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 95:
+      return (reader.readBool(offset)) as P;
+    case 96:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3498,6 +3507,16 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lyricsItalic',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsLineBreakEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsLineBreak',
         value: value,
       ));
     });
@@ -8243,6 +8262,20 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsLineBreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineBreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsLineBreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineBreak', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByLyricsMarginBottom() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsMarginBottom', Sort.asc);
@@ -9604,6 +9637,20 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsLineBreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineBreak', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsLineBreakDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineBreak', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByLyricsMarginBottom() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsMarginBottom', Sort.asc);
@@ -10687,6 +10734,13 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsLineBreak() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsLineBreak');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByLyricsMarginBottom() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lyricsMarginBottom');
@@ -11379,6 +11433,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       lyricsItalicProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lyricsItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      lyricsLineBreakProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsLineBreak');
     });
   }
 

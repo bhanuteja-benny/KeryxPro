@@ -87,6 +87,7 @@ class PresentationSettings {
   double lyricsMarginBottom = 32.0;
   double lyricsMarginLeft = 32.0;
   double lyricsMarginRight = 32.0;
+  bool lyricsLineBreak = false;
 
   // Chapter Settings (Bible)
   bool showChapter = true;
@@ -191,6 +192,7 @@ class PresentationSettings {
       'lyricsMarginBottom': lyricsMarginBottom,
       'lyricsMarginLeft': lyricsMarginLeft,
       'lyricsMarginRight': lyricsMarginRight,
+      'lyricsLineBreak': lyricsLineBreak,
       'showChapter': showChapter,
       'chapterAlignment': chapterAlignment,
       'chapterVerticalAlignment': chapterVerticalAlignment,
@@ -293,6 +295,7 @@ class PresentationSettings {
       ..lyricsMarginBottom = (map['lyricsMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..lyricsMarginLeft = (map['lyricsMarginLeft'] as num?)?.toDouble() ?? 32.0
       ..lyricsMarginRight = (map['lyricsMarginRight'] as num?)?.toDouble() ?? 32.0
+      ..lyricsLineBreak = map['lyricsLineBreak'] as bool? ?? false
       ..showChapter = map['showChapter'] as bool? ?? true
       ..chapterAlignment = map['chapterAlignment'] as String? ?? 'center'
       ..chapterVerticalAlignment = map['chapterVerticalAlignment'] as String? ?? 'bottom'
