@@ -4,6 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Tab Controller for Library (Songs vs Bible)
 final libraryTabControllerProvider = StateProvider<TabController?>((ref) => null);
 
+/// Bookmarked slide keys in the current slides preview.
+final slideBookmarksProvider = StateProvider<Set<String>>((ref) => {});
+
+/// Transfer query for scripture search trigger from preview pane.
+final bibleSearchQueryProvider = StateProvider<String?>((ref) => null);
+
 // Focus Nodes for various sections
 final songSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'SongSearchField'));
 final bibleSearchFocusNodeProvider = Provider((ref) => FocusNode(debugLabel: 'BibleSearchField'));

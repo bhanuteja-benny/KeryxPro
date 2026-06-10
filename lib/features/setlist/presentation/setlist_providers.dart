@@ -14,29 +14,44 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     state = [...state, SongSetlistItem(song)];
   }
 
-  void insertSong(Song song, int? atIndex) {
-    if (atIndex == null) {
-      addSong(song);
-    } else {
-      final newList = List<SetlistItem>.from(state);
-      final insertAt = (atIndex + 1).clamp(0, newList.length);
-      newList.insert(insertAt, SongSetlistItem(song));
-      state = newList;
-    }
+  int insertSong(Song song, {required bool goLive, required Set<int> selectedIndices, required int? currentDisplayItemIndex}) {
+    final insertAt = _calculateInsertIndex(goLive: goLive, selectedIndices: selectedIndices, currentDisplayItemIndex: currentDisplayItemIndex);
+    final newList = List<SetlistItem>.from(state);
+    newList.insert(insertAt, SongSetlistItem(song));
+    state = newList;
+    return insertAt;
   }
 
   void addImage(ImageSetlistItem imageItem) {
     state = [...state, imageItem];
   }
 
-  void insertImage(ImageSetlistItem imageItem, int? atIndex) {
-    if (atIndex == null) {
-      addImage(imageItem);
+  int insertImage(ImageSetlistItem imageItem, {required Set<int> selectedIndices, required int? currentDisplayItemIndex}) {
+    final insertAt = _calculateInsertIndex(goLive: false, selectedIndices: selectedIndices, currentDisplayItemIndex: currentDisplayItemIndex);
+    final newList = List<SetlistItem>.from(state);
+    newList.insert(insertAt, imageItem);
+    state = newList;
+    return insertAt;
+  }
+
+  int _calculateInsertIndex({
+    required bool goLive,
+    required Set<int> selectedIndices,
+    required int? currentDisplayItemIndex,
+  }) {
+    if (goLive) {
+      if (currentDisplayItemIndex != null) {
+        return (currentDisplayItemIndex + 1).clamp(0, state.length);
+      } else {
+        return state.length;
+      }
     } else {
-      final newList = List<SetlistItem>.from(state);
-      final insertAt = (atIndex + 1).clamp(0, newList.length);
-      newList.insert(insertAt, imageItem);
-      state = newList;
+      if (selectedIndices.isEmpty) {
+        return state.length;
+      } else {
+        final topMostIndex = selectedIndices.reduce((a, b) => a < b ? a : b);
+        return (topMostIndex + 1).clamp(0, state.length);
+      }
     }
   }
 
@@ -150,8 +165,6 @@ final setlistSelectionProvider =
 // ─────────────────────────────────────────────────────────
 // Active Saved SetList Name & Signature
 // ─────────────────────────────────────────────────────────
-
-final appendAtEndOfListProvider = StateProvider<bool>((ref) => false);
 
 final activeSetlistNameProvider = StateProvider<String?>((ref) => null);
 

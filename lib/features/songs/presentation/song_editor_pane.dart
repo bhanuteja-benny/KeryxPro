@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/song.dart';
 import 'song_providers.dart';
@@ -80,108 +81,114 @@ class _SongEditorPaneState extends ConsumerState<SongEditorPane> {
   Widget build(BuildContext context) {
     final isEditMode = ref.watch(songBeingEditedProvider) != null;
 
-    return Container(
-      color: Colors.grey[900],
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            color: Colors.black26,
-            child: Row(
-              children: [
-                Text(
-                  isEditMode ? 'Edit Song' : 'Add New Song',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blueAccent),
-                ),
-                const Spacer(),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.close, color: Colors.grey, size: 16),
-                  onPressed: _close,
-                  tooltip: 'Cancel',
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.keyS, control: true): _save,
+        const SingleActivator(LogicalKeyboardKey.keyS, meta: true): _save,
+      },
+      child: Container(
+        color: Colors.grey[900],
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              color: Colors.black26,
+              child: Row(
                 children: [
-                  TextField(
-                    controller: _titleController,
-                    style: const TextStyle(fontSize: 12),
-                    decoration: const InputDecoration(
-                      labelText: 'Title *',
-                      labelStyle: TextStyle(fontSize: 11),
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    autofocus: !isEditMode,
+                  Text(
+                    isEditMode ? 'Edit Song' : 'Add New Song',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blueAccent),
                   ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _authorController,
-                    style: const TextStyle(fontSize: 12),
-                    decoration: const InputDecoration(
-                      labelText: 'Author (Optional)',
-                      labelStyle: TextStyle(fontSize: 11),
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _lyricsController,
-                      style: const TextStyle(fontSize: 12, fontFamily: 'monospace', height: 1.4),
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter song lyrics here...',
-                        contentPadding: EdgeInsets.all(8),
-                      ),
-                      expands: true,
-                      maxLines: null,
-                      minLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textAlignVertical: TextAlignVertical.top,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: _isLoading ? null : _close,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        ),
-                        child: const Text('Cancel', style: TextStyle(fontSize: 12)),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                        ),
-                        onPressed: _isLoading ? null : _save,
-                        child: _isLoading 
-                          ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Save Song', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
+                  const Spacer(),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.close, color: Colors.grey, size: 16),
+                    onPressed: _close,
+                    tooltip: 'Cancel',
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _titleController,
+                      style: const TextStyle(fontSize: 12),
+                      decoration: const InputDecoration(
+                        labelText: 'Title *',
+                        labelStyle: TextStyle(fontSize: 11),
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      ),
+                      autofocus: !isEditMode,
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _authorController,
+                      style: const TextStyle(fontSize: 12),
+                      decoration: const InputDecoration(
+                        labelText: 'Author (Optional)',
+                        labelStyle: TextStyle(fontSize: 11),
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _lyricsController,
+                        style: const TextStyle(fontSize: 12, fontFamily: 'monospace', height: 1.4),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter song lyrics here...',
+                          contentPadding: EdgeInsets.all(8),
+                        ),
+                        expands: true,
+                        maxLines: null,
+                        minLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textAlignVertical: TextAlignVertical.top,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: _isLoading ? null : _close,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          ),
+                          child: const Text('Cancel', style: TextStyle(fontSize: 12)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            backgroundColor: Colors.blueAccent,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                          ),
+                          onPressed: _isLoading ? null : _save,
+                          child: _isLoading 
+                            ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text('Save Song', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

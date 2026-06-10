@@ -182,38 +182,49 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     if (selection.isNotEmpty) {
       ref.read(setlistProvider.notifier).removeAtIndices(selection);
       ref.read(setlistSelectionProvider.notifier).clear();
-    } else if (items.isEmpty && activeName != null) {
-      _confirmDeleteSetlist(activeName);
+    } else if (items.isEmpty && activeName != null && activeName.trim().isNotEmpty) {
+      _handleDeleteSetlistName(activeName.trim());
     }
   }
 
-  Future<void> _confirmDeleteSetlist(String name) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2D2D3E),
-        title: const Text('Delete SetList', style: TextStyle(color: Colors.white, fontSize: 16)),
-        content: Text("Are you sure you want to delete the SetList '$name'?", style: const TextStyle(color: Colors.white70, fontSize: 13)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
-          ),
-        ],
-      )
-    );
+  Future<void> _handleDeleteSetlistName(String name) async {
+    final savedNames = await ref.read(savedSetlistNamesProvider.future);
+    final isSaved = savedNames.contains(name);
 
-    if (confirm == true) {
-      final repo = ref.read(setlistRepositoryProvider);
-      await repo.deleteByName(name);
+    if (isSaved) {
+      if (!mounted) return;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF2D2D3E),
+          title: const Text('Delete SetList', style: TextStyle(color: Colors.white, fontSize: 16)),
+          content: const Text('Are you sure you want to delete setlist name?', style: TextStyle(color: Colors.white70, fontSize: 13)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            ),
+          ],
+        )
+      );
+
+      if (confirm == true) {
+        final repo = ref.read(setlistRepositoryProvider);
+        await repo.deleteByName(name);
+        ref.read(activeSetlistNameProvider.notifier).state = null;
+        ref.read(activeSetlistSignatureProvider.notifier).state = '';
+        _nameCtrl.clear();
+        ref.invalidate(savedSetlistNamesProvider);
+      }
+    } else {
+      // Not saved yet, just clear selection and textbox
       ref.read(activeSetlistNameProvider.notifier).state = null;
       ref.read(activeSetlistSignatureProvider.notifier).state = '';
       _nameCtrl.clear();
-      ref.invalidate(savedSetlistNamesProvider);
     }
   }
 
@@ -242,10 +253,11 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
       builder: (context) => const ImageSlideDialog(),
     );
     if (result != null) {
-      final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
-      final displayIndex = ref.read(currentDisplayItemIndexProvider);
-      final insertIndex = appendAtEndOfList ? null : displayIndex;
-      ref.read(setlistProvider.notifier).insertImage(result, insertIndex);
+      ref.read(setlistProvider.notifier).insertImage(
+        result,
+        selectedIndices: ref.read(setlistSelectionProvider),
+        currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+      );
     }
   }
 
@@ -391,6 +403,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
             final selectedIndex = sel.reduce((a, b) => a < b ? a : b);
             final slideIndex = _getSlideStartIndex(selectedIndex);
             ref.read(activeSlideIndexProvider.notifier).state = slideIndex;
+            ref.read(setlistSelectionProvider.notifier).clear();
             return KeyEventResult.handled;
           }
         }
@@ -619,13 +632,11 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                       onPressed: hasSelection ? _toggleFavorite : null,
                     ),
                     _segmentedButton(
-                      icon: Icons.layers_rounded,
-                      tooltip: 'append new item at EOL',
-                      onPressed: () {
-                        ref.read(appendAtEndOfListProvider.notifier).update((state) => !state);
-                      },
+                      icon: Icons.refresh,
+                      tooltip: 'Refresh',
+                      onPressed: null,
                       showBorder: false,
-                      isSelected: ref.watch(appendAtEndOfListProvider),
+                      isSelected: false,
                     ),
                   ],
                 ),

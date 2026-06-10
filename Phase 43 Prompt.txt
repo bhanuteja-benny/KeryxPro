@@ -1,0 +1,47 @@
+Phase 43 Plan
+
+Context:
+- Change in the logic of new slide insertion and setlist functions
+
+UI Requirements:
+- Remove the 'stack' icon in setlist pane and associated logic (replace the associated logic with new insertion logic given in this plan
+- Replace the 'stack' icon with 'refresh' icon and no interactions required
+
+New item/slide insertion logic:
+- when a new item/slide is inserted with golive = false
+-- when no item is selected in the setlist
+--- insert the new item/slide at end of list
+-- when an item or multiple items selected in setlist
+--- insert the new item/slide below the top most selected item
+- when a new item/slide is inserted with golive = true
+-- insert the item/slide below the current displaying item/slide
+
+SetList item logic:
+- below actions should be performed when user selects an item in the setlist and clicks 'enter on it'
+-- the associated slide is being displayed (no need to change this)
+-- but unselect the item (means that item should no longer remain as selected)
+-- so remove the purple background and apply the current displaying item/slide highlighting
+-- and user should be able to select an item which is currently being displayed (then the purple background should be applied to item but not to slides)
+
+Delete setlist name:
+- when user clicks on delete icon in the setlist pane while there are no items in the setlist
+-- if the setlist name is a saved setlist
+--- display a confirmation popup 'Are you sure you want to delete setlist name?'
+---- if users says ok, then delete the setlist name from database
+-- if the setlist name is not saved yet
+--- just clear the selection/textbox
+-- if there is no setlist name (textbox is empty), no further action required
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

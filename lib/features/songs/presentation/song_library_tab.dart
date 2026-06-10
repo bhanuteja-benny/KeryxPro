@@ -146,10 +146,12 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                     return KeyEventResult.handled;
                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                     if (songs.isNotEmpty && currentIndex >= 0 && currentIndex < songs.length) {
-                      final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
-                      final displayIndex = ref.read(currentDisplayItemIndexProvider);
-                      final insertIndex = appendAtEndOfList ? null : displayIndex;
-                      ref.read(setlistProvider.notifier).insertSong(songs[currentIndex], insertIndex);
+                      ref.read(setlistProvider.notifier).insertSong(
+                        songs[currentIndex],
+                        goLive: false,
+                        selectedIndices: ref.read(setlistSelectionProvider),
+                        currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+                      );
                     }
                     return KeyEventResult.handled;
                   }
@@ -175,10 +177,12 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
-                            final displayIndex = ref.read(currentDisplayItemIndexProvider);
-                            final insertIndex = appendAtEndOfList ? null : displayIndex;
-                            ref.read(setlistProvider.notifier).insertSong(song, insertIndex);
+                            ref.read(setlistProvider.notifier).insertSong(
+                              song,
+                              goLive: false,
+                              selectedIndices: ref.read(setlistSelectionProvider),
+                              currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+                            );
                           },
                           child: Container(
                             width: 30,

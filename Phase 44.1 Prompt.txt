@@ -1,0 +1,34 @@
+Phase 44.1 
+
+Context:
+- issues in adding next or before verses logic (using shortcuts)
+
+Problem:
+- the next verse or before verse adding logic is showing the required verse
+- but the reference label is not showing correct reference
+-- When user is in Ephesians 1:1 and clicked before verse shortcut
+--- verse is showing Galatians 6:18 verse but the reference label is showing Ephesians 1:18
+--- similarly for other references also it is not showing correct reference label
+- next or before verse issue when two or more slides are highlighted and displayed (in one of the monitor)
+-- when user clicked on Ephesians 1:1-2 slides (i.e., clicked on first verse slide), and both slides are being displayed in one of the monitor
+-- when user clicked next verse shortcut, it added Ephesians 1:2, but it should add Ephesians 1:3
+-- similarly for before verses as well
+
+Note:
+- missed one more point
+-- when there are group of slides like Gal 2:3-6 etc
+--- the next verse(s) shortcut should be enabled for last slide(s) only (1 or more slides which are displaying in at-least one monitor)
+--- similarly before verse(s) shortcut should be enabled for first slides(s) only (1 or more slides which are displaying in at-least one monitor)
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

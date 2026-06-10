@@ -58,7 +58,11 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
   bool _handleGlobalKeys(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
 
+    // Check if Ctrl (Windows/Linux) or Cmd/Meta (macOS) is held down
+    final isControlPressed = HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed;
+
     // Common sense: If we are typing in any text field, ignore shortcuts and let the text through
+    // EXCEPT if the shortcut contains a 'ctrl' key combination like 'ctrl + s'.
     final primaryFocus = FocusManager.instance.primaryFocus;
     if (primaryFocus != null && primaryFocus.context != null) {
       final context = primaryFocus.context!;
@@ -69,28 +73,28 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
                          context.findAncestorWidgetOfExactType<EditableText>() != null ||
                          context.findAncestorWidgetOfExactType<TextField>() != null;
                          
-      if (isTextInput) return false;
+      if (isTextInput && !isControlPressed) return false;
 
       // Fallback label checks
       final label = primaryFocus.debugLabel?.toLowerCase() ?? '';
       if (label.contains('editable') || label.contains('field') || label.contains('search') || label.contains('setlistname') || label.contains('title') || label.contains('author') || label.contains('lyrics') || label.contains('preset')) {
-        return false;
+        if (!isControlPressed) return false;
       }
     }
 
     final shortcuts = ref.read(globalShortcutActionProvider);
     final key = event.logicalKey;
 
-    if (key == LogicalKeyboardKey.keyS) {
+    if (key == LogicalKeyboardKey.keyS && !isControlPressed) {
       shortcuts.openBibleTab();
       return true;
-    } else if (key == LogicalKeyboardKey.keyQ) {
+    } else if (key == LogicalKeyboardKey.keyQ && !isControlPressed) {
       shortcuts.openSongsTab();
       return true;
-    } else if (key == LogicalKeyboardKey.keyL) {
+    } else if (key == LogicalKeyboardKey.keyL && !isControlPressed) {
       shortcuts.focusSlides();
       return true;
-    } else if (key == LogicalKeyboardKey.keyF) {
+    } else if (key == LogicalKeyboardKey.keyF && !isControlPressed) {
       shortcuts.toggleFreeze();
       return true;
     } else if (key == LogicalKeyboardKey.escape) {
@@ -220,7 +224,6 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
     // Initialize broadcaster
     ref.watch(projectionBroadcasterProvider);
     final isEditorOpen = ref.watch(isSongEditorOpenProvider);
-    final shortcuts = ref.read(globalShortcutActionProvider);
 
     // Library pane auto-hide state
     final pinMode = ref.watch(libraryPinModeProvider);

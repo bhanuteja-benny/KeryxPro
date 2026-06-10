@@ -247,23 +247,16 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
       ..author = 'Bible'
       ..lyrics = lyrics;
 
-    final appendAtEndOfList = ref.read(appendAtEndOfListProvider);
-    final displayIndex = ref.read(currentDisplayItemIndexProvider);
-    final insertIndex = (goLive || !appendAtEndOfList) ? displayIndex : null;
-
-    final previousSlides = ref.read(currentSlidesProvider);
-    final setlist = ref.read(setlistProvider);
-    final int nextIndex;
-    if (insertIndex == null) {
-      nextIndex = previousSlides.length;
-    } else {
-      nextIndex = getSlideCountForItems(setlist, insertIndex);
-    }
-
-    ref.read(setlistProvider.notifier).insertSong(mockSong, insertIndex);
+    final insertAt = ref.read(setlistProvider.notifier).insertSong(
+      mockSong,
+      goLive: goLive,
+      selectedIndices: ref.read(setlistSelectionProvider),
+      currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+    );
 
     // Auto-activate the newly added song and focus slides if goLive is true
     if (goLive) {
+      final nextIndex = getSlideCountForItems(ref.read(setlistProvider), insertAt - 1);
       ref.read(activeSlideIndexProvider.notifier).state = nextIndex;
       ref.read(slideListFocusNodeProvider).requestFocus();
     }
@@ -272,6 +265,18 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   @override
   Widget build(BuildContext context) {
     final bibleVersionsAsync = ref.watch(bibleVersionsProvider);
+
+    ref.listen<String?>(bibleSearchQueryProvider, (previous, next) {
+      if (next != null && next.isNotEmpty) {
+        _searchController.text = next;
+        _handleSearch(next, ref);
+        // Ensure focus remains in the search textbox
+        ref.read(bibleSearchFocusNodeProvider).requestFocus();
+        Future.microtask(() {
+          ref.read(bibleSearchQueryProvider.notifier).state = null;
+        });
+      }
+    });
 
     return Column(
       children: [

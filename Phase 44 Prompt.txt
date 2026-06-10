@@ -1,0 +1,85 @@
+Phase 44 Plan
+
+Context:
+- More shortcut keys to be added in slides pane
+
+UI Requirements:
+- add a 'bookmark icon' in the slides header section
+- add a 'up arrow' icon to the left of the bookmark icon
+- add a 'down arrow' icon to the right of the bookmark icon
+-- all these three icons "up arrow' "bookmark" "down arrow" should look as one set (look closer), should be aligned towards right (but not right most)
+- add a 'scripture' icon (which is used for scripture items in setlist pane), in the slides header section
+- add 'double left arrow' icon and then a 'single left arrow' icon to the left of the 'scripture' icon
+- add 'single right arrow' icon and then a 'double right arrow' icon to the right of the scripture icon
+- all these five icons "double left arrow" "single left arrow" "scripture" "single right arrow" "double right arrow" should look as a set (look closer), should be aligned to right most
+- there should be enough gap between bookmarks set of icons and scripture set of icons
+
+Shortcut Interactions in slides pane:
+- when user clicks on bookmark icon (in slides header) or 'ctrl + b' key combination
+-- then a bookmark icon should be added to the left of current slide
+-- if already that slide is bookmarked one, then remove the bookmark
+-- means toggle the bookmark of the slide
+-- user should be able to bookmark any no. of slides
+- when user clicks 'up arrow' icon (in slides header) or 'ctrl + up arrow key' key combination
+-- if any bookmarked slide is there towards above the current slide, then change the current slide to that bookmarked slide
+--- if multiple bookmarked slides are there above the current slide, just move to the adjacent one to the current slide
+-- if there are no bookmarked slides above the current slide, then remain in the current slide
+- when user clicks 'down arrow' icon (in slides header) or "ctrl + down arrow key' key combination
+-- if any bookmarked slide is there towards below the current slide, then change the current slide to that bookmarked slide
+-- if multiple bookmarked slides are there below the current slide, just move to the adjacent one to the current slide
+-- if there are no bookmarked slides below the current slide, then remain in the current slide
+- when user clicks on scripture icon (in slides header) or 'ctrl + s' key combination (in slides)
+-- if the current slide is not a scripture slide then ignore the action
+-- if the current slide is a scripture slide
+--- then shift the focus to bible search textbox (Open the Bible search pane if it is hiding)
+--- the bible reference which in current slide should be available (copied to) in bible search textbox
+--- also the books, chapter and verse listboxes selection should also be done/selected according to the bible reference in current slide
+- when user clicks "left arrow" icon (in slides header) or "ctrl + left arrow key" key combination
+-- then add the before verse (of the verse in the current slide) as a new slide and as a new item (in the setlist)
+--- i.e. . if current slide is John 2:2 then add 'John 2:1'
+--- if current slide is John 2:1 (first verse in the chapter) then add John 1:51 (before chapter last verse)
+--- if current slide is Mark 1:1 (first chapter and first verse of the book) then add 'Matthew 28:20' (before book, last chapter last verse)
+--- if current slide is 'Gen 1:1' then ignore
+-- and change the current slide to the newly added one
+- when user clicks 'double left arrow' icon (in slides header) or "ctrl + left arrow key two times immediately" key combination
+-- then add the before two verses (of the verse in the current slide) as a new group of slides and as a new item (in the setlist)
+--- i.e., if current slide is John 2:3 then add 'John 2:1-2'
+--- if current slide is John 2:2 then add 'John 2:1' (when there is only one verse left in the same book and chapter then one verse is enough)
+--- if current slide is John 2:1 (first verse in the chapter) then add 'John 1:50-51" (before chapter last two verses)
+--- if current slide is Mark 1:1 (first chapter and first verse of the book) then add 'Matthew 28:19-20' (before book, last chapter last two verses)
+--- if current slide is 'Gen 1:1' then ignore
+-- and change the current slide to the newly added one
+- when user clicks right arrow icon (in slides header) or 'ctrl + right arrow key' key combination
+-- then add the next verse (of the verse in the current slide) as a new slide and as a new item (in the setlist
+--- i.e., if current slide is John 2:2 then add 'John 2:3'
+--- if current slide is John 2:25 (last verse in the chapter) then add 'John 3:1' (next chapter first verse)
+--- if current slide is Mark 16:20 (last chapter and last verse of the book) then add 'Luke 1:1' (next book, first chapter first verse)
+--- if current slide is 'Rev 22:21" then ignore
+-- and change the current slide to the newly added one
+- when user clicks 'double right arrow' icon (in slides header) or 'ctrl + right arrow key two times immediately' key combination
+-- then add the next two verses (of the verse in the current slide) as a new group of slides and as a new item (in the setlist)
+--- i.e., if current slide is John 2:2 then add 'John 2:3-4'
+--- if current slide is John 2:25 (last verse in the chapter) then add 'John 3:1-2' (next chapter first two verses)
+--- if current slide is John 2:24 (last verse in the chapter) then add 'John 2:25' (when there is only one verse left in the same book and chapter then one verse is enough)
+--- if current slide is Mark 16:20 (last chapter and last verse of the book) then add 'Luke 1:1-2' (next book, first chapter first two verses)
+--- if current slide is 'Rev 22:21' then ignore
+-- and change the current slide to the newly added one
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file
+
+
+
+
+

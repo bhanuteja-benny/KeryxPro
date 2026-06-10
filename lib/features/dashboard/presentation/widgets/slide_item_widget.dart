@@ -5,6 +5,7 @@ class SlideItemWidget extends StatelessWidget {
   final Slide slide;
   final bool isActive;
   final bool isBorderActive;
+  final bool isBookmarked;
   final bool isPurpleHighlighted;
   final VoidCallback onTap;
 
@@ -13,6 +14,7 @@ class SlideItemWidget extends StatelessWidget {
     required this.slide,
     required this.isActive,
     required this.isBorderActive,
+    required this.isBookmarked,
     this.isPurpleHighlighted = false,
     required this.onTap,
   });
@@ -53,6 +55,11 @@ class SlideItemWidget extends StatelessWidget {
                   width: 150,
                   child: Row(
                     children: [
+                      if (isBookmarked)
+                        const Padding(
+                          padding: EdgeInsets.only(right: 4),
+                          child: Icon(Icons.bookmark_rounded, size: 12, color: Colors.amber),
+                        ),
                       if (slide.isFavorite)
                         Padding(
                           padding: const EdgeInsets.only(right: 4),
