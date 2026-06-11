@@ -212,6 +212,106 @@ class CustomTitleBar extends ConsumerWidget {
               ),
             ),
 
+          // Help & Shortcuts Icon Button
+          Tooltip(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.white12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            margin: const EdgeInsets.only(top: 8),
+            preferBelow: true,
+            waitDuration: const Duration(milliseconds: 100),
+            richMessage: TextSpan(
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                height: 1.4,
+              ),
+              children: [
+                const TextSpan(
+                  text: "Shortcut Keys:\n\n",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white),
+                ),
+                TextSpan(
+                  text: "'s'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - open scripture search\n"),
+                TextSpan(
+                  text: "'q'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - open song search\n"),
+                TextSpan(
+                  text: "'L'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - go to slides navigation\n"),
+                TextSpan(
+                  text: "'enter' + 'enter'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " in scripture search - add and display the verse immediately\n"),
+                TextSpan(
+                  text: "'enter' + 'tab' + 'enter'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " in scripture search - just add the verse\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + b'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - toggle bookmark on the current slide\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + up arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - navigate to the bookmarked slides towards up\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + down arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - navigate to the bookmarked slides towards down\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + right arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - add and display next verse of the currently displaying verse\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + right arrow + right arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - add and display next two verses of the currently displaying verse\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + left arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - add and display before verse of the currently displaying verse\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + left arrow + left arrow'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - add and display before two verses of the currently displaying verse\n"),
+                TextSpan(
+                  text: "'ctrl/cmd + s'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - open the current displaying verse in scripture search"),
+              ],
+            ),
+            child: _WindowButton(
+              icon: Icons.help_outline,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const HelpDialog(),
+                );
+              },
+            ),
+          ),
+
           // System Window Controls
           if (!Platform.isMacOS) const WindowButtons(),
         ],

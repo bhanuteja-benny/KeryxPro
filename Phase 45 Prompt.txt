@@ -1,0 +1,41 @@
+Phase 45 Plan
+
+Context:
+- Help icon 'type of question mark' in the main title bar of app towards right
+
+UI Requirement:
+- Add a question mark type of icon in the main title bar of the app at right corner
+- when user hovers over the icon, display a vertical list mentioning available shortcuts
+
+UI Visual Style:
+- a small, help type of icon which is standard for most the apps
+- mention shortcuts line by line which appears like a list (not so much line gap or padding is required)
+
+Shortcuts to mention:
+- 's' - open scripture search
+- 'q' - open song search
+- 'L' - go to slides navigation
+- 'enter' + 'enter' in scripture search - add and display the verse immediately
+- 'enter' + 'tab' + 'enter' in scripture search - just add the verse
+- ctrl/cmd +b' - toggle bookmark on the current slide
+- 'ctrl/cmd + up arrow' - navigate to the bookmarked slides towards up
+- 'ctrl/cmd + down arrow' - navigate to the bookmarked slides towards down
+- 'ctrl/cmd + right arrow' - add and display next verse of the currently displaying verse
+- 'ctrl/cmd + right arrow + right arrow' - add and display next two verses of the currently displaying verse
+- 'ctrl/cmd + left arrow' - add and display before verse of the currently displaying verse
+- 'ctrl/cmd + left arrow + left arrow' - add and display before two verses of the currently displaying verse
+- 'ctrl/cmd + s' - open the current displaying verse in scripture search
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file

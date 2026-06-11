@@ -1,0 +1,18 @@
+Phase 46.1
+
+Context:
+- issues in themes
+
+Problem:
+- when theme is saved, the background image is not being copied in themes folder
+- when exporting theme to .zip, background image is not being included
+- 'Apply Theme' button is placed in place of width and height boxes which appear when custom aspect ratio is selected, so change the place of 'Apply Theme'
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements

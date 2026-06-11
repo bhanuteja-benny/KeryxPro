@@ -1,0 +1,51 @@
+Phase 46 Plan
+
+Context:
+Adding preloaded themes for presentation
+
+Requirements:
+
+- For developers
+-- when app is running in debug mode
+--- an option to create themes is required for user (developer)
+--- user should be able to provide a theme name like 'Theme 1', 'Blue Background' etc
+--- Once name is mentioned, then display the same popup as presentation settings for song/scripture but here only one tab will be there 'Theme settings' (because this can be applied to both song and scripture individually)
+--- make all settings (options) available which are available in both song and scripture settings (mixed)
+--- user should able to change all the settings (aspect ration, typography, background images etc) and save it as a theme instead of preset
+--- those settings should be saved (including image files), in folder path 'Application folder (KeryxPro) -> Themes -> Theme Name'
+--- you decide which format you will save (xml or json etc)
+--- Developer will give each theme as a zip file (let me know if it can be given in any other format so that it will include all presentation settings including image files)
+- For End Users
+-- when app is running in release mode (or when user is using KeryxPro.exe or KeryxPro.app which is built in release mode)
+--- an option to import themes
+--- user should able to select the zip file or any other format file given by developer or admin and save it
+--- then store all those themes (whether in folder or database, you decide)
+--- an option to select theme in song and scripture presentation settings
+--- Should display preview of each theme, So that user can understand how that theme's presentation looks like
+--- so a sample scripture or song lyrics needs to be added at preview (if user wants to apply it for song then sample lyrics, if user wants to apply it to scripture then sample scripture)
+--- when user clicks on 'apply' or 'load' (you decide)
+--- apply all those settings to song/scripture settings
+--- and user should able to edit the preloaded settings
+--- then user can save all those settings as a preset settings 
+- as most of the settings are same for song and scripture, we can display same themes for both
+- in case of any settings doesn't match between song and scripture like 'Line Break' ignore them
+-- for example if developer created theme with 'Line Break' enabled and user selected that theme for scripture then ignore that setting
+-- for example if developer created theme with 'Line Break' enabled/disabled and user selected that theme for song then set the setting to exactly what developer has set
+
+Note:
+- as you know there are apps which provides themes, option to download them and apply them, so I need the same feature, so suggestions are allowed if given plan not suitable for themes
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation plan file
+
+
