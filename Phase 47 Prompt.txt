@@ -1,0 +1,35 @@
+Phase 47 Plan
+
+Context:
+- Adding powerpoint in the slides
+
+UI Change:
+- Replace the image' icon in setlist toolbar with 'media' icon (icon should represent any media image/video/powerpoint)
+
+UI Interactions:
+- When user clicks on that 'media' icon then open a popup and give options to 'add image', 'add video' and 'add powerpoint
+- When user clicks on 'add image' then proceed with already existing image slide addition steps
+- 'add video ' - lets do it in another phase (as of now just disable the button)
+- When user clicks on 'add powerpoint" give an option to browse for powerpoint files (whichever are acceptable like .ppt, -pptx, .ppsx)
+
+UI Requirement:
+- when user adds an powerpoint presentation to the setlist, add the slides of the presentation into slides pane (as one group of slides, no blank screen required in between each slide of the file), and let the slide number be the shortcut.
+- remaining functionality should be same as slides operation (displaying, bookmarking etc)
+
+Questionnaire:
+- what type of file types can be accepted (.ppt, .pptx, .ppsx, any other)?
+- can we give options like stretch or keep aspect ratio kind of things for these?
+- if the slides contain any actions like (in power point when user clicks 'next' then text appearing or underlining will happen), how these are handled? are these are ignored or added as multiple slides?
+- any other challenges or suggestions or betterments?
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation plan file

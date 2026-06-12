@@ -298,7 +298,22 @@ class CustomTitleBar extends ConsumerWidget {
                   text: "'ctrl/cmd + s'",
                   style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
                 ),
-                const TextSpan(text: " - open the current displaying verse in scripture search"),
+                const TextSpan(text: " - open the current displaying verse in scripture search\n"),
+                TextSpan(
+                  text: "'space'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - jump to next slide\n"),
+                TextSpan(
+                  text: "'tab'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - jump to next blank screen\n"),
+                TextSpan(
+                  text: "'f'",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.amberAccent),
+                ),
+                const TextSpan(text: " - freeze/unfreeze the presentation screens"),
               ],
             ),
             child: _WindowButton(

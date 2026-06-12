@@ -326,17 +326,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
 
   int _getSlideStartIndex(int index) {
     final items = ref.read(setlistProvider);
-    int slideStartIndex = 0;
-    for (int i = 0; i < index; i++) {
-      final item = items[i];
-      if (item is SongSetlistItem) {
-        final slides = SlideUtils.parseLyrics(item.song.lyrics, item.song.title);
-        slideStartIndex += slides.length;
-      } else if (item is ImageSetlistItem) {
-        slideStartIndex += 1; // Image = 1 slide
-      }
-    }
-    return slideStartIndex;
+    return getSlideCountForItems(items, index - 1);
   }
 
   // ── Scroll slide list to item only if not visible ─────────────────────
@@ -404,6 +394,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
             final slideIndex = _getSlideStartIndex(selectedIndex);
             ref.read(activeSlideIndexProvider.notifier).state = slideIndex;
             ref.read(setlistSelectionProvider.notifier).clear();
+            ref.read(slideListFocusNodeProvider).requestFocus();
             return KeyEventResult.handled;
           }
         }
