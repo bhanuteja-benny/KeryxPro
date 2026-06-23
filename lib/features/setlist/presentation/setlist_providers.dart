@@ -14,8 +14,13 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     state = [...state, SongSetlistItem(song)];
   }
 
-  int insertSong(Song song, {required bool goLive, required Set<int> selectedIndices, required int? currentDisplayItemIndex}) {
-    final insertAt = _calculateInsertIndex(goLive: goLive, selectedIndices: selectedIndices, currentDisplayItemIndex: currentDisplayItemIndex);
+  int insertSong(Song song, {
+    required bool goLive,
+    required Set<int> selectedIndices,
+    required int? currentDisplayItemIndex,
+    int? insertAtIndex,
+  }) {
+    final insertAt = insertAtIndex ?? _calculateInsertIndex(goLive: goLive, selectedIndices: selectedIndices, currentDisplayItemIndex: currentDisplayItemIndex);
     final newList = List<SetlistItem>.from(state);
     newList.insert(insertAt, SongSetlistItem(song));
     state = newList;

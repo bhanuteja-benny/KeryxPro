@@ -1,0 +1,20 @@
+Phase 48.3
+
+Context: 
+- slides scroll issue
+
+issue:
+- when user clicks on setlist item, the slides pane auto scroll's to the associated item 
+- also when user click's or navigates through the slides, the scroll bar adjusts automatically (scrolls down gradually)
+- in both of above cases the selected slide mostly adjusted to the middle (from top) in the slides pane but after many navigations, slowly the selected item is scrolling towards top, it is even going behind the top bar that the selected slide is not in the visible area any longer, even if it is scroll down manually, 
+- and when going to next slide, it is going to top again this has to be addressed. always the positions needs to be checked if it going to extreme top or extreme bottom. the selected should be near to the middle
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements

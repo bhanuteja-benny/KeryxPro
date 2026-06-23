@@ -333,19 +333,26 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
   void _scrollToItem(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       int slideStartIndex = _getSlideStartIndex(index);
-      
-      final scrollController = ref.read(slideListScrollControllerProvider);
-      if (scrollController.hasClients) {
-        const itemHeight = 28.0;
-        final viewportHeight = scrollController.position.viewportDimension;
-        final maxScroll = scrollController.position.maxScrollExtent;
-        final centerOffset = (slideStartIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
-        
-        scrollController.animateTo(
-          centerOffset.clamp(0.0, maxScroll),
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+      final slides = ref.read(currentSlidesProvider);
+      if (slideStartIndex >= 0 && slideStartIndex < slides.length) {
+        final scrollController = ref.read(slideListScrollControllerProvider);
+        if (scrollController.hasClients) {
+          final viewportHeight = scrollController.position.viewportDimension;
+          final maxScroll = scrollController.position.maxScrollExtent;
+          
+          double targetTop = 0.0;
+          for (int i = 0; i < slideStartIndex; i++) {
+            targetTop += slides[i].isBlank ? 24.0 : 28.0;
+          }
+          double targetHeight = slides[slideStartIndex].isBlank ? 24.0 : 28.0;
+          final centerOffset = targetTop - (viewportHeight / 2) + (targetHeight / 2);
+          
+          scrollController.animateTo(
+            centerOffset.clamp(0.0, maxScroll),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }

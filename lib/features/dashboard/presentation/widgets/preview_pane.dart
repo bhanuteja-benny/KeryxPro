@@ -32,6 +32,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
   String? _originalRightBaseTitle;
   int? _originalRightBaseVerse;
   int? _lastInsertedIndex;
+  DateTime? _lastInsertionTime;
 
   bool get _canShiftNext {
     final slides = ref.read(currentSlidesProvider);
@@ -177,10 +178,17 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final canShift = forward ? _canShiftNext : _canShiftPrev;
     if (!canShift) return;
 
+    final now = DateTime.now();
+    final bool isRecentReplacement = stepCount == 2 &&
+        _lastInsertedIndex != null &&
+        _lastInsertionTime != null &&
+        now.difference(_lastInsertionTime!) < const Duration(milliseconds: 600);
+
     String baseTitle;
     int baseVerse;
+    int? forceInsertAtIndex;
 
-    if (stepCount == 2) {
+    if (isRecentReplacement) {
       if (forward) {
         if (_originalRightBaseTitle == null || _originalRightBaseVerse == null) return;
         baseTitle = _originalRightBaseTitle!;
@@ -190,10 +198,9 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
         baseTitle = _originalLeftBaseTitle!;
         baseVerse = _originalLeftBaseVerse!;
       }
-      if (_lastInsertedIndex != null) {
-        ref.read(setlistProvider.notifier).removeAtIndices({_lastInsertedIndex!});
-        _lastInsertedIndex = null;
-      }
+      forceInsertAtIndex = _lastInsertedIndex;
+      ref.read(setlistProvider.notifier).removeAtIndices({forceInsertAtIndex!});
+      _lastInsertedIndex = null;
     } else {
       final slides = ref.read(currentSlidesProvider);
       final activeIndices = ref.read(activeSlideIndicesProvider);
@@ -271,9 +278,11 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
       goLive: true,
       selectedIndices: ref.read(setlistSelectionProvider),
       currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+      insertAtIndex: forceInsertAtIndex,
     );
 
     _lastInsertedIndex = insertAt;
+    _lastInsertionTime = DateTime.now();
     final nextIndex = getSlideCountForItems(ref.read(setlistProvider), insertAt - 1);
     ref.read(activeSlideIndexProvider.notifier).state = nextIndex;
     ref.read(slideListFocusNodeProvider).requestFocus();
@@ -556,16 +565,24 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     ref.listen(activeSlideIndexProvider, (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (scrollController.hasClients) {
-          const itemHeight = 28.0; // height of SlideItemWidget
-          final viewportHeight = scrollController.position.viewportDimension;
-          final maxScroll = scrollController.position.maxScrollExtent;
-          final centerOffset = (next * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
-          
-          scrollController.animateTo(
-            centerOffset.clamp(0.0, maxScroll),
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-          );
+          final slides = ref.read(currentSlidesProvider);
+          if (next >= 0 && next < slides.length) {
+            final viewportHeight = scrollController.position.viewportDimension;
+            final maxScroll = scrollController.position.maxScrollExtent;
+            
+            double targetTop = 0.0;
+            for (int i = 0; i < next; i++) {
+              targetTop += slides[i].isBlank ? 24.0 : 28.0;
+            }
+            double targetHeight = slides[next].isBlank ? 24.0 : 28.0;
+            final centerOffset = targetTop - (viewportHeight / 2) + (targetHeight / 2);
+            
+            scrollController.animateTo(
+              centerOffset.clamp(0.0, maxScroll),
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+            );
+          }
         }
       });
     });
