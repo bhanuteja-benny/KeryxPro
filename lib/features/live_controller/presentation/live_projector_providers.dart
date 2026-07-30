@@ -33,6 +33,18 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
         ));
         // Ensure a blank slide follows the image to prevent grouping with subsequent items
         allSlides.add(Slide.blank(title: title, isSong: false, isFavorite: isFavorite));
+        case WindowSetlistItem(:final windowHandle, :final windowTitle, :final isFavorite):
+          allSlides.add(Slide(
+          title: windowTitle,
+          shortcut: 'WIN',
+          content: 'WINDOW:$windowHandle|${Uri.encodeComponent(windowTitle)}',
+          type: SlideType.other, 
+          isBlank: false,
+          isSong: false,
+          isFavorite: isFavorite,
+        ));
+        // Mirror image-item behaviour
+        allSlides.add(Slide.blank(title: windowTitle, isSong: false, isFavorite: isFavorite));
     }
   }
   return allSlides;
@@ -82,7 +94,7 @@ final _monitorActiveSlideIndicesProvider = Provider.family<List<int>, int>((ref,
   final slide = slides[index];
 
   // Only group bible verses
-  if (slide.isSong || slide.isBlank || slide.shortcut == 'IMG') {
+  if (slide.isSong || slide.isBlank || slide.shortcut == 'IMG' || slide.shortcut == 'WIN') {
     return [index];
   }
 
@@ -237,7 +249,7 @@ final slideNavigationProvider = Provider<SlideNavigationState>((ref) {
   final slide = slides[index];
 
   // If not a Bible verse, all nav arrows just move to next/prev index
-  if (slide.isSong || slide.isBlank || slide.shortcut == 'IMG') {
+  if (slide.isSong || slide.isBlank || slide.shortcut == 'IMG' || slide.shortcut == 'WIN') {
     return SlideNavigationState(
       nextPrimaryIndex: index + 1 < slides.length ? index + 1 : null,
       prevPrimaryIndex: index - 1 >= 0 ? index - 1 : null,
@@ -334,6 +346,9 @@ final slideToSetlistItemIndexProvider = Provider<List<int>>((ref) {
       case ImageSetlistItem():
         mapping.add(itemIdx); // Image slide
         mapping.add(itemIdx); // Blank slide that follows
+      case WindowSetlistItem():
+        mapping.add(itemIdx); // Window slide
+        mapping.add(itemIdx); // Blank slide that follows
     }
   }
   return mapping;
@@ -360,6 +375,8 @@ int getSlideCountForItems(List<SetlistItem> items, int upToIndex) {
         final isSong = song.author != 'Bible';
         count += SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite).length;
       case ImageSetlistItem():
+        count += 2;
+      case WindowSetlistItem():
         count += 2;
     }
   }

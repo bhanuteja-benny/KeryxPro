@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../settings/data/presentation_settings.dart';
 import '../../../../core/sync/media_sync_manager.dart';
+import '../../../setlist/data/window_capture_service.dart';
 
 class ProjectorView extends ConsumerWidget {
   // On Windows, LWA_COLORKEY uses RGB(1,0,1) as the chroma key.
@@ -18,6 +22,7 @@ class ProjectorView extends ConsumerWidget {
   final bool isSong;
   final bool showCheckerboard;
   final int? monitorIndex;
+  final String? captureBridgeWindowId;
 
   const ProjectorView({
     super.key,
@@ -27,6 +32,7 @@ class ProjectorView extends ConsumerWidget {
     this.isSong = true,
     this.showCheckerboard = false,
     this.monitorIndex,
+    this.captureBridgeWindowId,
   });
 
   static Size getCanvasSize(
@@ -153,13 +159,14 @@ class ProjectorView extends ConsumerWidget {
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
     final isImageSlide = activeSlideText?.startsWith('IMAGE:') ?? false;
+    final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
 
     String processedText = activeSlideText ?? "";
     int finalLineCount = lineCount;
     int finalMaxLines = (isSong && lineCount > 1) ? lineCount : 30;
     bool shouldWrapWords = !isSong || lineCount == 1;
 
-    if (isSong && settings.lyricsLineBreak && processedText.isNotEmpty && !isImageSlide) {
+    if (isSong && settings.lyricsLineBreak && processedText.isNotEmpty && !isImageSlide && !isWindowSlide) {
       final style = TextStyle(
         fontSize: lyricsFontSizeValue,
         fontFamily: lyricsFontFamilyValue,
@@ -199,7 +206,7 @@ class ProjectorView extends ConsumerWidget {
             ),
 
           // 3. Layer: Background Image
-          if (activeSlideText != null && !isImageSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync())
+          if (activeSlideText != null && !isImageSlide && !isWindowSlide && isImageEnabled && backgroundImage.isNotEmpty && File(backgroundImage).existsSync())
             Positioned.fill(
               child: Image(
                 image: getImageProvider(
@@ -215,6 +222,8 @@ class ProjectorView extends ConsumerWidget {
               // Body Layer
               if (isImageSlide)
                 _buildImageWidget(activeSlideText!, canvasWidth, canvasHeight, mediaSync)
+              else if (isWindowSlide)
+                _buildWindowWidget(activeSlideText!, canvasWidth, canvasHeight, captureBridgeWindowId)
               else
                 Align(
                   alignment: _getAlignmentGeometry(alignStr, vAlignStr),
@@ -282,7 +291,7 @@ class ProjectorView extends ConsumerWidget {
               ),
 
               // Title Layer
-              if (showTitle && titleText != null && !isImageSlide)
+              if (showTitle && titleText != null && !isImageSlide && !isWindowSlide)
                 Align(
                   alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
                   child: Padding(
@@ -410,7 +419,31 @@ class ProjectorView extends ConsumerWidget {
       alignment: _getImageAlignment(content),
     );
   }
-
+  
+  Widget _buildWindowWidget(String content, double width, double height, String? bridgeWindowId) {
+    final rest = content.substring(7);
+    final parts = rest.split('|');
+    final handle = parts.isNotEmpty ? parts[0] : '';
+    final title = parts.length > 1 ? Uri.decodeComponent(parts[1]) : 'Window';
+    
+    if(handle.isEmpty){
+      return Center(
+        child: Text(
+          "Invalid window reference", 
+          style: TextStyle(color: Colors.red.withOpacity(0.7), fontSize: 14)
+          ),
+      );
+    }
+    
+    return _LiveWindowCaptureWidget(
+      windowHandle: handle,
+      title: title,
+      width: width,
+      height: height,
+      bridgeWindowId: bridgeWindowId,
+    );
+  }
+  
   Alignment _getImageAlignment(String content) {
     final rest = content.substring(6);
     final parts = rest.split('|');
@@ -506,4 +539,148 @@ class _CheckerboardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _LiveWindowCaptureWidget extends StatefulWidget {
+  final String windowHandle;
+  final String title;
+  final double width;
+  final double height;
+  final String? bridgeWindowId;
+  
+  const _LiveWindowCaptureWidget({
+    required this.windowHandle,
+    required this.title,
+    required this.width,
+    required this.height,
+    this.bridgeWindowId,
+  });
+  
+  @override
+  State<_LiveWindowCaptureWidget> createState() => _LiveWindowCaptureWidgetState();
+}
+
+class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
+  Timer? _timer;
+  bool _capturing = false;
+  ui.Image? _image;
+  String? _error;
+  
+  @override
+  void initState() {
+    super.initState();
+    _capture();
+    _timer = Timer.periodic(const Duration(milliseconds: 120), (_) => _capture());
+  }
+  
+  @override
+  void didUpdateWidget(covariant _LiveWindowCaptureWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(oldWidget.windowHandle != widget.windowHandle || oldWidget.bridgeWindowId != widget.bridgeWindowId) {
+      _image?.dispose();
+      _image = null;
+      _error = null;
+      _capture();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _image?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _capture() async{
+    if(_capturing || !mounted) return;
+    _capturing = true;
+
+    try{
+      final frame = await WindowCaptureService.instance.captureWindow(
+        widget.windowHandle,
+        bridgeWindowId: widget.bridgeWindowId,
+      );
+      if (frame == null || !frame.isValid) {
+        if (mounted) {
+          setState(() {
+            _error = 'Window unavailable';
+          });
+        }
+        return;
+      }
+
+      final image = await _decodeBgraImage(frame.pixels, frame.width, frame.height);
+      if (!mounted || image == null) return;
+
+      final previous = _image;
+      setState(() {
+        _error = null;
+        _image = image;
+      }); 
+      previous?.dispose();
+    }catch(e){
+      if(mounted){
+        setState(() {
+          _error = "Capture failed";
+        });
+      }
+    }finally{
+      _capturing = false;
+    }
+  }
+
+  Future<ui.Image?> _decodeBgraImage(Uint8List bytes, int width, int height) async {
+    final completer = Completer<ui.Image?>();
+    ui.decodeImageFromPixels(
+      bytes, 
+      width, 
+      height, 
+      ui.PixelFormat.bgra8888, 
+      (image) => completer.complete(image),
+      rowBytes: width * 4, // BGRA8888 has 4 bytes per pixel
+    );
+    return completer.future;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if(_image != null) {
+      return RawImage(
+        image: _image,
+        width: widget.width,
+        height: widget.height,
+        fit: BoxFit.contain,
+      );
+    }
+
+    if(_error != null){
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.desktop_access_disabled, color: Colors.red, size: 40),
+            const SizedBox(height: 8),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.white60, fontSize: 12),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              widget.title,
+              style: const TextStyle(color: Colors.white38, fontSize: 10),
+              overflow: TextOverflow.ellipsis,
+            )
+          ]
+        )
+      );
+    }
+
+    return const Center(
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
 }

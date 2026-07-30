@@ -100,6 +100,30 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
           } else if (state.monitor2WindowId == closedId) {
             state = state.copyWith(clearMonitor2: true);
           }
+        } else if (call.method == 'window_capture_frame') {
+            final args = call.arguments as Map?;
+            final handle = args?['handle']?.toString() ?? ''; 
+            if (handle.isEmpty) {
+              return {
+                'width': 0,
+                'height': 0,
+                'pixels': <int>[],
+              };
+            }
+
+            try{
+              const channel = MethodChannel('keryx/window');
+              return await channel.invokeMethod<Map<Object?, Object?>>(
+                'capture_window_frame',
+                {'handle': handle},
+              );
+            } catch (e) {
+              return {
+                'width': 0,
+                'height': 0,
+                'pixels': <int>[],
+              };
+            }
         } else if (call.method == 'close_monitor2') {
           await stopMonitor2();
         } else if (call.method == 'minimize_monitor2') {
@@ -261,6 +285,9 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     String? title,
     bool isSong = true,
   }) async {
+    final mainWindowController = await WindowController.fromCurrentEngine(); 
+    final mainWindowId = mainWindowController.windowId;
+
     final isar = await _isarService.db;
     final presetId = state.config.monitor2PresetId;
     final preset = presetId != null 
@@ -275,6 +302,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       'text': text,
       'title': title,
       'isSong': isSong,
+      'mainWindowId': mainWindowId,
     };
 
     final config = WindowConfiguration(arguments: jsonEncode(args));
@@ -361,6 +389,9 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     String? title,
     bool isSong = true,
   }) async {
+    final mainWindowController = await WindowController.fromCurrentEngine(); 
+    final mainWindowId = mainWindowController.windowId;
+
     await refreshDisplays();
     if (state.displays.length < 2) {
       print("monitor does not exists");
@@ -387,6 +418,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       'text': text,
       'title': title,
       'isSong': isSong,
+      'mainWindowId': mainWindowId,
       'displayX': displayX,
       'displayY': displayY,
       'displayW': displayW,

@@ -93,13 +93,15 @@ class SlideItemWidget extends StatelessWidget {
                   ),
                   child: slide.shortcut == 'IMG'
                     ? Icon(Icons.image_rounded, size: 12, color: _getShortcutColor(slide))
-                    : Text(
-                        slide.shortcut,
-                        style: TextStyle(
-                          color: _getShortcutColor(slide),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    : slide.shortcut == 'WIN'
+                       ? Icon(Icons.desktop_windows_rounded, size: 12, color: _getShortcutColor(slide))
+                       : Text(
+                          slide.shortcut,
+                          style: TextStyle(
+                            color: _getShortcutColor(slide),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
                 ),
                 const SizedBox(width: 8),
@@ -125,6 +127,7 @@ class SlideItemWidget extends StatelessWidget {
   Color _getShortcutColor(Slide slide) {
     if (slide.isBlank) return Colors.grey;
     if (slide.shortcut == 'IMG') return Colors.tealAccent;
+    if (slide.shortcut == 'WIN') return Colors.cyanAccent;
     if (!slide.isSong) return Colors.indigoAccent; // Bible
     return Colors.deepPurpleAccent; // Song
   }

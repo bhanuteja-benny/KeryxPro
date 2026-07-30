@@ -54,3 +54,30 @@ class ImageSetlistItem extends SetlistItem {
 
   String get displayName => imagePath.split(RegExp(r'[/\\]')).last;
 }
+
+class WindowSetlistItem extends SetlistItem {
+  final String windowHandle;
+  final String windowTitle;
+  final String processName;
+
+  WindowSetlistItem({
+    required this.windowHandle,
+    required this.windowTitle,
+    this.processName = '',
+    super.uniqueId,
+    super.isFavorite,
+  });
+
+  @override
+  WindowSetlistItem copyWith({bool? isFavorite,}) {
+    return WindowSetlistItem(
+      windowHandle: windowHandle,
+      windowTitle: windowTitle,
+      processName: processName,
+      uniqueId: uniqueId,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+
+  String get displayName => windowTitle;
+}

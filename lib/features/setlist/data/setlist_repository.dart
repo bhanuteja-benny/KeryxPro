@@ -101,9 +101,9 @@ class SetlistRepository {
     final favorites = <bool>[];
 
     for (final item in items) {
-      favorites.add(item.isFavorite);
       switch (item) {
         case SongSetlistItem(:final song):
+          favorites.add(item.isFavorite);
           if (song.author == 'Bible') {
             final encodedTitle = Uri.encodeComponent(song.title);
             final encodedLyrics = Uri.encodeComponent(song.lyrics);
@@ -113,9 +113,14 @@ class SetlistRepository {
             itemOrder.add('song:${song.id}');
           }
         case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
+          favorites.add(item.isFavorite);
           final idx = imageEntries.length;
           imageEntries.add('$imagePath|$layout|$alignment');
           itemOrder.add('image:$idx');
+        case WindowSetlistItem():
+
+
+          break;
       }
     }
 

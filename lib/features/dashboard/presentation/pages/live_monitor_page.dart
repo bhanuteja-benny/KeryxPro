@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../settings/presentation/presentation_settings_provider.dart';
 import '../../../settings/presentation/projection_provider.dart';
+import '../../../live_controller/presentation/live_projector_providers.dart';
 
 class LiveMonitorPage extends ConsumerWidget {
   const LiveMonitorPage({super.key});

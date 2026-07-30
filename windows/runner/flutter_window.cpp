@@ -3,6 +3,7 @@
 #include <optional>
 #include <windows.h>
 #include <string>
+#include <vector>
 
 #include "flutter/generated_plugin_registrant.h"
 #include "flutter/method_channel.h"
@@ -58,6 +59,148 @@ static HWND FindNamedSubWindow(HWND mainHwnd, const std::wstring& displayTitle) 
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+static std::string WideToUtf8(const std::wstring& value){
+  if (value.empty()) return "";
+  int utf8Size = WideCharToMultiByte(
+    CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), nullptr, 0, nullptr, nullptr);
+    if(utf8Size <= 0) return "";
+
+    std::string result(static_cast<size_t>(utf8Size), '\0');
+    WideCharToMultiByte(
+      CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), &result[0], utf8Size, nullptr, nullptr);
+    return result;
+}
+
+static std::wstring GetWindowTitle(HWND hwnd) {
+  int length = GetWindowTextLengthW(hwnd);
+  if(length <= 0) return L"";
+
+  std::wstring title(static_cast<size_t>(length) + 1, L'\0');
+  GetWindowTextW(hwnd, &title[0], length + 1);
+  title.resize(static_cast<size_t>(length));
+  return title;
+}
+
+static std::wstring GetProcessName(DWORD pid) {
+  HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+  if(!process) return L"";
+
+  wchar_t pathBuffer[MAX_PATH] = {};
+  DWORD size = MAX_PATH;
+  std::wstring result;
+  if (QueryFullProcessImageNameW(process, 0, pathBuffer, &size)) {
+    std::wstring fullPath(pathBuffer);
+    size_t slash = fullPath.find_last_of(L'\\');
+    result = slash == std::wstring::npos ? fullPath : fullPath.substr(slash + 1);
+  }
+  CloseHandle(process);
+  return result;
+}
+
+static bool IsCapturableWindow(HWND hwnd, HWND mainHwnd) {
+  if (!hwnd || hwnd == mainHwnd) return false; 
+  if (!IsWindowVisible(hwnd) || IsIconic(hwnd)) return false; 
+  if (GetWindow(hwnd, GW_OWNER) != nullptr) return false; 
+  
+  LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE); 
+  if ((exStyle & WS_EX_TOOLWINDOW) != 0) return false; 
+  
+  DWORD pid = 0; 
+  GetWindowThreadProcessId(hwnd, &pid); 
+  if (pid == 0 || pid == GetCurrentProcessId()) return false; 
+  
+  std::wstring title = GetWindowTitle(hwnd); 
+  if (title.empty()) return false;
+
+  return true;
+}
+
+struct CapturableWindowListData {
+  HWND mainHwnd; 
+  flutter::EncodableList* out;
+};
+
+static BOOL CALLBACK EnumerateCapturableWindows(HWND hwnd, LPARAM lParam) {
+  auto* data = reinterpret_cast<CapturableWindowListData*>(lParam); 
+  if (!data || !data->out) return FALSE;
+
+  if (!IsCapturableWindow(hwnd, data->mainHwnd)) return TRUE;
+
+  DWORD pid = 0; 
+  GetWindowThreadProcessId(hwnd, &pid); 
+  std::wstring title = GetWindowTitle(hwnd); 
+  std::wstring processName = GetProcessName(pid);
+
+  flutter::EncodableMap windowInfo;
+  windowInfo[flutter::EncodableValue("handle")] = flutter::EncodableValue(std::to_string(reinterpret_cast<uint64_t>(hwnd)));
+  windowInfo[flutter::EncodableValue("title")] = flutter::EncodableValue(WideToUtf8(title));
+  windowInfo[flutter::EncodableValue("processName")] = flutter::EncodableValue(WideToUtf8(processName));
+  windowInfo[flutter::EncodableValue("processId")] = flutter::EncodableValue(static_cast<int>(pid));
+
+  data->out->push_back(flutter::EncodableValue(windowInfo));
+  return TRUE;
+}
+
+static bool CapturewindowFrame (HWND hwnd, std::vector<uint8_t>& outpixels, int& outWidth, int& outHeight) {
+   RECT rect = {}; 
+   if (!GetWindowRect(hwnd, &rect)) return false; 
+
+   int width = rect.right - rect.left; 
+   int height = rect.bottom - rect.top; 
+   if (width <= 0 || height <= 0) return false; 
+   
+   HDC screenDc = GetDC(nullptr); 
+   if (!screenDc) return false; 
+   
+   HDC memDc = CreateCompatibleDC(screenDc); 
+   if (!memDc) { 
+    ReleaseDC(nullptr, screenDc); 
+    return false; 
+  }
+
+  BITMAPINFO bmi = {}; 
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = width;
+  bmi.bmiHeader.biHeight = -height; 
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 32;
+  bmi.bmiHeader.biCompression = BI_RGB;
+
+  void* bits = nullptr; 
+  HBITMAP dib = CreateDIBSection(screenDc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+  if (!dib || !bits) { 
+    if (dib) DeleteObject(dib);
+    DeleteDC(memDc);
+    ReleaseDC(nullptr, screenDc); 
+    return false; 
+  }
+
+  HGDIOBJ oldBmp = SelectObject(memDc, dib); 
+
+  bool captured = PrintWindow(hwnd, memDc, PW_RENDERFULLCONTENT); 
+  if(!captured) {
+    HDC windowDc = GetWindowDC(hwnd);
+    if (windowDc) {
+      captured = BitBlt(memDc, 0, 0, width, height, windowDc, 0, 0, SRCCOPY | CAPTUREBLT) == TRUE; 
+      ReleaseDC(hwnd, windowDc);
+    }
+  }
+
+  if (captured) {
+    size_t pixelCount = static_cast<size_t>(width) * static_cast<size_t>(height) * 4; 
+    outpixels.assign(static_cast<uint8_t*>(bits), static_cast<uint8_t*>(bits) + pixelCount);
+    outWidth = width;
+    outHeight = height;
+  }
+
+  SelectObject(memDc, oldBmp);
+  DeleteObject(dib);
+  DeleteDC(memDc);
+  ReleaseDC(nullptr, screenDc);
+
+  return captured;
+}
+
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
 
@@ -90,10 +233,73 @@ bool FlutterWindow::OnCreate() {
       [mainHwnd](const flutter::MethodCall<flutter::EncodableValue>& call,
              std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
 
+        // --- list_capturable_windows ---
+        if (call.method_name() == "list_capturable_windows") {
+          flutter::EncodableList windows;
+          CapturableWindowListData data = {mainHwnd, &windows};
+          EnumWindows(EnumerateCapturableWindows, reinterpret_cast<LPARAM>(&data));
+          result->Success(flutter::EncodableValue(windows));
+          return;
+        }
+        else if (call.method_name() == "capture_window_frame") {
+          const auto* args = std::get_if<flutter::EncodableMap>(call.arguments());
+          if (!args) {
+            result->Error("BAD_ARGS", "Expected EncodableMap");
+            return;
+          }
+
+          auto it = args->find(flutter::EncodableValue("handle"));
+          if (it == args->end()) {
+            result->Error("BAD_ARGS", "Missing handle");
+            return;
+          }
+          
+          std::string handleStr;
+          if (auto* s = std::get_if<std::string>(&it->second)) {
+            handleStr = *s;
+          } else if (auto* i = std::get_if<int>(&it->second)) {
+            handleStr = std::to_string(*i);
+          } else if (auto* i64 = std::get_if<int64_t> (&it->second)) {
+            handleStr = std::to_string(*i64);
+          } 
+
+          if (handleStr.empty()) {
+            result->Error("BAD_ARGS", "handle is null or not supported type");
+            return;
+          }
+
+          uint64_t handleValue = 0;
+          try {
+            handleValue = std::stoull(handleStr);
+          } catch (...) {
+            result->Error("BAD_ARGS", "handle is not a valid number");
+            return;
+          }
+
+          HWND targetHwnd = reinterpret_cast<HWND>(handleValue);
+          if (!IsWindow(targetHwnd) || !IsWindowVisible(targetHwnd) || IsIconic(targetHwnd)) {
+            result->Error("BAD_ARGS", "target window is not valid or not visible");
+            return;
+          }
+
+          std::vector<uint8_t> pixels;
+          int width = 0;
+          int height = 0;
+          if (!CapturewindowFrame(targetHwnd, pixels, width, height)) {
+            result->Error("CAPTURE_FAILED", "Failed to capture window frame");
+            return;
+          }
+
+          flutter::EncodableMap response;
+          response[flutter::EncodableValue("width")] = flutter::EncodableValue(width);
+          response[flutter::EncodableValue("height")] = flutter::EncodableValue(height);
+          response[flutter::EncodableValue("pixels")] = flutter::EncodableValue(pixels);
+          result->Success(flutter::EncodableValue(response));
+        
         // ── configure_subwindow ─────────────────────────────────────────────
         // Finds a newly created (unnamed) sub-window OR an already-renamed one,
         // renames it, and resizes it.
-        if (call.method_name() == "configure_subwindow") {
+        } else if (call.method_name() == "configure_subwindow") {
           const auto* args =
               std::get_if<flutter::EncodableMap>(call.arguments());
           if (!args) {
@@ -174,8 +380,6 @@ bool FlutterWindow::OnCreate() {
           // Monitor 2 = normal z-order; Monitor 1 = always-on-top
           HWND insertAfter = (monitorIndex == 2) ? HWND_NOTOPMOST : HWND_TOPMOST;
           SetWindowPos(target, insertAfter, x, y, adjustedW, adjustedH, flags);
-
-          SetForegroundWindow(mainHwnd);
           result->Success();
 
         // ── move_subwindow_to_display ───────────────────────────────────────
@@ -237,7 +441,6 @@ bool FlutterWindow::OnCreate() {
 
           SetWindowPos(target, HWND_TOPMOST, x, y, w, h,
                        SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
-          SetForegroundWindow(mainHwnd);
           result->Success();
 
         // ── close_subwindow ─────────────────────────────────────────────────

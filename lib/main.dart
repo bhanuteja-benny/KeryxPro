@@ -129,6 +129,7 @@ class _ProjectorAppState extends State<ProjectorApp> {
   PresentationSettings _settings = PresentationSettings();
   int? _presetId;
   int? _monitorIndex;
+  String? _mainWindowId;
 
   @override
   void initState() {
@@ -173,7 +174,8 @@ class _ProjectorAppState extends State<ProjectorApp> {
         _titleText = parsed['title'] as String?;
         _isSong = parsed['isSong'] as bool? ?? true;
         _monitorIndex = parsed['monitorIndex'] as int?;
-        
+        _mainWindowId = parsed['mainWindowId'] as String?;
+
         final settingsMap = parsed['settings'] as Map<String, dynamic>?;
         if (settingsMap != null) {
           _settings = PresentationSettings.fromMap(settingsMap);
@@ -184,12 +186,15 @@ class _ProjectorAppState extends State<ProjectorApp> {
 
   @override
   Widget build(BuildContext context) {
-    Widget view = ProjectorView(
-      settings: _settings,
-      activeSlideText: _activeSlideText,
-      titleText: _titleText,
-      isSong: _isSong,
-      monitorIndex: _monitorIndex,
+    Widget view = ExcludeSemantics(
+      child: ProjectorView(
+        settings: _settings,
+        activeSlideText: _activeSlideText,
+        titleText: _titleText,
+        isSong: _isSong,
+        monitorIndex: _monitorIndex,
+        captureBridgeWindowId: _mainWindowId,
+      ),
     );
 
     final bool isBlank = _activeSlideText == "";

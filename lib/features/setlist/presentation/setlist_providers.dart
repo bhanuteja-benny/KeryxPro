@@ -39,6 +39,14 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     return insertAt;
   }
 
+  int insertWindow(WindowSetlistItem windowItem, {required Set<int> selectedIndices, required int? currentDisplayItemIndex}) {
+    final insertAt = _calculateInsertIndex(goLive: false, selectedIndices: selectedIndices, currentDisplayItemIndex: currentDisplayItemIndex);
+    final newList = List<SetlistItem>.from(state);
+    newList.insert(insertAt, windowItem);
+    state = newList;
+    return insertAt;
+  }
+
   int _calculateInsertIndex({
     required bool goLive,
     required Set<int> selectedIndices,
@@ -191,6 +199,8 @@ String generateSetlistSignature(List<SetlistItem> items) {
         }
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
         buffer.write('img:$imagePath;$layout;$alignment|');
+      case WindowSetlistItem(:final windowHandle, :final windowTitle):
+        buffer.write('win:$windowHandle;${Uri.encodeComponent(windowTitle)}|');
     }
   }
   return buffer.toString();

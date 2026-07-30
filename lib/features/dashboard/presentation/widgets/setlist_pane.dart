@@ -5,6 +5,7 @@ import '../../../setlist/data/setlist_item.dart';
 import '../../../setlist/data/setlist_repository.dart';
 import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/presentation/image_slide_dialog.dart';
+import '../../../setlist/presentation/window_slide_dialog.dart';
 import '../global_ui_providers.dart';
 import '../../../live_controller/presentation/slide_utils.dart';
 import '../../../live_controller/presentation/live_projector_providers.dart';
@@ -261,6 +262,21 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     }
   }
 
+// ── Add window slide ────────────────────────────────────────────────────
+  Future<void> _addWindow() async {
+    final result = await showDialog<WindowSetlistItem>(
+      context: context,
+      builder: (context) => const WindowSlideDialog(),
+    );
+    if (result != null) {
+      ref.read(setlistProvider.notifier).insertWindow(
+        result,
+        selectedIndices: ref.read(setlistSelectionProvider),
+        currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+      );
+    }
+  }
+
   // ── Clear all items ────────────────────────────────────────────────────
   Future<void> _clearAll() async {
     final confirmed = await showDialog<bool>(
@@ -293,14 +309,6 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     final selection = ref.read(setlistSelectionProvider);
     if (selection.isEmpty) return;
     ref.read(setlistProvider.notifier).toggleFavorite(selection);
-  }
-
-  // ── Refresh placeholder ────────────────────────────────────────────────
-  void _refresh() {
-    debugPrint('Refresh clicked');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Refresh clicked'), duration: Duration(seconds: 1)),
-    );
   }
 
   // ── Handle item tap (single / Ctrl / Shift) ───────────────────────────
@@ -548,13 +556,20 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                                           size: 13,
                                           color: Colors.deepPurpleAccent,
                                         )
-                                else
+                                else if (item is ImageSetlistItem)
                                   const Icon(Icons.image_rounded,
-                                      size: 13, color: Colors.tealAccent),
+                                      size: 13, color: Colors.tealAccent)                            
+                                else
+                                  const Icon(Icons.desktop_windows_rounded,
+                                      size: 13, color: Colors.cyanAccent),
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
-                                  item is SongSetlistItem ? item.song.title : (item as ImageSetlistItem).displayName,
+                                    item is SongSetlistItem 
+                                      ? item.song.title 
+                                      : item is ImageSetlistItem 
+                                        ? item.displayName
+                                        : (item as WindowSetlistItem).displayName,
                                     style: TextStyle(
                                       color: isSelected ? Colors.white : Colors.white70,
                                       fontSize: 11,
@@ -630,9 +645,9 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                       onPressed: hasSelection ? _toggleFavorite : null,
                     ),
                     _segmentedButton(
-                      icon: Icons.refresh,
-                      tooltip: 'Refresh',
-                      onPressed: null,
+                      icon: Icons.desktop_windows_rounded,
+                      tooltip: 'Add Window Slide',
+                      onPressed: _addWindow,
                       showBorder: false,
                       isSelected: false,
                     ),
