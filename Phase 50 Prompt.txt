@@ -1,0 +1,43 @@
+Phase 50 Plan
+
+context:
+- More changes in the window slide popup and presentation
+
+UI Requirement:
+- in "Add window slide" popup add below options
+- - Stretch
+- - - same as from "Add Image Slide", with same functionality
+- - Keep Aspect Ratio
+- - - same as from "Add Image Slide", with same functionality
+- - Content Only
+- - - A checkbox
+- in "Presentation Settings", add "Window" along with Song/Scripture/Blank
+- - Give the same options for setting the background, Resolution/Background color etc
+- - No need to give Typography settings
+- Save the "Presentation Settings" into database, No need to save Window Slide in the SetList items database
+- "Window" presentation settings should be applied for the windows slide
+
+UI Styles:
+- in Monitor 1 preview and Launch window, in Monitor 2 preview and Launch window, apply the "Window" preset settings for windows slide
+- when "Content Only" is selected for windows slide
+- - then only the content (client area of the source window) should be displayed excluding title bar and status bar (Header and footer bars)
+- - - don't use PW_CLIENTONLY, as it will not work perfectly for some windows apps
+- - - - for example power point individual mode, only title bar is excluded but the bottom bar will display as it is part of the Client area.
+- - - use Windows Graphics Capture API like OBS, which captures each window's own rendered surface
+- - - Below is an example logic to get the exact client area. If you have any other better ways or improvements, let me know.
+- - - - find the largest direct child HWND and capture that. This matches OBS's per window capture behaviour.
+- - - - by enumerating direct children of the source window, find the one which is covering maximum area (may be like >= 70% of the client area)
+- - - - capture that child directly, its PrintWindow output contains only its own content, so the title and status bars (separate smaller sibling HWND are ignored) are not displayed.
+- - - - Fall back to the client-area cropping for apps where there is no dominant child window.
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan
