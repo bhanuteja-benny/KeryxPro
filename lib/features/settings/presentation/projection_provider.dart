@@ -103,6 +103,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
         } else if (call.method == 'window_capture_frame') {
             final args = call.arguments as Map?;
             final handle = args?['handle']?.toString() ?? ''; 
+            final contentOnly = args?['contentOnly'] == true;            
             if (handle.isEmpty) {
               return {
                 'width': 0,
@@ -115,7 +116,10 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
               const channel = MethodChannel('keryx/window');
               return await channel.invokeMethod<Map<Object?, Object?>>(
                 'capture_window_frame',
-                {'handle': handle},
+                {
+                  'handle': handle,
+                  'contentOnly': contentOnly,
+                  },
               );
             } catch (e) {
               return {
