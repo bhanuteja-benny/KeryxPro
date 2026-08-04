@@ -59,21 +59,27 @@ class WindowSetlistItem extends SetlistItem {
   final String windowHandle;
   final String windowTitle;
   final String processName;
+  final String layout; // 'stretch' | 'contain'
+  final bool contentOnly; // hide title bar/borders by capturing client area only
 
   WindowSetlistItem({
     required this.windowHandle,
     required this.windowTitle,
     this.processName = '',
+    this.layout = 'contain',
+    this.contentOnly = false,
     super.uniqueId,
     super.isFavorite,
   });
 
   @override
-  WindowSetlistItem copyWith({bool? isFavorite,}) {
+  WindowSetlistItem copyWith({bool? isFavorite}) {
     return WindowSetlistItem(
       windowHandle: windowHandle,
       windowTitle: windowTitle,
       processName: processName,
+      layout: layout,
+      contentOnly: contentOnly,
       uniqueId: uniqueId,
       isFavorite: isFavorite ?? this.isFavorite,
     );
