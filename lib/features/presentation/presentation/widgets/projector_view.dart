@@ -421,28 +421,32 @@ class ProjectorView extends ConsumerWidget {
   }
   
   Widget _buildWindowWidget(String content, double width, double height, String? bridgeWindowId) {
-    final rest = content.substring(7);
-    final parts = rest.split('|');
-    final handle = parts.isNotEmpty ? parts[0] : '';
-    final title = parts.length > 1 ? Uri.decodeComponent(parts[1]) : 'Window';
-    
-    if(handle.isEmpty){
-      return Center(
-        child: Text(
-          "Invalid window reference", 
-          style: TextStyle(color: Colors.red.withOpacity(0.7), fontSize: 14)
-          ),
-      );
-    }
-    
-    return _LiveWindowCaptureWidget(
-      windowHandle: handle,
-      title: title,
-      width: width,
-      height: height,
-      bridgeWindowId: bridgeWindowId,
-    );
+  final rest = content.substring(7);
+  final parts = rest.split('|');
+  final handle = parts.isNotEmpty ? parts[0] : '';
+  final title = parts.length > 1 ? Uri.decodeComponent(parts[1]) : 'Window';
+  final layout = parts.length > 2 ? parts[2] : 'contain';
+  final contentOnly = parts.length > 3 ? parts[3] == '1' : false;
+
+  if (handle.isEmpty) {
+    return Center(
+      child: Text(
+        'Invalid window reference',
+        style: TextStyle(color: Colors.red.withOpacity(0.7), fontSize: 14),
+      ), // Text
+    ); // Center
   }
+
+  return _LiveWindowCaptureWidget(
+    windowHandle: handle,
+    title: title,
+    width: width,
+    height: height,
+    layout: layout,
+    contentOnly: contentOnly,
+    bridgeWindowId: bridgeWindowId,
+  );
+}
   
   Alignment _getImageAlignment(String content) {
     final rest = content.substring(6);
@@ -546,16 +550,20 @@ class _LiveWindowCaptureWidget extends StatefulWidget {
   final String title;
   final double width;
   final double height;
+  final String layout;
+  final bool contentOnly;
   final String? bridgeWindowId;
-  
+
   const _LiveWindowCaptureWidget({
     required this.windowHandle,
     required this.title,
     required this.width,
     required this.height,
+    required this.layout,
+    required this.contentOnly,
     this.bridgeWindowId,
   });
-  
+
   @override
   State<_LiveWindowCaptureWidget> createState() => _LiveWindowCaptureWidgetState();
 }
@@ -596,9 +604,10 @@ class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
     _capturing = true;
 
     try{
-      final frame = await WindowCaptureService.instance.captureWindow(
+      final frame = await WindowCaptureService.instance.captureWindowFrame(
         widget.windowHandle,
         bridgeWindowId: widget.bridgeWindowId,
+        contentOnly: widget.contentOnly,
       );
       if (frame == null || !frame.isValid) {
         if (mounted) {
@@ -645,11 +654,12 @@ class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
   @override
   Widget build(BuildContext context) {
     if(_image != null) {
+      final fit = widget.layout == 'stretch' ? BoxFit.fill : BoxFit.contain;
       return RawImage(
         image: _image,
         width: widget.width,
         height: widget.height,
-        fit: BoxFit.contain,
+        fit: fit,
       );
     }
 
@@ -658,7 +668,7 @@ class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.desktop_access_disabled, color: Colors.red, size: 40),
+            Icon(Icons.desktop_access_disabled, color: Colors.red.withOpacity(0.7), size: 40),
             const SizedBox(height: 8),
             Text(
               _error!,
