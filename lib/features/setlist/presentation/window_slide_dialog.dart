@@ -102,7 +102,7 @@ Widget build(BuildContext context) {
                 style: TextStyle(
                   color: Colors.white54, 
                   fontSize: 11, 
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
               ),
               ),
               const SizedBox(height: 8),

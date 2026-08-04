@@ -90,7 +90,7 @@ static std::wstring GetProcessName(DWORD pid) {
   std::wstring result;
   if (QueryFullProcessImageNameW(process, 0, pathBuffer, &size)) {
     std::wstring fullPath(pathBuffer);
-    size_t slash = fullPath.find_last_of(L'\\/');
+    size_t slash = fullPath.find_last_of(L"\\/");
     result = slash == std::wstring::npos ? fullPath : fullPath.substr(slash + 1);
   }
   CloseHandle(process);
@@ -169,9 +169,9 @@ static bool CaptureWindowFrame(HWND hwnd, std::vector<uint8_t>& outPixels, int& 
     RECT windowRect = {};
     if (!GetWindowRect(hwnd, &windowRect)) return false;
 
-    int fullwidth  = windowRect.right - windowRect.left;
+    int fullWidth  = windowRect.right - windowRect.left;
     int fullHeight = windowRect.bottom - windowRect.top;
-    if (fullwidth <= 0 || fullHeight <= 0) return false;
+    if (fullWidth <= 0 || fullHeight <= 0) return false;
 
     HDC screenDc = GetDC(nullptr);
     if (!screenDc) return false;
@@ -181,7 +181,7 @@ static bool CaptureWindowFrame(HWND hwnd, std::vector<uint8_t>& outPixels, int& 
 
     BITMAPINFO bmi = {};
     bmi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth       = fullwidth;
+    bmi.bmiHeader.biWidth       = fullWidth;
     bmi.bmiHeader.biHeight      = -fullHeight; // top-down
     bmi.bmiHeader.biPlanes      = 1;
     bmi.bmiHeader.biBitCount    = 32;
@@ -360,7 +360,7 @@ if (contentOnlyIt != args->end()) {
           std::vector<uint8_t> pixels;
           int width = 0;
           int height = 0;
-          if (!CapturewindowFrame(targetHwnd, pixels, width, height, contentOnly)) {
+          if (!CaptureWindowFrame(targetHwnd, pixels, width, height, contentOnly)) {
             result->Error("CAPTURE_FAILED", "Failed to capture window frame");
             return;
           }

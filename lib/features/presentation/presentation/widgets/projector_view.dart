@@ -604,7 +604,7 @@ class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
     _capturing = true;
 
     try{
-      final frame = await WindowCaptureService.instance.captureWindowFrame(
+      final frame = await WindowCaptureService.instance.captureWindow(
         widget.windowHandle,
         bridgeWindowId: widget.bridgeWindowId,
         contentOnly: widget.contentOnly,
@@ -654,7 +654,7 @@ class _LiveWindowCaptureWidgetState extends State<_LiveWindowCaptureWidget> {
   @override
   Widget build(BuildContext context) {
     if(_image != null) {
-      final fit = widget.layout == 'stretch' ? BoxFit.fill : BoxFit.contain;
+      final fit = widget.layout == 'stretch' ? BoxFit.fill : BoxFit.fitHeight;
       return RawImage(
         image: _image,
         width: widget.width,
