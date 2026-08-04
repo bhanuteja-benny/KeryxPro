@@ -199,8 +199,8 @@ String generateSetlistSignature(List<SetlistItem> items) {
         }
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
         buffer.write('img:$imagePath;$layout;$alignment|');
-      case WindowSetlistItem(:final windowHandle, :final windowTitle):
-        buffer.write('win:$windowHandle;${Uri.encodeComponent(windowTitle)}|');
+      case WindowSetlistItem(:final windowHandle, :final windowTitle, :final layout, :final contentOnly):
+        buffer.write('win:$windowHandle;${Uri.encodeComponent(windowTitle)};$layout;${contentOnly ? '1' : '0'}|');
     }
   }
   return buffer.toString();
