@@ -80,7 +80,9 @@ class WindowCaptureService {
 
   Future<WindowCaptureFrame?> captureWindow(
     String handle,
-    {String? bridgeWindowId}
+    {String? bridgeWindowId,
+     bool contentOnly = false,
+     }
   ) async {
 
     if (handle.isEmpty) {
@@ -89,35 +91,44 @@ class WindowCaptureService {
 
     try {
       final raw = await _channel.invokeMethod<Map<Object?, Object?>>( 
-        'capture_window_frame', {'handle': handle},
+        'capture_window_frame', 
+        {'handle': handle,
+         'contentOnly': contentOnly,},
       );
       if (raw == null) return null; 
       final frame = WindowCaptureFrame.fromMap(raw); 
       return frame.isValid ? frame : null; 
     } on MissingPluginException {
-        return _captureWindowFrameViaBridge(handle, bridgeWindowId); 
+        return _captureWindowFrameViaBridge(handle, bridgeWindowId, contentOnly: contentOnly); 
     } on PlatformException { 
         if (bridgeWindowId == null || bridgeWindowId.isEmpty) return null; 
-        return _captureWindowFrameViaBridge(handle, bridgeWindowId);
+        return _captureWindowFrameViaBridge(handle, bridgeWindowId, contentOnly: contentOnly);
     }
 
   }
 
-  Future<WindowCaptureFrame?> _captureWindowFrameViaBridge(String handle, String? bridgeWindowId) async { 
+  Future<WindowCaptureFrame?> _captureWindowFrameViaBridge(
+  String handle,
+  String? bridgeWindowId, {
+  bool contentOnly = false,
+}) async {
+  if (bridgeWindowId == null || bridgeWindowId.isEmpty) return null;
 
-    if (bridgeWindowId == null || bridgeWindowId.isEmpty) return null; 
+  try {
+    final raw = await WindowController.fromWindowId(bridgeWindowId).invokeMethod(
+      'window_capture_frame',
+      {
+        'handle': handle,
+        'contentOnly': contentOnly,
+      },
+    );
 
-    try {
-      final raw = await WindowController.fromWindowId(bridgeWindowId).invokeMethod(
-        'window_capture_frame', {'handle' : handle}, 
-      );
-      
-      if (raw is! Map) return null; 
-      final map = Map<Object?, Object?>.from(raw); 
-      final frame = WindowCaptureFrame.fromMap(map); 
-      return frame.isValid? frame : null; 
-    } catch (_) { 
-        return null;
-    }
+    if (raw is! Map) return null;
+    final map = Map<Object?, Object?>.from(raw);
+    final frame = WindowCaptureFrame.fromMap(map);
+    return frame.isValid ? frame : null;
+  } catch (_) {
+    return null;
   }
+}
 }
