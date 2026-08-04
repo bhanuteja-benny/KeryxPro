@@ -90,7 +90,7 @@ static std::wstring GetProcessName(DWORD pid) {
   std::wstring result;
   if (QueryFullProcessImageNameW(process, 0, pathBuffer, &size)) {
     std::wstring fullPath(pathBuffer);
-    size_t slash = fullPath.find_last_of(L'\\');
+    size_t slash = fullPath.find_last_of(L'\\/');
     result = slash == std::wstring::npos ? fullPath : fullPath.substr(slash + 1);
   }
   CloseHandle(process);
