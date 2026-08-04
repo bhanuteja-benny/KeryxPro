@@ -141,57 +141,124 @@ static BOOL CALLBACK EnumerateCapturableWindows(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
-static bool CapturewindowFrame (HWND hwnd, std::vector<uint8_t>& outpixels, int& outWidth, int& outHeight) {
-   RECT rect = {}; 
-   if (!GetWindowRect(hwnd, &rect)) return false; 
+// Returns the largest visible direct child covering >=70% of the parent client area.
+static HWND FindLargestDirectChild(HWND parent) {
+    RECT pc = {};
+    if (!GetClientRect(parent, &pc)) return nullptr;
+    const LONG parentArea = (pc.right - pc.left) * (pc.bottom - pc.top);
+    if (parentArea <= 0) return nullptr;
 
-   int width = rect.right - rect.left; 
-   int height = rect.bottom - rect.top; 
-   if (width <= 0 || height <= 0) return false; 
-   
-   HDC screenDc = GetDC(nullptr); 
-   if (!screenDc) return false; 
-   
-   HDC memDc = CreateCompatibleDC(screenDc); 
-   if (!memDc) { 
-    ReleaseDC(nullptr, screenDc); 
-    return false; 
-  }
+    struct SD { HWND parent, best; LONG bestArea, threshold; };
+    SD sd = {parent, nullptr, 0, parentArea * 7 / 10};
 
-  BITMAPINFO bmi = {}; 
-  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth = width;
-  bmi.bmiHeader.biHeight = -height; 
-  bmi.bmiHeader.biPlanes = 1;
-  bmi.bmiHeader.biBitCount = 32;
-  bmi.bmiHeader.biCompression = BI_RGB;
+    EnumChildWindows(parent, [](HWND child, LPARAM lp) -> BOOL {
+        auto* d = reinterpret_cast<SD*>(lp);
+        if (GetParent(child) != d->parent) return TRUE;
+        if (!IsWindowVisible(child)) return TRUE;
+        RECT r = {};
+        if (!GetWindowRect(child, &r)) return TRUE;
+        LONG area = (r.right - r.left) * (r.bottom - r.top);
+        if (area > d->bestArea) { d->bestArea = area; d->best = child; }
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&sd));
 
-  void* bits = nullptr; 
-  HBITMAP dib = CreateDIBSection(screenDc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
-  if (!dib || !bits) { 
-    if (dib) DeleteObject(dib);
-    DeleteDC(memDc);
-    ReleaseDC(nullptr, screenDc); 
-    return false; 
-  }
+    return (sd.best && sd.bestArea >= sd.threshold) ? sd.best : nullptr;
+}
 
-  HGDIOBJ oldBmp = SelectObject(memDc, dib); 
+static bool CaptureWindowFrame(HWND hwnd, std::vector<uint8_t>& outPixels, int& outWidth, int& outHeight, bool contentOnly) {
+    RECT windowRect = {};
+    if (!GetWindowRect(hwnd, &windowRect)) return false;
 
-  bool captured = PrintWindow(hwnd, memDc, PW_RENDERFULLCONTENT); 
-  if(!captured) {
+    int fullwidth  = windowRect.right - windowRect.left;
+    int fullHeight = windowRect.bottom - windowRect.top;
+    if (fullwidth <= 0 || fullHeight <= 0) return false;
+
+    HDC screenDc = GetDC(nullptr);
+    if (!screenDc) return false;
+
+    HDC memDc = CreateCompatibleDC(screenDc);
+    if (!memDc) { ReleaseDC(nullptr, screenDc); return false; }
+
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth       = fullwidth;
+    bmi.bmiHeader.biHeight      = -fullHeight; // top-down
+    bmi.bmiHeader.biPlanes      = 1;
+    bmi.bmiHeader.biBitCount    = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    void*   bits = nullptr;
+    HBITMAP dib = CreateDIBSection(screenDc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    if (!dib || !bits) {
+        if (dib) DeleteObject(dib);
+        DeleteDC(memDc);
+        ReleaseDC(nullptr, screenDc);
+        return false;
+    }
+
+  HGDIOBJ oldBmp = SelectObject(memDc, dib);
+
+// Capture full window - always use PW_RENDERFULLCONTENT for GPU-composited content.
+bool captured = PrintWindow(hwnd, memDc, PW_RENDERFULLCONTENT);
+if (!captured) {
     HDC windowDc = GetWindowDC(hwnd);
     if (windowDc) {
-      captured = BitBlt(memDc, 0, 0, width, height, windowDc, 0, 0, SRCCOPY | CAPTUREBLT) == TRUE; 
-      ReleaseDC(hwnd, windowDc);
+        captured = BitBlt(memDc, 0, 0, fullWidth, fullHeight, windowDc, 0, 0, SRCCOPY | CAPTUREBLT) == TRUE;
+        ReleaseDC(hwnd, windowDc);
     }
-  }
+    if (!captured) {
+        captured = BitBlt(memDc, 0, 0, fullWidth, fullHeight, screenDc,
+                          windowRect.left, windowRect.top, SRCCOPY | CAPTUREBLT) == TRUE;
+    }
+}
 
   if (captured) {
-    size_t pixelCount = static_cast<size_t>(width) * static_cast<size_t>(height) * 4; 
-    outpixels.assign(static_cast<uint8_t*>(bits), static_cast<uint8_t*>(bits) + pixelCount);
-    outWidth = width;
-    outHeight = height;
-  }
+    if (contentOnly) {
+        // Prefer capturing the largest direct child (e.g. PowerPoint slide view).
+        // Status bars are separate sibling HWNDs and will be excluded - matches OBS behaviour.
+        HWND contentChild = FindLargestDirectChild(hwnd);
+        if (contentChild) {
+            SelectObject(memDc, oldBmp);
+            DeleteObject(dib);
+            DeleteDC(memDc);
+            ReleaseDC(nullptr, screenDc);
+            return CaptureWindowFrame(contentChild, outPixels, outWidth, outHeight, false);
+        } else {
+            // No dominant child: crop to client area to remove OS chrome.
+            RECT  clientRect   = {};
+            POINT clientOrigin = {0, 0};
+            bool ok = GetClientRect(hwnd, &clientRect) && ClientToScreen(hwnd, &clientOrigin);
+            int dx = clientOrigin.x - windowRect.left;
+            int dy = clientOrigin.y - windowRect.top;
+            int cw = clientRect.right  - clientRect.left;
+            int ch = clientRect.bottom - clientRect.top;
+
+            if (ok && dx >= 0 && dy >= 0 && cw > 0 && ch > 0 &&
+                dx + cw <= fullWidth && dy + ch <= fullHeight) {
+                const auto* src = static_cast<const uint8_t*>(bits);
+                std::vector<uint8_t> cropped(static_cast<size_t>(cw) * static_cast<size_t>(ch) * 4);
+                for (int row = 0; row < ch; ++row) {
+                    const uint8_t* srcRow = src + (static_cast<size_t>(dy + row) * fullWidth + dx) * 4;
+                    uint8_t*       dstRow = cropped.data() + static_cast<size_t>(row) * cw * 4;
+                    memcpy(dstRow, srcRow, static_cast<size_t>(cw) * 4);
+                }
+                outPixels = std::move(cropped);
+                outWidth  = cw;
+                outHeight = ch;
+            } else {
+                size_t n = static_cast<size_t>(fullWidth) * fullHeight * 4;
+                outPixels.assign(static_cast<uint8_t*>(bits), static_cast<uint8_t*>(bits) + n);
+                outWidth  = fullWidth;
+                outHeight = fullHeight;
+            }
+        }
+    } else {
+        size_t n = static_cast<size_t>(fullWidth) * fullHeight * 4;
+        outPixels.assign(static_cast<uint8_t*>(bits), static_cast<uint8_t*>(bits) + n);
+        outWidth  = fullWidth;
+        outHeight = fullHeight;
+    }
+}
 
   SelectObject(memDc, oldBmp);
   DeleteObject(dib);
@@ -255,6 +322,7 @@ bool FlutterWindow::OnCreate() {
           }
           
           std::string handleStr;
+          bool contentOnly = false;
           if (auto* s = std::get_if<std::string>(&it->second)) {
             handleStr = *s;
           } else if (auto* i = std::get_if<int>(&it->second)) {
@@ -262,6 +330,13 @@ bool FlutterWindow::OnCreate() {
           } else if (auto* i64 = std::get_if<int64_t> (&it->second)) {
             handleStr = std::to_string(*i64);
           } 
+
+          auto contentOnlyIt = args->find(flutter::EncodableValue("contentOnly"));
+if (contentOnlyIt != args->end()) {
+    if (auto* b = std::get_if<bool>(&contentOnlyIt->second)) {
+        contentOnly = *b;
+    }
+}
 
           if (handleStr.empty()) {
             result->Error("BAD_ARGS", "handle is null or not supported type");
@@ -285,7 +360,7 @@ bool FlutterWindow::OnCreate() {
           std::vector<uint8_t> pixels;
           int width = 0;
           int height = 0;
-          if (!CapturewindowFrame(targetHwnd, pixels, width, height)) {
+          if (!CapturewindowFrame(targetHwnd, pixels, width, height, contentOnly)) {
             result->Error("CAPTURE_FAILED", "Failed to capture window frame");
             return;
           }
