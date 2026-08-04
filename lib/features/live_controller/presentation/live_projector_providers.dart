@@ -33,18 +33,18 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
         ));
         // Ensure a blank slide follows the image to prevent grouping with subsequent items
         allSlides.add(Slide.blank(title: title, isSong: false, isFavorite: isFavorite));
-        case WindowSetlistItem(:final windowHandle, :final windowTitle, :final isFavorite):
-          allSlides.add(Slide(
-          title: windowTitle,
-          shortcut: 'WIN',
-          content: 'WINDOW:$windowHandle|${Uri.encodeComponent(windowTitle)}',
-          type: SlideType.other, 
-          isBlank: false,
-          isSong: false,
-          isFavorite: isFavorite,
-        ));
-        // Mirror image-item behaviour
-        allSlides.add(Slide.blank(title: windowTitle, isSong: false, isFavorite: isFavorite));
+case WindowSetlistItem(:final windowHandle, :final windowTitle, :final layout, :final contentOnly, :final isFavorite):
+  allSlides.add(Slide(
+    title: windowTitle,
+    shortcut: 'WIN',
+    content: 'WINDOW:$windowHandle|${Uri.encodeComponent(windowTitle)}|$layout|${contentOnly ? '1' : '0'}',
+    type: SlideType.other,
+    isBlank: false,
+    isSong: false,
+    isFavorite: isFavorite,
+  )); // Slide
+  // Mirror image-item behavior for separation and keyboard navigation consistency.
+  allSlides.add(Slide.blank(title: windowTitle, isSong: false, isFavorite: isFavorite));
     }
   }
   return allSlides;
