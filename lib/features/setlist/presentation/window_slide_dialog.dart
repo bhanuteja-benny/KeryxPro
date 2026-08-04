@@ -15,6 +15,13 @@ class _WindowSlideDialogState extends State<WindowSlideDialog> {
   String? _errorText;
   List<CapturableWindow> _windows = const [];
   CapturableWindow? _selected;
+  String _layout = 'contain';
+bool _contentOnly = false;
+
+static const _layouts = [
+  ('stretch', 'Stretch', Icons.aspect_ratio),
+  ('contain', 'Keep Aspect Ratio', Icons.crop_free),
+];
 
   @override
   void initState() {
@@ -80,7 +87,8 @@ Widget build(BuildContext context) {
           ? const SizedBox(
             height: 80,
             child: Center(
-              child: Text("No capturable windows found", 
+              child: Text(
+                "No capturable windows found", 
               style: TextStyle(color: Colors.white54, fontSize: 12),
               ),
             ),
@@ -91,7 +99,11 @@ Widget build(BuildContext context) {
             children: [
               const Text(
                 'Window',
-                style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: Colors.white54, 
+                  fontSize: 11, 
+                  fontWeight: FontWeight.w600),
+              ),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<CapturableWindow>(
@@ -101,16 +113,17 @@ Widget build(BuildContext context) {
                 style: const TextStyle(color: Colors.white70, fontSize: 12),
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric( horizontal: 10, vertical: 8),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
                     borderSide: const BorderSide(color: Colors.white24),
                   ),
+                  enabledBorder: OutlineInputBorder(
+  borderRadius: BorderRadius.circular(6),
+  borderSide: const BorderSide(color: Colors.white24),
+), // OutlineInputBorder
                 ),
                 selectedItemBuilder: (context) => _windows
                     .map( 
@@ -138,7 +151,83 @@ Widget build(BuildContext context) {
                 onChanged: (value) {
                   setState(() => _selected = value);
                 },
-              )
+              ),
+              const SizedBox(height: 16),
+const Text(
+  'Layout',
+  style: TextStyle(
+    color: Colors.white54,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+  ), // TextStyle
+), // Text
+const SizedBox(height: 8),
+Row(
+  children: _layouts.map((entry) {
+    final (value, label, icon) = entry;
+    final selected = _layout == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _layout = value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? Colors.deepPurpleAccent : const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: selected ? Colors.deepPurpleAccent : Colors.white12,
+            ), // Border.all
+          ), // BoxDecoration
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: selected ? Colors.white : Colors.white38),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: selected ? Colors.white : Colors.white38,
+                ), // TextStyle
+                textAlign: TextAlign.center,
+              ), // Text
+            ],
+          ), // Column
+        ), // AnimatedContainer
+      ), // GestureDetector
+    ); // Expanded
+  }).toList(),
+), // Row
+const SizedBox(height: 8),
+Theme(
+  data: Theme.of(context).copyWith(
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return Colors.deepPurpleAccent;
+        }
+        return Colors.white24;
+      }),
+    ), // CheckboxThemeData
+  ),
+  child: CheckboxListTile(
+    dense: true,
+    contentPadding: EdgeInsets.zero,
+    controlAffinity: ListTileControlAffinity.leading,
+    value: _contentOnly,
+    onChanged: (value) {
+      setState(() {
+        _contentOnly = value ?? false;
+      });
+    },
+    title: const Text(
+      'Content only (hide title bar and borders)',
+      style: TextStyle(color: Colors.white70, fontSize: 11),
+    ), // Text
+  ), // CheckboxListTile
+), // Theme
             ],
           )
     ),
@@ -158,6 +247,8 @@ Widget build(BuildContext context) {
                     windowHandle: selected.handle,
                     windowTitle: selected.title,
                     processName: selected.processName,
+                    layout: _layout,
+                    contentOnly: _contentOnly,
                   ),
                 );
             },
