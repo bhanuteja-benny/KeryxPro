@@ -241,23 +241,69 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       ..monitor2Format = old.monitor2Format;
   }
 
-  Size _getWindowSize(PresentationSettings? settings, bool isSong) {
-    if (settings == null) return const Size(1280, 720);
-    final ratio = isSong ? settings.songAspectRatio : settings.scriptureAspectRatio;
+  Size _getWindowSize(PresentationSettings? settings, bool isSong, {String? text}) {
+  if (settings == null) return const Size(1280, 720);
+  final isBlank = text == '';
+  final isWindowSlide = text?.startsWith('WINDOW:') ?? false;
+  final ratio = isBlank
+      ? settings.blankAspectRatio
+      : (isWindowSlide ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
     switch (ratio) {
       case '4:3':
         return const Size(960, 720);
       case '4:1':
         return const Size(1200, 300);
       case 'Custom':
-        final w = isSong ? settings.songCustomWidth : settings.scriptureCustomWidth;
-        final h = isSong ? settings.songCustomHeight : settings.scriptureCustomHeight;
+        final w = isBlank
+    ? settings.blankCustomWidth
+    : (isWindowSlide ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
+final h = isBlank
+    ? settings.blankCustomHeight
+    : (isWindowSlide ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
         return (w > 0 && h > 0) ? Size(w.toDouble(), h.toDouble()) : const Size(1280, 720);
       case '16:9':
       default:
         return const Size(1280, 720);
     }
   }
+
+Future<PresentationSettings?> _resolvePresetOrFallback(int? presetId) async {
+  final isar = await _isarService.db;
+  if (presetId != null) {
+    final preset = await isar.presentationSettings.get(presetId);
+    if (preset != null) return preset;
+  }
+  // Match preview behavior when no preset is selected.
+  return await isar.presentationSettings.where().findFirst();
+}
+
+Future<void> _moveMonitor1ToDisplayNatively({
+  required double x,
+  required double y,
+  required double w,
+  required double h,
+  int maxAttempts = 1,
+  Duration retryDelay = const Duration(milliseconds: 120),
+}) async {
+  for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const channel = MethodChannel('keryx/window');
+      await channel.invokeMethod('move_subwindow_to_display', {
+        'x': x.toInt(),
+        'y': y.toInt(),
+        'w': w.toInt(),
+        'h': h.toInt(),
+      });
+      return;
+    } catch (e) {
+      if (attempt == maxAttempts) {
+        print('Error moving sub-window: $e');
+        return;
+      }
+      await Future.delayed(retryDelay);
+    }
+  }
+}
 
   Future<void> _configureSubwindowNatively({
     required int monitorIndex,
@@ -267,23 +313,32 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     required double h,
     required String title,
     bool noMove = false,
+    int maxAttempts = 1,
+Duration retryDelay = const Duration(milliseconds: 120),
   }) async {
-    try {
-      const channel = MethodChannel('keryx/window');
-      await channel.invokeMethod('configure_subwindow', {
-        'monitorIndex': monitorIndex,
-        'x': x,
-        'y': y,
-        'w': w,
-        'h': h,
-        'title': title,
-        'noMove': noMove,
-      });
-    } catch (e) {
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+  try {
+    const channel = MethodChannel('keryx/window');
+    await channel.invokeMethod('configure_subwindow', {
+      'monitorIndex': monitorIndex,
+      'x': x,
+      'y': y,
+      'w': w,
+      'h': h,
+      'title': title,
+      'noMove': noMove,
+    });
+    return;
+  } catch (e) {
+    if (attempt == maxAttempts) {
       print("Error configuring sub-window natively: $e");
+      return;
     }
+    await Future.delayed(retryDelay);
   }
-
+}
+}
+  
   Future<void> launchMonitor2({
     String? text,
     String? title,
@@ -292,11 +347,8 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     final mainWindowController = await WindowController.fromCurrentEngine(); 
     final mainWindowId = mainWindowController.windowId;
 
-    final isar = await _isarService.db;
-    final presetId = state.config.monitor2PresetId;
-    final preset = presetId != null 
-        ? await isar.presentationSettings.get(presetId)
-        : null;
+    final preset = await _resolvePresetOrFallback(state.config.monitor2PresetId);
+final presetId = preset?.id;
 
     final args = {
       'type': 'projector',
@@ -318,7 +370,7 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     // desktop_multi_window creates windows with empty title; the native
     // side finds the unnamed window and renames it.
     await Future.delayed(const Duration(milliseconds: 300));
-    final size = _getWindowSize(preset, isSong);
+    final size = _getWindowSize(preset, isSong, text: text);
     await _configureSubwindowNatively(
       monitorIndex: 2,
       x: 100.0,
@@ -326,6 +378,8 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       w: size.width,
       h: size.height,
       title: 'KeryxPro Monitor 2',
+      maxAttempts: 10,
+      retryDelay: const Duration(milliseconds: 120),  
     );
 
     // Refocus main window
@@ -338,27 +392,6 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
 
     state = state.copyWith(
       monitor2WindowId: window.windowId,
-    );
-  }
-
-  Future<void> resizeMonitor2Window(bool isSong) async {
-    if (state.monitor2WindowId == null) return;
-
-    final isar = await _isarService.db;
-    final presetId = state.config.monitor2PresetId;
-    final preset = presetId != null 
-        ? await isar.presentationSettings.get(presetId)
-        : null;
-
-    final size = _getWindowSize(preset, isSong);
-    await _configureSubwindowNatively(
-      monitorIndex: 2,
-      x: 100.0,
-      y: 100.0,
-      w: size.width,
-      h: size.height,
-      title: 'KeryxPro Monitor 2',
-      noMove: true,
     );
   }
 
@@ -402,11 +435,8 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
       return;
     }
 
-    final isar = await _isarService.db;
-    final presetId = state.config.monitor1PresetId;
-    final preset = presetId != null 
-        ? await isar.presentationSettings.get(presetId)
-        : null;
+    final preset = await _resolvePresetOrFallback(state.config.monitor1PresetId);
+final presetId = preset?.id;
 
     final secondaryDisplay = state.displays[1];
     final displayX = secondaryDisplay.visiblePosition?.dx ?? secondaryDisplay.size.width;
@@ -446,17 +476,46 @@ class ProjectionNotifier extends StateNotifier<ProjectionState> with ScreenListe
     // The native side finds the unnamed sub-window (empty title) and
     // moves it full-screen to the secondary display.
     await Future.delayed(const Duration(milliseconds: 1000));
-    try {
-      const channel = MethodChannel('keryx/window');
-      await channel.invokeMethod('move_subwindow_to_display', {
-        'x': displayX.toInt(),
-        'y': displayY.toInt(),
-        'w': displayW.toInt(),
-        'h': displayH.toInt(),
-      });
-    } catch (e) {
-      print("Error moving sub-window: $e");
-    }
+    await _moveMonitor1ToDisplayNatively(
+  x: displayX,
+  y: displayY,
+  w: displayW,
+  h: displayH,
+  maxAttempts: 8,
+  retryDelay: const Duration(milliseconds: 120),
+);
+
+// Stabilize Monitor 1 placement in case OS/default sizing applies late.
+Future.delayed(const Duration(milliseconds: 250), () {
+  _moveMonitor1ToDisplayNatively(
+    x: displayX,
+    y: displayY,
+    w: displayW,
+    h: displayH,
+    maxAttempts: 2,
+    retryDelay: const Duration(milliseconds: 80),
+  );
+});
+Future.delayed(const Duration(milliseconds: 700), () {
+  _moveMonitor1ToDisplayNatively(
+    x: displayX,
+    y: displayY,
+    w: displayW,
+    h: displayH,
+    maxAttempts: 2,
+    retryDelay: const Duration(milliseconds: 80),
+  );
+});
+Future.delayed(const Duration(milliseconds: 1300), () {
+  _moveMonitor1ToDisplayNatively(
+    x: displayX,
+    y: displayY,
+    w: displayW,
+    h: displayH,
+    maxAttempts: 2,
+    retryDelay: const Duration(milliseconds: 80),
+  );
+});
 
     state = state.copyWith(
       monitor1WindowId: window.windowId,

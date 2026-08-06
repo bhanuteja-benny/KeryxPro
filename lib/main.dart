@@ -131,6 +131,87 @@ class _ProjectorAppState extends State<ProjectorApp> {
   int? _monitorIndex;
   String? _mainWindowId;
 
+Size? _getTargetWindowSize() {
+  // If content type is still unknown, avoid forcing a fallback size.
+  if (_activeSlideText == null) return null;
+
+  final isBlank = _activeSlideText == '';
+  final isWindowSlide = _activeSlideText?.startsWith('WINDOW:') ?? false;
+
+  final ratio = isBlank
+      ? _settings.blankAspectRatio
+      : (isWindowSlide
+          ? _settings.windowAspectRatio
+          : (_isSong ? _settings.songAspectRatio : _settings.scriptureAspectRatio));
+
+  switch (ratio) {
+    case '4:3':
+      return const Size(960, 720);
+    case '4:1':
+      return const Size(1200, 300);
+    case 'Custom':
+      final w = isBlank
+          ? _settings.blankCustomWidth
+          : (isWindowSlide
+              ? _settings.windowCustomWidth
+              : (_isSong ? _settings.songCustomWidth : _settings.scriptureCustomWidth));
+      final h = isBlank
+          ? _settings.blankCustomHeight
+          : (isWindowSlide
+              ? _settings.windowCustomHeight
+              : (_isSong ? _settings.songCustomHeight : _settings.scriptureCustomHeight));
+      if (w > 0 && h > 0) {
+        return Size(w, h);
+      }
+      return const Size(1280, 720);
+    case '16:9':
+    default:
+      return const Size(1280, 720);
+  }
+}
+
+Future<void> _applyCurrentWindowSizeIfNeeded({
+  int attempts = 1,
+  Duration retryDelay = const Duration(milliseconds: 80),
+}) async {
+  if (_monitorIndex != 2) return;
+
+  final size = _getTargetWindowSize();
+  if (size == null) return;
+  for (var i = 0; i < attempts; i++) {
+    try {
+      const channel = MethodChannel('keryx/window');
+      await channel.invokeMethod('configure_current_window', {
+        'w': size.width,
+        'h': size.height,
+        'monitorIndex': 2,
+      });
+      return;
+    } catch (_) {
+      if (i == attempts - 1) {
+        try {
+          await windowManager.setSize(size);
+        } catch (_) {}
+        return;
+      }
+      await Future.delayed(retryDelay);
+    }
+  }
+}
+
+void _scheduleMonitor2SizeStabilization() {
+  if (_monitorIndex != 2) return;
+  Future.delayed(const Duration(milliseconds: 250), () {
+    _applyCurrentWindowSizeIfNeeded(attempts: 2, retryDelay: const Duration(milliseconds: 80));
+  }); // Future.delayed
+  Future.delayed(const Duration(milliseconds: 700), () {
+    _applyCurrentWindowSizeIfNeeded(attempts: 2, retryDelay: const Duration(milliseconds: 80));
+  }); // Future.delayed
+  Future.delayed(const Duration(milliseconds: 1300), () {
+    _applyCurrentWindowSizeIfNeeded(attempts: 2, retryDelay: const Duration(milliseconds: 80));
+  }); // Future.delayed
+}
+
   @override
   void initState() {
     super.initState();
@@ -148,6 +229,8 @@ class _ProjectorAppState extends State<ProjectorApp> {
             _titleText = args['title'] as String?;
             _isSong = isSong;
           });
+          await _applyCurrentWindowSizeIfNeeded(attempts: 3);
+          _scheduleMonitor2SizeStabilization();
         }
       } else if (call.method == 'update_preset') {
         final args = call.arguments as Map?;
@@ -158,9 +241,17 @@ class _ProjectorAppState extends State<ProjectorApp> {
             _settings = newSettings;
             _presetId = args?['presetId'] as int?;
           });
+          await _applyCurrentWindowSizeIfNeeded(attempts: 3);
+          _scheduleMonitor2SizeStabilization();
         }
       }
       return null;
+    });
+
+    // Ensure initial launch size is applied by the subwindow itself.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyCurrentWindowSizeIfNeeded(attempts: 6, retryDelay: const Duration(milliseconds: 120));
+      _scheduleMonitor2SizeStabilization();
     });
   }
 
@@ -195,12 +286,13 @@ class _ProjectorAppState extends State<ProjectorApp> {
         monitorIndex: _monitorIndex,
         captureBridgeWindowId: _mainWindowId,
       ),
-    );
+    );  
 
     final bool isBlank = _activeSlideText == "";
+    final bool isWindowSlide = _activeSlideText?.startsWith('WINDOW:') ?? false;
     final isTransparent = isBlank
         ? _settings.isBlankTransparent
-        : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent);
+        : (isWindowSlide ? _settings.isWindowTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent));
     final Color scaffoldBgColor = isTransparent
         ? (Platform.isWindows ? const Color(0xFF010001) : Colors.transparent)
         : Colors.black;

@@ -56,8 +56,19 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = isThemeMode ? _themeSettings : ref.read(editingPresetProvider);
     final isSong = isThemeMode ? true : (_editTabIndex == 0);
     final isBlank = isThemeMode ? false : (_editTabIndex == 2);
-    _widthCtrl.text = (isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)).toStringAsFixed(0);
-    _heightCtrl.text = (isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)).toStringAsFixed(0);
+    final isWindow = isThemeMode ? false : (_editTabIndex == 3);
+    _widthCtrl.text = (isBlank
+    ? settings.blankCustomWidth
+    : (isWindow
+        ? settings.windowCustomWidth
+        : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)))
+    .toStringAsFixed(0);
+    _heightCtrl.text = (isBlank
+    ? settings.blankCustomHeight
+    : (isWindow
+        ? settings.windowCustomHeight
+        : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)))
+    .toStringAsFixed(0);
   }
 
   @override
@@ -188,6 +199,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 ButtonSegment(value: 0, label: Text('Song')),
                 ButtonSegment(value: 1, label: Text('Scripture')),
                 ButtonSegment(value: 2, label: Text('Blank Screen')),
+                ButtonSegment(value: 3, label: Text('Window')),
               ],
               selected: {_editTabIndex},
               onSelectionChanged: (set) {
@@ -471,7 +483,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               children: [
                 _buildAspectRatioSelector(),
                 const SizedBox(height: 12),
-                if (_editTabIndex != 2) ...[
+                if (_editTabIndex != 2 && _editTabIndex != 3) ...[
                   Align(
                     alignment: Alignment.centerLeft,
                     child: ElevatedButton.icon(
@@ -500,27 +512,27 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
-                    child: _editTabIndex == 2 ? const SizedBox.shrink() : _buildTitleSettings(),
+                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? const SizedBox.shrink() : _buildTitleSettings(),
                   ),
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: _editTabIndex == 2 ? const SizedBox.shrink() : _buildBodySettings(),
+                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? const SizedBox.shrink() : _buildBodySettings(),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.save),
-                    label: Text('Save ${_editTabIndex == 0 ? 'Song' : _editTabIndex == 1 ? 'Scripture' : 'Blank Screen'} Settings'),
+                    label: Text('Save ${_editTabIndex == 0 ? 'Song' : _editTabIndex == 1 ? 'Scripture' : _editTabIndex == 2 ? 'Blank Screen' : 'Window'} Settings'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(48),
                     ),
                     onPressed: () {
                       final s = ref.read(editingPresetProvider);
                       // Validation
-                      if (_editTabIndex != 2) {
+                      if (_editTabIndex != 2 && _editTabIndex != 3) {
                         bool isValid = s.titleFontFamily.isNotEmpty && s.titleFontSize > 0 &&
                                       s.lyricsFontFamily.isNotEmpty && s.lyricsFontSize > 0 &&
                                       s.chapterFontFamily.isNotEmpty && s.chapterFontSize > 0 &&
@@ -787,8 +799,11 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
     final isBlank = _editTabIndex == 2;
+    final isWindow = _editTabIndex == 3;
 
-    final aspectRatio = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+    final aspectRatio = isBlank
+        ? settings.blankAspectRatio
+        : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
 
     return Row(
       children: [
@@ -850,13 +865,26 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
     final isBlank = _editTabIndex == 2;
-    
-    final isTransparent = isBlank ? settings.isBlankTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent);
-    final backgroundColor = isBlank ? settings.blankBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor);
-    final isImageEnabled = isBlank ? settings.isBlankImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled);
-    final backgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
-    final backgroundImageLayout = isBlank ? settings.blankBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout);
-    final backgroundImageAlignment = isBlank ? settings.blankBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment);
+    final isWindow = _editTabIndex == 3;
+
+final isTransparent = isBlank
+    ? settings.isBlankTransparent
+    : (isWindow ? settings.isWindowTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent));
+final backgroundColor = isBlank
+    ? settings.blankBackgroundColor
+    : (isWindow ? settings.windowBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor));
+final isImageEnabled = isBlank
+    ? settings.isBlankImageEnabled
+    : (isWindow ? settings.isWindowImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled));
+final backgroundImage = isBlank
+    ? settings.blankBackgroundImage
+    : (isWindow ? settings.windowBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage));
+final backgroundImageLayout = isBlank
+    ? settings.blankBackgroundImageLayout
+    : (isWindow ? settings.windowBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout));
+final backgroundImageAlignment = isBlank
+    ? settings.blankBackgroundImageAlignment
+    : (isWindow ? settings.windowBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1302,21 +1330,32 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final isSong = _editTabIndex == 0;
     final isBlank = _editTabIndex == 2;
-    
-    final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
-    final previewText = isBlank ? "" : (isSong 
-      ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
-      : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.");
+    final isWindow = _editTabIndex == 3;
 
-    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
-    double aspectRatio = 16 / 9;
-    if (aspectRatioStr == '4:3') {
-      aspectRatio = 4 / 3;
-    } else if (aspectRatioStr == '4:1') {
-      aspectRatio = 4 / 1;
-    } else if (aspectRatioStr == 'Custom') {
-      final w = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
-      final h = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
+final previewText = isBlank
+    ? ""
+    : (isWindow
+        ? "WINDOW:preview|Window%20Preview|contain|0"
+        : (isSong
+            ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
+            : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."));
+
+final aspectRatioStr = isBlank
+    ? settings.blankAspectRatio
+    : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
+double aspectRatio = 16 / 9;
+if (aspectRatioStr == '4:3') {
+  aspectRatio = 4 / 3;
+} else if (aspectRatioStr == '4:1') {
+  aspectRatio = 4 / 1;
+} else if (aspectRatioStr == 'Custom') {
+  final w = isBlank
+      ? settings.blankCustomWidth
+      : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
+  final h = isBlank
+      ? settings.blankCustomHeight
+      : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
       aspectRatio = (w > 0 && h > 0) ? w / h : 16 / 9;
     }
 

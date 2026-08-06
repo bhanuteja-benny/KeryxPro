@@ -89,6 +89,9 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
   if (!settings.blankCustomWidth.isFinite || settings.blankCustomWidth <= 0) settings.blankCustomWidth = 1920.0;
   if (!settings.blankCustomHeight.isFinite || settings.blankCustomHeight <= 0) settings.blankCustomHeight = 1080.0;
 
+if (!settings.windowCustomWidth.isFinite || settings.windowCustomWidth <= 0) settings.windowCustomWidth = 1920.0;
+if (!settings.windowCustomHeight.isFinite || settings.windowCustomHeight <= 0) settings.windowCustomHeight = 1080.0;
+
   // Strings Fallback
   if (settings.presetName.isEmpty) {
     settings.presetName = (settings.isDefault || settings.id == 1) ? 'Default' : 'Preset ${settings.id}';
@@ -100,6 +103,7 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
   if (settings.songAspectRatio.isEmpty) settings.songAspectRatio = '16:9';
   if (settings.scriptureAspectRatio.isEmpty) settings.scriptureAspectRatio = '16:9';
   if (settings.blankAspectRatio.isEmpty) settings.blankAspectRatio = '16:9';
+  if (settings.windowAspectRatio.isEmpty) settings.windowAspectRatio = '16:9';
   if (settings.titleAlignment.isEmpty) settings.titleAlignment = 'center';
   if (settings.titleVerticalAlignment.isEmpty) settings.titleVerticalAlignment = 'bottom';
   if (settings.chapterAlignment.isEmpty) settings.chapterAlignment = 'center';
@@ -118,10 +122,13 @@ PresentationSettings _processFallbacks(PresentationSettings settings) {
   if (settings.scriptureBackgroundImageAlignment.isEmpty) settings.scriptureBackgroundImageAlignment = 'center';
   if (settings.blankBackgroundImageLayout.isEmpty) settings.blankBackgroundImageLayout = 'stretch';
   if (settings.blankBackgroundImageAlignment.isEmpty) settings.blankBackgroundImageAlignment = 'center';
+  if (settings.windowBackgroundImageLayout.isEmpty) settings.windowBackgroundImageLayout = 'stretch';
+  if (settings.windowBackgroundImageAlignment.isEmpty) settings.windowBackgroundImageAlignment = 'center';
 
   if (settings.songBackgroundColor == 0) settings.songBackgroundColor = 0xFF000000;
   if (settings.scriptureBackgroundColor == 0) settings.scriptureBackgroundColor = 0xFF000000;
   if (settings.blankBackgroundColor == 0) settings.blankBackgroundColor = 0xFF000000;
+  if (settings.windowBackgroundColor == 0) settings.windowBackgroundColor = 0xFF000000;
   if ((settings.lyricsFontColor & 0xFF000000) == 0) settings.lyricsFontColor = 0xFFFFFFFF;
   if ((settings.titleFontColor & 0xFF000000) == 0) settings.titleFontColor = 0x8FFFFFFF;
   if ((settings.chapterFontColor & 0xFF000000) == 0) settings.chapterFontColor = 0x8FFFFFFF;
@@ -211,6 +218,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       state = cloneState(state)..scriptureAspectRatio = ratio;
     } else if (tabIndex == 2) {
       state = cloneState(state)..blankAspectRatio = ratio;
+    } else if (tabIndex == 3) {
+      state = cloneState(state)..windowAspectRatio = ratio;
     }
   }
 
@@ -221,6 +230,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       state = cloneState(state)..scriptureCustomWidth = w;
     } else if (tabIndex == 2) {
       state = cloneState(state)..blankCustomWidth = w;
+    } else if (tabIndex == 3) {
+      state = cloneState(state)..windowCustomWidth = w;
     }
   }
 
@@ -231,6 +242,8 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       state = cloneState(state)..scriptureCustomHeight = h;
     } else if (tabIndex == 2) {
       state = cloneState(state)..blankCustomHeight = h;
+    } else if (tabIndex == 3) {
+      state = cloneState(state)..windowCustomHeight = h;
     }
   }
   // Background updates now take an int to distinguish song/scripture/blank
@@ -245,7 +258,10 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 2) {
       s.blankBackgroundColor = color;
       s.isBlankTransparent = false;
-    }
+    } else if (tabIndex == 3) {
+      s.windowBackgroundColor = color;
+      s.isWindowTransparent = false;
+    }   
     state = s;
   }
   
@@ -266,7 +282,12 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       s.blankBackgroundImageLayout = layout;
       s.blankBackgroundImageAlignment = alignment;
       s.isBlankImageEnabled = true;
-    }
+    } else if (tabIndex == 3) {
+      s.windowBackgroundImage = path;
+      s.windowBackgroundImageLayout = layout;
+      s.windowBackgroundImageAlignment = alignment;
+      s.isWindowImageEnabled = true;
+    }   
     state = s;
   }
 
@@ -278,7 +299,9 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       s.isScriptureImageEnabled = enabled;
     } else if (tabIndex == 2) {
       s.isBlankImageEnabled = enabled;
-    }
+    } else if (tabIndex == 3) {
+      s.isWindowImageEnabled = enabled;
+    }   
     state = s;
   }
   
@@ -290,7 +313,9 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       s.isScriptureTransparent = transparent;
     } else if (tabIndex == 2) {
       s.isBlankTransparent = transparent;
-    }
+    } else if (tabIndex == 3) {
+      s.isWindowTransparent = transparent;
+    }   
     state = s;
   }
 
@@ -409,6 +434,15 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..blankBackgroundImage = src.blankBackgroundImage
       ..blankBackgroundImageLayout = src.blankBackgroundImageLayout
       ..blankBackgroundImageAlignment = src.blankBackgroundImageAlignment
+      ..windowAspectRatio = src.windowAspectRatio
+      ..windowCustomWidth = src.windowCustomWidth
+      ..windowCustomHeight = src.windowCustomHeight
+      ..isWindowImageEnabled = src.isWindowImageEnabled
+      ..isWindowTransparent = src.isWindowTransparent
+      ..windowBackgroundColor = src.windowBackgroundColor
+      ..windowBackgroundImage = src.windowBackgroundImage
+      ..windowBackgroundImageLayout = src.windowBackgroundImageLayout
+      ..windowBackgroundImageAlignment = src.windowBackgroundImageAlignment
       ..showTitle = src.showTitle
       ..titleAlignment = src.titleAlignment
       ..titleVerticalAlignment = src.titleVerticalAlignment

@@ -457,6 +457,56 @@ if (contentOnlyIt != args->end()) {
           SetWindowPos(target, insertAfter, x, y, adjustedW, adjustedH, flags);
           result->Success();
 
+          // - configure_current_window
+// Resizes/configures the current Flutter window instance directly.
+} else if (call.method_name() == "configure_current_window") {
+  const auto* args =
+      std::get_if<flutter::EncodableMap>(call.arguments());
+  if (!args) {
+    result->Error("BAD_ARGS", "Expected EncodableMap");
+    return;
+  }
+
+  auto getInt = [&](const std::string& key, int def) -> int {
+    auto it = args->find(flutter::EncodableValue(key));
+    if (it != args->end()) {
+      if (auto* d = std::get_if<double>(&it->second)) return static_cast<int>(*d);
+      if (auto* i = std::get_if<int>(&it->second))    return *i;
+    }
+    return def;
+  };
+
+  int monitorIndex = getInt("monitorIndex", 2);
+  int w = getInt("w", 1280);
+  int h = getInt("h", 720);
+
+  if (!IsWindow(mainHwnd)) {
+    result->Error("NOT_FOUND", "Current window handle is invalid");
+    return;
+  }
+
+  LONG style = GetWindowLong(mainHwnd, GWL_STYLE);
+  LONG exStyle = GetWindowLong(mainHwnd, GWL_EXSTYLE);
+
+  RECT rect = { 0, 0, w, h };
+  AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+  int adjustedW = rect.right - rect.left;
+  int adjustedH = rect.bottom - rect.top;
+
+  exStyle |= WS_EX_LAYERED;
+  SetWindowLong(mainHwnd, GWL_EXSTYLE, exStyle);
+  SetLayeredWindowAttributes(mainHwnd, RGB(1, 0, 1), 0, LWA_COLORKEY);
+
+  HWND insertAfter = (monitorIndex == 2) ? HWND_NOTOPMOST : HWND_TOPMOST;
+  SetWindowPos(
+      mainHwnd,
+      insertAfter,
+      0,
+      0,
+      adjustedW,
+      adjustedH,
+      SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+  result->Success();
         // ── move_subwindow_to_display ───────────────────────────────────────
         // For Monitor 1: strips decorations and positions full-screen on
         // the secondary display.
@@ -482,14 +532,13 @@ if (contentOnlyIt != args->end()) {
           int w = getInt("w");
           int h = getInt("h");
 
-          // Monitor 1 is unnamed at first, but may already be visible.
-          // Search for unnamed first, then for any sub-window we haven't
-          // renamed to "KeryxPro Monitor 2".
-          HWND target = FindUnnamedSubWindow(mainHwnd);
+          // Monitor 1 may already be named from a previous move call.
+          HWND target = FindNamedSubWindow(mainHwnd, L"KeryxPro Monitor 1");
           if (!target) {
-            // All windows are named; the Monitor 1 window should NOT have
-            // the Monitor 2 title.  This is a fallback — shouldn't normally
-            // be needed since move_subwindow_to_display is called before rename.
+            target = FindUnnamedSubWindow(mainHwnd);
+          } 
+          if (!target) {
+          
             result->Error("NOT_FOUND", "Projector sub-window not found");
             return;
           }

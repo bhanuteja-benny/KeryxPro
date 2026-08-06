@@ -51,6 +51,18 @@ class PresentationSettings {
   bool isBlankImageEnabled = false;
   bool isBlankTransparent = false;
 
+// View Settings (Window)
+String windowAspectRatio = '16:9'; // '16:9', '4:3', '4:1', 'Custom'
+double windowCustomWidth = 1920.0;
+double windowCustomHeight = 1080.0;
+
+int windowBackgroundColor = 0xFF000000;
+String windowBackgroundImage = '';
+String windowBackgroundImageLayout = 'stretch';
+String windowBackgroundImageAlignment = 'center';
+bool isWindowImageEnabled = false;
+bool isWindowTransparent = false;
+
   // Title Settings
   bool showTitle = true;
   String titleAlignment = 'center';
@@ -159,6 +171,15 @@ class PresentationSettings {
       'blankBackgroundImageAlignment': blankBackgroundImageAlignment,
       'isBlankImageEnabled': isBlankImageEnabled,
       'isBlankTransparent': isBlankTransparent,
+      'windowAspectRatio': windowAspectRatio,
+'windowCustomWidth': windowCustomWidth,
+'windowCustomHeight': windowCustomHeight,
+'windowBackgroundColor': windowBackgroundColor,
+'windowBackgroundImage': windowBackgroundImage,
+'windowBackgroundImageLayout': windowBackgroundImageLayout,
+'windowBackgroundImageAlignment': windowBackgroundImageAlignment,
+'isWindowImageEnabled': isWindowImageEnabled,
+'isWindowTransparent': isWindowTransparent,
       'showTitle': showTitle,
       'titleAlignment': titleAlignment,
       'titleVerticalAlignment': titleVerticalAlignment,
@@ -262,6 +283,15 @@ class PresentationSettings {
       ..blankBackgroundImageAlignment = map['blankBackgroundImageAlignment'] as String? ?? 'center'
       ..isBlankImageEnabled = map['isBlankImageEnabled'] as bool? ?? false
       ..isBlankTransparent = map['isBlankTransparent'] as bool? ?? false
+      ..windowAspectRatio = map['windowAspectRatio'] as String? ?? '16:9'
+..windowCustomWidth = (map['windowCustomWidth'] as num?)?.toDouble() ?? 1920.0
+..windowCustomHeight = (map['windowCustomHeight'] as num?)?.toDouble() ?? 1080.0
+..windowBackgroundColor = map['windowBackgroundColor'] as int? ?? 0xFF000000
+..windowBackgroundImage = map['windowBackgroundImage'] as String? ?? ''
+..windowBackgroundImageLayout = map['windowBackgroundImageLayout'] as String? ?? 'stretch'
+..windowBackgroundImageAlignment = map['windowBackgroundImageAlignment'] as String? ?? 'center'
+..isWindowImageEnabled = map['isWindowImageEnabled'] as bool? ?? false
+..isWindowTransparent = map['isWindowTransparent'] as bool? ?? false
       ..showTitle = map['showTitle'] as bool? ?? true
       ..titleAlignment = map['titleAlignment'] as String? ?? 'center'
       ..titleVerticalAlignment = map['titleVerticalAlignment'] as String? ?? 'bottom'

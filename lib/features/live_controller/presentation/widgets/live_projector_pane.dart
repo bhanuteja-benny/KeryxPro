@@ -239,7 +239,8 @@ class _Monitor1View extends ConsumerWidget {
                         orElse: () => PresentationSettings(),
                       );
                       final isBlank = activeSlideText == "";
-                      final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank);
+                      final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
+                      final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide); 
 
                       return AspectRatio(
                         aspectRatio: aspectRatio,
@@ -373,7 +374,8 @@ class _Monitor2View extends ConsumerWidget {
                     orElse: () => PresentationSettings(),
                   );
                   final isBlank = activeSlideText == "";
-                  final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank);
+                  final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
+                  final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide); 
 
                   return AspectRatio(
                     aspectRatio: aspectRatio,
@@ -407,16 +409,22 @@ class _Monitor2View extends ConsumerWidget {
 
 // ─── Helpers ───
 
-double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank = false}) {
-  final ratio = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank = false, bool isWindow = false}) {
+  final ratio = isBlank
+      ? settings.blankAspectRatio
+      : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
   switch (ratio) {
     case '4:3':
       return 4 / 3;
     case '4:1':
       return 4 / 1;
     case 'Custom':
-      final w = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
-      final h = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+      final w = isBlank
+          ? settings.blankCustomWidth
+          : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
+      final h = isBlank
+          ? settings.blankCustomHeight
+          : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
       return (w > 0 && h > 0) ? w / h : 16 / 9;
     case '16:9':
     default:

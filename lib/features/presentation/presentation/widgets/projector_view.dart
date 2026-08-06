@@ -39,10 +39,13 @@ class ProjectorView extends ConsumerWidget {
     PresentationSettings settings, {
     required bool isSong,
     required bool isBlank,
+    bool isWindow = false,
     BuildContext? context,
     int? monitorIndex,
   }) {
-    final aspectRatioStr = isBlank ? settings.blankAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio);
+    final aspectRatioStr = isBlank
+    ? settings.blankAspectRatio
+    : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
     double canvasWidth = 1920;
     double canvasHeight = 1080;
 
@@ -53,8 +56,12 @@ class ProjectorView extends ConsumerWidget {
       canvasWidth = 1920;
       canvasHeight = 480;
     } else if (aspectRatioStr == 'Custom') {
-      canvasWidth = isBlank ? settings.blankCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth);
-      canvasHeight = isBlank ? settings.blankCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight);
+      canvasWidth = isBlank
+    ? settings.blankCustomWidth
+    : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
+canvasHeight = isBlank
+    ? settings.blankCustomHeight
+    : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
       if (canvasWidth <= 0) canvasWidth = 1920;
       if (canvasHeight <= 0) canvasHeight = 1080;
     } else if (aspectRatioStr == 'Fit to screen') {
@@ -84,15 +91,28 @@ class ProjectorView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaSync = ref.watch(mediaSyncManagerProvider);
+    final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
     final bool isBlank = activeSlideText == "";
 
-    final isTransparent = isBlank ? settings.isBlankTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent);
-    final backgroundColorValue = Color(isBlank ? settings.blankBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor));
-    final isImageEnabled = isBlank ? settings.isBlankImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled);
-    final rawBackgroundImage = isBlank ? settings.blankBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage);
-    final backgroundImage = rawBackgroundImage.isNotEmpty ? mediaSync.resolveMediaPath(rawBackgroundImage) : '';
-    final backgroundLayout = isBlank ? settings.blankBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout);
-    final backgroundAlignment = isBlank ? settings.blankBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment);
+    final isTransparent = isBlank
+    ? settings.isBlankTransparent
+    : (isWindowSlide ? settings.isWindowTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent));
+final backgroundColorValue = Color(isBlank
+    ? settings.blankBackgroundColor
+    : (isWindowSlide ? settings.windowBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor)));
+final isImageEnabled = isBlank
+    ? settings.isBlankImageEnabled
+    : (isWindowSlide ? settings.isWindowImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled));
+final rawBackgroundImage = isBlank
+    ? settings.blankBackgroundImage
+    : (isWindowSlide ? settings.windowBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage));
+final backgroundImage = rawBackgroundImage.isNotEmpty ? mediaSync.resolveMediaPath(rawBackgroundImage) : '';
+final backgroundLayout = isBlank
+    ? settings.blankBackgroundImageLayout
+    : (isWindowSlide ? settings.windowBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout));
+final backgroundAlignment = isBlank
+    ? settings.blankBackgroundImageAlignment
+    : (isWindowSlide ? settings.windowBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment));
 
     final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
@@ -102,6 +122,7 @@ class ProjectorView extends ConsumerWidget {
       settings,
       isSong: isSong,
       isBlank: isBlank,
+      isWindow: isWindowSlide,
       context: context,
       monitorIndex: monitorIndex,
     );
@@ -159,7 +180,6 @@ class ProjectorView extends ConsumerWidget {
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
     final isImageSlide = activeSlideText?.startsWith('IMAGE:') ?? false;
-    final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
 
     String processedText = activeSlideText ?? "";
     int finalLineCount = lineCount;

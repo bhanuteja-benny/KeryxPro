@@ -30,6 +30,22 @@ class MainFlutterWindow: NSWindow {
       }
       
       switch call.method {
+        case "configure_current_window":
+        let w = args?["w"] as? Double ?? 1280
+        let h = args?["h"] as? Double ?? 720
+        let monitorIndex = args?["monitorIndex"] as? Int ?? 2
+
+        var frame = self.frame
+        frame.origin.y = frame.origin.y + frame.size.height - CGFloat(h)
+        frame.size = CGSize(width: CGFloat(w), height: CGFloat(h))
+        self.setFrame(frame, display: true)
+
+        self.isOpaque = false
+        self.backgroundColor = .clear
+        self.hasShadow = false
+        self.level = (monitorIndex == 1) ? .floating : .normal
+        result(nil)
+
       case "configure_subwindow":
         let w = args?["w"] as? Double ?? 1280
         let h = args?["h"] as? Double ?? 720
@@ -64,11 +80,14 @@ class MainFlutterWindow: NSWindow {
         result(nil)
         
       case "move_subwindow_to_display":
-        guard let target = findSubWindow(title: nil) else {
+        let target = windows.first(where: { $0.title == "KeryxPro Monitor 1" }) ?? findSubWindow(title: nil)
+        guard let target = target else {
           result(FlutterError(code: "NOT_FOUND", message: "No sub-window found", details: nil))
           return
         }
-        target.title = "KeryxPro Monitor 1"
+        if target.title.isEmpty {
+          target.title = "KeryxPro Monitor 1"
+        }
         
         // IMPORTANT: Do NOT set styleMask = [.borderless].
         // Changing styleMask destroys the window backing and invalidates

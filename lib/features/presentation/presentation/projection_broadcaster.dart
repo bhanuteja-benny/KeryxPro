@@ -70,6 +70,5 @@ void _broadcastContentM2(Ref ref, String? text) {
         .catchError((e, stack) {
       print('[KeryxPro-v3] Error broadcasting to Monitor 2 (async): $e\n$stack');
     });
-    ref.read(projectionProvider.notifier).resizeMonitor2Window(isSong);
   }
 }
