@@ -247,8 +247,33 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     ref.read(setlistSelectionProvider.notifier).selectBatch(newSelection);
   }
 
-  // ── Add image slide ────────────────────────────────────────────────────
+  // ── Add / Edit image slide ────────────────────────────────────────────────────
   Future<void> _addImage() async {
+    final items = ref.read(setlistProvider);
+final selection = ref.read(setlistSelectionProvider);
+final isSingleImageSelected = selection.length == 1 &&
+    items[selection.first] is ImageSetlistItem;
+
+if (isSingleImageSelected) {
+  // Edit existing image slide
+  final idx = selection.first;
+  final existing = items[idx] as ImageSetlistItem;
+  final result = await showDialog<ImageSetlistItem>(
+    context: context,
+    builder: (context) => ImageSlideDialog(
+      isEditing: true,
+      initialImagePath: existing.imagePath,
+      initialLayout: existing.layout,
+      initialAlignment: existing.alignment,
+      existingUniqueId: existing.uniqueId,
+      existingIsFavorite: existing.isFavorite,
+    ),
+  );
+  if (result != null) {
+    ref.read(setlistProvider.notifier).replaceAt(idx, result);
+  }
+} else {
+  // Add new image slide
     final result = await showDialog<ImageSetlistItem>(
       context: context,
       builder: (context) => const ImageSlideDialog(),
@@ -260,10 +285,29 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
         currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
       );
     }
+}
   }
 
-// ── Add window slide ────────────────────────────────────────────────────
+// ── Add / Edit window slide ────────────────────────────────────────────────────
   Future<void> _addWindow() async {
+    final items = ref.read(setlistProvider);
+final selection = ref.read(setlistSelectionProvider);
+final isSingleWindowSelected = selection.length == 1 &&
+    items[selection.first] is WindowSetlistItem;
+
+if (isSingleWindowSelected) {
+  // Edit existing window slide
+  final idx = selection.first;
+  final existing = items[idx] as WindowSetlistItem;
+  final result = await showDialog<WindowSetlistItem>(
+    context: context,
+    builder: (context) => WindowSlideDialog(existing: existing),
+  );
+  if (result != null) {
+    ref.read(setlistProvider.notifier).replaceAt(idx, result);
+  }
+} else {
+  // Add new window slide
     final result = await showDialog<WindowSetlistItem>(
       context: context,
       builder: (context) => const WindowSlideDialog(),
@@ -275,6 +319,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
         currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
       );
     }
+}
   }
 
   // ── Clear all items ────────────────────────────────────────────────────
