@@ -119,6 +119,12 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     ];
   }
 
+  void replaceAt(int index, SetlistItem item) {
+  final newList = List<SetlistItem>.from(state);
+  newList[index] = item;
+  state = newList;
+  }
+
   // Legacy helper used by Bible search add
   void addItem(SetlistItem item) {
     state = [...state, item];
