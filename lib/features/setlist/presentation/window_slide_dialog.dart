@@ -4,7 +4,8 @@ import '../data/setlist_item.dart';
 import '../data/window_capture_service.dart';
 
 class WindowSlideDialog extends StatefulWidget {
-  const WindowSlideDialog({super.key});
+  final WindowSetlistItem? existing;
+const WindowSlideDialog({super.key, this.existing});
 
   @override
   State<WindowSlideDialog> createState() => _WindowSlideDialogState();
@@ -15,20 +16,24 @@ class _WindowSlideDialogState extends State<WindowSlideDialog> {
   String? _errorText;
   List<CapturableWindow> _windows = const [];
   CapturableWindow? _selected;
-  String _layout = 'contain';
-bool _contentOnly = false;
+  late String _layout;
+late bool _contentOnly;
+
+@override
+void initState() {
+  super.initState();
+  _layout = widget.existing?.layout ?? 'contain';
+  _contentOnly = widget.existing?.contentOnly ?? false;
+  _loadWindows();
+}
 
 static const _layouts = [
   ('stretch', 'Stretch', Icons.aspect_ratio),
   ('contain', 'Keep Aspect Ratio', Icons.crop_free),
 ];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadWindows();
-  }
 
+  
   Future<void> _loadWindows() async {
      setState(() {
         _isLoading = true;
@@ -40,7 +45,10 @@ static const _layouts = [
       if (!mounted) return;
       setState(() {
         _windows = windows;
-        _selected = _windows.isNotEmpty ? _windows.first : null;
+        // Pre-select existing window if editing, else default to first
+_selected = widget.existing != null
+    ? (_windows.where((w) => w.handle == widget.existing!.windowHandle).firstOrNull ?? (_windows.isNotEmpty ? _windows.first : null))
+    : (_windows.isNotEmpty ? _windows.first : null);
       });
     } catch (_) {
       if (!mounted) return;
@@ -62,9 +70,9 @@ Widget build(BuildContext context) {
   return AlertDialog(
     backgroundColor: const Color(0xFF2D2D2D),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    title: const Text(
-      "Add Window Slide",
-      style: TextStyle(color: Colors.white, fontSize: 16),
+    title: Text(
+widget.existing != null ? "Edit Window Slide" : "Add Window Slide",
+style: const TextStyle(color: Colors.white, fontSize: 16),
     ),
     content: SizedBox(
       width: 420,
@@ -249,6 +257,8 @@ Theme(
                     processName: selected.processName,
                     layout: _layout,
                     contentOnly: _contentOnly,
+                    uniqueId: widget.existing?.uniqueId,
+isFavorite: widget.existing?.isFavorite ?? false,
                   ),
                 );
             },
@@ -257,7 +267,7 @@ Theme(
             disabledBackgroundColor: Colors.white12,
             foregroundColor: Colors.white,
           ),
-        child: const Text("Add to Setlist"),
+        child: Text(widget.existing != null ? "Save" : "Add to Setlist"),
       ),
     ],
   );
