@@ -512,13 +512,13 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
-                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? const SizedBox.shrink() : _buildTitleSettings(),
+                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? _buildTitleSettings() : const SizedBox.shrink(),
                   ),
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? const SizedBox.shrink() : _buildBodySettings(),
+                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? _buildBodySettings() : const SizedBox.shrink(),
                   ),
                 ),
                 Padding(
