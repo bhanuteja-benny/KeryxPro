@@ -74,7 +74,7 @@ class RemoteClientTab extends ConsumerWidget {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              crossAxisAlignment: WrapCrossAxisAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 ElevatedButton.icon(
                   onPressed: canConnect
