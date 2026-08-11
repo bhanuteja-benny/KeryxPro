@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../global_ui_providers.dart';
+import '../../../../core/remote/remote_models.dart';
+import '../../../../core/remote/remote_providers.dart';
 
 /// A slim vertical icon rail on the far left of the app.
 /// Always visible. Contains Songs and Bible icons that toggle the Library pane.
@@ -11,6 +13,7 @@ class LibraryIconRail extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isVisible = ref.watch(libraryPaneVisibleProvider);
     final activeIndex = ref.watch(activeLibraryRailIndexProvider);
+    final remoteMode = ref.watch(remoteSettingsProvider).mode;
 
     return Container(
       width: 32,
@@ -19,6 +22,16 @@ class LibraryIconRail extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 4),
+          if (remoteMode == RemoteMode.client)
+            _RailIcon(
+              icon: Icons.wifi_tethering,
+              tooltip: 'Remote Mode - Client',
+              isActive: isVisible,
+              onTap: () {
+                ref.read(libraryPaneVisibleProvider.notifier).state = !isVisible;
+              },
+            )
+          else ...[
           _RailIcon(
             icon: Icons.library_music,
             tooltip: 'Songs (Q)',
@@ -26,13 +39,14 @@ class LibraryIconRail extends ConsumerWidget {
             onTap: () => _handleTap(ref, 0),
           ),
           const SizedBox(height: 4),
-          _RailIcon(
+          _RailIcon(  
             icon: Icons.menu_book,
             tooltip: 'Bible (S)',
             isActive: isVisible && activeIndex == 1,
             onTap: () => _handleTap(ref, 1),
           ),
         ],
+      ],
       ),
     );
   }

@@ -18,6 +18,7 @@ import '../../../live_controller/domain/slide.dart';
 import '../../../live_controller/presentation/live_projector_providers.dart';
 import '../../../settings/presentation/presentation_settings_provider.dart';
 import '../../../../core/sync/media_sync_manager.dart';
+import '../../../../core/remote/remote_providers.dart';
 import '../../../settings/presentation/projection_provider.dart';
 
 import 'package:flutter/services.dart';
@@ -223,6 +224,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
 
     // Initialize broadcaster
     ref.watch(projectionBroadcasterProvider);
+    ref.watch(remotSyncBridgeProvider);
     final isEditorOpen = ref.watch(isSongEditorOpenProvider);
 
     // Library pane auto-hide state

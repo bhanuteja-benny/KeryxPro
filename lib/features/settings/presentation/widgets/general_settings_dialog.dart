@@ -94,24 +94,25 @@ class _GeneralSettingsDialogState extends ConsumerState<GeneralSettingsDialog> {
                 ],
               ),
             ),
-            
             // Content
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SwitchListTile(
-                    title: const Text('Enable Error Logging'),
-                    subtitle: const Text('Write application errors and exceptions to a local error.log file.'),
-                    value: _isErrorLoggingEnabled,
-                    onChanged: _updateLogging,
-                    contentPadding: EdgeInsets.zero,
+                  Material(
+                    color: Colors.transparent,
+                    child: SwitchListTile(
+                      title: const Text('Enable Error Logging'),
+                      subtitle: const Text('Write application errors and exceptions to a local error.log file.'),
+                      value: _isErrorLoggingEnabled,
+                      onChanged: _updateLogging,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ],
               ),
             ),
-            
             // Footer
             Padding(
               padding: const EdgeInsets.all(16.0),

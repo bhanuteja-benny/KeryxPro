@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../setlist/data/setlist_item.dart';
+import '../../../../core/remote/remote_models.dart';
+import '../../../../core/remote/remote_providers.dart';
 import '../../../setlist/data/setlist_repository.dart';
 import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/presentation/image_slide_dialog.dart';
@@ -248,7 +250,32 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
   }
 
   // ── Add image slide ────────────────────────────────────────────────────
-  Future<void> _addImage() async {
+ Future<void> _addImage() async {
+  final items = ref.read(setlistProvider);
+  final selection = ref.read(setlistSelectionProvider);
+  final isSingleImageSelected = selection.length == 1 &&
+      items[selection.first] is ImageSetlistItem;
+
+  if (isSingleImageSelected) {
+    // Edit existing image slide
+    final idx = selection.first;
+    final existing = items[idx] as ImageSetlistItem;
+    final result = await showDialog<ImageSetlistItem>(
+      context: context,
+      builder: (context) => ImageSlideDialog(
+        isEditing: true,
+        initialImagePath: existing.imagePath,
+        initialLayout: existing.layout,
+        initialAlignment: existing.alignment,
+        existingUniqueId: existing.uniqueId,
+        existingIsFavorite: existing.isFavorite,
+      ),
+    );
+    if (result != null) {
+      ref.read(setlistProvider.notifier).replaceAt(idx, result);
+    }
+  } else {
+    // Add new image slide
     final result = await showDialog<ImageSetlistItem>(
       context: context,
       builder: (context) => const ImageSlideDialog(),
@@ -261,9 +288,28 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
       );
     }
   }
+}
 
 // ── Add window slide ────────────────────────────────────────────────────
-  Future<void> _addWindow() async {
+  Future<void> _addwindow() async {
+  final items = ref.read(setlistProvider);
+  final selection = ref.read(setlistSelectionProvider);
+  final isSingleWindowSelected = selection.length == 1 &&
+      items[selection.first] is WindowSetlistItem;
+
+  if (isSingleWindowSelected) {
+    // Edit existing window slide
+    final idx = selection.first;
+    final existing = items[idx] as WindowSetlistItem;
+    final result = await showDialog<WindowSetlistItem>(
+      context: context,
+      builder: (context) => WindowSlideDialog(existing: existing),
+    );
+    if (result != null) {
+      ref.read(setlistProvider.notifier).replaceAt(idx, result);
+    }
+  } else {
+    // Add new window slide
     final result = await showDialog<WindowSetlistItem>(
       context: context,
       builder: (context) => const WindowSlideDialog(),
@@ -276,6 +322,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
       );
     }
   }
+}
 
   // ── Clear all items ────────────────────────────────────────────────────
   Future<void> _clearAll() async {
@@ -392,6 +439,12 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
     final hasSelection = selection.isNotEmpty;
     final canMoveUp = hasSelection && !selection.contains(0);
     final canMoveDown = hasSelection && !selection.contains(items.length - 1);
+    final remoteMode = ref.watch(remoteSettingsProvider).mode;
+final isClientMode = remoteMode == RemoteMode.client;
+final isSingleImageSelected =
+    selection.length == 1 && items[selection.first] is ImageSetlistItem;
+final isSinglewindowSelected =
+    selection.length == 1 && items[selection.first] is WindowSetlistItem;
 
     return Focus(
       focusNode: _listFocusNode,
@@ -402,6 +455,7 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
           ref.read(slideListFocusNodeProvider).requestFocus();
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+          if(isClientMode) return KeyEventResult.handled;
           final sel = ref.read(setlistSelectionProvider);
           if (sel.isNotEmpty) {
             // Find the lowest selected index
@@ -604,22 +658,22 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                     _segmentedButton(
                       icon: Icons.delete_rounded,
                       tooltip: items.isEmpty && activeName != null ? 'Delete SetList' : 'Delete Selected',
-                      onPressed: (hasSelection || (items.isEmpty && activeName != null)) ? _deleteAction : null,
+                      onPressed: (!isClientMode && (hasSelection || (items.isEmpty && activeName != null))) ? _deleteAction : null,
                     ),
                     _segmentedButton(
                       icon: Icons.arrow_upward_rounded,
                       tooltip: 'Move Up',
-                      onPressed: canMoveUp ? _moveUp : null,
+                      onPressed: (!isClientMode && canMoveUp) ? _moveUp : null,
                     ),
                     _segmentedButton(
                       icon: Icons.arrow_downward_rounded,
                       tooltip: 'Move Down',
-                      onPressed: canMoveDown ? _moveDown : null,
+                      onPressed: (!isClientMode && canMoveDown) ? _moveDown : null,
                     ),
                     _segmentedButton(
                       icon: Icons.save_rounded,
                       tooltip: 'Save SetList',
-                      onPressed: _saveSetlist,
+                      onPressed: (!isClientMode)? _saveSetlist : null,
                       showBorder: false,
                     ),
                   ],
@@ -632,22 +686,26 @@ class _SetlistPaneState extends ConsumerState<SetlistPane> {
                     _segmentedButton(
                       icon: Icons.block_rounded,
                       tooltip: 'Clear All',
-                      onPressed: items.isNotEmpty ? _clearAll : null,
+                      onPressed: (!isClientMode && items.isNotEmpty) ? _clearAll : null,
                     ),
                     _segmentedButton(
                       icon: Icons.add_photo_alternate_rounded,
-                      tooltip: 'Add Image Slide',
-                      onPressed: _addImage,
+                      tooltip: isClientMode ? 'Edit selected image item' : 'Add Image Slide',
+                      onPressed: isClientMode 
+                      ? (isSingleImageSelected ? _addImage : null)
+                      : _addImage,
                     ),
                     _segmentedButton(
                       icon: Icons.star_rounded,
                       tooltip: 'Mark Item as Favorite',
-                      onPressed: hasSelection ? _toggleFavorite : null,
+                      onPressed: (!isClientMode && hasSelection) ? _toggleFavorite : null,
                     ),
                     _segmentedButton(
                       icon: Icons.desktop_windows_rounded,
-                      tooltip: 'Add Window Slide',
-                      onPressed: _addWindow,
+                      tooltip: isClientMode ? 'Edit selected window item' : 'Add Window Slide',
+                      onPressed: isClientMode 
+                         ? (isSingleWindowSelected ? _addWindow : null)
+                         : _addWindow,
                       showBorder: false,
                       isSelected: false,
                     ),

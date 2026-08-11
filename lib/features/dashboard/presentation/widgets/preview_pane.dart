@@ -15,6 +15,8 @@ import '../../../bible/domain/bible_constants.dart';
 import '../../../bible/data/bible.dart';
 import '../../../bible/presentation/bible_providers.dart';
 import '../../../../main.dart';
+import '../../../../core/remote/remote_providers.dart';
+import '../../../../core/remote/remote_models.dart';
 
 class PreviewPane extends ConsumerStatefulWidget {
   const PreviewPane({super.key});
@@ -390,6 +392,10 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
   KeyEventResult _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
+    if(ref.read(remoteSettingsProvider).mode == RemoteMode.client) {
+      return KeyEventResult.handled;
+    }
+
     final slides = ref.read(currentSlidesProvider);
     final activeIndices = ref.read(activeSlideIndicesProvider);
     final navState = ref.read(slideNavigationProvider);
@@ -560,6 +566,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final activeIndices = ref.watch(activeSlideIndicesProvider);
     final borderActiveIndices = ref.watch(borderActiveSlideIndicesProvider);
     final slides = ref.watch(currentSlidesProvider);
+    final isClientMode = ref.watch(remoteSettingsProvider).mode == RemoteMode.client;
 
     // Scroll to active index and center it
     ref.listen(activeSlideIndexProvider, (previous, next) {
@@ -680,12 +687,16 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                           _HeaderIconButton(
                             icon: Icons.keyboard_double_arrow_left_rounded,
                             tooltip: 'Add previous two verses (Ctrl + Double Left)',
-                            onPressed: _canShiftPrev ? () => _performShift(stepCount: 2, forward: false) : null,
+                            onPressed: (!isClientMode && _canShiftPrev) 
+                            ? () => _performShift(stepCount: 2, forward: false) 
+                            : null,
                           ),
                           _HeaderIconButton(
                             icon: Icons.keyboard_arrow_left_rounded,
                             tooltip: 'Add previous verse (Ctrl + Left)',
-                            onPressed: _canShiftPrev ? () => _performShift(stepCount: 1, forward: false) : null,
+                            onPressed: (!isClientMode && _canShiftPrev) 
+                            ? () => _performShift(stepCount: 1, forward: false) 
+                            : null,
                           ),
                           _HeaderIconButton(
                             tooltip: 'Focus Scripture in Bible Search (Ctrl + S)',
@@ -700,12 +711,16 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                           _HeaderIconButton(
                             icon: Icons.keyboard_arrow_right_rounded,
                             tooltip: 'Add next verse (Ctrl + Right)',
-                            onPressed: _canShiftNext ? () => _performShift(stepCount: 1, forward: true) : null,
+                            onPressed: (!isClientMode && _canShiftNext) 
+                            ? () => _performShift(stepCount: 1, forward: true) 
+                            : null,
                           ),
                           _HeaderIconButton(
                             icon: Icons.keyboard_double_arrow_right_rounded,
                             tooltip: 'Add next two verses (Ctrl + Double Right)',
-                            onPressed: _canShiftNext ? () => _performShift(stepCount: 2, forward: true) : null,
+                            onPressed: (!isClientMode && _canShiftNext) 
+                            ? () => _performShift(stepCount: 2, forward: true) 
+                            : null,
                           ),
                         ],
                       ),
@@ -740,6 +755,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
                       isBookmarked: isBookmarked,
                       isPurpleHighlighted: isPurpleHighlighted,
                       onTap: () {
+                        if(isClientMode) return;
                         ref.read(activeSlideIndexProvider.notifier).state = index;
                         focusNode.requestFocus();
                       },

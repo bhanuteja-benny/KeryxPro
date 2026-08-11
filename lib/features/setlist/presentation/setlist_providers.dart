@@ -119,6 +119,47 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
     ];
   }
 
+void replaceAt(int index, SetlistItem item) {
+  final newList = List<SetlistItem>.from(state);
+  newList[safeIndex] = item;
+  state = newList;
+}
+
+void insertItemAt(int index, SetlistItem item) {
+  final newList = List<SetlistItem>.from(state);
+  final safeIndex = index.clamp(0, newList.length) as int;
+  newList.insert(safeIndex, item);
+  state = newList;
+}
+
+void removeByUniqueIds(List<String> uniqueIds) {
+  if (uniqueIds.isEmpty) return;
+  final idSet = uniqueIds.toSet();
+  state = [for (final item in state) if (!idSet.contains(item.uniqueId)) item];
+}
+
+void reorderByUniqueIds(List<String> orderedUniqueIds) {
+  if (orderedUniqueIds.isEmpty || state.isEmpty) return;
+
+  final byId = <String, SetlistItem>{
+    for (final item in state) item.uniqueId: item,
+  };
+
+  final reordered = <SetlistItem>[];
+  for (final id in orderedUniqueIds) {
+    final item = byId.remove(id);
+    if (item != null) {
+      reordered.add(item);
+    }
+  }
+
+  if (byId.isNotEmpty) {
+    reordered.addAll(byId.values);
+  }
+
+  state = reordered;
+}
+
   // Legacy helper used by Bible search add
   void addItem(SetlistItem item) {
     state = [...state, item];

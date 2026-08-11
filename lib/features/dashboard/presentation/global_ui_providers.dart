@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/remote/remote_models.dart';
+import '../../../core/remote/remote_providers.dart';
 
 // Tab Controller for Library (Songs vs Bible)
 final libraryTabControllerProvider = StateProvider<TabController?>((ref) => null);
@@ -97,6 +99,7 @@ class GlobalShortcutActions {
   }
 
   void openBibleTab() {
+    if(ref.read(remoteSettingsProvider).mode == RemoteMode.client) return;
     // Ensure library pane is visible (un-hide if hidden)
     ref.read(libraryPaneVisibleProvider.notifier).state = true;
     ref.read(activeLibraryRailIndexProvider.notifier).state = 1;
@@ -106,6 +109,7 @@ class GlobalShortcutActions {
   }
 
   void openSongsTab() {
+    if(ref.read(remoteSettingsProvider).mode == RemoteMode.client) return;
     // Ensure library pane is visible (un-hide if hidden)
     ref.read(libraryPaneVisibleProvider.notifier).state = true;
     ref.read(activeLibraryRailIndexProvider.notifier).state = 0;

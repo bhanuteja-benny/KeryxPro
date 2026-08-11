@@ -15,6 +15,8 @@ import 'core/sync/sync_config.dart';
 import 'core/sync/sync_service.dart';
 import 'core/sync/media_sync_manager.dart';
 import 'core/error/logger_service.dart';
+import 'core/remote/remote_config.dart';
+import 'core/remote/remote_providers.dart';
 import 'dart:ui';
 
 void main(List<String> args) async {
@@ -76,12 +78,14 @@ void main(List<String> args) async {
   // Init foundational services
   final isarService = IsarService();
   final syncConfig = await SyncConfig.init();
+  final remoteConfig = await RemoteConfig.init();
 
   runApp(
     ProviderScope(
       overrides: [
         isarServiceProvider.overrideWithValue(isarService),
         syncConfigProvider.overrideWithValue(syncConfig),
+        remoteConfigProvider.overrideWithValue(remoteConfig),
         appDocumentsDirectoryPathProvider.overrideWithValue(appDocDirPath),
       ],
       child: const DashboardApp(),

@@ -28,14 +28,17 @@ class _DatabaseSyncSettingsDialogState extends ConsumerState<DatabaseSyncSetting
               style: TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 24),
-            SwitchListTile(
-              title: const Text('Enable Sync'),
-              value: config.syncEnabled,
-              onChanged: (val) {
-                config.setSyncEnabled(val);
-                setState(() {}); // refresh dialog
-              },
-              contentPadding: EdgeInsets.zero,
+            Material(
+              color: Colors.transparent,
+              child: SwitchListTile(
+                title: const Text('Enable Sync'),
+                value: config.syncEnabled,
+                onChanged: (val) {
+                  config.setSyncEnabled(val);
+                  setState(() {}); // refresh dialog
+                },
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
             const SizedBox(height: 16),
             const Text('Sync Folder Path', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -70,7 +73,7 @@ class _DatabaseSyncSettingsDialogState extends ConsumerState<DatabaseSyncSetting
                       await config.setSyncFolderPath(selectedDirectory);
                       setState(() {});
                     }
-                  },
+                  }
                 ),
               ],
             ),

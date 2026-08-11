@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../../../songs/presentation/song_library_tab.dart';
 import '../../../bible/presentation/widgets/bible_search_tab.dart';
+import '../../../remote/presentation/remote_client_tab.dart';
+import '../../../../core/remote/remote_models.dart';
+import '../../../../core/remote/remote_providers.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../global_ui_providers.dart';
@@ -44,6 +47,65 @@ class _LibraryPaneState extends ConsumerState<LibraryPane> {
   Widget build(BuildContext context) {
     final tabController = ref.watch(libraryTabControllerProvider);
     final pinMode = ref.watch(libraryPinModeProvider);
+    final remoteMode = ref.watch(remoteSettingsProvider).mode;
+
+final isPinned = pinMode == LibraryPinMode.pinned;
+
+if (remoteMode == RemoteMode.client) {
+  return Column(
+    children: [
+      SizedBox(
+        height: 30,
+        child: Container(
+          color: Colors.grey[900],
+          child: Row(
+            children: [
+              const Expanded(
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wifi_tethering, size: 16),
+                      SizedBox(width: 4),
+                      Text('Remote Mode - Client', style: TextStyle(fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 28,
+                child: Tooltip(
+                  message: isPinned ? 'Unpin (Auto Hide)' : 'Pin',
+                  waitDuration: const Duration(milliseconds: 500),
+                  child: InkWell(
+                    onTap: () {
+                      if (isPinned) {
+                        ref.read(libraryPinModeProvider.notifier).state = LibraryPinMode.autoHide;
+                        ref.read(libraryPaneVisibleProvider.notifier).state = false;
+                      } else {
+                        ref.read(libraryPinModeProvider.notifier).state = LibraryPinMode.pinned;
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(4),
+                    child: Center(
+                      child: isPinned
+                          ? const Icon(Icons.push_pin, size: 14, color: Colors.grey)
+                          : Transform.rotate(
+                              angle: math.pi / 4,
+                              child: const Icon(Icons.push_pin_outlined, size: 14, color: Colors.grey),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      const Expanded(child: RemoteClientTab()),
+    ],
+  );
+}
 
     if (tabController == null) {
       return const Center(child: CircularProgressIndicator());

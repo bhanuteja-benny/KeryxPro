@@ -6,9 +6,12 @@ import 'package:file_picker/file_picker.dart';
 import '../../../settings/presentation/widgets/presentation_settings_dialog.dart';
 import '../../../settings/presentation/widgets/database_sync_settings_dialog.dart';
 import '../../../settings/presentation/widgets/general_settings_dialog.dart';
+import '../../../settings/presentation/widgets/remote_mode_dialog.dart';
 import '../../../songs/presentation/song_providers.dart';
 import '../../../songs/data/song_import_service.dart';
 import '../../../bible/presentation/widgets/bible_import_dialog.dart';
+import '../../../../core/remote/remote_models.dart';
+import '../../../../core/remote/remote_providers.dart';
 import '../../../../core/sync/sync_service.dart';
 import '../../../setlist/presentation/manage_setlists_dialog.dart';
 import 'help_dialog.dart';
@@ -53,6 +56,36 @@ class CustomTitleBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final remoteSettings = ref.watch(remoteSettingsProvider);
+final remoteState = ref.watch(remoteConnectionStateProvider);
+final incomingRequest = ref.watch(remoteIncomingRequestProvider);
+final connectedClientName = ref.watch(remoteClientConnectedNameProvider);
+
+String remoteStatus;
+switch (remoteState) {
+  case RemoteConnectionState.connected:
+    remoteStatus = 'Connected';
+    break;
+  case RemoteConnectionState.awaitingApproval:
+    remoteStatus = 'Awaiting Approval';
+    break;
+  case RemoteConnectionState.connecting:
+    remoteStatus = 'Connecting';
+    break;
+  case RemoteConnectionState.discovering:
+    remoteStatus = 'Discovering';
+    break;
+  case RemoteConnectionState.error:
+    remoteStatus = 'Error';
+    break;
+  case RemoteConnectionState.disconnected:
+    remoteStatus = 'Disconnected';
+    break;
+  case RemoteConnectionState.idle:
+    remoteStatus = 'Idle';
+    break;
+}
+
     return Container(
       height: 32, // Slim header
       color: const Color(0xFF2D2D2D), // Slightly accented grey
@@ -124,6 +157,15 @@ class CustomTitleBar extends ConsumerWidget {
                     },
                     child: const Text('General Settings'),
                   ),
+                  MenuItemButton(
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (context) => const RemoteModeDialog(),
+    );
+  },
+  child: const Text('Remote Mode'),
+),
                 ],
                 child: const Text('Settings', style: TextStyle(fontSize: 12)),
               ),
@@ -182,6 +224,46 @@ class CustomTitleBar extends ConsumerWidget {
             ],
           ),
           
+if (remoteSettings.mode == RemoteMode.server)
+  Container(
+    margin: const EdgeInsets.only(left: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: const Color(0xFF1E1E1E),
+      borderRadius: BorderRadius.circular(4),
+      border: Border.all(color: Colors.white12),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.wifi_tethering, size: 12, color: Colors.lightBlueAccent),
+        const SizedBox(width: 4),
+        Text('Server: $remoteStatus', style: const TextStyle(fontSize: 10, color: Colors.white70)),
+        if (connectedClientName != null && connectedClientName.isNotEmpty) ...[
+          const SizedBox(width: 6),
+          Text('Client: $connectedClientName', style: const TextStyle(fontSize: 10, color: Colors.white54)),
+        ],
+        if (incomingRequest != null) ...[
+          const SizedBox(width: 8),
+          Text('Request: ${incomingRequest.machineName}', style: const TextStyle(fontSize: 10, color: Colors.white60)),
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: () {
+              ref.read(remoteServiceProvider).acceptPendingRequest(incomingRequest.requestId);
+            },
+            child: const Text('Accept', style: TextStyle(fontSize: 10, color: Colors.lightGreenAccent)),
+          ),
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: () {
+              ref.read(remoteServiceProvider).rejectPendingRequest(incomingRequest.requestId);
+            },
+            child: const Text('Reject', style: TextStyle(fontSize: 10, color: Colors.redAccent)),
+          ),
+        ],
+      ],
+    ),
+  ),
+
           // Main Drag Area
           const Expanded(
             child: WindowCaptionSegment(
