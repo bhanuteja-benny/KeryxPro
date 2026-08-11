@@ -121,7 +121,7 @@ class SetlistNotifier extends StateNotifier<List<SetlistItem>> {
 
 void replaceAt(int index, SetlistItem item) {
   final newList = List<SetlistItem>.from(state);
-  newList[safeIndex] = item;
+  newList[index] = item;
   state = newList;
 }
 
