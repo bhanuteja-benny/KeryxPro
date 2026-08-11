@@ -444,6 +444,12 @@ Future<void> _applyActionBatch(Map<String, dynamic> message) async {
 
   _ref.read(isApplyingRemoteChangesProvider.notifier).state = true;
   try {
+
+
+
+
+    Map<String, dynamic>? deferredSlideChangePayload;
+    
     for (final raw in actions) {
       if (raw is! Map<String, dynamic>) continue;
       final type = raw['actionType'] as String?;
@@ -477,7 +483,15 @@ Future<void> _applyActionBatch(Map<String, dynamic> message) async {
           break;
 
         case 'ACTIVE_SLIDE_CHANGED':
-          final requested = payload['activeSlideIndex'] as int? ?? 0;
+
+          deferredSlideChangePayload = payload;
+          break;
+      }
+    }
+
+
+    if (deferredSlideChangePayload != null) {
+          final requested = deferredSlideChangePayload['activeSlideIndex'] as int? ?? 0;
           final slideCount = _ref.read(currentSlidesProvider).length;
           if (slideCount == 0) {
             _ref.read(activeSlideIndexProvider.notifier).state = 0;
@@ -485,9 +499,8 @@ Future<void> _applyActionBatch(Map<String, dynamic> message) async {
             final safe = requested.clamp(0, slideCount - 1) as int;
             _ref.read(activeSlideIndexProvider.notifier).state = safe;
           }
-          break;
       }
-    }
+    
 
     _ref.read(setlistSelectionProvider.notifier).clear();
     _ref.read(remoteLastSyncProvider.notifier).state = DateTime.now();
