@@ -443,7 +443,7 @@ if (isSingleWindowSelected) {
 final isClientMode = remoteMode == RemoteMode.client;
 final isSingleImageSelected =
     selection.length == 1 && items[selection.first] is ImageSetlistItem;
-final isSinglewindowSelected =
+final isSingleWindowSelected =
     selection.length == 1 && items[selection.first] is WindowSetlistItem;
 
     return Focus(
