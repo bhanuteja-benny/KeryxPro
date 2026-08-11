@@ -230,7 +230,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
       }
     }
 
-    final match = RegExp(r'^(.+?)\s+(\d+):([\d\-,]+)\s+([a-zA-Z0-9]+)$').firstMatch(baseTitle.trim());
+    final match = RegExp(r'^(.+?)\s+(\d+):([\d\-,]+)\s+([a-zA-Z0-9_\s]+)$').firstMatch(baseTitle.trim());
     if (match == null) return;
     final bookName = match.group(1)!;
     final chapter = int.tryParse(match.group(2)!);

@@ -6,17 +6,23 @@ import '../../../core/sync/media_sync_manager.dart';
 
 class ImageSlideDialog extends ConsumerStatefulWidget {
   final bool isForBackground;
-  final String initialImagePath;
-  final String initialLayout;
-  final String initialAlignment;
+  final bool isEditing;
+final String initialImagePath;
+final String initialLayout;
+final String initialAlignment;
+final String? existingUniqueId;
+final bool existingIsFavorite;
 
-  const ImageSlideDialog({
-    super.key,
-    this.isForBackground = false,
-    this.initialImagePath = '',
-    this.initialLayout = 'contain',
-    this.initialAlignment = 'center',
-  });
+const ImageSlideDialog({
+  super.key,
+  this.isForBackground = false,
+  this.isEditing = false,
+  this.initialImagePath = '',
+  this.initialLayout = 'contain',
+  this.initialAlignment = 'center',
+  this.existingUniqueId,
+  this.existingIsFavorite = false,
+});
 
   @override
   ConsumerState<ImageSlideDialog> createState() => _ImageSlideDialogState();
@@ -70,7 +76,7 @@ class _ImageSlideDialogState extends ConsumerState<ImageSlideDialog> {
     return AlertDialog(
       backgroundColor: const Color(0xFF2D2D2D),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      title: Text(widget.isForBackground ? 'Background Image Settings' : 'Add Image Slide', style: const TextStyle(color: Colors.white, fontSize: 16)),
+      title: Text(widget.isEditing ? 'Edit Image Slide' : (widget.isForBackground ? 'Background Image Settings' : 'Add Image Slide'), style: const TextStyle(color: Colors.white, fontSize: 16)),
       content: SizedBox(
         width: 420,
         child: Column(
@@ -215,10 +221,16 @@ class _ImageSlideDialogState extends ConsumerState<ImageSlideDialog> {
                     builder: (c) => const Center(child: CircularProgressIndicator()),
                   );
 
-                  final syncManager = ref.read(mediaSyncManagerProvider);
-                  final finalPath = widget.isForBackground
-                      ? await syncManager.importBackgroundImage(_imagePath)
-                      : await syncManager.importImageSlide(_imagePath);
+                  String finalPath;
+// Skip re-import if path unchanged during editing
+if (widget.isEditing && _imagePath == widget.initialImagePath) {
+  finalPath = _imagePath;
+} else {
+  final syncManager = ref.read(mediaSyncManagerProvider);
+  finalPath = widget.isForBackground
+      ? await syncManager.importBackgroundImage(_imagePath)
+      : await syncManager.importImageSlide(_imagePath);
+}
 
                   if (context.mounted) {
                     Navigator.pop(context); // Close loading indicator
@@ -228,6 +240,8 @@ class _ImageSlideDialogState extends ConsumerState<ImageSlideDialog> {
                         imagePath: finalPath,
                         layout: _layout,
                         alignment: _alignment,
+                        uniqueId: widget.existingUniqueId,
+isFavorite: widget.existingIsFavorite,
                       ),
                     );
                   }
@@ -238,7 +252,7 @@ class _ImageSlideDialogState extends ConsumerState<ImageSlideDialog> {
             disabledBackgroundColor: Colors.white12,
             foregroundColor: Colors.white,
           ),
-          child: Text(widget.isForBackground ? 'Done' : 'Add to SetList'),
+          child: Text(widget.isEditing ? 'Save' : (widget.isForBackground ? 'Done' : 'Add to SetList')),
         ),
       ],
     );
