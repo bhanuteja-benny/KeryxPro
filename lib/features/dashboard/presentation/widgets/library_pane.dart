@@ -111,8 +111,6 @@ if (remoteMode == RemoteMode.client) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final isPinned = pinMode == LibraryPinMode.pinned;
-
     return Column(
       children: [
         SizedBox(
