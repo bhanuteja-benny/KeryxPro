@@ -224,7 +224,7 @@ class _MainDashboardPageState extends ConsumerState<MainDashboardPage> with Tick
 
     // Initialize broadcaster
     ref.watch(projectionBroadcasterProvider);
-    ref.watch(remotSyncBridgeProvider);
+    ref.watch(remoteSyncBridgeProvider);
     final isEditorOpen = ref.watch(isSongEditorOpenProvider);
 
     // Library pane auto-hide state
