@@ -138,7 +138,89 @@ bool isWindowTransparent = false;
   double verseMarginLeft = 32.0;
   double verseMarginRight = 32.0;
 
+  PresentationSettings sanitize() {
+    // Numbers / Doubles Fallback
+    if (!songCustomWidth.isFinite || songCustomWidth <= 0) songCustomWidth = 1920.0;
+    if (!songCustomHeight.isFinite || songCustomHeight <= 0) songCustomHeight = 1080.0;
+    if (!scriptureCustomWidth.isFinite || scriptureCustomWidth <= 0) scriptureCustomWidth = 1920.0;
+    if (!scriptureCustomHeight.isFinite || scriptureCustomHeight <= 0) scriptureCustomHeight = 1080.0;
+    if (!blankCustomWidth.isFinite || blankCustomWidth <= 0) blankCustomWidth = 1920.0;
+    if (!blankCustomHeight.isFinite || blankCustomHeight <= 0) blankCustomHeight = 1080.0;
+    if (!windowCustomWidth.isFinite || windowCustomWidth <= 0) windowCustomWidth = 1920.0;
+    if (!windowCustomHeight.isFinite || windowCustomHeight <= 0) windowCustomHeight = 1080.0;
+
+    if (!titleFontSize.isFinite || titleFontSize <= 0) titleFontSize = 24.0;
+    if (!titleMarginTop.isFinite || titleMarginTop < 0) titleMarginTop = 16.0;
+    if (!titleMarginBottom.isFinite || titleMarginBottom < 0) titleMarginBottom = 16.0;
+    if (!titleMarginLeft.isFinite || titleMarginLeft < 0) titleMarginLeft = 16.0;
+    if (!titleMarginRight.isFinite || titleMarginRight < 0) titleMarginRight = 16.0;
+
+    if (!lyricsFontSize.isFinite || lyricsFontSize <= 0) lyricsFontSize = 80.0;
+    if (!lyricsMarginTop.isFinite || lyricsMarginTop < 0) lyricsMarginTop = 32.0;
+    if (!lyricsMarginBottom.isFinite || lyricsMarginBottom < 0) lyricsMarginBottom = 32.0;
+    if (!lyricsMarginLeft.isFinite || lyricsMarginLeft < 0) lyricsMarginLeft = 32.0;
+    if (!lyricsMarginRight.isFinite || lyricsMarginRight < 0) lyricsMarginRight = 32.0;
+
+    if (!chapterFontSize.isFinite || chapterFontSize <= 0) chapterFontSize = 24.0;
+    if (!chapterMarginTop.isFinite || chapterMarginTop < 0) chapterMarginTop = 16.0;
+    if (!chapterMarginBottom.isFinite || chapterMarginBottom < 0) chapterMarginBottom = 16.0;
+    if (!chapterMarginLeft.isFinite || chapterMarginLeft < 0) chapterMarginLeft = 16.0;
+    if (!chapterMarginRight.isFinite || chapterMarginRight < 0) chapterMarginRight = 16.0;
+
+    if (!verseFontSize.isFinite || verseFontSize <= 0) verseFontSize = 80.0;
+    if (!verseMarginTop.isFinite || verseMarginTop < 0) verseMarginTop = 32.0;
+    if (!verseMarginBottom.isFinite || verseMarginBottom < 0) verseMarginBottom = 32.0;
+    if (!verseMarginLeft.isFinite || verseMarginLeft < 0) verseMarginLeft = 32.0;
+    if (!verseMarginRight.isFinite || verseMarginRight < 0) verseMarginRight = 32.0;
+
+    // Strings Fallback
+    if (presetName.isEmpty) {
+      presetName = (isDefault || id == 1) ? 'Default' : 'Preset $id';
+    }
+    if (presetName == 'Default') {
+      isDefault = true;
+    }
+
+    if (songAspectRatio.isEmpty) songAspectRatio = '16:9';
+    if (scriptureAspectRatio.isEmpty) scriptureAspectRatio = '16:9';
+    if (blankAspectRatio.isEmpty) blankAspectRatio = '16:9';
+    if (windowAspectRatio.isEmpty) windowAspectRatio = '16:9';
+    if (titleAlignment.isEmpty) titleAlignment = 'center';
+    if (titleVerticalAlignment.isEmpty) titleVerticalAlignment = 'bottom';
+    if (chapterAlignment.isEmpty) chapterAlignment = 'center';
+    if (chapterVerticalAlignment.isEmpty) chapterVerticalAlignment = 'bottom';
+    if (verseAlignment.isEmpty) verseAlignment = 'center';
+    if (verseVerticalAlignment.isEmpty) verseVerticalAlignment = 'center';
+    if (lyricsAlignment.isEmpty) lyricsAlignment = 'center';
+    if (lyricsVerticalAlignment.isEmpty) lyricsVerticalAlignment = 'center';
+    if (chapterFontFamily.isEmpty) chapterFontFamily = 'Arial';
+    if (verseFontFamily.isEmpty) verseFontFamily = 'Arial';
+    if (lyricsFontFamily.isEmpty) lyricsFontFamily = 'Arial';
+    if (titleFontFamily.isEmpty) titleFontFamily = 'Arial';
+
+    if (songBackgroundImageLayout.isEmpty) songBackgroundImageLayout = 'stretch';
+    if (songBackgroundImageAlignment.isEmpty) songBackgroundImageAlignment = 'center';
+    if (scriptureBackgroundImageLayout.isEmpty) scriptureBackgroundImageLayout = 'stretch';
+    if (scriptureBackgroundImageAlignment.isEmpty) scriptureBackgroundImageAlignment = 'center';
+    if (blankBackgroundImageLayout.isEmpty) blankBackgroundImageLayout = 'stretch';
+    if (blankBackgroundImageAlignment.isEmpty) blankBackgroundImageAlignment = 'center';
+    if (windowBackgroundImageLayout.isEmpty) windowBackgroundImageLayout = 'stretch';
+    if (windowBackgroundImageAlignment.isEmpty) windowBackgroundImageAlignment = 'center';
+
+    if (songBackgroundColor == 0) songBackgroundColor = 0xFF000000;
+    if (scriptureBackgroundColor == 0) scriptureBackgroundColor = 0xFF000000;
+    if (blankBackgroundColor == 0) blankBackgroundColor = 0xFF000000;
+    if (windowBackgroundColor == 0) windowBackgroundColor = 0xFF000000;
+    if ((lyricsFontColor & 0xFF000000) == 0) lyricsFontColor = 0xFFFFFFFF;
+    if ((titleFontColor & 0xFF000000) == 0) titleFontColor = 0x8FFFFFFF;
+    if ((chapterFontColor & 0xFF000000) == 0) chapterFontColor = 0x8FFFFFFF;
+    if ((verseFontColor & 0xFF000000) == 0) verseFontColor = 0xFFFFFFFF;
+
+    return this;
+  }
+
   Map<String, dynamic> toMap() {
+    sanitize();
     return {
       'id': id,
       'syncId': syncId,
@@ -251,7 +333,7 @@ bool isWindowTransparent = false;
   }
 
   static PresentationSettings fromMap(Map<String, dynamic> map) {
-    return PresentationSettings()
+    final settings = PresentationSettings()
       ..id = map['id'] as int? ?? Isar.autoIncrement
       ..syncId = map['syncId'] as String? ?? const Uuid().v4()
       ..presetName = map['presetName'] as String? ?? 'Default'
@@ -359,5 +441,6 @@ bool isWindowTransparent = false;
       ..verseMarginBottom = (map['verseMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..verseMarginLeft = (map['verseMarginLeft'] as num?)?.toDouble() ?? 32.0
       ..verseMarginRight = (map['verseMarginRight'] as num?)?.toDouble() ?? 32.0;
+    return settings.sanitize();
   }
 }

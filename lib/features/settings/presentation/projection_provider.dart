@@ -269,12 +269,12 @@ final h = isBlank
 
 Future<PresentationSettings?> _resolvePresetOrFallback(int? presetId) async {
   final isar = await _isarService.db;
+  PresentationSettings? preset;
   if (presetId != null) {
-    final preset = await isar.presentationSettings.get(presetId);
-    if (preset != null) return preset;
+    preset = await isar.presentationSettings.get(presetId);
   }
-  // Match preview behavior when no preset is selected.
-  return await isar.presentationSettings.where().findFirst();
+  preset ??= await isar.presentationSettings.where().findFirst();
+  return preset?.sanitize();
 }
 
 Future<void> _moveMonitor1ToDisplayNatively({
@@ -439,10 +439,15 @@ final presetId = preset?.id;
 final presetId = preset?.id;
 
     final secondaryDisplay = state.displays[1];
-    final displayX = secondaryDisplay.visiblePosition?.dx ?? secondaryDisplay.size.width;
-    final displayY = secondaryDisplay.visiblePosition?.dy ?? 0.0;
-    final displayW = secondaryDisplay.size.width;
-    final displayH = secondaryDisplay.size.height;
+    final rawX = secondaryDisplay.visiblePosition?.dx ?? secondaryDisplay.size.width;
+    final rawY = secondaryDisplay.visiblePosition?.dy ?? 0.0;
+    final rawW = secondaryDisplay.size.width;
+    final rawH = secondaryDisplay.size.height;
+
+    final displayX = rawX.isFinite ? rawX : 0.0;
+    final displayY = rawY.isFinite ? rawY : 0.0;
+    final displayW = (rawW.isFinite && rawW > 0) ? rawW : 1920.0;
+    final displayH = (rawH.isFinite && rawH > 0) ? rawH : 1080.0;
 
     final args = {
       'type': 'projector',
