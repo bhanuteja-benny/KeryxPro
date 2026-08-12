@@ -264,79 +264,32 @@ Future<bool> _addReferenceLineToSetlist(String line, WidgetRef ref) async {
 }
 
 Future<void> _showImportVersesDialog(WidgetRef ref) async {
-  final inputController = TextEditingController();
-  var isAdding = false;
-
-  await showDialog<void>(
+  final result = await showDialog<({int added, int notFound})>(
     context: context,
-    builder: (dialogContext) {
-      return StatefulBuilder(
-        builder: (context, setDialogState) {
-          return AlertDialog(
-            title: const Text('Import Verses'),
-            content: SizedBox(
-              width: 420,
-              child: TextField(
-                controller: inputController,
-                autofocus: true,
-                minLines: 6,
-                maxLines: 10,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: isAdding ? null : () => Navigator.of(dialogContext).pop(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: isAdding
-                    ? null
-                    : () async {
-                        setDialogState(() {
-                          isAdding = true;
-                        });
-
-                        final lines = inputController.text
-                            .split('\n')
-                            .map((line) => line.trim())
-                            .where((line) => line.isNotEmpty)
-                            .toList();
-
-                        int addedCount = 0;
-                        int notFoundCount = 0;
-
-                        for (final line in lines) {
-                          final added = await _addReferenceLineToSetlist(line, ref);
-                          if (added) {
-                            addedCount++;
-                          } else {
-                            notFoundCount++;
-                          }
-                        }
-
-                        if (!mounted) return;
-                        Navigator.of(dialogContext).pop();
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('$addedCount references added, $notFoundCount not found'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                child: const Text('Add'),
-              ),
-            ],
-          );
-        },
-      );
-    },
+    builder: (dialogContext) => _ImportVersesDialog(
+      onAdd: (lines) async {
+        int addedCount = 0;
+        int notFoundCount = 0;
+        for (final line in lines) {
+          final added = await _addReferenceLineToSetlist(line, ref);
+          if (added) {
+            addedCount++;
+          } else {
+            notFoundCount++;
+          }
+        }
+        return (added: addedCount, notFound: notFoundCount);
+      },
+    ),
   );
 
-  inputController.dispose();
+  if (!mounted || result == null) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('${result.added} references added, ${result.notFound} not found'),
+      duration: const Duration(seconds: 2),
+    ),
+  );
 }
   
   void _addToSetlist(List<BibleVerse> verses, BibleVersion version, WidgetRef ref, {bool goLive = true}) {
@@ -1021,6 +974,69 @@ suffixIconConstraints: const BoxConstraints(minWidth: 24, minHeight: 24),
           ),
         ],
       ),
+    );
+  }
+}
+
+typedef _ImportVersesCallback = Future<({int added, int notFound})> Function(List<String> lines);
+
+class _ImportVersesDialog extends StatefulWidget {
+  const _ImportVersesDialog({required this.onAdd});
+
+  final _ImportVersesCallback onAdd;
+
+  @override
+  State<_ImportVersesDialog> createState() => _ImportVersesDialogState();
+}
+
+class _ImportVersesDialogState extends State<_ImportVersesDialog> {
+  final TextEditingController _controller = TextEditingController();
+  bool _isAdding = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Import Verses'),
+      content: SizedBox(
+        width: 420,
+        child: TextField(
+          controller: _controller,
+          autofocus: true,
+          minLines: 6,
+          maxLines: 10,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isAdding ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isAdding
+              ? null
+              : () async {
+                  setState(() => _isAdding = true);
+                  final lines = _controller.text
+                      .split('\n')
+                      .map((l) => l.trim())
+                      .where((l) => l.isNotEmpty)
+                      .toList();
+                  final result = await widget.onAdd(lines);
+                  if (!mounted) return;
+                  Navigator.of(context).pop(result);
+                },
+          child: const Text('Add'),
+        ),
+      ],
     );
   }
 }
