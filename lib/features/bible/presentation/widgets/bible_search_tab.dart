@@ -197,6 +197,148 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     ref.read(bibleSearchFocusNodeProvider).requestFocus();
   }
 
+Future<bool> _addReferenceLineToSetlist(String line, WidgetRef ref) async {
+  final regex = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;](\d+)(?:-(\d+))?(?:\s+([a-zA-Z0-9]+))?$');
+  final match = regex.firstMatch(line.trim());
+  if (match == null) return false;
+
+  final bookStr = match.group(1)?.trim() ?? '';
+  final chapterStr = match.group(2) ?? '';
+  final verseStartStr = match.group(3) ?? '';
+  final verseEndStr = match.group(4);
+  final versionStr = match.group(5);
+
+  final normalizedBook = BibleConstants.normalizeBookName(bookStr);
+  if (normalizedBook == null) return false;
+
+  final chapter = int.tryParse(chapterStr);
+  final startVerse = int.tryParse(verseStartStr);
+  final endVerse = verseEndStr != null ? int.tryParse(verseEndStr) : startVerse;
+  if (chapter == null || startVerse == null || endVerse == null || endVerse < startVerse) {
+    return false;
+  }
+
+  final versionsAsync = ref.read(bibleVersionsProvider);
+  final versions = versionsAsync.valueOrNull ?? [];
+  if (versions.isEmpty) return false;
+
+  BibleVersion? targetVersion;
+  if (versionStr != null) {
+    targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == versionStr.toLowerCase()).firstOrNull;
+    if (targetVersion == null) {
+      return false;
+    }
+  } else {
+    targetVersion = ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+    if (targetVersion == null) {
+      return false;
+    }
+  }
+
+  final isar = await ref.read(isarServiceProvider).db;
+  final chapterVerses = await isar.bibleVerses
+      .filter()
+      .bibleVersionIdEqualTo(targetVersion.id)
+      .bookNameEqualTo(normalizedBook)
+      .chapterNumberEqualTo(chapter)
+      .findAll();
+
+  if (chapterVerses.isEmpty) return false;
+
+  final requiredVerseCount = endVerse - startVerse + 1;
+  final selectedVerses = chapterVerses
+      .where((v) => v.verseNumber >= startVerse && v.verseNumber <= endVerse)
+      .toList()
+    ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+  if (selectedVerses.length != requiredVerseCount) return false;
+
+  for (int i = 0; i < requiredVerseCount; i++) {
+    if (selectedVerses[i].verseNumber != startVerse + i) {
+      return false;
+    }
+  }
+
+  _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
+  return true;
+}
+
+Future<void> _showImportVersesDialog(WidgetRef ref) async {
+  final inputController = TextEditingController();
+  var isAdding = false;
+
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text('Import Verses'),
+            content: SizedBox(
+              width: 420,
+              child: TextField(
+                controller: inputController,
+                autofocus: true,
+                minLines: 6,
+                maxLines: 10,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: isAdding ? null : () => Navigator.of(dialogContext).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: isAdding
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          isAdding = true;
+                        });
+
+                        final lines = inputController.text
+                            .split('\n')
+                            .map((line) => line.trim())
+                            .where((line) => line.isNotEmpty)
+                            .toList();
+
+                        int addedCount = 0;
+                        int notFoundCount = 0;
+
+                        for (final line in lines) {
+                          final added = await _addReferenceLineToSetlist(line, ref);
+                          if (added) {
+                            addedCount++;
+                          } else {
+                            notFoundCount++;
+                          }
+                        }
+
+                        if (!mounted) return;
+                        Navigator.of(dialogContext).pop();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('$addedCount references added, $notFoundCount not found'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                child: const Text('Add'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  inputController.dispose();
+}
+  
   void _addToSetlist(List<BibleVerse> verses, BibleVersion version, WidgetRef ref, {bool goLive = true}) {
     if (verses.isEmpty) return;
 
@@ -301,6 +443,14 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                     hintText: 'Search (e.g. gen 1:3, John 3:1-5)',
                     prefixIcon: const Icon(Icons.search, size: 12),
+                    suffixIcon: IconButton(
+  padding: EdgeInsets.zero,
+  constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+  icon: const Icon(Icons.file_download_outlined, size: 12),
+  tooltip: 'Import Verses',
+  onPressed: () => _showImportVersesDialog(ref),
+),
+suffixIconConstraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                     filled: true,
                     fillColor: Colors.black26,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
