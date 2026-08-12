@@ -234,7 +234,11 @@ Future<void> _startServer(RemoteSettingsState settings) async {
       );
     });
 
-    await _startServerDiscovery(settings);
+    try {
+      await _startServerDiscovery(settings);
+    } catch (e) {
+      print('Warning: Server UDP discovery error: $e');
+    }
     _setConnectionState(RemoteConnectionState.idle);
   } catch (e) {
     _setError('Failed to start server on port ${settings.port}: $e');
@@ -246,12 +250,17 @@ Future<void> _startServerDiscovery(RemoteSettingsState settings) async {
   if (!settings.discoveryEnabled) return;
 
   final discoveryPort = settings.port + 1;
-  _discoveryServerSocket = await RawDatagramSocket.bind(
-    InternetAddress.anyIPv4,
-    discoveryPort,
-    reuseAddress: true,
-    reusePort: true,
-  );
+  try {
+    _discoveryServerSocket = await RawDatagramSocket.bind(
+      InternetAddress.anyIPv4,
+      discoveryPort,
+      reuseAddress: true,
+      reusePort: false,
+    );
+  } catch (e) {
+    print('Warning: Server discovery socket bind error: $e');
+    return;
+  }
 
   _discoveryServerSocket!.listen((RawSocketEvent event) {
     if (event != RawSocketEvent.read) return;
@@ -267,25 +276,35 @@ Future<void> _startServerDiscovery(RemoteSettingsState settings) async {
       'port': settings.port,
     });
 
-    _discoveryServerSocket!.send(
-      utf8.encode(response),
-      dg.address,
-      dg.port,
-    );
+    try {
+      _discoveryServerSocket!.send(
+        utf8.encode(response),
+        dg.address,
+        dg.port,
+      );
+    } catch (_) {}
   });
 }
 
 Future<void> _startClientDiscovery(RemoteSettingsState settings) async {
   final discoveryPort = settings.port + 1;
 
-  _discoveryClientSocket = await RawDatagramSocket.bind(
-    InternetAddress.anyIPv4,
-    0,
-    reuseAddress: true,
-    reusePort: true,
-  );
+  try {
+    _discoveryClientSocket = await RawDatagramSocket.bind(
+      InternetAddress.anyIPv4,
+      0,
+      reuseAddress: true,
+      reusePort: false,
+    );
+  } catch (e) {
+    print('Warning: Client discovery socket bind error: $e');
+    return;
+  }
 
-  _discoveryClientSocket!.broadcastEnabled = true;
+  try {
+    _discoveryClientSocket!.broadcastEnabled = true;
+  } catch (_) {}
+
   _discoveryClientSocket!.listen((RawSocketEvent event) {
     if (event != RawSocketEvent.read) return;
     final dg = _discoveryClientSocket!.receive();
@@ -312,11 +331,13 @@ Future<void> _startClientDiscovery(RemoteSettingsState settings) async {
   });
 
   _discoveryBroadcastTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-    _discoveryClientSocket?.send(
-      utf8.encode('KERYX_DISCOVER_V1'),
-      InternetAddress('255.255.255.255'),
-      discoveryPort,
-    );
+    try {
+      _discoveryClientSocket?.send(
+        utf8.encode('KERYX_DISCOVER_V1'),
+        InternetAddress('255.255.255.255'),
+        discoveryPort,
+      );
+    } catch (_) {}
   });
 
   _discoveryCleanupTimer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -325,11 +346,13 @@ Future<void> _startClientDiscovery(RemoteSettingsState settings) async {
     _publishDiscovered();
   });
 
-  _discoveryClientSocket!.send(
-    utf8.encode('KERYX_DISCOVER_V1'),
-    InternetAddress('255.255.255.255'),
-    discoveryPort,
-  );
+  try {
+    _discoveryClientSocket!.send(
+      utf8.encode('KERYX_DISCOVER_V1'),
+      InternetAddress('255.255.255.255'),
+      discoveryPort,
+    );
+  } catch (_) {}
 }
 
 Future<void> _sendSessionSnapshot() async {

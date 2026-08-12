@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>KeryxPro requires local network access to connect Remote Mode controllers and sync setlists across devices.</string>
 </dict>
 </plist>
