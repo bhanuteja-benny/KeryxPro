@@ -1,0 +1,36 @@
+Context:
+- Editable line height, stroke width and font shadow (offset, radius, color, opacity) in presentation typography settings
+
+UI Requirement:
+- In presentation settings for Song and Scripture typography settings, need below features editable
+- In Typography pop up
+- - as of now font height (line height) is fixed to 1.4 (for title 1.2). Give a textbox where user can enter decimal values up to two decimals.
+    By default (when setting is blank), let the value in textbox and default value be 1.4
+- - as of now stroke width is like lyricsFontSizeValue * 0.08. I want that 0.08 to be configurable. so give a textbox where user can enter
+    decimal values up to two decimals (by default 0.08) and use the same for calculating.
+- - Add shadow feature as well. Need textboxes and options to set color (picker), offsets (x,y) and radius.
+- to accommodate all above new fields in the UI, increase the width of Typography pop up and rearrange the fields beautifully, so that they
+  look orderly and well arranged.
+- - arrange them in below order
+- - put text color and line height in one row
+- - put underline, bold, italic in one row
+- - put fill and stroke in one row
+- - put shadow and all its related fields in one row. let the color be first then remaining textboxes.
+- - as the color picker already has the opacity control and use the same for shadow opacity setting.
+- save all those settings in database for the preset
+- apply those in Presentation preview, Monitors previews and launched windows accordingly.
+- for all the above text fields have some default values rather than blank.
+- checkbox needed for shadow (similar to stroke checkbox). for line height no need of checkbox.
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan

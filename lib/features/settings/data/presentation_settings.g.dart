@@ -88,463 +88,603 @@ const PresentationSettingsSchema = CollectionSchema(
       name: r'chapterHasFill',
       type: IsarType.bool,
     ),
-    r'chapterHasStroke': PropertySchema(
+    r'chapterHasShadow': PropertySchema(
       id: 14,
+      name: r'chapterHasShadow',
+      type: IsarType.bool,
+    ),
+    r'chapterHasStroke': PropertySchema(
+      id: 15,
       name: r'chapterHasStroke',
       type: IsarType.bool,
     ),
     r'chapterItalic': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'chapterItalic',
       type: IsarType.bool,
     ),
+    r'chapterLineHeight': PropertySchema(
+      id: 17,
+      name: r'chapterLineHeight',
+      type: IsarType.double,
+    ),
     r'chapterMarginBottom': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'chapterMarginBottom',
       type: IsarType.double,
     ),
     r'chapterMarginLeft': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'chapterMarginLeft',
       type: IsarType.double,
     ),
     r'chapterMarginRight': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'chapterMarginRight',
       type: IsarType.double,
     ),
     r'chapterMarginTop': PropertySchema(
-      id: 19,
+      id: 21,
       name: r'chapterMarginTop',
       type: IsarType.double,
     ),
+    r'chapterShadowColor': PropertySchema(
+      id: 22,
+      name: r'chapterShadowColor',
+      type: IsarType.long,
+    ),
+    r'chapterShadowOffsetX': PropertySchema(
+      id: 23,
+      name: r'chapterShadowOffsetX',
+      type: IsarType.double,
+    ),
+    r'chapterShadowOffsetY': PropertySchema(
+      id: 24,
+      name: r'chapterShadowOffsetY',
+      type: IsarType.double,
+    ),
+    r'chapterShadowRadius': PropertySchema(
+      id: 25,
+      name: r'chapterShadowRadius',
+      type: IsarType.double,
+    ),
     r'chapterStrokeColor': PropertySchema(
-      id: 20,
+      id: 26,
       name: r'chapterStrokeColor',
       type: IsarType.long,
     ),
+    r'chapterStrokeWidth': PropertySchema(
+      id: 27,
+      name: r'chapterStrokeWidth',
+      type: IsarType.double,
+    ),
     r'chapterUnderline': PropertySchema(
-      id: 21,
+      id: 28,
       name: r'chapterUnderline',
       type: IsarType.bool,
     ),
     r'chapterVerticalAlignment': PropertySchema(
-      id: 22,
+      id: 29,
       name: r'chapterVerticalAlignment',
       type: IsarType.string,
     ),
     r'isBlankImageEnabled': PropertySchema(
-      id: 23,
+      id: 30,
       name: r'isBlankImageEnabled',
       type: IsarType.bool,
     ),
     r'isBlankTransparent': PropertySchema(
-      id: 24,
+      id: 31,
       name: r'isBlankTransparent',
       type: IsarType.bool,
     ),
     r'isDefault': PropertySchema(
-      id: 25,
+      id: 32,
       name: r'isDefault',
       type: IsarType.bool,
     ),
     r'isScriptureImageEnabled': PropertySchema(
-      id: 26,
+      id: 33,
       name: r'isScriptureImageEnabled',
       type: IsarType.bool,
     ),
     r'isScriptureTransparent': PropertySchema(
-      id: 27,
+      id: 34,
       name: r'isScriptureTransparent',
       type: IsarType.bool,
     ),
     r'isSongImageEnabled': PropertySchema(
-      id: 28,
+      id: 35,
       name: r'isSongImageEnabled',
       type: IsarType.bool,
     ),
     r'isSongTransparent': PropertySchema(
-      id: 29,
+      id: 36,
       name: r'isSongTransparent',
       type: IsarType.bool,
     ),
     r'isWindowImageEnabled': PropertySchema(
-      id: 30,
+      id: 37,
       name: r'isWindowImageEnabled',
       type: IsarType.bool,
     ),
     r'isWindowTransparent': PropertySchema(
-      id: 31,
+      id: 38,
       name: r'isWindowTransparent',
       type: IsarType.bool,
     ),
     r'lyricsAlignment': PropertySchema(
-      id: 32,
+      id: 39,
       name: r'lyricsAlignment',
       type: IsarType.string,
     ),
     r'lyricsBold': PropertySchema(
-      id: 33,
+      id: 40,
       name: r'lyricsBold',
       type: IsarType.bool,
     ),
     r'lyricsFillColor': PropertySchema(
-      id: 34,
+      id: 41,
       name: r'lyricsFillColor',
       type: IsarType.long,
     ),
     r'lyricsFontColor': PropertySchema(
-      id: 35,
+      id: 42,
       name: r'lyricsFontColor',
       type: IsarType.long,
     ),
     r'lyricsFontFamily': PropertySchema(
-      id: 36,
+      id: 43,
       name: r'lyricsFontFamily',
       type: IsarType.string,
     ),
     r'lyricsFontSize': PropertySchema(
-      id: 37,
+      id: 44,
       name: r'lyricsFontSize',
       type: IsarType.double,
     ),
     r'lyricsHasFill': PropertySchema(
-      id: 38,
+      id: 45,
       name: r'lyricsHasFill',
       type: IsarType.bool,
     ),
+    r'lyricsHasShadow': PropertySchema(
+      id: 46,
+      name: r'lyricsHasShadow',
+      type: IsarType.bool,
+    ),
     r'lyricsHasStroke': PropertySchema(
-      id: 39,
+      id: 47,
       name: r'lyricsHasStroke',
       type: IsarType.bool,
     ),
     r'lyricsItalic': PropertySchema(
-      id: 40,
+      id: 48,
       name: r'lyricsItalic',
       type: IsarType.bool,
     ),
     r'lyricsLineBreak': PropertySchema(
-      id: 41,
+      id: 49,
       name: r'lyricsLineBreak',
       type: IsarType.bool,
     ),
+    r'lyricsLineHeight': PropertySchema(
+      id: 50,
+      name: r'lyricsLineHeight',
+      type: IsarType.double,
+    ),
     r'lyricsMarginBottom': PropertySchema(
-      id: 42,
+      id: 51,
       name: r'lyricsMarginBottom',
       type: IsarType.double,
     ),
     r'lyricsMarginLeft': PropertySchema(
-      id: 43,
+      id: 52,
       name: r'lyricsMarginLeft',
       type: IsarType.double,
     ),
     r'lyricsMarginRight': PropertySchema(
-      id: 44,
+      id: 53,
       name: r'lyricsMarginRight',
       type: IsarType.double,
     ),
     r'lyricsMarginTop': PropertySchema(
-      id: 45,
+      id: 54,
       name: r'lyricsMarginTop',
       type: IsarType.double,
     ),
+    r'lyricsShadowColor': PropertySchema(
+      id: 55,
+      name: r'lyricsShadowColor',
+      type: IsarType.long,
+    ),
+    r'lyricsShadowOffsetX': PropertySchema(
+      id: 56,
+      name: r'lyricsShadowOffsetX',
+      type: IsarType.double,
+    ),
+    r'lyricsShadowOffsetY': PropertySchema(
+      id: 57,
+      name: r'lyricsShadowOffsetY',
+      type: IsarType.double,
+    ),
+    r'lyricsShadowRadius': PropertySchema(
+      id: 58,
+      name: r'lyricsShadowRadius',
+      type: IsarType.double,
+    ),
     r'lyricsStrokeColor': PropertySchema(
-      id: 46,
+      id: 59,
       name: r'lyricsStrokeColor',
       type: IsarType.long,
     ),
+    r'lyricsStrokeWidth': PropertySchema(
+      id: 60,
+      name: r'lyricsStrokeWidth',
+      type: IsarType.double,
+    ),
     r'lyricsUnderline': PropertySchema(
-      id: 47,
+      id: 61,
       name: r'lyricsUnderline',
       type: IsarType.bool,
     ),
     r'lyricsVerticalAlignment': PropertySchema(
-      id: 48,
+      id: 62,
       name: r'lyricsVerticalAlignment',
       type: IsarType.string,
     ),
     r'presetName': PropertySchema(
-      id: 49,
+      id: 63,
       name: r'presetName',
       type: IsarType.string,
     ),
     r'scriptureAspectRatio': PropertySchema(
-      id: 50,
+      id: 64,
       name: r'scriptureAspectRatio',
       type: IsarType.string,
     ),
     r'scriptureBackgroundColor': PropertySchema(
-      id: 51,
+      id: 65,
       name: r'scriptureBackgroundColor',
       type: IsarType.long,
     ),
     r'scriptureBackgroundImage': PropertySchema(
-      id: 52,
+      id: 66,
       name: r'scriptureBackgroundImage',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageAlignment': PropertySchema(
-      id: 53,
+      id: 67,
       name: r'scriptureBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageLayout': PropertySchema(
-      id: 54,
+      id: 68,
       name: r'scriptureBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'scriptureCustomHeight': PropertySchema(
-      id: 55,
+      id: 69,
       name: r'scriptureCustomHeight',
       type: IsarType.double,
     ),
     r'scriptureCustomWidth': PropertySchema(
-      id: 56,
+      id: 70,
       name: r'scriptureCustomWidth',
       type: IsarType.double,
     ),
     r'showChapter': PropertySchema(
-      id: 57,
+      id: 71,
       name: r'showChapter',
       type: IsarType.bool,
     ),
     r'showTitle': PropertySchema(
-      id: 58,
+      id: 72,
       name: r'showTitle',
       type: IsarType.bool,
     ),
     r'songAspectRatio': PropertySchema(
-      id: 59,
+      id: 73,
       name: r'songAspectRatio',
       type: IsarType.string,
     ),
     r'songBackgroundColor': PropertySchema(
-      id: 60,
+      id: 74,
       name: r'songBackgroundColor',
       type: IsarType.long,
     ),
     r'songBackgroundImage': PropertySchema(
-      id: 61,
+      id: 75,
       name: r'songBackgroundImage',
       type: IsarType.string,
     ),
     r'songBackgroundImageAlignment': PropertySchema(
-      id: 62,
+      id: 76,
       name: r'songBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'songBackgroundImageLayout': PropertySchema(
-      id: 63,
+      id: 77,
       name: r'songBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'songCustomHeight': PropertySchema(
-      id: 64,
+      id: 78,
       name: r'songCustomHeight',
       type: IsarType.double,
     ),
     r'songCustomWidth': PropertySchema(
-      id: 65,
+      id: 79,
       name: r'songCustomWidth',
       type: IsarType.double,
     ),
     r'syncId': PropertySchema(
-      id: 66,
+      id: 80,
       name: r'syncId',
       type: IsarType.string,
     ),
     r'titleAlignment': PropertySchema(
-      id: 67,
+      id: 81,
       name: r'titleAlignment',
       type: IsarType.string,
     ),
     r'titleBold': PropertySchema(
-      id: 68,
+      id: 82,
       name: r'titleBold',
       type: IsarType.bool,
     ),
     r'titleFillColor': PropertySchema(
-      id: 69,
+      id: 83,
       name: r'titleFillColor',
       type: IsarType.long,
     ),
     r'titleFontColor': PropertySchema(
-      id: 70,
+      id: 84,
       name: r'titleFontColor',
       type: IsarType.long,
     ),
     r'titleFontFamily': PropertySchema(
-      id: 71,
+      id: 85,
       name: r'titleFontFamily',
       type: IsarType.string,
     ),
     r'titleFontSize': PropertySchema(
-      id: 72,
+      id: 86,
       name: r'titleFontSize',
       type: IsarType.double,
     ),
     r'titleHasFill': PropertySchema(
-      id: 73,
+      id: 87,
       name: r'titleHasFill',
       type: IsarType.bool,
     ),
+    r'titleHasShadow': PropertySchema(
+      id: 88,
+      name: r'titleHasShadow',
+      type: IsarType.bool,
+    ),
     r'titleHasStroke': PropertySchema(
-      id: 74,
+      id: 89,
       name: r'titleHasStroke',
       type: IsarType.bool,
     ),
     r'titleItalic': PropertySchema(
-      id: 75,
+      id: 90,
       name: r'titleItalic',
       type: IsarType.bool,
     ),
+    r'titleLineHeight': PropertySchema(
+      id: 91,
+      name: r'titleLineHeight',
+      type: IsarType.double,
+    ),
     r'titleMarginBottom': PropertySchema(
-      id: 76,
+      id: 92,
       name: r'titleMarginBottom',
       type: IsarType.double,
     ),
     r'titleMarginLeft': PropertySchema(
-      id: 77,
+      id: 93,
       name: r'titleMarginLeft',
       type: IsarType.double,
     ),
     r'titleMarginRight': PropertySchema(
-      id: 78,
+      id: 94,
       name: r'titleMarginRight',
       type: IsarType.double,
     ),
     r'titleMarginTop': PropertySchema(
-      id: 79,
+      id: 95,
       name: r'titleMarginTop',
       type: IsarType.double,
     ),
+    r'titleShadowColor': PropertySchema(
+      id: 96,
+      name: r'titleShadowColor',
+      type: IsarType.long,
+    ),
+    r'titleShadowOffsetX': PropertySchema(
+      id: 97,
+      name: r'titleShadowOffsetX',
+      type: IsarType.double,
+    ),
+    r'titleShadowOffsetY': PropertySchema(
+      id: 98,
+      name: r'titleShadowOffsetY',
+      type: IsarType.double,
+    ),
+    r'titleShadowRadius': PropertySchema(
+      id: 99,
+      name: r'titleShadowRadius',
+      type: IsarType.double,
+    ),
     r'titleStrokeColor': PropertySchema(
-      id: 80,
+      id: 100,
       name: r'titleStrokeColor',
       type: IsarType.long,
     ),
+    r'titleStrokeWidth': PropertySchema(
+      id: 101,
+      name: r'titleStrokeWidth',
+      type: IsarType.double,
+    ),
     r'titleUnderline': PropertySchema(
-      id: 81,
+      id: 102,
       name: r'titleUnderline',
       type: IsarType.bool,
     ),
     r'titleVerticalAlignment': PropertySchema(
-      id: 82,
+      id: 103,
       name: r'titleVerticalAlignment',
       type: IsarType.string,
     ),
     r'verseAlignment': PropertySchema(
-      id: 83,
+      id: 104,
       name: r'verseAlignment',
       type: IsarType.string,
     ),
     r'verseBold': PropertySchema(
-      id: 84,
+      id: 105,
       name: r'verseBold',
       type: IsarType.bool,
     ),
     r'verseFillColor': PropertySchema(
-      id: 85,
+      id: 106,
       name: r'verseFillColor',
       type: IsarType.long,
     ),
     r'verseFontColor': PropertySchema(
-      id: 86,
+      id: 107,
       name: r'verseFontColor',
       type: IsarType.long,
     ),
     r'verseFontFamily': PropertySchema(
-      id: 87,
+      id: 108,
       name: r'verseFontFamily',
       type: IsarType.string,
     ),
     r'verseFontSize': PropertySchema(
-      id: 88,
+      id: 109,
       name: r'verseFontSize',
       type: IsarType.double,
     ),
     r'verseHasFill': PropertySchema(
-      id: 89,
+      id: 110,
       name: r'verseHasFill',
       type: IsarType.bool,
     ),
+    r'verseHasShadow': PropertySchema(
+      id: 111,
+      name: r'verseHasShadow',
+      type: IsarType.bool,
+    ),
     r'verseHasStroke': PropertySchema(
-      id: 90,
+      id: 112,
       name: r'verseHasStroke',
       type: IsarType.bool,
     ),
     r'verseItalic': PropertySchema(
-      id: 91,
+      id: 113,
       name: r'verseItalic',
       type: IsarType.bool,
     ),
+    r'verseLineHeight': PropertySchema(
+      id: 114,
+      name: r'verseLineHeight',
+      type: IsarType.double,
+    ),
     r'verseMarginBottom': PropertySchema(
-      id: 92,
+      id: 115,
       name: r'verseMarginBottom',
       type: IsarType.double,
     ),
     r'verseMarginLeft': PropertySchema(
-      id: 93,
+      id: 116,
       name: r'verseMarginLeft',
       type: IsarType.double,
     ),
     r'verseMarginRight': PropertySchema(
-      id: 94,
+      id: 117,
       name: r'verseMarginRight',
       type: IsarType.double,
     ),
     r'verseMarginTop': PropertySchema(
-      id: 95,
+      id: 118,
       name: r'verseMarginTop',
       type: IsarType.double,
     ),
+    r'verseShadowColor': PropertySchema(
+      id: 119,
+      name: r'verseShadowColor',
+      type: IsarType.long,
+    ),
+    r'verseShadowOffsetX': PropertySchema(
+      id: 120,
+      name: r'verseShadowOffsetX',
+      type: IsarType.double,
+    ),
+    r'verseShadowOffsetY': PropertySchema(
+      id: 121,
+      name: r'verseShadowOffsetY',
+      type: IsarType.double,
+    ),
+    r'verseShadowRadius': PropertySchema(
+      id: 122,
+      name: r'verseShadowRadius',
+      type: IsarType.double,
+    ),
     r'verseStrokeColor': PropertySchema(
-      id: 96,
+      id: 123,
       name: r'verseStrokeColor',
       type: IsarType.long,
     ),
+    r'verseStrokeWidth': PropertySchema(
+      id: 124,
+      name: r'verseStrokeWidth',
+      type: IsarType.double,
+    ),
     r'verseUnderline': PropertySchema(
-      id: 97,
+      id: 125,
       name: r'verseUnderline',
       type: IsarType.bool,
     ),
     r'verseVerticalAlignment': PropertySchema(
-      id: 98,
+      id: 126,
       name: r'verseVerticalAlignment',
       type: IsarType.string,
     ),
     r'windowAspectRatio': PropertySchema(
-      id: 99,
+      id: 127,
       name: r'windowAspectRatio',
       type: IsarType.string,
     ),
     r'windowBackgroundColor': PropertySchema(
-      id: 100,
+      id: 128,
       name: r'windowBackgroundColor',
       type: IsarType.long,
     ),
     r'windowBackgroundImage': PropertySchema(
-      id: 101,
+      id: 129,
       name: r'windowBackgroundImage',
       type: IsarType.string,
     ),
     r'windowBackgroundImageAlignment': PropertySchema(
-      id: 102,
+      id: 130,
       name: r'windowBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'windowBackgroundImageLayout': PropertySchema(
-      id: 103,
+      id: 131,
       name: r'windowBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'windowCustomHeight': PropertySchema(
-      id: 104,
+      id: 132,
       name: r'windowCustomHeight',
       type: IsarType.double,
     ),
     r'windowCustomWidth': PropertySchema(
-      id: 105,
+      id: 133,
       name: r'windowCustomWidth',
       type: IsarType.double,
     )
@@ -636,98 +776,126 @@ void _presentationSettingsSerialize(
   writer.writeString(offsets[11], object.chapterFontFamily);
   writer.writeDouble(offsets[12], object.chapterFontSize);
   writer.writeBool(offsets[13], object.chapterHasFill);
-  writer.writeBool(offsets[14], object.chapterHasStroke);
-  writer.writeBool(offsets[15], object.chapterItalic);
-  writer.writeDouble(offsets[16], object.chapterMarginBottom);
-  writer.writeDouble(offsets[17], object.chapterMarginLeft);
-  writer.writeDouble(offsets[18], object.chapterMarginRight);
-  writer.writeDouble(offsets[19], object.chapterMarginTop);
-  writer.writeLong(offsets[20], object.chapterStrokeColor);
-  writer.writeBool(offsets[21], object.chapterUnderline);
-  writer.writeString(offsets[22], object.chapterVerticalAlignment);
-  writer.writeBool(offsets[23], object.isBlankImageEnabled);
-  writer.writeBool(offsets[24], object.isBlankTransparent);
-  writer.writeBool(offsets[25], object.isDefault);
-  writer.writeBool(offsets[26], object.isScriptureImageEnabled);
-  writer.writeBool(offsets[27], object.isScriptureTransparent);
-  writer.writeBool(offsets[28], object.isSongImageEnabled);
-  writer.writeBool(offsets[29], object.isSongTransparent);
-  writer.writeBool(offsets[30], object.isWindowImageEnabled);
-  writer.writeBool(offsets[31], object.isWindowTransparent);
-  writer.writeString(offsets[32], object.lyricsAlignment);
-  writer.writeBool(offsets[33], object.lyricsBold);
-  writer.writeLong(offsets[34], object.lyricsFillColor);
-  writer.writeLong(offsets[35], object.lyricsFontColor);
-  writer.writeString(offsets[36], object.lyricsFontFamily);
-  writer.writeDouble(offsets[37], object.lyricsFontSize);
-  writer.writeBool(offsets[38], object.lyricsHasFill);
-  writer.writeBool(offsets[39], object.lyricsHasStroke);
-  writer.writeBool(offsets[40], object.lyricsItalic);
-  writer.writeBool(offsets[41], object.lyricsLineBreak);
-  writer.writeDouble(offsets[42], object.lyricsMarginBottom);
-  writer.writeDouble(offsets[43], object.lyricsMarginLeft);
-  writer.writeDouble(offsets[44], object.lyricsMarginRight);
-  writer.writeDouble(offsets[45], object.lyricsMarginTop);
-  writer.writeLong(offsets[46], object.lyricsStrokeColor);
-  writer.writeBool(offsets[47], object.lyricsUnderline);
-  writer.writeString(offsets[48], object.lyricsVerticalAlignment);
-  writer.writeString(offsets[49], object.presetName);
-  writer.writeString(offsets[50], object.scriptureAspectRatio);
-  writer.writeLong(offsets[51], object.scriptureBackgroundColor);
-  writer.writeString(offsets[52], object.scriptureBackgroundImage);
-  writer.writeString(offsets[53], object.scriptureBackgroundImageAlignment);
-  writer.writeString(offsets[54], object.scriptureBackgroundImageLayout);
-  writer.writeDouble(offsets[55], object.scriptureCustomHeight);
-  writer.writeDouble(offsets[56], object.scriptureCustomWidth);
-  writer.writeBool(offsets[57], object.showChapter);
-  writer.writeBool(offsets[58], object.showTitle);
-  writer.writeString(offsets[59], object.songAspectRatio);
-  writer.writeLong(offsets[60], object.songBackgroundColor);
-  writer.writeString(offsets[61], object.songBackgroundImage);
-  writer.writeString(offsets[62], object.songBackgroundImageAlignment);
-  writer.writeString(offsets[63], object.songBackgroundImageLayout);
-  writer.writeDouble(offsets[64], object.songCustomHeight);
-  writer.writeDouble(offsets[65], object.songCustomWidth);
-  writer.writeString(offsets[66], object.syncId);
-  writer.writeString(offsets[67], object.titleAlignment);
-  writer.writeBool(offsets[68], object.titleBold);
-  writer.writeLong(offsets[69], object.titleFillColor);
-  writer.writeLong(offsets[70], object.titleFontColor);
-  writer.writeString(offsets[71], object.titleFontFamily);
-  writer.writeDouble(offsets[72], object.titleFontSize);
-  writer.writeBool(offsets[73], object.titleHasFill);
-  writer.writeBool(offsets[74], object.titleHasStroke);
-  writer.writeBool(offsets[75], object.titleItalic);
-  writer.writeDouble(offsets[76], object.titleMarginBottom);
-  writer.writeDouble(offsets[77], object.titleMarginLeft);
-  writer.writeDouble(offsets[78], object.titleMarginRight);
-  writer.writeDouble(offsets[79], object.titleMarginTop);
-  writer.writeLong(offsets[80], object.titleStrokeColor);
-  writer.writeBool(offsets[81], object.titleUnderline);
-  writer.writeString(offsets[82], object.titleVerticalAlignment);
-  writer.writeString(offsets[83], object.verseAlignment);
-  writer.writeBool(offsets[84], object.verseBold);
-  writer.writeLong(offsets[85], object.verseFillColor);
-  writer.writeLong(offsets[86], object.verseFontColor);
-  writer.writeString(offsets[87], object.verseFontFamily);
-  writer.writeDouble(offsets[88], object.verseFontSize);
-  writer.writeBool(offsets[89], object.verseHasFill);
-  writer.writeBool(offsets[90], object.verseHasStroke);
-  writer.writeBool(offsets[91], object.verseItalic);
-  writer.writeDouble(offsets[92], object.verseMarginBottom);
-  writer.writeDouble(offsets[93], object.verseMarginLeft);
-  writer.writeDouble(offsets[94], object.verseMarginRight);
-  writer.writeDouble(offsets[95], object.verseMarginTop);
-  writer.writeLong(offsets[96], object.verseStrokeColor);
-  writer.writeBool(offsets[97], object.verseUnderline);
-  writer.writeString(offsets[98], object.verseVerticalAlignment);
-  writer.writeString(offsets[99], object.windowAspectRatio);
-  writer.writeLong(offsets[100], object.windowBackgroundColor);
-  writer.writeString(offsets[101], object.windowBackgroundImage);
-  writer.writeString(offsets[102], object.windowBackgroundImageAlignment);
-  writer.writeString(offsets[103], object.windowBackgroundImageLayout);
-  writer.writeDouble(offsets[104], object.windowCustomHeight);
-  writer.writeDouble(offsets[105], object.windowCustomWidth);
+  writer.writeBool(offsets[14], object.chapterHasShadow);
+  writer.writeBool(offsets[15], object.chapterHasStroke);
+  writer.writeBool(offsets[16], object.chapterItalic);
+  writer.writeDouble(offsets[17], object.chapterLineHeight);
+  writer.writeDouble(offsets[18], object.chapterMarginBottom);
+  writer.writeDouble(offsets[19], object.chapterMarginLeft);
+  writer.writeDouble(offsets[20], object.chapterMarginRight);
+  writer.writeDouble(offsets[21], object.chapterMarginTop);
+  writer.writeLong(offsets[22], object.chapterShadowColor);
+  writer.writeDouble(offsets[23], object.chapterShadowOffsetX);
+  writer.writeDouble(offsets[24], object.chapterShadowOffsetY);
+  writer.writeDouble(offsets[25], object.chapterShadowRadius);
+  writer.writeLong(offsets[26], object.chapterStrokeColor);
+  writer.writeDouble(offsets[27], object.chapterStrokeWidth);
+  writer.writeBool(offsets[28], object.chapterUnderline);
+  writer.writeString(offsets[29], object.chapterVerticalAlignment);
+  writer.writeBool(offsets[30], object.isBlankImageEnabled);
+  writer.writeBool(offsets[31], object.isBlankTransparent);
+  writer.writeBool(offsets[32], object.isDefault);
+  writer.writeBool(offsets[33], object.isScriptureImageEnabled);
+  writer.writeBool(offsets[34], object.isScriptureTransparent);
+  writer.writeBool(offsets[35], object.isSongImageEnabled);
+  writer.writeBool(offsets[36], object.isSongTransparent);
+  writer.writeBool(offsets[37], object.isWindowImageEnabled);
+  writer.writeBool(offsets[38], object.isWindowTransparent);
+  writer.writeString(offsets[39], object.lyricsAlignment);
+  writer.writeBool(offsets[40], object.lyricsBold);
+  writer.writeLong(offsets[41], object.lyricsFillColor);
+  writer.writeLong(offsets[42], object.lyricsFontColor);
+  writer.writeString(offsets[43], object.lyricsFontFamily);
+  writer.writeDouble(offsets[44], object.lyricsFontSize);
+  writer.writeBool(offsets[45], object.lyricsHasFill);
+  writer.writeBool(offsets[46], object.lyricsHasShadow);
+  writer.writeBool(offsets[47], object.lyricsHasStroke);
+  writer.writeBool(offsets[48], object.lyricsItalic);
+  writer.writeBool(offsets[49], object.lyricsLineBreak);
+  writer.writeDouble(offsets[50], object.lyricsLineHeight);
+  writer.writeDouble(offsets[51], object.lyricsMarginBottom);
+  writer.writeDouble(offsets[52], object.lyricsMarginLeft);
+  writer.writeDouble(offsets[53], object.lyricsMarginRight);
+  writer.writeDouble(offsets[54], object.lyricsMarginTop);
+  writer.writeLong(offsets[55], object.lyricsShadowColor);
+  writer.writeDouble(offsets[56], object.lyricsShadowOffsetX);
+  writer.writeDouble(offsets[57], object.lyricsShadowOffsetY);
+  writer.writeDouble(offsets[58], object.lyricsShadowRadius);
+  writer.writeLong(offsets[59], object.lyricsStrokeColor);
+  writer.writeDouble(offsets[60], object.lyricsStrokeWidth);
+  writer.writeBool(offsets[61], object.lyricsUnderline);
+  writer.writeString(offsets[62], object.lyricsVerticalAlignment);
+  writer.writeString(offsets[63], object.presetName);
+  writer.writeString(offsets[64], object.scriptureAspectRatio);
+  writer.writeLong(offsets[65], object.scriptureBackgroundColor);
+  writer.writeString(offsets[66], object.scriptureBackgroundImage);
+  writer.writeString(offsets[67], object.scriptureBackgroundImageAlignment);
+  writer.writeString(offsets[68], object.scriptureBackgroundImageLayout);
+  writer.writeDouble(offsets[69], object.scriptureCustomHeight);
+  writer.writeDouble(offsets[70], object.scriptureCustomWidth);
+  writer.writeBool(offsets[71], object.showChapter);
+  writer.writeBool(offsets[72], object.showTitle);
+  writer.writeString(offsets[73], object.songAspectRatio);
+  writer.writeLong(offsets[74], object.songBackgroundColor);
+  writer.writeString(offsets[75], object.songBackgroundImage);
+  writer.writeString(offsets[76], object.songBackgroundImageAlignment);
+  writer.writeString(offsets[77], object.songBackgroundImageLayout);
+  writer.writeDouble(offsets[78], object.songCustomHeight);
+  writer.writeDouble(offsets[79], object.songCustomWidth);
+  writer.writeString(offsets[80], object.syncId);
+  writer.writeString(offsets[81], object.titleAlignment);
+  writer.writeBool(offsets[82], object.titleBold);
+  writer.writeLong(offsets[83], object.titleFillColor);
+  writer.writeLong(offsets[84], object.titleFontColor);
+  writer.writeString(offsets[85], object.titleFontFamily);
+  writer.writeDouble(offsets[86], object.titleFontSize);
+  writer.writeBool(offsets[87], object.titleHasFill);
+  writer.writeBool(offsets[88], object.titleHasShadow);
+  writer.writeBool(offsets[89], object.titleHasStroke);
+  writer.writeBool(offsets[90], object.titleItalic);
+  writer.writeDouble(offsets[91], object.titleLineHeight);
+  writer.writeDouble(offsets[92], object.titleMarginBottom);
+  writer.writeDouble(offsets[93], object.titleMarginLeft);
+  writer.writeDouble(offsets[94], object.titleMarginRight);
+  writer.writeDouble(offsets[95], object.titleMarginTop);
+  writer.writeLong(offsets[96], object.titleShadowColor);
+  writer.writeDouble(offsets[97], object.titleShadowOffsetX);
+  writer.writeDouble(offsets[98], object.titleShadowOffsetY);
+  writer.writeDouble(offsets[99], object.titleShadowRadius);
+  writer.writeLong(offsets[100], object.titleStrokeColor);
+  writer.writeDouble(offsets[101], object.titleStrokeWidth);
+  writer.writeBool(offsets[102], object.titleUnderline);
+  writer.writeString(offsets[103], object.titleVerticalAlignment);
+  writer.writeString(offsets[104], object.verseAlignment);
+  writer.writeBool(offsets[105], object.verseBold);
+  writer.writeLong(offsets[106], object.verseFillColor);
+  writer.writeLong(offsets[107], object.verseFontColor);
+  writer.writeString(offsets[108], object.verseFontFamily);
+  writer.writeDouble(offsets[109], object.verseFontSize);
+  writer.writeBool(offsets[110], object.verseHasFill);
+  writer.writeBool(offsets[111], object.verseHasShadow);
+  writer.writeBool(offsets[112], object.verseHasStroke);
+  writer.writeBool(offsets[113], object.verseItalic);
+  writer.writeDouble(offsets[114], object.verseLineHeight);
+  writer.writeDouble(offsets[115], object.verseMarginBottom);
+  writer.writeDouble(offsets[116], object.verseMarginLeft);
+  writer.writeDouble(offsets[117], object.verseMarginRight);
+  writer.writeDouble(offsets[118], object.verseMarginTop);
+  writer.writeLong(offsets[119], object.verseShadowColor);
+  writer.writeDouble(offsets[120], object.verseShadowOffsetX);
+  writer.writeDouble(offsets[121], object.verseShadowOffsetY);
+  writer.writeDouble(offsets[122], object.verseShadowRadius);
+  writer.writeLong(offsets[123], object.verseStrokeColor);
+  writer.writeDouble(offsets[124], object.verseStrokeWidth);
+  writer.writeBool(offsets[125], object.verseUnderline);
+  writer.writeString(offsets[126], object.verseVerticalAlignment);
+  writer.writeString(offsets[127], object.windowAspectRatio);
+  writer.writeLong(offsets[128], object.windowBackgroundColor);
+  writer.writeString(offsets[129], object.windowBackgroundImage);
+  writer.writeString(offsets[130], object.windowBackgroundImageAlignment);
+  writer.writeString(offsets[131], object.windowBackgroundImageLayout);
+  writer.writeDouble(offsets[132], object.windowCustomHeight);
+  writer.writeDouble(offsets[133], object.windowCustomWidth);
 }
 
 PresentationSettings _presentationSettingsDeserialize(
@@ -751,99 +919,127 @@ PresentationSettings _presentationSettingsDeserialize(
   object.chapterFontFamily = reader.readString(offsets[11]);
   object.chapterFontSize = reader.readDouble(offsets[12]);
   object.chapterHasFill = reader.readBool(offsets[13]);
-  object.chapterHasStroke = reader.readBool(offsets[14]);
-  object.chapterItalic = reader.readBool(offsets[15]);
-  object.chapterMarginBottom = reader.readDouble(offsets[16]);
-  object.chapterMarginLeft = reader.readDouble(offsets[17]);
-  object.chapterMarginRight = reader.readDouble(offsets[18]);
-  object.chapterMarginTop = reader.readDouble(offsets[19]);
-  object.chapterStrokeColor = reader.readLong(offsets[20]);
-  object.chapterUnderline = reader.readBool(offsets[21]);
-  object.chapterVerticalAlignment = reader.readString(offsets[22]);
+  object.chapterHasShadow = reader.readBool(offsets[14]);
+  object.chapterHasStroke = reader.readBool(offsets[15]);
+  object.chapterItalic = reader.readBool(offsets[16]);
+  object.chapterLineHeight = reader.readDouble(offsets[17]);
+  object.chapterMarginBottom = reader.readDouble(offsets[18]);
+  object.chapterMarginLeft = reader.readDouble(offsets[19]);
+  object.chapterMarginRight = reader.readDouble(offsets[20]);
+  object.chapterMarginTop = reader.readDouble(offsets[21]);
+  object.chapterShadowColor = reader.readLong(offsets[22]);
+  object.chapterShadowOffsetX = reader.readDouble(offsets[23]);
+  object.chapterShadowOffsetY = reader.readDouble(offsets[24]);
+  object.chapterShadowRadius = reader.readDouble(offsets[25]);
+  object.chapterStrokeColor = reader.readLong(offsets[26]);
+  object.chapterStrokeWidth = reader.readDouble(offsets[27]);
+  object.chapterUnderline = reader.readBool(offsets[28]);
+  object.chapterVerticalAlignment = reader.readString(offsets[29]);
   object.id = id;
-  object.isBlankImageEnabled = reader.readBool(offsets[23]);
-  object.isBlankTransparent = reader.readBool(offsets[24]);
-  object.isDefault = reader.readBool(offsets[25]);
-  object.isScriptureImageEnabled = reader.readBool(offsets[26]);
-  object.isScriptureTransparent = reader.readBool(offsets[27]);
-  object.isSongImageEnabled = reader.readBool(offsets[28]);
-  object.isSongTransparent = reader.readBool(offsets[29]);
-  object.isWindowImageEnabled = reader.readBool(offsets[30]);
-  object.isWindowTransparent = reader.readBool(offsets[31]);
-  object.lyricsAlignment = reader.readString(offsets[32]);
-  object.lyricsBold = reader.readBool(offsets[33]);
-  object.lyricsFillColor = reader.readLong(offsets[34]);
-  object.lyricsFontColor = reader.readLong(offsets[35]);
-  object.lyricsFontFamily = reader.readString(offsets[36]);
-  object.lyricsFontSize = reader.readDouble(offsets[37]);
-  object.lyricsHasFill = reader.readBool(offsets[38]);
-  object.lyricsHasStroke = reader.readBool(offsets[39]);
-  object.lyricsItalic = reader.readBool(offsets[40]);
-  object.lyricsLineBreak = reader.readBool(offsets[41]);
-  object.lyricsMarginBottom = reader.readDouble(offsets[42]);
-  object.lyricsMarginLeft = reader.readDouble(offsets[43]);
-  object.lyricsMarginRight = reader.readDouble(offsets[44]);
-  object.lyricsMarginTop = reader.readDouble(offsets[45]);
-  object.lyricsStrokeColor = reader.readLong(offsets[46]);
-  object.lyricsUnderline = reader.readBool(offsets[47]);
-  object.lyricsVerticalAlignment = reader.readString(offsets[48]);
-  object.presetName = reader.readString(offsets[49]);
-  object.scriptureAspectRatio = reader.readString(offsets[50]);
-  object.scriptureBackgroundColor = reader.readLong(offsets[51]);
-  object.scriptureBackgroundImage = reader.readString(offsets[52]);
-  object.scriptureBackgroundImageAlignment = reader.readString(offsets[53]);
-  object.scriptureBackgroundImageLayout = reader.readString(offsets[54]);
-  object.scriptureCustomHeight = reader.readDouble(offsets[55]);
-  object.scriptureCustomWidth = reader.readDouble(offsets[56]);
-  object.showChapter = reader.readBool(offsets[57]);
-  object.showTitle = reader.readBool(offsets[58]);
-  object.songAspectRatio = reader.readString(offsets[59]);
-  object.songBackgroundColor = reader.readLong(offsets[60]);
-  object.songBackgroundImage = reader.readString(offsets[61]);
-  object.songBackgroundImageAlignment = reader.readString(offsets[62]);
-  object.songBackgroundImageLayout = reader.readString(offsets[63]);
-  object.songCustomHeight = reader.readDouble(offsets[64]);
-  object.songCustomWidth = reader.readDouble(offsets[65]);
-  object.syncId = reader.readString(offsets[66]);
-  object.titleAlignment = reader.readString(offsets[67]);
-  object.titleBold = reader.readBool(offsets[68]);
-  object.titleFillColor = reader.readLong(offsets[69]);
-  object.titleFontColor = reader.readLong(offsets[70]);
-  object.titleFontFamily = reader.readString(offsets[71]);
-  object.titleFontSize = reader.readDouble(offsets[72]);
-  object.titleHasFill = reader.readBool(offsets[73]);
-  object.titleHasStroke = reader.readBool(offsets[74]);
-  object.titleItalic = reader.readBool(offsets[75]);
-  object.titleMarginBottom = reader.readDouble(offsets[76]);
-  object.titleMarginLeft = reader.readDouble(offsets[77]);
-  object.titleMarginRight = reader.readDouble(offsets[78]);
-  object.titleMarginTop = reader.readDouble(offsets[79]);
-  object.titleStrokeColor = reader.readLong(offsets[80]);
-  object.titleUnderline = reader.readBool(offsets[81]);
-  object.titleVerticalAlignment = reader.readString(offsets[82]);
-  object.verseAlignment = reader.readString(offsets[83]);
-  object.verseBold = reader.readBool(offsets[84]);
-  object.verseFillColor = reader.readLong(offsets[85]);
-  object.verseFontColor = reader.readLong(offsets[86]);
-  object.verseFontFamily = reader.readString(offsets[87]);
-  object.verseFontSize = reader.readDouble(offsets[88]);
-  object.verseHasFill = reader.readBool(offsets[89]);
-  object.verseHasStroke = reader.readBool(offsets[90]);
-  object.verseItalic = reader.readBool(offsets[91]);
-  object.verseMarginBottom = reader.readDouble(offsets[92]);
-  object.verseMarginLeft = reader.readDouble(offsets[93]);
-  object.verseMarginRight = reader.readDouble(offsets[94]);
-  object.verseMarginTop = reader.readDouble(offsets[95]);
-  object.verseStrokeColor = reader.readLong(offsets[96]);
-  object.verseUnderline = reader.readBool(offsets[97]);
-  object.verseVerticalAlignment = reader.readString(offsets[98]);
-  object.windowAspectRatio = reader.readString(offsets[99]);
-  object.windowBackgroundColor = reader.readLong(offsets[100]);
-  object.windowBackgroundImage = reader.readString(offsets[101]);
-  object.windowBackgroundImageAlignment = reader.readString(offsets[102]);
-  object.windowBackgroundImageLayout = reader.readString(offsets[103]);
-  object.windowCustomHeight = reader.readDouble(offsets[104]);
-  object.windowCustomWidth = reader.readDouble(offsets[105]);
+  object.isBlankImageEnabled = reader.readBool(offsets[30]);
+  object.isBlankTransparent = reader.readBool(offsets[31]);
+  object.isDefault = reader.readBool(offsets[32]);
+  object.isScriptureImageEnabled = reader.readBool(offsets[33]);
+  object.isScriptureTransparent = reader.readBool(offsets[34]);
+  object.isSongImageEnabled = reader.readBool(offsets[35]);
+  object.isSongTransparent = reader.readBool(offsets[36]);
+  object.isWindowImageEnabled = reader.readBool(offsets[37]);
+  object.isWindowTransparent = reader.readBool(offsets[38]);
+  object.lyricsAlignment = reader.readString(offsets[39]);
+  object.lyricsBold = reader.readBool(offsets[40]);
+  object.lyricsFillColor = reader.readLong(offsets[41]);
+  object.lyricsFontColor = reader.readLong(offsets[42]);
+  object.lyricsFontFamily = reader.readString(offsets[43]);
+  object.lyricsFontSize = reader.readDouble(offsets[44]);
+  object.lyricsHasFill = reader.readBool(offsets[45]);
+  object.lyricsHasShadow = reader.readBool(offsets[46]);
+  object.lyricsHasStroke = reader.readBool(offsets[47]);
+  object.lyricsItalic = reader.readBool(offsets[48]);
+  object.lyricsLineBreak = reader.readBool(offsets[49]);
+  object.lyricsLineHeight = reader.readDouble(offsets[50]);
+  object.lyricsMarginBottom = reader.readDouble(offsets[51]);
+  object.lyricsMarginLeft = reader.readDouble(offsets[52]);
+  object.lyricsMarginRight = reader.readDouble(offsets[53]);
+  object.lyricsMarginTop = reader.readDouble(offsets[54]);
+  object.lyricsShadowColor = reader.readLong(offsets[55]);
+  object.lyricsShadowOffsetX = reader.readDouble(offsets[56]);
+  object.lyricsShadowOffsetY = reader.readDouble(offsets[57]);
+  object.lyricsShadowRadius = reader.readDouble(offsets[58]);
+  object.lyricsStrokeColor = reader.readLong(offsets[59]);
+  object.lyricsStrokeWidth = reader.readDouble(offsets[60]);
+  object.lyricsUnderline = reader.readBool(offsets[61]);
+  object.lyricsVerticalAlignment = reader.readString(offsets[62]);
+  object.presetName = reader.readString(offsets[63]);
+  object.scriptureAspectRatio = reader.readString(offsets[64]);
+  object.scriptureBackgroundColor = reader.readLong(offsets[65]);
+  object.scriptureBackgroundImage = reader.readString(offsets[66]);
+  object.scriptureBackgroundImageAlignment = reader.readString(offsets[67]);
+  object.scriptureBackgroundImageLayout = reader.readString(offsets[68]);
+  object.scriptureCustomHeight = reader.readDouble(offsets[69]);
+  object.scriptureCustomWidth = reader.readDouble(offsets[70]);
+  object.showChapter = reader.readBool(offsets[71]);
+  object.showTitle = reader.readBool(offsets[72]);
+  object.songAspectRatio = reader.readString(offsets[73]);
+  object.songBackgroundColor = reader.readLong(offsets[74]);
+  object.songBackgroundImage = reader.readString(offsets[75]);
+  object.songBackgroundImageAlignment = reader.readString(offsets[76]);
+  object.songBackgroundImageLayout = reader.readString(offsets[77]);
+  object.songCustomHeight = reader.readDouble(offsets[78]);
+  object.songCustomWidth = reader.readDouble(offsets[79]);
+  object.syncId = reader.readString(offsets[80]);
+  object.titleAlignment = reader.readString(offsets[81]);
+  object.titleBold = reader.readBool(offsets[82]);
+  object.titleFillColor = reader.readLong(offsets[83]);
+  object.titleFontColor = reader.readLong(offsets[84]);
+  object.titleFontFamily = reader.readString(offsets[85]);
+  object.titleFontSize = reader.readDouble(offsets[86]);
+  object.titleHasFill = reader.readBool(offsets[87]);
+  object.titleHasShadow = reader.readBool(offsets[88]);
+  object.titleHasStroke = reader.readBool(offsets[89]);
+  object.titleItalic = reader.readBool(offsets[90]);
+  object.titleLineHeight = reader.readDouble(offsets[91]);
+  object.titleMarginBottom = reader.readDouble(offsets[92]);
+  object.titleMarginLeft = reader.readDouble(offsets[93]);
+  object.titleMarginRight = reader.readDouble(offsets[94]);
+  object.titleMarginTop = reader.readDouble(offsets[95]);
+  object.titleShadowColor = reader.readLong(offsets[96]);
+  object.titleShadowOffsetX = reader.readDouble(offsets[97]);
+  object.titleShadowOffsetY = reader.readDouble(offsets[98]);
+  object.titleShadowRadius = reader.readDouble(offsets[99]);
+  object.titleStrokeColor = reader.readLong(offsets[100]);
+  object.titleStrokeWidth = reader.readDouble(offsets[101]);
+  object.titleUnderline = reader.readBool(offsets[102]);
+  object.titleVerticalAlignment = reader.readString(offsets[103]);
+  object.verseAlignment = reader.readString(offsets[104]);
+  object.verseBold = reader.readBool(offsets[105]);
+  object.verseFillColor = reader.readLong(offsets[106]);
+  object.verseFontColor = reader.readLong(offsets[107]);
+  object.verseFontFamily = reader.readString(offsets[108]);
+  object.verseFontSize = reader.readDouble(offsets[109]);
+  object.verseHasFill = reader.readBool(offsets[110]);
+  object.verseHasShadow = reader.readBool(offsets[111]);
+  object.verseHasStroke = reader.readBool(offsets[112]);
+  object.verseItalic = reader.readBool(offsets[113]);
+  object.verseLineHeight = reader.readDouble(offsets[114]);
+  object.verseMarginBottom = reader.readDouble(offsets[115]);
+  object.verseMarginLeft = reader.readDouble(offsets[116]);
+  object.verseMarginRight = reader.readDouble(offsets[117]);
+  object.verseMarginTop = reader.readDouble(offsets[118]);
+  object.verseShadowColor = reader.readLong(offsets[119]);
+  object.verseShadowOffsetX = reader.readDouble(offsets[120]);
+  object.verseShadowOffsetY = reader.readDouble(offsets[121]);
+  object.verseShadowRadius = reader.readDouble(offsets[122]);
+  object.verseStrokeColor = reader.readLong(offsets[123]);
+  object.verseStrokeWidth = reader.readDouble(offsets[124]);
+  object.verseUnderline = reader.readBool(offsets[125]);
+  object.verseVerticalAlignment = reader.readString(offsets[126]);
+  object.windowAspectRatio = reader.readString(offsets[127]);
+  object.windowBackgroundColor = reader.readLong(offsets[128]);
+  object.windowBackgroundImage = reader.readString(offsets[129]);
+  object.windowBackgroundImageAlignment = reader.readString(offsets[130]);
+  object.windowBackgroundImageLayout = reader.readString(offsets[131]);
+  object.windowCustomHeight = reader.readDouble(offsets[132]);
+  object.windowCustomWidth = reader.readDouble(offsets[133]);
   return object;
 }
 
@@ -887,7 +1083,7 @@ P _presentationSettingsDeserializeProp<P>(
     case 15:
       return (reader.readBool(offset)) as P;
     case 16:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 17:
       return (reader.readDouble(offset)) as P;
     case 18:
@@ -895,149 +1091,149 @@ P _presentationSettingsDeserializeProp<P>(
     case 19:
       return (reader.readDouble(offset)) as P;
     case 20:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 21:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 22:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 23:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 24:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 25:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 26:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 27:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 28:
       return (reader.readBool(offset)) as P;
     case 29:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 30:
       return (reader.readBool(offset)) as P;
     case 31:
       return (reader.readBool(offset)) as P;
     case 32:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 33:
       return (reader.readBool(offset)) as P;
     case 34:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 35:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 36:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 37:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 38:
       return (reader.readBool(offset)) as P;
     case 39:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 40:
       return (reader.readBool(offset)) as P;
     case 41:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 42:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 43:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 44:
       return (reader.readDouble(offset)) as P;
     case 45:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 46:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 47:
       return (reader.readBool(offset)) as P;
     case 48:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 49:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 50:
-      return (reader.readString(offset)) as P;
-    case 51:
-      return (reader.readLong(offset)) as P;
-    case 52:
-      return (reader.readString(offset)) as P;
-    case 53:
-      return (reader.readString(offset)) as P;
-    case 54:
-      return (reader.readString(offset)) as P;
-    case 55:
       return (reader.readDouble(offset)) as P;
+    case 51:
+      return (reader.readDouble(offset)) as P;
+    case 52:
+      return (reader.readDouble(offset)) as P;
+    case 53:
+      return (reader.readDouble(offset)) as P;
+    case 54:
+      return (reader.readDouble(offset)) as P;
+    case 55:
+      return (reader.readLong(offset)) as P;
     case 56:
       return (reader.readDouble(offset)) as P;
     case 57:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 58:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 59:
-      return (reader.readString(offset)) as P;
-    case 60:
       return (reader.readLong(offset)) as P;
+    case 60:
+      return (reader.readDouble(offset)) as P;
     case 61:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 62:
       return (reader.readString(offset)) as P;
     case 63:
       return (reader.readString(offset)) as P;
     case 64:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 65:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 66:
       return (reader.readString(offset)) as P;
     case 67:
       return (reader.readString(offset)) as P;
     case 68:
-      return (reader.readBool(offset)) as P;
-    case 69:
-      return (reader.readLong(offset)) as P;
-    case 70:
-      return (reader.readLong(offset)) as P;
-    case 71:
       return (reader.readString(offset)) as P;
+    case 69:
+      return (reader.readDouble(offset)) as P;
+    case 70:
+      return (reader.readDouble(offset)) as P;
+    case 71:
+      return (reader.readBool(offset)) as P;
     case 72:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 73:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 74:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 75:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 76:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 77:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 78:
       return (reader.readDouble(offset)) as P;
     case 79:
       return (reader.readDouble(offset)) as P;
     case 80:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 81:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 82:
-      return (reader.readString(offset)) as P;
-    case 83:
-      return (reader.readString(offset)) as P;
-    case 84:
       return (reader.readBool(offset)) as P;
+    case 83:
+      return (reader.readLong(offset)) as P;
+    case 84:
+      return (reader.readLong(offset)) as P;
     case 85:
-      return (reader.readLong(offset)) as P;
-    case 86:
-      return (reader.readLong(offset)) as P;
-    case 87:
       return (reader.readString(offset)) as P;
-    case 88:
+    case 86:
       return (reader.readDouble(offset)) as P;
+    case 87:
+      return (reader.readBool(offset)) as P;
+    case 88:
+      return (reader.readBool(offset)) as P;
     case 89:
       return (reader.readBool(offset)) as P;
     case 90:
       return (reader.readBool(offset)) as P;
     case 91:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 92:
       return (reader.readDouble(offset)) as P;
     case 93:
@@ -1049,22 +1245,78 @@ P _presentationSettingsDeserializeProp<P>(
     case 96:
       return (reader.readLong(offset)) as P;
     case 97:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 98:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 99:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 100:
       return (reader.readLong(offset)) as P;
     case 101:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 102:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 103:
       return (reader.readString(offset)) as P;
     case 104:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 105:
+      return (reader.readBool(offset)) as P;
+    case 106:
+      return (reader.readLong(offset)) as P;
+    case 107:
+      return (reader.readLong(offset)) as P;
+    case 108:
+      return (reader.readString(offset)) as P;
+    case 109:
+      return (reader.readDouble(offset)) as P;
+    case 110:
+      return (reader.readBool(offset)) as P;
+    case 111:
+      return (reader.readBool(offset)) as P;
+    case 112:
+      return (reader.readBool(offset)) as P;
+    case 113:
+      return (reader.readBool(offset)) as P;
+    case 114:
+      return (reader.readDouble(offset)) as P;
+    case 115:
+      return (reader.readDouble(offset)) as P;
+    case 116:
+      return (reader.readDouble(offset)) as P;
+    case 117:
+      return (reader.readDouble(offset)) as P;
+    case 118:
+      return (reader.readDouble(offset)) as P;
+    case 119:
+      return (reader.readLong(offset)) as P;
+    case 120:
+      return (reader.readDouble(offset)) as P;
+    case 121:
+      return (reader.readDouble(offset)) as P;
+    case 122:
+      return (reader.readDouble(offset)) as P;
+    case 123:
+      return (reader.readLong(offset)) as P;
+    case 124:
+      return (reader.readDouble(offset)) as P;
+    case 125:
+      return (reader.readBool(offset)) as P;
+    case 126:
+      return (reader.readString(offset)) as P;
+    case 127:
+      return (reader.readString(offset)) as P;
+    case 128:
+      return (reader.readLong(offset)) as P;
+    case 129:
+      return (reader.readString(offset)) as P;
+    case 130:
+      return (reader.readString(offset)) as P;
+    case 131:
+      return (reader.readString(offset)) as P;
+    case 132:
+      return (reader.readDouble(offset)) as P;
+    case 133:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2488,6 +2740,16 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterHasShadowEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterHasShadow',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> chapterHasStrokeEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -2503,6 +2765,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'chapterItalic',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterLineHeightEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterLineHeightGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterLineHeightLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterLineHeightBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterLineHeight',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -2772,6 +3100,260 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowColorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowColorGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowColorLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowColorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterShadowColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetXEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetXGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetXLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetXBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterShadowOffsetX',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetYEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetYGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetYLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowOffsetYBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterShadowOffsetY',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowRadiusEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowRadiusGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowRadiusLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShadowRadiusBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterShadowRadius',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> chapterStrokeColorEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -2823,6 +3405,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterStrokeWidthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterStrokeWidthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chapterStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterStrokeWidthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chapterStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterStrokeWidthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chapterStrokeWidth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -3598,6 +4246,16 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsHasShadowEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsHasShadow',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> lyricsHasStrokeEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -3623,6 +4281,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lyricsLineBreak',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsLineHeightEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsLineHeightGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsLineHeightLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsLineHeightBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsLineHeight',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -3892,6 +4616,260 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowColorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowColorGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowColorLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowColorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsShadowColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetXEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetXGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetXLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetXBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsShadowOffsetX',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetYEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetYGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetYLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowOffsetYBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsShadowOffsetY',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowRadiusEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowRadiusGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowRadiusLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsShadowRadiusBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsShadowRadius',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> lyricsStrokeColorEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -3943,6 +4921,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsStrokeWidthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lyricsStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsStrokeWidthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lyricsStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsStrokeWidthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lyricsStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> lyricsStrokeWidthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lyricsStrokeWidth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -6358,6 +7402,16 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleHasShadowEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleHasShadow',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> titleHasStrokeEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -6373,6 +7427,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'titleItalic',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleLineHeightEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleLineHeightGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleLineHeightLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleLineHeightBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleLineHeight',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -6642,6 +7762,260 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowColorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowColorGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowColorLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowColorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleShadowColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetXEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetXGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetXLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetXBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleShadowOffsetX',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetYEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetYGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetYLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowOffsetYBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleShadowOffsetY',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowRadiusEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowRadiusGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowRadiusLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleShadowRadiusBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleShadowRadius',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> titleStrokeColorEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -6693,6 +8067,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleStrokeWidthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleStrokeWidthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleStrokeWidthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> titleStrokeWidthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleStrokeWidth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -7322,6 +8762,16 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseHasShadowEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseHasShadow',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> verseHasStrokeEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -7337,6 +8787,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'verseItalic',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseLineHeightEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseLineHeightGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseLineHeightLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseLineHeight',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseLineHeightBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseLineHeight',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -7606,6 +9122,260 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowColorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowColorGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowColorLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseShadowColor',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowColorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseShadowColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetXEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetXGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetXLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseShadowOffsetX',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetXBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseShadowOffsetX',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetYEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetYGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetYLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseShadowOffsetY',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowOffsetYBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseShadowOffsetY',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowRadiusEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowRadiusGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowRadiusLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseShadowRadius',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseShadowRadiusBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseShadowRadius',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> verseStrokeColorEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -7657,6 +9427,72 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseStrokeWidthEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'verseStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseStrokeWidthGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'verseStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseStrokeWidthLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'verseStrokeWidth',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> verseStrokeWidthBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'verseStrokeWidth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -8762,6 +10598,20 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByChapterHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterHasStroke', Sort.asc);
@@ -8786,6 +10636,20 @@ extension PresentationSettingsQuerySortBy
       sortByChapterItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterLineHeight', Sort.desc);
     });
   }
 
@@ -8846,6 +10710,62 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.asc);
@@ -8856,6 +10776,20 @@ extension PresentationSettingsQuerySortBy
       sortByChapterStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterStrokeWidth', Sort.desc);
     });
   }
 
@@ -9112,6 +11046,20 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByLyricsHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsHasStroke', Sort.asc);
@@ -9150,6 +11098,20 @@ extension PresentationSettingsQuerySortBy
       sortByLyricsLineBreakDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsLineBreak', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineHeight', Sort.desc);
     });
   }
 
@@ -9210,6 +11172,62 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByLyricsStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsStrokeColor', Sort.asc);
@@ -9220,6 +11238,20 @@ extension PresentationSettingsQuerySortBy
       sortByLyricsStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByLyricsStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsStrokeWidth', Sort.desc);
     });
   }
 
@@ -9602,6 +11634,20 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByTitleHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleHasStroke', Sort.asc);
@@ -9626,6 +11672,20 @@ extension PresentationSettingsQuerySortBy
       sortByTitleItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleLineHeight', Sort.desc);
     });
   }
 
@@ -9686,6 +11746,62 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByTitleStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleStrokeColor', Sort.asc);
@@ -9696,6 +11812,20 @@ extension PresentationSettingsQuerySortBy
       sortByTitleStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByTitleStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleStrokeWidth', Sort.desc);
     });
   }
 
@@ -9826,6 +11956,20 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByVerseHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseHasStroke', Sort.asc);
@@ -9850,6 +11994,20 @@ extension PresentationSettingsQuerySortBy
       sortByVerseItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseLineHeight', Sort.desc);
     });
   }
 
@@ -9910,6 +12068,62 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByVerseStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseStrokeColor', Sort.asc);
@@ -9920,6 +12134,20 @@ extension PresentationSettingsQuerySortBy
       sortByVerseStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByVerseStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseStrokeWidth', Sort.desc);
     });
   }
 
@@ -10249,6 +12477,20 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByChapterHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterHasStroke', Sort.asc);
@@ -10273,6 +12515,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByChapterItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterLineHeight', Sort.desc);
     });
   }
 
@@ -10333,6 +12589,62 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.asc);
@@ -10343,6 +12655,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByChapterStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterStrokeWidth', Sort.desc);
     });
   }
 
@@ -10613,6 +12939,20 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByLyricsHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsHasStroke', Sort.asc);
@@ -10651,6 +12991,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByLyricsLineBreakDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsLineBreak', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsLineHeight', Sort.desc);
     });
   }
 
@@ -10711,6 +13065,62 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByLyricsStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsStrokeColor', Sort.asc);
@@ -10721,6 +13131,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByLyricsStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lyricsStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByLyricsStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lyricsStrokeWidth', Sort.desc);
     });
   }
 
@@ -11103,6 +13527,20 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByTitleHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleHasStroke', Sort.asc);
@@ -11127,6 +13565,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByTitleItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleLineHeight', Sort.desc);
     });
   }
 
@@ -11187,6 +13639,62 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByTitleStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleStrokeColor', Sort.asc);
@@ -11197,6 +13705,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByTitleStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titleStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByTitleStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'titleStrokeWidth', Sort.desc);
     });
   }
 
@@ -11327,6 +13849,20 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseHasShadow', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseHasShadowDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseHasShadow', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByVerseHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseHasStroke', Sort.asc);
@@ -11351,6 +13887,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByVerseItalicDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseItalic', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseLineHeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseLineHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseLineHeight', Sort.desc);
     });
   }
 
@@ -11411,6 +13961,62 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetX', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowOffsetXDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetX', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetY', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowOffsetYDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowOffsetY', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowRadius', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseShadowRadiusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByVerseStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseStrokeColor', Sort.asc);
@@ -11421,6 +14027,20 @@ extension PresentationSettingsQuerySortThenBy
       thenByVerseStrokeColorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'verseStrokeColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseStrokeWidth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByVerseStrokeWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'verseStrokeWidth', Sort.desc);
     });
   }
 
@@ -11658,6 +14278,13 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByChapterHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterHasStroke');
@@ -11668,6 +14295,13 @@ extension PresentationSettingsQueryWhereDistinct
       distinctByChapterItalic() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterLineHeight');
     });
   }
 
@@ -11700,9 +14334,44 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterStrokeWidth');
     });
   }
 
@@ -11836,6 +14505,13 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByLyricsHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lyricsHasStroke');
@@ -11853,6 +14529,13 @@ extension PresentationSettingsQueryWhereDistinct
       distinctByLyricsLineBreak() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lyricsLineBreak');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsLineHeight');
     });
   }
 
@@ -11885,9 +14568,44 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByLyricsStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lyricsStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByLyricsStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lyricsStrokeWidth');
     });
   }
 
@@ -12092,6 +14810,13 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByTitleHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'titleHasStroke');
@@ -12102,6 +14827,13 @@ extension PresentationSettingsQueryWhereDistinct
       distinctByTitleItalic() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'titleItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleLineHeight');
     });
   }
 
@@ -12134,9 +14866,44 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByTitleStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'titleStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByTitleStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleStrokeWidth');
     });
   }
 
@@ -12207,6 +14974,13 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseHasShadow() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByVerseHasStroke() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'verseHasStroke');
@@ -12217,6 +14991,13 @@ extension PresentationSettingsQueryWhereDistinct
       distinctByVerseItalic() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'verseItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseLineHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseLineHeight');
     });
   }
 
@@ -12249,9 +15030,44 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseShadowColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseShadowOffsetX() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseShadowOffsetY() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseShadowRadius() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByVerseStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'verseStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByVerseStrokeWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'verseStrokeWidth');
     });
   }
 
@@ -12431,6 +15247,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      chapterHasShadowProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
       chapterHasStrokeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterHasStroke');
@@ -12441,6 +15264,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       chapterItalicProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      chapterLineHeightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterLineHeight');
     });
   }
 
@@ -12473,9 +15303,44 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, int, QQueryOperations>
+      chapterShadowColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      chapterShadowOffsetXProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      chapterShadowOffsetYProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      chapterShadowRadiusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, int, QQueryOperations>
       chapterStrokeColorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      chapterStrokeWidthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterStrokeWidth');
     });
   }
 
@@ -12606,6 +15471,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      lyricsHasShadowProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
       lyricsHasStrokeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lyricsHasStroke');
@@ -12623,6 +15495,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       lyricsLineBreakProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lyricsLineBreak');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      lyricsLineHeightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsLineHeight');
     });
   }
 
@@ -12655,9 +15534,44 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, int, QQueryOperations>
+      lyricsShadowColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      lyricsShadowOffsetXProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      lyricsShadowOffsetYProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      lyricsShadowRadiusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, int, QQueryOperations>
       lyricsStrokeColorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lyricsStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      lyricsStrokeWidthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lyricsStrokeWidth');
     });
   }
 
@@ -12851,6 +15765,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      titleHasShadowProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
       titleHasStrokeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'titleHasStroke');
@@ -12861,6 +15782,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       titleItalicProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'titleItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      titleLineHeightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleLineHeight');
     });
   }
 
@@ -12893,9 +15821,44 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, int, QQueryOperations>
+      titleShadowColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      titleShadowOffsetXProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      titleShadowOffsetYProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      titleShadowRadiusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, int, QQueryOperations>
       titleStrokeColorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'titleStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      titleStrokeWidthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleStrokeWidth');
     });
   }
 
@@ -12963,6 +15926,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      verseHasShadowProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseHasShadow');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
       verseHasStrokeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'verseHasStroke');
@@ -12973,6 +15943,13 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       verseItalicProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'verseItalic');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      verseLineHeightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseLineHeight');
     });
   }
 
@@ -13005,9 +15982,44 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PresentationSettings, int, QQueryOperations>
+      verseShadowColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseShadowColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      verseShadowOffsetXProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseShadowOffsetX');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      verseShadowOffsetYProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseShadowOffsetY');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      verseShadowRadiusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, int, QQueryOperations>
       verseStrokeColorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'verseStrokeColor');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, double, QQueryOperations>
+      verseStrokeWidthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'verseStrokeWidth');
     });
   }
 

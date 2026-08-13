@@ -150,6 +150,22 @@ final backgroundAlignment = isBlank
     final lyricsStrokeColorValue = Color(isSong ? settings.lyricsStrokeColor : settings.verseStrokeColor);
     final lyricsHasFillValue = isSong ? settings.lyricsHasFill : settings.verseHasFill;
     final lyricsFillColorValue = Color(isSong ? settings.lyricsFillColor : settings.verseFillColor);
+    final lyricsLineHeightValue = isSong ? settings.lyricsLineHeight : settings.verseLineHeight;
+    final lyricsStrokeWidthFactor = isSong ? settings.lyricsStrokeWidth : settings.verseStrokeWidth;
+    final lyricsHasShadowValue = isSong ? settings.lyricsHasShadow : settings.verseHasShadow;
+    final lyricsShadowColorValue = Color(isSong ? settings.lyricsShadowColor : settings.verseShadowColor);
+    final lyricsShadowOffsetXValue = isSong ? settings.lyricsShadowOffsetX : settings.verseShadowOffsetX;
+    final lyricsShadowOffsetYValue = isSong ? settings.lyricsShadowOffsetY : settings.verseShadowOffsetY;
+    final lyricsShadowRadiusValue = isSong ? settings.lyricsShadowRadius : settings.verseShadowRadius;
+    final List<Shadow>? lyricsShadows = lyricsHasShadowValue
+        ? [
+            Shadow(
+              color: lyricsShadowColorValue,
+              offset: Offset(lyricsShadowOffsetXValue, lyricsShadowOffsetYValue),
+              blurRadius: lyricsShadowRadiusValue,
+            ),
+          ]
+        : null;
 
     final showTitle = isSong ? settings.showTitle : settings.showChapter;
     final titleHorizontalStr = isSong ? settings.titleAlignment : settings.chapterAlignment;
@@ -176,6 +192,22 @@ final backgroundAlignment = isBlank
     final titleStrokeColorValue = Color(isSong ? settings.titleStrokeColor : settings.chapterStrokeColor);
     final titleHasFillValue = isSong ? settings.titleHasFill : settings.chapterHasFill;
     final titleFillColorValue = Color(isSong ? settings.titleFillColor : settings.chapterFillColor);
+    final titleLineHeightValue = isSong ? settings.titleLineHeight : settings.chapterLineHeight;
+    final titleStrokeWidthFactor = isSong ? settings.titleStrokeWidth : settings.chapterStrokeWidth;
+    final titleHasShadowValue = isSong ? settings.titleHasShadow : settings.chapterHasShadow;
+    final titleShadowColorValue = Color(isSong ? settings.titleShadowColor : settings.chapterShadowColor);
+    final titleShadowOffsetXValue = isSong ? settings.titleShadowOffsetX : settings.chapterShadowOffsetX;
+    final titleShadowOffsetYValue = isSong ? settings.titleShadowOffsetY : settings.chapterShadowOffsetY;
+    final titleShadowRadiusValue = isSong ? settings.titleShadowRadius : settings.chapterShadowRadius;
+    final List<Shadow>? titleShadows = titleHasShadowValue
+        ? [
+            Shadow(
+              color: titleShadowColorValue,
+              offset: Offset(titleShadowOffsetXValue, titleShadowOffsetYValue),
+              blurRadius: titleShadowRadiusValue,
+            ),
+          ]
+        : null;
 
     final lineCount = activeSlideText?.split('\n').length ?? 1;
     final isBlankScreen = activeSlideText == "";
@@ -192,6 +224,7 @@ final backgroundAlignment = isBlank
         fontFamily: lyricsFontFamilyValue,
         fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
         fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+        height: lyricsLineHeightValue,
       );
       final double availableWidth = canvasWidth - lyricsMarginLeftValue - lyricsMarginRightValue;
       final lines = processedText.split('\n');
@@ -258,6 +291,8 @@ final backgroundAlignment = isBlank
                                 fontFamily: settings.lyricsFontFamily,
                                 fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
                                 fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
+                                height: lyricsLineHeightValue,
+                                shadows: lyricsShadows,
                               ),
                               maxLines: 1,
                             )
@@ -271,12 +306,13 @@ final backgroundAlignment = isBlank
                                       fontFamily: lyricsFontFamilyValue,
                                       fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
                                       fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
-                                      height: 1.4,                                      
+                                      height: lyricsLineHeightValue,                                      
                                       decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                                       backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
+                                      shadows: lyricsShadows,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
-                                        ..strokeWidth = lyricsFontSizeValue * 0.08
+                                        ..strokeWidth = lyricsFontSizeValue * lyricsStrokeWidthFactor
                                         ..strokeJoin = StrokeJoin.round
                                         ..strokeCap = StrokeCap.round
                                         ..color = lyricsStrokeColorValue,
@@ -295,9 +331,10 @@ final backgroundAlignment = isBlank
                                     fontFamily: lyricsFontFamilyValue,
                                     fontWeight: lyricsBoldValue ? FontWeight.bold : FontWeight.normal,
                                     fontStyle: lyricsItalicValue ? FontStyle.italic : FontStyle.normal,
-                                    height: 1.4,                                    
+                                    height: lyricsLineHeightValue,                                    
                                     decoration: lyricsUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                                     backgroundColor: lyricsHasFillValue ? lyricsFillColorValue : null,
+                                    shadows: lyricsShadows,
                                   ),
                                   textAlign: _getTextAlign(alignStr),
                                   maxLines: finalMaxLines, 
@@ -327,12 +364,13 @@ final backgroundAlignment = isBlank
                               fontFamily: titleFontFamilyValue,
                               fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
                               fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
-                              height: 1.2,
+                              height: titleLineHeightValue,
                               decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                               backgroundColor: titleHasFillValue ? titleFillColorValue : null,
+                              shadows: titleShadows,
                               foreground: Paint()
                                 ..style = PaintingStyle.stroke
-                                ..strokeWidth = titleFontSizeValue * 0.08
+                                ..strokeWidth = titleFontSizeValue * titleStrokeWidthFactor
                                 ..strokeJoin = StrokeJoin.round
                                 ..strokeCap = StrokeCap.round
                                 ..color = titleStrokeColorValue,
@@ -347,9 +385,10 @@ final backgroundAlignment = isBlank
                             fontFamily: titleFontFamilyValue,
                             fontWeight: titleBoldValue ? FontWeight.bold : FontWeight.normal,
                             fontStyle: titleItalicValue ? FontStyle.italic : FontStyle.normal,
-                            height: 1.2,
+                            height: titleLineHeightValue,
                             decoration: titleUnderlineValue ? TextDecoration.underline : TextDecoration.none,
                             backgroundColor: titleHasFillValue ? titleFillColorValue : null,
+                            shadows: titleShadows,
                           ),
                         ),
                       ],

@@ -81,6 +81,13 @@ bool isWindowTransparent = false;
   double titleMarginBottom = 16.0;
   double titleMarginLeft = 16.0;
   double titleMarginRight = 16.0;
+  double titleLineHeight = 1.2;
+  double titleStrokeWidth = 0.08;
+  bool titleHasShadow = false;
+  int titleShadowColor = 0xFF000000;
+  double titleShadowOffsetX = 2.0;
+  double titleShadowOffsetY = 2.0;
+  double titleShadowRadius = 4.0;
 
   // Lyrics Settings
   String lyricsAlignment = 'center'; // 'left', 'center', 'right'
@@ -100,6 +107,13 @@ bool isWindowTransparent = false;
   double lyricsMarginLeft = 32.0;
   double lyricsMarginRight = 32.0;
   bool lyricsLineBreak = false;
+  double lyricsLineHeight = 1.4;
+  double lyricsStrokeWidth = 0.08;
+  bool lyricsHasShadow = false;
+  int lyricsShadowColor = 0xFF000000;
+  double lyricsShadowOffsetX = 2.0;
+  double lyricsShadowOffsetY = 2.0;
+  double lyricsShadowRadius = 4.0;
 
   // Chapter Settings (Bible)
   bool showChapter = true;
@@ -119,6 +133,13 @@ bool isWindowTransparent = false;
   double chapterMarginBottom = 16.0;
   double chapterMarginLeft = 16.0;
   double chapterMarginRight = 16.0;
+  double chapterLineHeight = 1.2;
+  double chapterStrokeWidth = 0.08;
+  bool chapterHasShadow = false;
+  int chapterShadowColor = 0xFF000000;
+  double chapterShadowOffsetX = 2.0;
+  double chapterShadowOffsetY = 2.0;
+  double chapterShadowRadius = 4.0;
 
   // Verse Settings (Bible)
   String verseAlignment = 'center'; // 'left', 'center', 'right'
@@ -137,6 +158,13 @@ bool isWindowTransparent = false;
   double verseMarginBottom = 32.0;
   double verseMarginLeft = 32.0;
   double verseMarginRight = 32.0;
+  double verseLineHeight = 1.4;
+  double verseStrokeWidth = 0.08;
+  bool verseHasShadow = false;
+  int verseShadowColor = 0xFF000000;
+  double verseShadowOffsetX = 2.0;
+  double verseShadowOffsetY = 2.0;
+  double verseShadowRadius = 4.0;
 
   PresentationSettings sanitize() {
     // Numbers / Doubles Fallback
@@ -150,24 +178,44 @@ bool isWindowTransparent = false;
     if (!windowCustomHeight.isFinite || windowCustomHeight <= 0) windowCustomHeight = 1080.0;
 
     if (!titleFontSize.isFinite || titleFontSize <= 0) titleFontSize = 24.0;
+    if (!titleLineHeight.isFinite || titleLineHeight <= 0) titleLineHeight = 1.2;
+    if (!titleStrokeWidth.isFinite || titleStrokeWidth <= 0) titleStrokeWidth = 0.08;
+    if (!titleShadowOffsetX.isFinite) titleShadowOffsetX = 2.0;
+    if (!titleShadowOffsetY.isFinite) titleShadowOffsetY = 2.0;
+    if (!titleShadowRadius.isFinite || titleShadowRadius < 0) titleShadowRadius = 4.0;
     if (!titleMarginTop.isFinite || titleMarginTop < 0) titleMarginTop = 16.0;
     if (!titleMarginBottom.isFinite || titleMarginBottom < 0) titleMarginBottom = 16.0;
     if (!titleMarginLeft.isFinite || titleMarginLeft < 0) titleMarginLeft = 16.0;
     if (!titleMarginRight.isFinite || titleMarginRight < 0) titleMarginRight = 16.0;
 
     if (!lyricsFontSize.isFinite || lyricsFontSize <= 0) lyricsFontSize = 80.0;
+    if (!lyricsLineHeight.isFinite || lyricsLineHeight <= 0) lyricsLineHeight = 1.4;
+    if (!lyricsStrokeWidth.isFinite || lyricsStrokeWidth <= 0) lyricsStrokeWidth = 0.08;
+    if (!lyricsShadowOffsetX.isFinite) lyricsShadowOffsetX = 2.0;
+    if (!lyricsShadowOffsetY.isFinite) lyricsShadowOffsetY = 2.0;
+    if (!lyricsShadowRadius.isFinite || lyricsShadowRadius < 0) lyricsShadowRadius = 4.0;
     if (!lyricsMarginTop.isFinite || lyricsMarginTop < 0) lyricsMarginTop = 32.0;
     if (!lyricsMarginBottom.isFinite || lyricsMarginBottom < 0) lyricsMarginBottom = 32.0;
     if (!lyricsMarginLeft.isFinite || lyricsMarginLeft < 0) lyricsMarginLeft = 32.0;
     if (!lyricsMarginRight.isFinite || lyricsMarginRight < 0) lyricsMarginRight = 32.0;
 
     if (!chapterFontSize.isFinite || chapterFontSize <= 0) chapterFontSize = 24.0;
+    if (!chapterLineHeight.isFinite || chapterLineHeight <= 0) chapterLineHeight = 1.2;
+    if (!chapterStrokeWidth.isFinite || chapterStrokeWidth <= 0) chapterStrokeWidth = 0.08;
+    if (!chapterShadowOffsetX.isFinite) chapterShadowOffsetX = 2.0;
+    if (!chapterShadowOffsetY.isFinite) chapterShadowOffsetY = 2.0;
+    if (!chapterShadowRadius.isFinite || chapterShadowRadius < 0) chapterShadowRadius = 4.0;
     if (!chapterMarginTop.isFinite || chapterMarginTop < 0) chapterMarginTop = 16.0;
     if (!chapterMarginBottom.isFinite || chapterMarginBottom < 0) chapterMarginBottom = 16.0;
     if (!chapterMarginLeft.isFinite || chapterMarginLeft < 0) chapterMarginLeft = 16.0;
     if (!chapterMarginRight.isFinite || chapterMarginRight < 0) chapterMarginRight = 16.0;
 
     if (!verseFontSize.isFinite || verseFontSize <= 0) verseFontSize = 80.0;
+    if (!verseLineHeight.isFinite || verseLineHeight <= 0) verseLineHeight = 1.4;
+    if (!verseStrokeWidth.isFinite || verseStrokeWidth <= 0) verseStrokeWidth = 0.08;
+    if (!verseShadowOffsetX.isFinite) verseShadowOffsetX = 2.0;
+    if (!verseShadowOffsetY.isFinite) verseShadowOffsetY = 2.0;
+    if (!verseShadowRadius.isFinite || verseShadowRadius < 0) verseShadowRadius = 4.0;
     if (!verseMarginTop.isFinite || verseMarginTop < 0) verseMarginTop = 32.0;
     if (!verseMarginBottom.isFinite || verseMarginBottom < 0) verseMarginBottom = 32.0;
     if (!verseMarginLeft.isFinite || verseMarginLeft < 0) verseMarginLeft = 32.0;
@@ -275,6 +323,13 @@ bool isWindowTransparent = false;
       'titleFillColor': titleFillColor,
       'titleHasStroke': titleHasStroke,
       'titleStrokeColor': titleStrokeColor,
+      'titleLineHeight': titleLineHeight,
+      'titleStrokeWidth': titleStrokeWidth,
+      'titleHasShadow': titleHasShadow,
+      'titleShadowColor': titleShadowColor,
+      'titleShadowOffsetX': titleShadowOffsetX,
+      'titleShadowOffsetY': titleShadowOffsetY,
+      'titleShadowRadius': titleShadowRadius,
       'titleMarginTop': titleMarginTop,
       'titleMarginBottom': titleMarginBottom,
       'titleMarginLeft': titleMarginLeft,
@@ -291,6 +346,13 @@ bool isWindowTransparent = false;
       'lyricsFillColor': lyricsFillColor,
       'lyricsHasStroke': lyricsHasStroke,
       'lyricsStrokeColor': lyricsStrokeColor,
+      'lyricsLineHeight': lyricsLineHeight,
+      'lyricsStrokeWidth': lyricsStrokeWidth,
+      'lyricsHasShadow': lyricsHasShadow,
+      'lyricsShadowColor': lyricsShadowColor,
+      'lyricsShadowOffsetX': lyricsShadowOffsetX,
+      'lyricsShadowOffsetY': lyricsShadowOffsetY,
+      'lyricsShadowRadius': lyricsShadowRadius,
       'lyricsMarginTop': lyricsMarginTop,
       'lyricsMarginBottom': lyricsMarginBottom,
       'lyricsMarginLeft': lyricsMarginLeft,
@@ -309,6 +371,13 @@ bool isWindowTransparent = false;
       'chapterFillColor': chapterFillColor,
       'chapterHasStroke': chapterHasStroke,
       'chapterStrokeColor': chapterStrokeColor,
+      'chapterLineHeight': chapterLineHeight,
+      'chapterStrokeWidth': chapterStrokeWidth,
+      'chapterHasShadow': chapterHasShadow,
+      'chapterShadowColor': chapterShadowColor,
+      'chapterShadowOffsetX': chapterShadowOffsetX,
+      'chapterShadowOffsetY': chapterShadowOffsetY,
+      'chapterShadowRadius': chapterShadowRadius,
       'chapterMarginTop': chapterMarginTop,
       'chapterMarginBottom': chapterMarginBottom,
       'chapterMarginLeft': chapterMarginLeft,
@@ -325,6 +394,13 @@ bool isWindowTransparent = false;
       'verseFillColor': verseFillColor,
       'verseHasStroke': verseHasStroke,
       'verseStrokeColor': verseStrokeColor,
+      'verseLineHeight': verseLineHeight,
+      'verseStrokeWidth': verseStrokeWidth,
+      'verseHasShadow': verseHasShadow,
+      'verseShadowColor': verseShadowColor,
+      'verseShadowOffsetX': verseShadowOffsetX,
+      'verseShadowOffsetY': verseShadowOffsetY,
+      'verseShadowRadius': verseShadowRadius,
       'verseMarginTop': verseMarginTop,
       'verseMarginBottom': verseMarginBottom,
       'verseMarginLeft': verseMarginLeft,
@@ -387,6 +463,13 @@ bool isWindowTransparent = false;
       ..titleFillColor = map['titleFillColor'] as int? ?? 0x00000000
       ..titleHasStroke = map['titleHasStroke'] as bool? ?? false
       ..titleStrokeColor = map['titleStrokeColor'] as int? ?? 0xFF000000
+      ..titleLineHeight = (map['titleLineHeight'] as num?)?.toDouble() ?? 1.2
+      ..titleStrokeWidth = (map['titleStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..titleHasShadow = map['titleHasShadow'] as bool? ?? false
+      ..titleShadowColor = map['titleShadowColor'] as int? ?? 0xFF000000
+      ..titleShadowOffsetX = (map['titleShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..titleShadowOffsetY = (map['titleShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..titleShadowRadius = (map['titleShadowRadius'] as num?)?.toDouble() ?? 4.0
       ..titleMarginTop = (map['titleMarginTop'] as num?)?.toDouble() ?? 16.0
       ..titleMarginBottom = (map['titleMarginBottom'] as num?)?.toDouble() ?? 16.0
       ..titleMarginLeft = (map['titleMarginLeft'] as num?)?.toDouble() ?? 16.0
@@ -403,6 +486,13 @@ bool isWindowTransparent = false;
       ..lyricsFillColor = map['lyricsFillColor'] as int? ?? 0x00000000
       ..lyricsHasStroke = map['lyricsHasStroke'] as bool? ?? false
       ..lyricsStrokeColor = map['lyricsStrokeColor'] as int? ?? 0xFF000000
+      ..lyricsLineHeight = (map['lyricsLineHeight'] as num?)?.toDouble() ?? 1.4
+      ..lyricsStrokeWidth = (map['lyricsStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..lyricsHasShadow = map['lyricsHasShadow'] as bool? ?? false
+      ..lyricsShadowColor = map['lyricsShadowColor'] as int? ?? 0xFF000000
+      ..lyricsShadowOffsetX = (map['lyricsShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..lyricsShadowOffsetY = (map['lyricsShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..lyricsShadowRadius = (map['lyricsShadowRadius'] as num?)?.toDouble() ?? 4.0
       ..lyricsMarginTop = (map['lyricsMarginTop'] as num?)?.toDouble() ?? 32.0
       ..lyricsMarginBottom = (map['lyricsMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..lyricsMarginLeft = (map['lyricsMarginLeft'] as num?)?.toDouble() ?? 32.0
@@ -421,6 +511,13 @@ bool isWindowTransparent = false;
       ..chapterFillColor = map['chapterFillColor'] as int? ?? 0x00000000
       ..chapterHasStroke = map['chapterHasStroke'] as bool? ?? false
       ..chapterStrokeColor = map['chapterStrokeColor'] as int? ?? 0xFF000000
+      ..chapterLineHeight = (map['chapterLineHeight'] as num?)?.toDouble() ?? 1.2
+      ..chapterStrokeWidth = (map['chapterStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..chapterHasShadow = map['chapterHasShadow'] as bool? ?? false
+      ..chapterShadowColor = map['chapterShadowColor'] as int? ?? 0xFF000000
+      ..chapterShadowOffsetX = (map['chapterShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..chapterShadowOffsetY = (map['chapterShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..chapterShadowRadius = (map['chapterShadowRadius'] as num?)?.toDouble() ?? 4.0
       ..chapterMarginTop = (map['chapterMarginTop'] as num?)?.toDouble() ?? 16.0
       ..chapterMarginBottom = (map['chapterMarginBottom'] as num?)?.toDouble() ?? 16.0
       ..chapterMarginLeft = (map['chapterMarginLeft'] as num?)?.toDouble() ?? 16.0
@@ -437,6 +534,13 @@ bool isWindowTransparent = false;
       ..verseFillColor = map['verseFillColor'] as int? ?? 0x00000000
       ..verseHasStroke = map['verseHasStroke'] as bool? ?? false
       ..verseStrokeColor = map['verseStrokeColor'] as int? ?? 0xFF000000
+      ..verseLineHeight = (map['verseLineHeight'] as num?)?.toDouble() ?? 1.4
+      ..verseStrokeWidth = (map['verseStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..verseHasShadow = map['verseHasShadow'] as bool? ?? false
+      ..verseShadowColor = map['verseShadowColor'] as int? ?? 0xFF000000
+      ..verseShadowOffsetX = (map['verseShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..verseShadowOffsetY = (map['verseShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..verseShadowRadius = (map['verseShadowRadius'] as num?)?.toDouble() ?? 4.0
       ..verseMarginTop = (map['verseMarginTop'] as num?)?.toDouble() ?? 32.0
       ..verseMarginBottom = (map['verseMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..verseMarginLeft = (map['verseMarginLeft'] as num?)?.toDouble() ?? 32.0

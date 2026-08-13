@@ -250,6 +250,17 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateTitleUnderline(bool v) => state = cloneState(state)..titleUnderline = v;
   void updateTitleFill(bool hasFill, int color) => state = cloneState(state)..titleHasFill = hasFill..titleFillColor = color;
   void updateTitleStroke(bool hasStroke, int color) => state = cloneState(state)..titleHasStroke = hasStroke..titleStrokeColor = color;
+  void updateTitleLineHeight(double v) => state = cloneState(state)..titleLineHeight = v;
+  void updateTitleStrokeWidth(double v) => state = cloneState(state)..titleStrokeWidth = v;
+  void updateTitleShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.titleHasShadow = hasShadow;
+    if (color != null) s.titleShadowColor = color;
+    if (offsetX != null) s.titleShadowOffsetX = offsetX;
+    if (offsetY != null) s.titleShadowOffsetY = offsetY;
+    if (radius != null) s.titleShadowRadius = radius;
+    state = s;
+  }
   void updateTitleMargins({double? top, double? bottom, double? left, double? right}) {
     final s = cloneState(state);
     if (top != null) s.titleMarginTop = top;
@@ -271,6 +282,17 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateLyricsFill(bool hasFill, int color) => state = cloneState(state)..lyricsHasFill = hasFill..lyricsFillColor = color;
   void updateLyricsStroke(bool hasStroke, int color) => state = cloneState(state)..lyricsHasStroke = hasStroke..lyricsStrokeColor = color;
   void updateLyricsLineBreak(bool value) => state = cloneState(state)..lyricsLineBreak = value;
+  void updateLyricsLineHeight(double v) => state = cloneState(state)..lyricsLineHeight = v;
+  void updateLyricsStrokeWidth(double v) => state = cloneState(state)..lyricsStrokeWidth = v;
+  void updateLyricsShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.lyricsHasShadow = hasShadow;
+    if (color != null) s.lyricsShadowColor = color;
+    if (offsetX != null) s.lyricsShadowOffsetX = offsetX;
+    if (offsetY != null) s.lyricsShadowOffsetY = offsetY;
+    if (radius != null) s.lyricsShadowRadius = radius;
+    state = s;
+  }
   void updateLyricsMargins({double? top, double? bottom, double? left, double? right}) {
     final s = cloneState(state);
     if (top != null) s.lyricsMarginTop = top;
@@ -292,6 +314,17 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateChapterUnderline(bool v) => state = cloneState(state)..chapterUnderline = v;
   void updateChapterFill(bool hasFill, int color) => state = cloneState(state)..chapterHasFill = hasFill..chapterFillColor = color;
   void updateChapterStroke(bool hasStroke, int color) => state = cloneState(state)..chapterHasStroke = hasStroke..chapterStrokeColor = color;
+  void updateChapterLineHeight(double v) => state = cloneState(state)..chapterLineHeight = v;
+  void updateChapterStrokeWidth(double v) => state = cloneState(state)..chapterStrokeWidth = v;
+  void updateChapterShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.chapterHasShadow = hasShadow;
+    if (color != null) s.chapterShadowColor = color;
+    if (offsetX != null) s.chapterShadowOffsetX = offsetX;
+    if (offsetY != null) s.chapterShadowOffsetY = offsetY;
+    if (radius != null) s.chapterShadowRadius = radius;
+    state = s;
+  }
   void updateChapterMargins({double? top, double? bottom, double? left, double? right}) {
     final s = cloneState(state);
     if (top != null) s.chapterMarginTop = top;
@@ -312,6 +345,17 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
   void updateVerseUnderline(bool v) => state = cloneState(state)..verseUnderline = v;
   void updateVerseFill(bool hasFill, int color) => state = cloneState(state)..verseHasFill = hasFill..verseFillColor = color;
   void updateVerseStroke(bool hasStroke, int color) => state = cloneState(state)..verseHasStroke = hasStroke..verseStrokeColor = color;
+  void updateVerseLineHeight(double v) => state = cloneState(state)..verseLineHeight = v;
+  void updateVerseStrokeWidth(double v) => state = cloneState(state)..verseStrokeWidth = v;
+  void updateVerseShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.verseHasShadow = hasShadow;
+    if (color != null) s.verseShadowColor = color;
+    if (offsetX != null) s.verseShadowOffsetX = offsetX;
+    if (offsetY != null) s.verseShadowOffsetY = offsetY;
+    if (radius != null) s.verseShadowRadius = radius;
+    state = s;
+  }
   void updateVerseMargins({double? top, double? bottom, double? left, double? right}) {
     final s = cloneState(state);
     if (top != null) s.verseMarginTop = top;
@@ -375,6 +419,13 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..titleFillColor = src.titleFillColor
       ..titleHasStroke = src.titleHasStroke
       ..titleStrokeColor = src.titleStrokeColor
+      ..titleLineHeight = src.titleLineHeight
+      ..titleStrokeWidth = src.titleStrokeWidth
+      ..titleHasShadow = src.titleHasShadow
+      ..titleShadowColor = src.titleShadowColor
+      ..titleShadowOffsetX = src.titleShadowOffsetX
+      ..titleShadowOffsetY = src.titleShadowOffsetY
+      ..titleShadowRadius = src.titleShadowRadius
       ..titleMarginTop = src.titleMarginTop
       ..titleMarginBottom = src.titleMarginBottom
       ..titleMarginLeft = src.titleMarginLeft
@@ -391,6 +442,13 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..lyricsFillColor = src.lyricsFillColor
       ..lyricsHasStroke = src.lyricsHasStroke
       ..lyricsStrokeColor = src.lyricsStrokeColor
+      ..lyricsLineHeight = src.lyricsLineHeight
+      ..lyricsStrokeWidth = src.lyricsStrokeWidth
+      ..lyricsHasShadow = src.lyricsHasShadow
+      ..lyricsShadowColor = src.lyricsShadowColor
+      ..lyricsShadowOffsetX = src.lyricsShadowOffsetX
+      ..lyricsShadowOffsetY = src.lyricsShadowOffsetY
+      ..lyricsShadowRadius = src.lyricsShadowRadius
       ..lyricsMarginTop = src.lyricsMarginTop
       ..lyricsMarginBottom = src.lyricsMarginBottom
       ..lyricsMarginLeft = src.lyricsMarginLeft
@@ -409,6 +467,13 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..chapterFillColor = src.chapterFillColor
       ..chapterHasStroke = src.chapterHasStroke
       ..chapterStrokeColor = src.chapterStrokeColor
+      ..chapterLineHeight = src.chapterLineHeight
+      ..chapterStrokeWidth = src.chapterStrokeWidth
+      ..chapterHasShadow = src.chapterHasShadow
+      ..chapterShadowColor = src.chapterShadowColor
+      ..chapterShadowOffsetX = src.chapterShadowOffsetX
+      ..chapterShadowOffsetY = src.chapterShadowOffsetY
+      ..chapterShadowRadius = src.chapterShadowRadius
       ..chapterMarginTop = src.chapterMarginTop
       ..chapterMarginBottom = src.chapterMarginBottom
       ..chapterMarginLeft = src.chapterMarginLeft
@@ -425,6 +490,13 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..verseFillColor = src.verseFillColor
       ..verseHasStroke = src.verseHasStroke
       ..verseStrokeColor = src.verseStrokeColor
+      ..verseLineHeight = src.verseLineHeight
+      ..verseStrokeWidth = src.verseStrokeWidth
+      ..verseHasShadow = src.verseHasShadow
+      ..verseShadowColor = src.verseShadowColor
+      ..verseShadowOffsetX = src.verseShadowOffsetX
+      ..verseShadowOffsetY = src.verseShadowOffsetY
+      ..verseShadowRadius = src.verseShadowRadius
       ..verseMarginTop = src.verseMarginTop
       ..verseMarginBottom = src.verseMarginBottom
       ..verseMarginLeft = src.verseMarginLeft

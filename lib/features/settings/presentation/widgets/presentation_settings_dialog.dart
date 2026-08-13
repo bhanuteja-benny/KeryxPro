@@ -587,6 +587,14 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final hasStroke = isSong ? settings.titleHasStroke : settings.chapterHasStroke;
     final strokeColor = isSong ? settings.titleStrokeColor : settings.chapterStrokeColor;
 
+    final lineHeight = isSong ? settings.titleLineHeight : settings.chapterLineHeight;
+    final strokeWidth = isSong ? settings.titleStrokeWidth : settings.chapterStrokeWidth;
+    final hasShadow = isSong ? settings.titleHasShadow : settings.chapterHasShadow;
+    final shadowColor = isSong ? settings.titleShadowColor : settings.chapterShadowColor;
+    final shadowOffsetX = isSong ? settings.titleShadowOffsetX : settings.chapterShadowOffsetX;
+    final shadowOffsetY = isSong ? settings.titleShadowOffsetY : settings.chapterShadowOffsetY;
+    final shadowRadius = isSong ? settings.titleShadowRadius : settings.chapterShadowRadius;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -605,7 +613,14 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
+                initialLineHeight: lineHeight,
+                initialStrokeWidth: strokeWidth,
+                initialHasShadow: hasShadow,
+                initialShadowColor: shadowColor,
+                initialShadowOffsetX: shadowOffsetX,
+                initialShadowOffsetY: shadowOffsetY,
+                initialShadowRadius: shadowRadius,
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
                   final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateTitleFontFamily(fontFamily) : notifier.updateChapterFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateTitleFontSize(fontSize) : notifier.updateChapterFontSize(fontSize);
@@ -622,6 +637,13 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                     final s = hasStroke ?? (isSong ? currentSettings.titleHasStroke : currentSettings.chapterHasStroke);
                     final sc = strokeColor ?? (isSong ? currentSettings.titleStrokeColor : currentSettings.chapterStrokeColor);
                     isSong ? notifier.updateTitleStroke(s, sc) : notifier.updateChapterStroke(s, sc);
+                  }
+                  if (lineHeight != null) isSong ? notifier.updateTitleLineHeight(lineHeight) : notifier.updateChapterLineHeight(lineHeight);
+                  if (strokeWidth != null) isSong ? notifier.updateTitleStrokeWidth(strokeWidth) : notifier.updateChapterStrokeWidth(strokeWidth);
+                  if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                    isSong
+                      ? notifier.updateTitleShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius)
+                      : notifier.updateChapterShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius);
                   }
                 },
               );
@@ -708,6 +730,14 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final hasStroke = isSong ? settings.lyricsHasStroke : settings.verseHasStroke;
     final strokeColor = isSong ? settings.lyricsStrokeColor : settings.verseStrokeColor;
 
+    final lineHeight = isSong ? settings.lyricsLineHeight : settings.verseLineHeight;
+    final strokeWidth = isSong ? settings.lyricsStrokeWidth : settings.verseStrokeWidth;
+    final hasShadow = isSong ? settings.lyricsHasShadow : settings.verseHasShadow;
+    final shadowColor = isSong ? settings.lyricsShadowColor : settings.verseShadowColor;
+    final shadowOffsetX = isSong ? settings.lyricsShadowOffsetX : settings.verseShadowOffsetX;
+    final shadowOffsetY = isSong ? settings.lyricsShadowOffsetY : settings.verseShadowOffsetY;
+    final shadowRadius = isSong ? settings.lyricsShadowRadius : settings.verseShadowRadius;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -726,9 +756,16 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
+                initialLineHeight: lineHeight,
+                initialStrokeWidth: strokeWidth,
+                initialHasShadow: hasShadow,
+                initialShadowColor: shadowColor,
+                initialShadowOffsetX: shadowOffsetX,
+                initialShadowOffsetY: shadowOffsetY,
+                initialShadowRadius: shadowRadius,
                 showLineBreakOption: isSong,
                 initialLineBreak: isSong ? settings.lyricsLineBreak : false,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
                   final currentSettings = ref.read(editingPresetProvider);
                   if (fontFamily != null) isSong ? notifier.updateLyricsFontFamily(fontFamily) : notifier.updateVerseFontFamily(fontFamily);
                   if (fontSize != null) isSong ? notifier.updateLyricsFontSize(fontSize) : notifier.updateVerseFontSize(fontSize);
@@ -746,6 +783,13 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                     final s = hasStroke ?? (isSong ? currentSettings.lyricsHasStroke : currentSettings.verseHasStroke);
                     final sc = strokeColor ?? (isSong ? currentSettings.lyricsStrokeColor : currentSettings.verseStrokeColor);
                     isSong ? notifier.updateLyricsStroke(s, sc) : notifier.updateVerseStroke(s, sc);
+                  }
+                  if (lineHeight != null) isSong ? notifier.updateLyricsLineHeight(lineHeight) : notifier.updateVerseLineHeight(lineHeight);
+                  if (strokeWidth != null) isSong ? notifier.updateLyricsStrokeWidth(strokeWidth) : notifier.updateVerseStrokeWidth(strokeWidth);
+                  if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                    isSong
+                      ? notifier.updateLyricsShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius)
+                      : notifier.updateVerseShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius);
                   }
                 },
               );
@@ -1011,6 +1055,13 @@ final backgroundImageAlignment = isBlank
     required int initialFillColor,
     required bool initialHasStroke,
     required int initialStrokeColor,
+    double initialLineHeight = 1.4,
+    double initialStrokeWidth = 0.08,
+    bool initialHasShadow = false,
+    int initialShadowColor = 0xFF000000,
+    double initialShadowOffsetX = 2.0,
+    double initialShadowOffsetY = 2.0,
+    double initialShadowRadius = 4.0,
     bool showLineBreakOption = false,
     bool initialLineBreak = false,
     required void Function({
@@ -1024,6 +1075,13 @@ final backgroundImageAlignment = isBlank
       int? fillColor,
       bool? hasStroke,
       int? strokeColor,
+      double? lineHeight,
+      double? strokeWidth,
+      bool? hasShadow,
+      int? shadowColor,
+      double? shadowOffsetX,
+      double? shadowOffsetY,
+      double? shadowRadius,
       bool? lineBreak,
     }) onChanged,
   }) {
@@ -1037,10 +1095,22 @@ final backgroundImageAlignment = isBlank
     int fillColor = initialFillColor;
     bool hasStroke = initialHasStroke;
     int strokeColor = initialStrokeColor;
+    double lineHeight = initialLineHeight;
+    double strokeWidth = initialStrokeWidth;
+    bool hasShadow = initialHasShadow;
+    int shadowColor = initialShadowColor;
+    double shadowOffsetX = initialShadowOffsetX;
+    double shadowOffsetY = initialShadowOffsetY;
+    double shadowRadius = initialShadowRadius;
     bool lineBreak = initialLineBreak;
     
     final TextEditingController fontCtrl = TextEditingController(text: fontFamily);
     final TextEditingController sizeCtrl = TextEditingController(text: fontSize.toInt().toString());
+    final TextEditingController lineHeightCtrl = TextEditingController(text: lineHeight.toStringAsFixed(2));
+    final TextEditingController strokeWidthCtrl = TextEditingController(text: strokeWidth.toStringAsFixed(2));
+    final TextEditingController shadowOffsetXCtrl = TextEditingController(text: shadowOffsetX.toStringAsFixed(1));
+    final TextEditingController shadowOffsetYCtrl = TextEditingController(text: shadowOffsetY.toStringAsFixed(1));
+    final TextEditingController shadowRadiusCtrl = TextEditingController(text: shadowRadius.toStringAsFixed(1));
 
     bool hasEditedFont = false;
     bool hasEditedSize = false;
@@ -1066,254 +1136,356 @@ final backgroundImageAlignment = isBlank
           return AlertDialog(
             title: const Text('Typography'),
             content: SizedBox(
-              width: 500,
+              width: 700,
               child: SingleChildScrollView(
                 child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              controller: fontCtrl,
-                              decoration: const InputDecoration(
-                                labelText: 'Font Family',
-                                border: OutlineInputBorder(),
-                                isDense: true,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                controller: fontCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Font Family',
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                ),
+                                onChanged: (v) {
+                                  setState(() {
+                                    hasEditedFont = true;
+                                    fontFamily = v;
+                                  });
+                                  onChanged(fontFamily: v);
+                                },
                               ),
-                              onChanged: (v) {
-                                setState(() {
-                                  hasEditedFont = true;
-                                  fontFamily = v;
-                                });
-                                onChanged(fontFamily: v);
-                              },
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              height: 150,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(4),
+                              const SizedBox(height: 4),
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.shade400),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: ListView(
+                                  children: kCommonSystemFonts
+                                      .where((f) => !hasEditedFont || f.toLowerCase().contains(fontCtrl.text.toLowerCase()))
+                                      .map((f) => ListTile(
+                                            title: Text(f, style: TextStyle(fontFamily: f)),
+                                            dense: true,
+                                            selected: fontFamily == f,
+                                            onTap: () {
+                                              setState(() {
+                                                hasEditedFont = false;
+                                                fontFamily = f;
+                                                fontCtrl.text = f;
+                                              });
+                                              onChanged(fontFamily: f);
+                                            },
+                                          ))
+                                      .toList(),
+                                ),
                               ),
-                              child: ListView(
-                                children: kCommonSystemFonts
-                                    .where((f) => !hasEditedFont || f.toLowerCase().contains(fontCtrl.text.toLowerCase()))
-                                    .map((f) => ListTile(
-                                          title: Text(f, style: TextStyle(fontFamily: f)),
-                                          dense: true,
-                                          selected: fontFamily == f,
-                                          onTap: () {
-                                            setState(() {
-                                              hasEditedFont = false; // Reset to show all after selection? or keep false.
-                                              fontFamily = f;
-                                              fontCtrl.text = f;
-                                            });
-                                            onChanged(fontFamily: f);
-                                          },
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              controller: sizeCtrl,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                controller: sizeCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Size',
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                ),
+                                onChanged: (v) {
+                                  setState(() {
+                                    hasEditedSize = true;
+                                  });
+                                  var parsed = double.tryParse(v);
+                                  if (parsed != null) {
+                                    if (parsed > 300.0) {
+                                      parsed = 300.0;
+                                      sizeCtrl.text = '300';
+                                      sizeCtrl.selection = TextSelection.fromPosition(
+                                        TextPosition(offset: sizeCtrl.text.length),
+                                      );
+                                    }
+                                    fontSize = parsed;
+                                    onChanged(fontSize: parsed);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.shade400),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: ListView(
+                                  children: List.generate(296, (i) => i + 5)
+                                      .where((s) => !hasEditedSize || sizeCtrl.text.isEmpty || s.toString().contains(sizeCtrl.text))
+                                      .map((s) => ListTile(
+                                            title: Text(s.toString()),
+                                            dense: true,
+                                            selected: fontSize.toInt() == s,
+                                            onTap: () {
+                                              setState(() {
+                                                hasEditedSize = false;
+                                                fontSize = s.toDouble();
+                                                sizeCtrl.text = s.toString();
+                                              });
+                                              onChanged(fontSize: s.toDouble());
+                                            },
+                                          ))
+                                      .toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        const Text('Text Color: '),
+                        const SizedBox(width: 8),
+                        buildColorBox(fontColor, (c) {
+                          setState(() => fontColor = c.value);
+                          onChanged(fontColor: c.value);
+                        }),
+                        const SizedBox(width: 32),
+                        const Text('Line Height: '),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 80,
+                          child: TextField(
+                            controller: lineHeightCtrl,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            ),
+                            onChanged: (v) {
+                              final val = double.tryParse(v);
+                              if (val != null && val > 0) {
+                                lineHeight = val;
+                                onChanged(lineHeight: val);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: underline,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => underline = v);
+                              onChanged(underline: v);
+                            }
+                          },
+                        ),
+                        const Text('Underline'),
+                        const SizedBox(width: 16),
+                        Checkbox(
+                          value: bold,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => bold = v);
+                              onChanged(bold: v);
+                            }
+                          },
+                        ),
+                        const Text('Bold'),
+                        const SizedBox(width: 16),
+                        Checkbox(
+                          value: italic,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => italic = v);
+                              onChanged(italic: v);
+                            }
+                          },
+                        ),
+                        const Text('Italic'),
+                        if (showLineBreakOption) ...[
+                          const SizedBox(width: 16),
+                          Checkbox(
+                            value: lineBreak,
+                            onChanged: (v) {
+                              if (v != null) {
+                                setState(() => lineBreak = v);
+                                onChanged(lineBreak: v);
+                              }
+                            },
+                          ),
+                          const Text('Line Break'),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: hasFill,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => hasFill = v);
+                              onChanged(hasFill: v);
+                            }
+                          },
+                        ),
+                        const Text('Fill'),
+                        const SizedBox(width: 8),
+                        if (hasFill)
+                          buildColorBox(fillColor, (c) {
+                            setState(() => fillColor = c.value);
+                            onChanged(fillColor: c.value);
+                          }),
+                        const SizedBox(width: 24),
+                        Checkbox(
+                          value: hasStroke,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => hasStroke = v);
+                              onChanged(hasStroke: v);
+                            }
+                          },
+                        ),
+                        const Text('Stroke'),
+                        const SizedBox(width: 8),
+                        if (hasStroke) ...[
+                          buildColorBox(strokeColor, (c) {
+                            setState(() => strokeColor = c.value);
+                            onChanged(strokeColor: c.value);
+                          }),
+                          const SizedBox(width: 12),
+                          const Text('Width: '),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            width: 70,
+                            child: TextField(
+                              controller: strokeWidthCtrl,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               decoration: const InputDecoration(
-                                labelText: 'Size',
                                 border: OutlineInputBorder(),
                                 isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
                               onChanged: (v) {
-                                setState(() {
-                                  hasEditedSize = true;
-                                });
-                                var parsed = double.tryParse(v);
-                                if (parsed != null) {
-                                  if (parsed > 300.0) {
-                                    parsed = 300.0;
-                                    sizeCtrl.text = '300';
-                                    sizeCtrl.selection = TextSelection.fromPosition(
-                                      TextPosition(offset: sizeCtrl.text.length),
-                                    );
-                                  }
-                                  fontSize = parsed;
-                                  onChanged(fontSize: parsed);
+                                final val = double.tryParse(v);
+                                if (val != null && val > 0) {
+                                  strokeWidth = val;
+                                  onChanged(strokeWidth: val);
                                 }
                               },
                             ),
-                            const SizedBox(height: 4),
-                            Container(
-                              height: 150,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: ListView(
-                                children: List.generate(296, (i) => i + 5)
-                                    .where((s) => !hasEditedSize || sizeCtrl.text.isEmpty || s.toString().contains(sizeCtrl.text))
-                                    .map((s) => ListTile(
-                                          title: Text(s.toString()),
-                                          dense: true,
-                                          selected: fontSize.toInt() == s,
-                                          onTap: () {
-                                            setState(() {
-                                              hasEditedSize = false;
-                                              fontSize = s.toDouble();
-                                              sizeCtrl.text = s.toString();
-                                            });
-                                            onChanged(fontSize: s.toDouble());
-                                          },
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: hasShadow,
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() => hasShadow = v);
+                              onChanged(hasShadow: v);
+                            }
+                          },
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text('Text Color: '),
-                      const SizedBox(width: 8),
-                      buildColorBox(fontColor, (c) {
-                        setState(() => fontColor = c.value);
-                        onChanged(fontColor: c.value);
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: underline,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => underline = v);
-                                      onChanged(underline: v);
-                                    }
-                                  },
-                                ),
-                                const Text('Underline'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: hasFill,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => hasFill = v);
-                                      onChanged(hasFill: v);
-                                    }
-                                  },
-                                ),
-                                const Text('Fill'),
-                                const SizedBox(width: 16),
-                                if (hasFill) buildColorBox(fillColor, (c) {
-                                  setState(() => fillColor = c.value);
-                                  onChanged(fillColor: c.value);
-                                }),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: hasStroke,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => hasStroke = v);
-                                      onChanged(hasStroke: v);
-                                    }
-                                  },
-                                ),
-                                const Text('Stroke'),
-                                const SizedBox(width: 16),
-                                if (hasStroke) buildColorBox(strokeColor, (c) {
-                                  setState(() => strokeColor = c.value);
-                                  onChanged(strokeColor: c.value);
-                                }),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: bold,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => bold = v);
-                                      onChanged(bold: v);
-                                    }
-                                  },
-                                ),
-                                const Text('Bold'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: italic,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => italic = v);
-                                      onChanged(italic: v);
-                                    }
-                                  },
-                                ),
-                                const Text('Italic'),
-                              ],
-                            ),
-                            if (showLineBreakOption)
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: lineBreak,
-                                    onChanged: (v) {
-                                      if (v != null) {
-                                        setState(() => lineBreak = v);
-                                        onChanged(lineBreak: v);
-                                      }
-                                    },
-                                  ),
-                                  const Text('Line Break'),
-                                ],
+                        const Text('Shadow'),
+                        const SizedBox(width: 8),
+                        if (hasShadow) ...[
+                          buildColorBox(shadowColor, (c) {
+                            setState(() => shadowColor = c.value);
+                            onChanged(shadowColor: c.value);
+                          }),
+                          const SizedBox(width: 12),
+                          const Text('Offset X: '),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            width: 60,
+                            child: TextField(
+                              controller: shadowOffsetXCtrl,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                              onChanged: (v) {
+                                final val = double.tryParse(v) ?? 0.0;
+                                shadowOffsetX = val;
+                                onChanged(shadowOffsetX: val);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('Offset Y: '),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            width: 60,
+                            child: TextField(
+                              controller: shadowOffsetYCtrl,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              onChanged: (v) {
+                                final val = double.tryParse(v) ?? 0.0;
+                                shadowOffsetY = val;
+                                onChanged(shadowOffsetY: val);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('Radius: '),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            width: 60,
+                            child: TextField(
+                              controller: shadowRadiusCtrl,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              onChanged: (v) {
+                                final val = double.tryParse(v);
+                                if (val != null && val >= 0) {
+                                  shadowRadius = val;
+                                  onChanged(shadowRadius: val);
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx),
@@ -1509,6 +1681,13 @@ if (aspectRatioStr == '4:3') {
       'titleFillColor': s.titleFillColor,
       'titleHasStroke': s.titleHasStroke,
       'titleStrokeColor': s.titleStrokeColor,
+      'titleLineHeight': s.titleLineHeight,
+      'titleStrokeWidth': s.titleStrokeWidth,
+      'titleHasShadow': s.titleHasShadow,
+      'titleShadowColor': s.titleShadowColor,
+      'titleShadowOffsetX': s.titleShadowOffsetX,
+      'titleShadowOffsetY': s.titleShadowOffsetY,
+      'titleShadowRadius': s.titleShadowRadius,
       'titleMarginTop': s.titleMarginTop,
       'titleMarginBottom': s.titleMarginBottom,
       'titleMarginLeft': s.titleMarginLeft,
@@ -1526,6 +1705,13 @@ if (aspectRatioStr == '4:3') {
       'bodyFillColor': s.lyricsFillColor,
       'bodyHasStroke': s.lyricsHasStroke,
       'bodyStrokeColor': s.lyricsStrokeColor,
+      'bodyLineHeight': s.lyricsLineHeight,
+      'bodyStrokeWidth': s.lyricsStrokeWidth,
+      'bodyHasShadow': s.lyricsHasShadow,
+      'bodyShadowColor': s.lyricsShadowColor,
+      'bodyShadowOffsetX': s.lyricsShadowOffsetX,
+      'bodyShadowOffsetY': s.lyricsShadowOffsetY,
+      'bodyShadowRadius': s.lyricsShadowRadius,
       'bodyMarginTop': s.lyricsMarginTop,
       'bodyMarginBottom': s.lyricsMarginBottom,
       'bodyMarginLeft': s.lyricsMarginLeft,
@@ -1585,6 +1771,13 @@ if (aspectRatioStr == '4:3') {
     s.titleFillColor = json['titleFillColor'] as int? ?? 0;
     s.titleHasStroke = json['titleHasStroke'] as bool? ?? false;
     s.titleStrokeColor = json['titleStrokeColor'] as int? ?? 0xFF000000;
+    s.titleLineHeight = (json['titleLineHeight'] as num?)?.toDouble() ?? 1.2;
+    s.titleStrokeWidth = (json['titleStrokeWidth'] as num?)?.toDouble() ?? 0.08;
+    s.titleHasShadow = json['titleHasShadow'] as bool? ?? false;
+    s.titleShadowColor = json['titleShadowColor'] as int? ?? 0xFF000000;
+    s.titleShadowOffsetX = (json['titleShadowOffsetX'] as num?)?.toDouble() ?? 2.0;
+    s.titleShadowOffsetY = (json['titleShadowOffsetY'] as num?)?.toDouble() ?? 2.0;
+    s.titleShadowRadius = (json['titleShadowRadius'] as num?)?.toDouble() ?? 4.0;
     s.titleMarginTop = (json['titleMarginTop'] as num?)?.toDouble() ?? 16.0;
     s.titleMarginBottom = (json['titleMarginBottom'] as num?)?.toDouble() ?? 16.0;
     s.titleMarginLeft = (json['titleMarginLeft'] as num?)?.toDouble() ?? 16.0;
@@ -1603,6 +1796,13 @@ if (aspectRatioStr == '4:3') {
     s.chapterFillColor = s.titleFillColor;
     s.chapterHasStroke = s.titleHasStroke;
     s.chapterStrokeColor = s.titleStrokeColor;
+    s.chapterLineHeight = s.titleLineHeight;
+    s.chapterStrokeWidth = s.titleStrokeWidth;
+    s.chapterHasShadow = s.titleHasShadow;
+    s.chapterShadowColor = s.titleShadowColor;
+    s.chapterShadowOffsetX = s.titleShadowOffsetX;
+    s.chapterShadowOffsetY = s.titleShadowOffsetY;
+    s.chapterShadowRadius = s.titleShadowRadius;
     s.chapterMarginTop = s.titleMarginTop;
     s.chapterMarginBottom = s.titleMarginBottom;
     s.chapterMarginLeft = s.titleMarginLeft;
@@ -1620,6 +1820,13 @@ if (aspectRatioStr == '4:3') {
     s.lyricsFillColor = json['bodyFillColor'] as int? ?? 0;
     s.lyricsHasStroke = json['bodyHasStroke'] as bool? ?? false;
     s.lyricsStrokeColor = json['bodyStrokeColor'] as int? ?? 0xFF000000;
+    s.lyricsLineHeight = (json['bodyLineHeight'] as num?)?.toDouble() ?? 1.4;
+    s.lyricsStrokeWidth = (json['bodyStrokeWidth'] as num?)?.toDouble() ?? 0.08;
+    s.lyricsHasShadow = json['bodyHasShadow'] as bool? ?? false;
+    s.lyricsShadowColor = json['bodyShadowColor'] as int? ?? 0xFF000000;
+    s.lyricsShadowOffsetX = (json['bodyShadowOffsetX'] as num?)?.toDouble() ?? 2.0;
+    s.lyricsShadowOffsetY = (json['bodyShadowOffsetY'] as num?)?.toDouble() ?? 2.0;
+    s.lyricsShadowRadius = (json['bodyShadowRadius'] as num?)?.toDouble() ?? 4.0;
     s.lyricsMarginTop = (json['bodyMarginTop'] as num?)?.toDouble() ?? 32.0;
     s.lyricsMarginBottom = (json['bodyMarginBottom'] as num?)?.toDouble() ?? 32.0;
     s.lyricsMarginLeft = (json['bodyMarginLeft'] as num?)?.toDouble() ?? 32.0;
@@ -1638,6 +1845,13 @@ if (aspectRatioStr == '4:3') {
     s.verseFillColor = s.lyricsFillColor;
     s.verseHasStroke = s.lyricsHasStroke;
     s.verseStrokeColor = s.lyricsStrokeColor;
+    s.verseLineHeight = s.lyricsLineHeight;
+    s.verseStrokeWidth = s.lyricsStrokeWidth;
+    s.verseHasShadow = s.lyricsHasShadow;
+    s.verseShadowColor = s.lyricsShadowColor;
+    s.verseShadowOffsetX = s.lyricsShadowOffsetX;
+    s.verseShadowOffsetY = s.lyricsShadowOffsetY;
+    s.verseShadowRadius = s.lyricsShadowRadius;
     s.verseMarginTop = s.lyricsMarginTop;
     s.verseMarginBottom = s.lyricsMarginBottom;
     s.verseMarginLeft = s.lyricsMarginLeft;
@@ -1974,6 +2188,14 @@ if (aspectRatioStr == '4:3') {
     final hasStroke = settings.titleHasStroke;
     final strokeColor = settings.titleStrokeColor;
 
+    final lineHeight = settings.titleLineHeight;
+    final strokeWidth = settings.titleStrokeWidth;
+    final hasShadow = settings.titleHasShadow;
+    final shadowColor = settings.titleShadowColor;
+    final shadowOffsetX = settings.titleShadowOffsetX;
+    final shadowOffsetY = settings.titleShadowOffsetY;
+    final shadowRadius = settings.titleShadowRadius;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1992,7 +2214,14 @@ if (aspectRatioStr == '4:3') {
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
+                initialLineHeight: lineHeight,
+                initialStrokeWidth: strokeWidth,
+                initialHasShadow: hasShadow,
+                initialShadowColor: shadowColor,
+                initialShadowOffsetX: shadowOffsetX,
+                initialShadowOffsetY: shadowOffsetY,
+                initialShadowRadius: shadowRadius,
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
                   setState(() {
                     if (fontFamily != null) {
                       _themeSettings.titleFontFamily = fontFamily;
@@ -2033,6 +2262,36 @@ if (aspectRatioStr == '4:3') {
                       _themeSettings.titleStrokeColor = sc;
                       _themeSettings.chapterHasStroke = s;
                       _themeSettings.chapterStrokeColor = sc;
+                    }
+                    if (lineHeight != null) {
+                      _themeSettings.titleLineHeight = lineHeight;
+                      _themeSettings.chapterLineHeight = lineHeight;
+                    }
+                    if (strokeWidth != null) {
+                      _themeSettings.titleStrokeWidth = strokeWidth;
+                      _themeSettings.chapterStrokeWidth = strokeWidth;
+                    }
+                    if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                      if (hasShadow != null) {
+                        _themeSettings.titleHasShadow = hasShadow;
+                        _themeSettings.chapterHasShadow = hasShadow;
+                      }
+                      if (shadowColor != null) {
+                        _themeSettings.titleShadowColor = shadowColor;
+                        _themeSettings.chapterShadowColor = shadowColor;
+                      }
+                      if (shadowOffsetX != null) {
+                        _themeSettings.titleShadowOffsetX = shadowOffsetX;
+                        _themeSettings.chapterShadowOffsetX = shadowOffsetX;
+                      }
+                      if (shadowOffsetY != null) {
+                        _themeSettings.titleShadowOffsetY = shadowOffsetY;
+                        _themeSettings.chapterShadowOffsetY = shadowOffsetY;
+                      }
+                      if (shadowRadius != null) {
+                        _themeSettings.titleShadowRadius = shadowRadius;
+                        _themeSettings.chapterShadowRadius = shadowRadius;
+                      }
                     }
                   });
                 },
@@ -2132,6 +2391,14 @@ if (aspectRatioStr == '4:3') {
     final hasStroke = settings.lyricsHasStroke;
     final strokeColor = settings.lyricsStrokeColor;
 
+    final lineHeight = settings.lyricsLineHeight;
+    final strokeWidth = settings.lyricsStrokeWidth;
+    final hasShadow = settings.lyricsHasShadow;
+    final shadowColor = settings.lyricsShadowColor;
+    final shadowOffsetX = settings.lyricsShadowOffsetX;
+    final shadowOffsetY = settings.lyricsShadowOffsetY;
+    final shadowRadius = settings.lyricsShadowRadius;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -2150,9 +2417,16 @@ if (aspectRatioStr == '4:3') {
                 initialFillColor: fillColor,
                 initialHasStroke: hasStroke,
                 initialStrokeColor: strokeColor,
+                initialLineHeight: lineHeight,
+                initialStrokeWidth: strokeWidth,
+                initialHasShadow: hasShadow,
+                initialShadowColor: shadowColor,
+                initialShadowOffsetX: shadowOffsetX,
+                initialShadowOffsetY: shadowOffsetY,
+                initialShadowRadius: shadowRadius,
                 showLineBreakOption: true,
                 initialLineBreak: settings.lyricsLineBreak,
-                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineBreak}) {
+                onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
                   setState(() {
                     if (fontFamily != null) {
                       _themeSettings.lyricsFontFamily = fontFamily;
@@ -2196,6 +2470,36 @@ if (aspectRatioStr == '4:3') {
                       _themeSettings.lyricsStrokeColor = sc;
                       _themeSettings.verseHasStroke = s;
                       _themeSettings.verseStrokeColor = sc;
+                    }
+                    if (lineHeight != null) {
+                      _themeSettings.lyricsLineHeight = lineHeight;
+                      _themeSettings.verseLineHeight = lineHeight;
+                    }
+                    if (strokeWidth != null) {
+                      _themeSettings.lyricsStrokeWidth = strokeWidth;
+                      _themeSettings.verseStrokeWidth = strokeWidth;
+                    }
+                    if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                      if (hasShadow != null) {
+                        _themeSettings.lyricsHasShadow = hasShadow;
+                        _themeSettings.verseHasShadow = hasShadow;
+                      }
+                      if (shadowColor != null) {
+                        _themeSettings.lyricsShadowColor = shadowColor;
+                        _themeSettings.verseShadowColor = shadowColor;
+                      }
+                      if (shadowOffsetX != null) {
+                        _themeSettings.lyricsShadowOffsetX = shadowOffsetX;
+                        _themeSettings.verseShadowOffsetX = shadowOffsetX;
+                      }
+                      if (shadowOffsetY != null) {
+                        _themeSettings.lyricsShadowOffsetY = shadowOffsetY;
+                        _themeSettings.verseShadowOffsetY = shadowOffsetY;
+                      }
+                      if (shadowRadius != null) {
+                        _themeSettings.lyricsShadowRadius = shadowRadius;
+                        _themeSettings.verseShadowRadius = shadowRadius;
+                      }
                     }
                   });
                 },
@@ -2522,6 +2826,15 @@ if (aspectRatioStr == '4:3') {
       notifier.updateTitleUnderline(theme.titleUnderline);
       notifier.updateTitleFill(theme.titleHasFill, theme.titleFillColor);
       notifier.updateTitleStroke(theme.titleHasStroke, theme.titleStrokeColor);
+      notifier.updateTitleLineHeight(theme.titleLineHeight);
+      notifier.updateTitleStrokeWidth(theme.titleStrokeWidth);
+      notifier.updateTitleShadow(
+        hasShadow: theme.titleHasShadow,
+        color: theme.titleShadowColor,
+        offsetX: theme.titleShadowOffsetX,
+        offsetY: theme.titleShadowOffsetY,
+        radius: theme.titleShadowRadius,
+      );
       notifier.updateTitleMargins(
         top: theme.titleMarginTop,
         bottom: theme.titleMarginBottom,
@@ -2539,6 +2852,15 @@ if (aspectRatioStr == '4:3') {
       notifier.updateLyricsUnderline(theme.lyricsUnderline);
       notifier.updateLyricsFill(theme.lyricsHasFill, theme.lyricsFillColor);
       notifier.updateLyricsStroke(theme.lyricsHasStroke, theme.lyricsStrokeColor);
+      notifier.updateLyricsLineHeight(theme.lyricsLineHeight);
+      notifier.updateLyricsStrokeWidth(theme.lyricsStrokeWidth);
+      notifier.updateLyricsShadow(
+        hasShadow: theme.lyricsHasShadow,
+        color: theme.lyricsShadowColor,
+        offsetX: theme.lyricsShadowOffsetX,
+        offsetY: theme.lyricsShadowOffsetY,
+        radius: theme.lyricsShadowRadius,
+      );
       notifier.updateLyricsLineBreak(theme.lyricsLineBreak);
       notifier.updateLyricsMargins(
         top: theme.lyricsMarginTop,
@@ -2574,6 +2896,15 @@ if (aspectRatioStr == '4:3') {
       notifier.updateChapterUnderline(theme.chapterUnderline);
       notifier.updateChapterFill(theme.chapterHasFill, theme.chapterFillColor);
       notifier.updateChapterStroke(theme.chapterHasStroke, theme.chapterStrokeColor);
+      notifier.updateChapterLineHeight(theme.chapterLineHeight);
+      notifier.updateChapterStrokeWidth(theme.chapterStrokeWidth);
+      notifier.updateChapterShadow(
+        hasShadow: theme.chapterHasShadow,
+        color: theme.chapterShadowColor,
+        offsetX: theme.chapterShadowOffsetX,
+        offsetY: theme.chapterShadowOffsetY,
+        radius: theme.chapterShadowRadius,
+      );
       notifier.updateChapterMargins(
         top: theme.chapterMarginTop,
         bottom: theme.chapterMarginBottom,
@@ -2591,6 +2922,15 @@ if (aspectRatioStr == '4:3') {
       notifier.updateVerseUnderline(theme.verseUnderline);
       notifier.updateVerseFill(theme.verseHasFill, theme.verseFillColor);
       notifier.updateVerseStroke(theme.verseHasStroke, theme.verseStrokeColor);
+      notifier.updateVerseLineHeight(theme.verseLineHeight);
+      notifier.updateVerseStrokeWidth(theme.verseStrokeWidth);
+      notifier.updateVerseShadow(
+        hasShadow: theme.verseHasShadow,
+        color: theme.verseShadowColor,
+        offsetX: theme.verseShadowOffsetX,
+        offsetY: theme.verseShadowOffsetY,
+        radius: theme.verseShadowRadius,
+      );
       notifier.updateVerseMargins(
         top: theme.verseMarginTop,
         bottom: theme.verseMarginBottom,
