@@ -1,0 +1,32 @@
+Phase 51.2
+
+Context:
+- Extended Bible search and import verses
+
+Requirement:
+- in Bible search: entering comma separated verses should be allowed and added as separate items to setlist and separate slides.
+- - for example: luk 1:2,4, 5
+- - - luk 1:2 and luk 1:4 and luk 1:5 should be added as three different items and slides.
+- in Bible search: entering comma separated chapters and verses should be allowed and added as separate items to setlist and separate slides.
+- - for example: luk 1:2, 4, 3:5, 6
+- - -  luk 1:2, luk 1:4, luk 3:5 and luk 3:6 should be added as four different items and slides.
+- in Bible search: entering comma (or semi colon) separated books, chapters and verses should be allowed and added as separate items to setlist and separate slides.
+- - for example: luk 1:2, gen 2:4, 10; mar 4:5
+- - - luk 1:2, gen 2:4, gen 2:10 and mar 4:5 should be added as four different items and slides.
+- in Bible search: shortcut 'f' for first and 'l' for last and 'a' for all
+- -  for example: gen 1:1f or gen 1:f1 should be considered as gen 1:1 (first verse)
+- - - gen 1:2f or gen 1:f2 should be considered as gen 1:1-2 (first 2  verses)
+- - - mar 2:3f or mar 2:f3 should be considered as mar 2:1-3 (first 3 verses) 
+- - - luk 2:1l or luk 2:l1 should be considered as luk 2:52 (last verse of luk 2 chapter) (when l is given, then app has to search for the last verses in that book and chapter)
+- - - luk 2:2l or luk 2:l2 should be considered as luk 2:51-52 (last two verses of luk 2 chapter) (when l is given, then app has to search for the last verses in that book and chapter)
+- - - luk 2:1 should be considered as luk 2:1-52 (all verses should be added)
+
+
+Constraints / Rules:
+- Don't make any UI or functionality changes except the mentioned ones.
+- Do not disturb the existing design or functionality except the mentioned ones.
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation plan and take approval.
+- Neven make any change (UI or functionality) which is not mentioned in the implementation plan
+- No hidden assumptions. every assumption or presumption should be mentioned in implementation plan and take approval
+- Do NOT add extra fields or buttons.
+- Do NOT improvise additional UI elements

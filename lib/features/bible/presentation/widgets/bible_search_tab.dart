@@ -14,6 +14,22 @@ import '../../../setlist/data/setlist_item.dart';
 import '../../../../main.dart';
 import 'package:isar/isar.dart';
 
+class _ParsedBibleReference {
+  final String bookName;
+  final int chapter;
+  final int startVerse;
+  final int endVerse;
+  final String? versionStr;
+
+  _ParsedBibleReference({
+    required this.bookName,
+    required this.chapter,
+    required this.startVerse,
+    required this.endVerse,
+    this.versionStr,
+  });
+}
+
 class BibleSearchTab extends ConsumerStatefulWidget {
   const BibleSearchTab({super.key});
 
@@ -77,115 +93,154 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     }
   }
 
-  Future<void> _handleSearch(String query, WidgetRef ref) async {
-    if (query.isEmpty) return;
+  Future<List<_ParsedBibleReference>> _parseBibleReferenceQueries(String input, WidgetRef ref) async {
+  final List<_ParsedBibleReference> results = [];
+  if (input.trim().isEmpty) return results;
 
-    final regex = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;](\d+)(?:-(\d+))?(?:\s+([a-zA-Z0-9]+))?$');
-    final match = regex.firstMatch(query.trim());
+  final rawTokens = input.split(RegExp(r'[;,]'));
 
-    if (match != null) {
-      final bookStr = match.group(1)?.trim() ?? '';
-      final chapterStr = match.group(2) ?? '';
-      final verseStartStr = match.group(3) ?? '';
-      final verseEndStr = match.group(4);
-      final versionStr = match.group(5);
+  String? currentBook;
+  int? currentChapter;
 
-      final normalizedBook = BibleConstants.normalizeBookName(bookStr);
-      if (normalizedBook != null) {
-        final chapter = int.tryParse(chapterStr);
-        if (chapter != null) {
-          final startVerse = int.tryParse(verseStartStr);
-          if (startVerse != null) {
-            final endVerse = verseEndStr != null ? int.tryParse(verseEndStr) : startVerse;
-            
-            final versionsAsync = ref.read(bibleVersionsProvider);
-            final versions = versionsAsync.valueOrNull ?? [];
-            
-            BibleVersion? targetVersion;
-            if (versionStr != null) {
-              targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == versionStr.toLowerCase()).firstOrNull;
-            }
-            targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+  final isar = await ref.read(isarServiceProvider).db;
 
-            if (targetVersion != null) {
-              final isar = await ref.read(isarServiceProvider).db;
-              final chapters = await isar.bibleVerses
-                  .filter()
-                  .bibleVersionIdEqualTo(targetVersion.id)
-                  .bookNameEqualTo(normalizedBook)
-                  .chapterNumberProperty()
-                  .findAll();
+  for (String rawToken in rawTokens) {
+    String tokenText = rawToken.trim();
+    if (tokenText.isEmpty) continue;
 
-              if (chapters.contains(chapter)) {
-                final verses = await isar.bibleVerses
-                    .filter()
-                    .bibleVersionIdEqualTo(targetVersion.id)
-                    .bookNameEqualTo(normalizedBook)
-                    .chapterNumberEqualTo(chapter)
-                    .verseNumberProperty()
-                    .findAll();
-                
-                final verseNumbers = verses.toSet();
-                bool versesValid = true;
-                for (int i = startVerse; i <= (endVerse ?? startVerse); i++) {
-                  if (!verseNumbers.contains(i)) {
-                    versesValid = false;
-                    break;
-                  }
-                }
+    String? tokenVersionStr;
 
-                if (versesValid) {
-                  // ALL VALID
-                  if (targetVersion != ref.read(selectedBibleVersionProvider)) {
-                    ref.read(selectedBibleVersionProvider.notifier).state = targetVersion;
-                  }
-                  ref.read(selectedBookProvider.notifier).state = normalizedBook;
-                  ref.read(selectedChapterProvider.notifier).state = chapter;
-                  
-                  final Set<int> versesToSelect = {};
-                  for (int i = startVerse; i <= (endVerse ?? startVerse); i++) {
-                    versesToSelect.add(i);
-                  }
-                  ref.read(selectedVersesProvider.notifier).state = versesToSelect;
-                  if (mounted) {
-                    setState(() {
-                      _lastVerseToggled = endVerse ?? startVerse;
-                    });
-                  }
+    final versionMatch = RegExp(r'^(.*?)\s+([a-zA-Z0-9]{2,6})$').firstMatch(tokenText);
+    if (versionMatch != null) {
+      final candidateText = versionMatch.group(1)!.trim();
+      final candidateVer = versionMatch.group(2)!.trim();
 
-                  ref.read(bibleVerseListFocusNodeProvider).requestFocus();
-
-                  // Auto scroll
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (BibleConstants.oldTestamentBooks.contains(normalizedBook)) {
-                      final index = BibleConstants.oldTestamentBooks.indexOf(normalizedBook);
-                      _scrollToEnsureVisible(_otScrollController, index);
-                    } else if (BibleConstants.newTestamentBooks.contains(normalizedBook)) {
-                      final index = BibleConstants.newTestamentBooks.indexOf(normalizedBook);
-                      _scrollToEnsureVisible(_ntScrollController, index);
-                    }
-
-                    // For async list boxes, they might not be populated immediately, delay slightly
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      final chItems = ref.read(availableChaptersProvider).valueOrNull ?? [];
-                      final chIndex = chItems.indexOf(chapter);
-                      if (chIndex != -1) _scrollToEnsureVisible(_chScrollController, chIndex);
-                      
-                      final vsItems = ref.read(availableVersesProvider).valueOrNull ?? [];
-                      final vsIndex = vsItems.indexOf(startVerse);
-                      if (vsIndex != -1) _scrollToEnsureVisible(_vsScrollController, vsIndex);
-                    });
-                  });
-
-                  return; // SUCCESS
-                }
-              }
-            }
-          }
-        }
+      final lowerVer = candidateVer.toLowerCase();
+      if (!['a', 'f', 'l'].contains(lowerVer) &&
+          !RegExp(r'^\d*[fl]\d*$').hasMatch(lowerVer) &&
+          BibleConstants.normalizeBookName(tokenText) == null) {
+        tokenText = candidateText;
+        tokenVersionStr = candidateVer;
       }
     }
 
+    String? bookStr;
+    int? chapter;
+    String? verseExpr;
+
+    final fullRefMatch = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;]([a-zA-Z0-9\-]+)$').firstMatch(tokenText);
+    final chVerseMatch = RegExp(r'^(\d+)[\:\;]([a-zA-Z0-9\-]+)$').firstMatch(tokenText);
+    final bookChMatch = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)$').firstMatch(tokenText);
+    final verseOnlyMatch = RegExp(r'^([a-zA-Z0-9\-]+)$').firstMatch(tokenText);
+
+    if (fullRefMatch != null) {
+      final normBook = BibleConstants.normalizeBookName(fullRefMatch.group(1)!.trim());
+      final ch = int.tryParse(fullRefMatch.group(2)!);
+      if (normBook != null && ch != null) {
+        bookStr = normBook;
+        chapter = ch;
+        verseExpr = fullRefMatch.group(3)!;
+      }
+    } else if (chVerseMatch != null && currentBook != null) {
+      final ch = int.tryParse(chVerseMatch.group(1)!);
+      if (ch != null) {
+        bookStr = currentBook;
+        chapter = ch;
+        verseExpr = chVerseMatch.group(2)!;
+      }
+    } else if (bookChMatch != null && BibleConstants.normalizeBookName(bookChMatch.group(1)!.trim()) != null) {
+      final normBook = BibleConstants.normalizeBookName(bookChMatch.group(1)!.trim());
+      final ch = int.tryParse(bookChMatch.group(2)!);
+      if (normBook != null && ch != null) {
+        bookStr = normBook;
+        chapter = ch;
+        verseExpr = 'a';
+      }
+    } else if (verseOnlyMatch != null && currentBook != null && currentChapter != null) {
+      bookStr = currentBook;
+      chapter = currentChapter;
+      verseExpr = verseOnlyMatch.group(1)!;
+    }
+
+    if (bookStr == null || chapter == null || verseExpr == null) {
+      continue;
+    }
+
+    currentBook = bookStr;
+    currentChapter = chapter;
+
+    final versionsAsync = ref.read(bibleVersionsProvider);
+    final versions = versionsAsync.valueOrNull ?? [];
+    BibleVersion? targetVersion;
+    if (tokenVersionStr != null) {
+      targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == tokenVersionStr!.toLowerCase()).firstOrNull;
+    }
+    targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+
+    int totalVerses = 0;
+    if (targetVersion != null) {
+      final verseNums = await isar.bibleVerses
+          .filter()
+          .bibleVersionIdEqualTo(targetVersion.id)
+          .bookNameEqualTo(bookStr)
+          .chapterNumberEqualTo(chapter)
+          .verseNumberProperty()
+          .findAll();
+      if (verseNums.isNotEmpty) {
+        totalVerses = verseNums.reduce((a, b) => a > b ? a : b);
+      }
+    }
+
+    if (totalVerses == 0) continue;
+
+    final lowerExpr = verseExpr.trim().toLowerCase();
+    int? startVerse;
+    int? endVerse;
+
+    if (lowerExpr == 'a') {
+      startVerse = 1;
+      endVerse = totalVerses;
+    } else if (RegExp(r'^(\d*)f(\d*)$').hasMatch(lowerExpr)) {
+      final m = RegExp(r'^(\d*)f(\d*)$').firstMatch(lowerExpr)!;
+      final numStr = m.group(1)!.isNotEmpty ? m.group(1)! : (m.group(2)!.isNotEmpty ? m.group(2)! : '1');
+      final n = int.tryParse(numStr) ?? 1;
+      startVerse = 1;
+      endVerse = n.clamp(1, totalVerses);
+    } else if (RegExp(r'^(\d*)l(\d*)$').hasMatch(lowerExpr)) {
+      final m = RegExp(r'^(\d*)l(\d*)$').firstMatch(lowerExpr)!;
+      final numStr = m.group(1)!.isNotEmpty ? m.group(1)! : (m.group(2)!.isNotEmpty ? m.group(2)! : '1');
+      final n = int.tryParse(numStr) ?? 1;
+      startVerse = (totalVerses - n + 1).clamp(1, totalVerses);
+      endVerse = totalVerses;
+    } else if (RegExp(r'^(\d+)-(\d+)$').hasMatch(lowerExpr)) {
+      final m = RegExp(r'^(\d+)-(\d+)$').firstMatch(lowerExpr)!;
+      startVerse = int.tryParse(m.group(1)!);
+      endVerse = int.tryParse(m.group(2)!);
+    } else if (RegExp(r'^(\d+)$').hasMatch(lowerExpr)) {
+      startVerse = int.tryParse(lowerExpr);
+      endVerse = startVerse;
+    }
+
+    if (startVerse != null && endVerse != null && startVerse <= endVerse && startVerse >= 1 && endVerse <= totalVerses) {
+      results.add(_ParsedBibleReference(
+        bookName: bookStr,
+        chapter: chapter,
+        startVerse: startVerse,
+        endVerse: endVerse,
+        versionStr: tokenVersionStr,
+      ));
+    }
+  }
+
+  return results;
+}
+
+Future<void> _handleSearch(String query, WidgetRef ref) async {
+  if (query.trim().isEmpty) return;
+
+  final queries = await _parseBibleReferenceQueries(query, ref);
+
+  if (queries.isEmpty) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Reference not found'), duration: Duration(seconds: 2)),
@@ -195,72 +250,152 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
     ref.read(selectedChapterProvider.notifier).state = null;
     ref.read(selectedVersesProvider.notifier).state = <int>{};
     ref.read(bibleSearchFocusNodeProvider).requestFocus();
+    return;
   }
+
+  final isar = await ref.read(isarServiceProvider).db;
+  final versionsAsync = ref.read(bibleVersionsProvider);
+  final versions = versionsAsync.valueOrNull ?? [];
+
+  if (queries.length == 1) {
+    final q = queries.first;
+    BibleVersion? targetVersion;
+    if (q.versionStr != null) {
+      targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == q.versionStr!.toLowerCase()).firstOrNull;
+    }
+    targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+
+    if (targetVersion != null) {
+      if (targetVersion != ref.read(selectedBibleVersionProvider)) {
+        ref.read(selectedBibleVersionProvider.notifier).state = targetVersion;
+      }
+      ref.read(selectedBookProvider.notifier).state = q.bookName;
+      ref.read(selectedChapterProvider.notifier).state = q.chapter;
+
+      final Set<int> versesToSelect = {};
+      for (int i = q.startVerse; i <= q.endVerse; i++) {
+        versesToSelect.add(i);
+      }
+      ref.read(selectedVersesProvider.notifier).state = versesToSelect;
+      if (mounted) {
+        setState(() {
+          _lastVerseToggled = q.endVerse;
+        });
+      }
+
+      ref.read(bibleVerseListFocusNodeProvider).requestFocus();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (BibleConstants.oldTestamentBooks.contains(q.bookName)) {
+          final index = BibleConstants.oldTestamentBooks.indexOf(q.bookName);
+          _scrollToEnsureVisible(_otScrollController, index);
+        } else if (BibleConstants.newTestamentBooks.contains(q.bookName)) {
+          final index = BibleConstants.newTestamentBooks.indexOf(q.bookName);
+          _scrollToEnsureVisible(_ntScrollController, index);
+        }
+
+        Future.delayed(const Duration(milliseconds: 100), () {
+          final chItems = ref.read(availableChaptersProvider).valueOrNull ?? [];
+          final chIndex = chItems.indexOf(q.chapter);
+          if (chIndex != -1) _scrollToEnsureVisible(_chScrollController, chIndex);
+          
+          final vsItems = ref.read(availableVersesProvider).valueOrNull ?? [];
+          final vsIndex = vsItems.indexOf(q.startVerse);
+          if (vsIndex != -1) _scrollToEnsureVisible(_vsScrollController, vsIndex);
+        });
+      });
+
+      return;
+    }
+  } else {
+    for (final q in queries) {
+      BibleVersion? targetVersion;
+      if (q.versionStr != null) {
+        targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == q.versionStr!.toLowerCase()).firstOrNull;
+      }
+      targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+
+      if (targetVersion != null) {
+        final chapterVerses = await isar.bibleVerses
+            .filter()
+            .bibleVersionIdEqualTo(targetVersion.id)
+            .bookNameEqualTo(q.bookName)
+            .chapterNumberEqualTo(q.chapter)
+            .findAll();
+
+        final selectedVerses = chapterVerses
+            .where((v) => v.verseNumber >= q.startVerse && v.verseNumber <= q.endVerse)
+            .toList()
+          ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+        if (selectedVerses.isNotEmpty) {
+          _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
+        }
+      }
+    }
+
+    final lastQ = queries.last;
+    BibleVersion? lastVersion;
+    if (lastQ.versionStr != null) {
+      lastVersion = versions.where((v) => v.abbreviation.toLowerCase() == lastQ.versionStr!.toLowerCase()).firstOrNull;
+    }
+    lastVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+
+    if (lastVersion != null) {
+      if (lastVersion != ref.read(selectedBibleVersionProvider)) {
+        ref.read(selectedBibleVersionProvider.notifier).state = lastVersion;
+      }
+      ref.read(selectedBookProvider.notifier).state = lastQ.bookName;
+      ref.read(selectedChapterProvider.notifier).state = lastQ.chapter;
+
+      final Set<int> versesToSelect = {};
+      for (int i = lastQ.startVerse; i <= lastQ.endVerse; i++) {
+        versesToSelect.add(i);
+      }
+      ref.read(selectedVersesProvider.notifier).state = versesToSelect;
+    }
+  }
+}
 
 Future<bool> _addReferenceLineToSetlist(String line, WidgetRef ref) async {
-  final regex = RegExp(r'^(\d?\s*[a-zA-Z\s]+?)\s*(\d+)[\:\;](\d+)(?:-(\d+))?(?:\s+([a-zA-Z0-9]+))?$');
-  final match = regex.firstMatch(line.trim());
-  if (match == null) return false;
+  final queries = await _parseBibleReferenceQueries(line, ref);
+  if (queries.isEmpty) return false;
 
-  final bookStr = match.group(1)?.trim() ?? '';
-  final chapterStr = match.group(2) ?? '';
-  final verseStartStr = match.group(3) ?? '';
-  final verseEndStr = match.group(4);
-  final versionStr = match.group(5);
-
-  final normalizedBook = BibleConstants.normalizeBookName(bookStr);
-  if (normalizedBook == null) return false;
-
-  final chapter = int.tryParse(chapterStr);
-  final startVerse = int.tryParse(verseStartStr);
-  final endVerse = verseEndStr != null ? int.tryParse(verseEndStr) : startVerse;
-  if (chapter == null || startVerse == null || endVerse == null || endVerse < startVerse) {
-    return false;
-  }
-
+  final isar = await ref.read(isarServiceProvider).db;
   final versionsAsync = ref.read(bibleVersionsProvider);
   final versions = versionsAsync.valueOrNull ?? [];
   if (versions.isEmpty) return false;
 
-  BibleVersion? targetVersion;
-  if (versionStr != null) {
-    targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == versionStr.toLowerCase()).firstOrNull;
-    if (targetVersion == null) {
-      return false;
+  bool addedAny = false;
+
+  for (final q in queries) {
+    BibleVersion? targetVersion;
+    if (q.versionStr != null) {
+      targetVersion = versions.where((v) => v.abbreviation.toLowerCase() == q.versionStr!.toLowerCase()).firstOrNull;
     }
-  } else {
-    targetVersion = ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
-    if (targetVersion == null) {
-      return false;
-    }
-  }
+    targetVersion ??= ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
 
-  final isar = await ref.read(isarServiceProvider).db;
-  final chapterVerses = await isar.bibleVerses
-      .filter()
-      .bibleVersionIdEqualTo(targetVersion.id)
-      .bookNameEqualTo(normalizedBook)
-      .chapterNumberEqualTo(chapter)
-      .findAll();
+    if (targetVersion == null) continue;
 
-  if (chapterVerses.isEmpty) return false;
+    final chapterVerses = await isar.bibleVerses
+        .filter()
+        .bibleVersionIdEqualTo(targetVersion.id)
+        .bookNameEqualTo(q.bookName)
+        .chapterNumberEqualTo(q.chapter)
+        .findAll();
 
-  final requiredVerseCount = endVerse - startVerse + 1;
-  final selectedVerses = chapterVerses
-      .where((v) => v.verseNumber >= startVerse && v.verseNumber <= endVerse)
-      .toList()
-    ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+    final selectedVerses = chapterVerses
+        .where((v) => v.verseNumber >= q.startVerse && v.verseNumber <= q.endVerse)
+        .toList()
+      ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
 
-  if (selectedVerses.length != requiredVerseCount) return false;
-
-  for (int i = 0; i < requiredVerseCount; i++) {
-    if (selectedVerses[i].verseNumber != startVerse + i) {
-      return false;
+    if (selectedVerses.length == (q.endVerse - q.startVerse + 1)) {
+      _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
+      addedAny = true;
     }
   }
 
-  _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
-  return true;
+  return addedAny;
 }
 
 Future<void> _showImportVersesDialog(WidgetRef ref) async {
