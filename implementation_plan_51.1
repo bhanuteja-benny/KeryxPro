@@ -1,0 +1,43 @@
+# Implementation Plan - Phase 51.1: Fix Bible Book Search logic for 'Jud' and add 'cho' for Chronicles
+
+## Root Cause Analysis
+In `lib/features/bible/domain/bible_constants.dart`, `BibleConstants.normalizeBookName(input)` resolves book names in three sequential steps:
+1. **Exact match** (ignoring spaces & case).
+2. **Abbreviations map lookup** (`bookAbbreviations`).
+3. **Prefix match** (iterating through Old Testament books first, then New Testament books).
+
+Currently:
+1. `bookAbbreviations` had an explicit mapping: `'jud': 'Jude'`.
+   When a user entered `'Jud'` (or `'jud'`), Step 2 checked `bookAbbreviations['jud']` and returned `'Jude'` immediately, bypassing Step 3 prefix search order (which evaluates OT books before NT books). In contrast, entering `'Phil'` returns `'Philippians'` because `'phil'` matches `'Philippians'` first.
+2. Users typing `'cho'` or `'1 cho'` / `'2 cho'` for Chronicles (missing the `'r'`) were not matched because `'cho'` was not present in `bookAbbreviations`.
+
+## Proposed Changes
+
+### `lib/features/bible/domain/bible_constants.dart`
+1. Remove `'jud': 'Jude'` from `bookAbbreviations`.
+2. Add `'cho'`, `'chro'`, `'1 cho'`, `'2 cho'`, `'1 chro'`, `'2 chro'` to `bookAbbreviations` mapping to `'1 Chronicles'` / `'2 Chronicles'`.
+
+#### Behavior after fix:
+- When user enters **`Jud`** / **`jud`**:
+  - Step 1 (Exact match): Fails.
+  - Step 2 (Abbreviations map): `'jud'` is not in `bookAbbreviations`.
+  - Step 3 (Prefix match): Checks `oldTestamentBooks` first. `Judges` starts with `jud`, so `Judges` is returned (first book in canonical order).
+- When user enters **`Jude`** / **`jude`**:
+  - Step 1 (Exact match): Matches `Jude` in `newTestamentBooks` and returns `Jude`.
+- When user enters **`Judg`** / **`judg`** or **`jdg`**:
+  - Step 2 (Abbreviations map): Matches `Judges` and returns `Judges`.
+- When user enters **`cho`**, **`1 cho`**, **`2 cho`**, **`chro`**, **`1 chro`**, **`2 chro`**:
+  - Step 2 (Abbreviations map): Matches `1 Chronicles` / `2 Chronicles`.
+
+## Presumptions / Assumptions
+1. Entering `'Jud'` should resolve to `'Judges'` as it is the first book matching the prefix in canonical Bible order (Old Testament then New Testament).
+2. Entering full book name `'Jude'` will continue to match `'Jude'` via exact match.
+3. Entering `'cho'` variants will match Chronicles.
+4. No UI or existing functionality changes outside of this normalization fix are required.
+
+## Verification Plan
+1. Test `normalizeBookName('Jud')` / `normalizeBookName('jud')` -> returns `'Judges'`.
+2. Test `normalizeBookName('Jude')` / `normalizeBookName('jude')` -> returns `'Jude'`.
+3. Test `normalizeBookName('Phil')` / `normalizeBookName('phil')` -> returns `'Philippians'`.
+4. Test `normalizeBookName('1 cho')` / `normalizeBookName('cho')` -> returns `'1 Chronicles'`.
+5. Test `normalizeBookName('2 cho')` -> returns `'2 Chronicles'`.

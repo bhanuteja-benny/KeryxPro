@@ -18,7 +18,7 @@ class BibleConstants {
     'gen': 'Genesis', 'ex': 'Exodus', 'exo': 'Exodus', 'lev': 'Leviticus', 'num': 'Numbers', 'deut': 'Deuteronomy', 'dt': 'Deuteronomy',
     'josh': 'Joshua', 'judg': 'Judges', 'jdg': 'Judges', 'rut': 'Ruth', 'rth': 'Ruth',
     '1 sam': '1 Samuel', '2 sam': '2 Samuel', '1 kgs': '1 Kings', '2 kgs': '2 Kings',
-    '1 chron': '1 Chronicles', '2 chron': '2 Chronicles', '1 chr': '1 Chronicles', '2 chr': '2 Chronicles',
+    '1 chron': '1 Chronicles', '2 chron': '2 Chronicles', '1 chr': '1 Chronicles', '2 chr': '2 Chronicles', '1 chro': '1 Chronicles', '2 chro': '2 Chronicles', '1 cho': '1 Chronicles', '2 cho': '2 Chronicles', 'cho': '1 Chronicles', 'chro': '1 Chronicles',
     'ezr': 'Ezra', 'neh': 'Nehemiah', 'est': 'Esther', 'job': 'Job', 'ps': 'Psalms', 'psa': 'Psalms', 'prov': 'Proverbs', 'pro': 'Proverbs',
     'ecc': 'Ecclesiastes', 'song': 'Song of Solomon', 'sos': 'Song of Solomon',
     'isa': 'Isaiah', 'jer': 'Jeremiah', 'lam': 'Lamentations', 'eze': 'Ezekiel', 'dan': 'Daniel',
@@ -32,7 +32,7 @@ class BibleConstants {
     '1 tim': '1 Timothy', '2 tim': '2 Timothy', 'tit': 'Titus', 'phile': 'Philemon', 'phm': 'Philemon',
     'heb': 'Hebrews', 'jam': 'James', 'jas': 'James', '1 pet': '1 Peter', '2 pet': '2 Peter',
     '1 joh': '1 John', '1 jn': '1 John', '2 joh': '2 John', '2 jn': '2 John', '3 joh': '3 John', '3 jn': '3 John',
-    'jud': 'Jude', 'rev': 'Revelation',
+    'rev': 'Revelation',
   };
 
   static String? normalizeBookName(String input) {
