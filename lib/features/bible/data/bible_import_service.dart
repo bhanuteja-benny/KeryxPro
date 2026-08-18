@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:xml/xml.dart';
 import 'package:path/path.dart' as p;
+import 'dart:convert';
 import 'bible.dart';
 
 class BibleImportResult {
@@ -17,7 +18,18 @@ class BibleImportService {
       final file = File(filePath);
       if (!await file.exists()) return null;
 
-      final content = await file.readAsString();
+      String content = '';
+
+try {
+  content = await file.readAsString();
+} catch (e) {
+  try {
+    content = await file.readAsString(encoding: latin1);
+  } catch (e) {
+    print('Error reading Bible file $filePath: $e');
+    return null;
+  }
+}
       
       // Determine format
       if (content.contains('<XMLBIBLE')) {
