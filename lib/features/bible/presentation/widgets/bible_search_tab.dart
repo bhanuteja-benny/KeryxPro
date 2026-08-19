@@ -515,34 +515,56 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           color: Colors.black12,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 flex: 3,
                 child: TextField(
                   controller: _searchController,
                   focusNode: ref.read(bibleSearchFocusNodeProvider),
+                  textAlignVertical: TextAlignVertical.center,
                   onSubmitted: (val) {
                     _handleSearch(val, ref);
                   },
-                  style: const TextStyle(fontSize: 11),
+                  style: const TextStyle(fontSize: 12),
                   decoration: InputDecoration(
                     isDense: true,
                     visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                     hintText: 'Search (e.g. gen 1:3, John 3:1-5)',
-                    prefixIcon: const Icon(Icons.search, size: 12),
-                    suffixIcon: IconButton(
-  padding: EdgeInsets.zero,
-  constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-  icon: const Icon(Icons.file_download_outlined, size: 12),
-  tooltip: 'Import Verses',
-  onPressed: () => _showImportVersesDialog(ref),
+                    prefixIcon: const Icon(Icons.search, size: 14),
+prefixIconConstraints: const BoxConstraints.tightFor(width: 28, height: 28),
+suffixIcon: SizedBox(
+  width: 56,
+  height: 28,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      IconButton(
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+        icon: const Icon(Icons.file_download_outlined, size: 14),
+        tooltip: 'Import Verses',
+        onPressed: () => _showImportVersesDialog(ref),
+      ),
+      IconButton(
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+        icon: const Icon(Icons.add_to_photos_outlined, size: 14),
+        tooltip: 'Dual Version Mode',
+        onPressed: () {},
+      ),
+    ],
+  ),
 ),
-suffixIconConstraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                     filled: true,
                     fillColor: Colors.black26,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
-                  ),
+                  border: OutlineInputBorder(
+  borderRadius: BorderRadius.circular(4),
+  borderSide: BorderSide.none,
+),
+                ),
                 ),
               ),
               const SizedBox(width: 4),
@@ -564,7 +586,7 @@ suffixIconConstraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                     final selectedVersion = ref.watch(selectedBibleVersionProvider) ?? versions.first;
 
                     return Container(
-                      height: 22,
+                      height: 28,
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       decoration: BoxDecoration(
                         color: Colors.black26,
