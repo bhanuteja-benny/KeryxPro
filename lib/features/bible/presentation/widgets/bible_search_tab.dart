@@ -40,6 +40,8 @@ class BibleSearchTab extends ConsumerStatefulWidget {
 class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   final TextEditingController _searchController = TextEditingController();
   int? _lastVerseToggled;
+  bool _isDualVersionMode = false;
+  BibleVersion? _secondaryBibleVersion;
 
   final FocusNode _otFocusNode = FocusNode();
   final FocusNode _ntFocusNode = FocusNode();
@@ -518,7 +520,7 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                flex: 3,
+                flex: _isDualVersionMode ? 2 : 3,
                 child: TextField(
                   controller: _searchController,
                   focusNode: ref.read(bibleSearchFocusNodeProvider),
@@ -552,7 +554,11 @@ suffixIcon: SizedBox(
         constraints: const BoxConstraints.tightFor(width: 28, height: 28),
         icon: const Icon(Icons.add_to_photos_outlined, size: 14),
         tooltip: 'Dual Version Mode',
-        onPressed: () {},
+        onPressed: () {
+  setState(() {
+    _isDualVersionMode = !_isDualVersionMode;
+  });
+},
       ),
     ],
   ),
@@ -615,6 +621,55 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                   error: (e, st) => const Text('Error', style: TextStyle(fontSize: 10)),
                 ),
               ),
+              if (_isDualVersionMode) ...[
+  const SizedBox(width: 4),
+  Expanded(
+    flex: 1,
+    child: bibleVersionsAsync.when(
+      data: (versions) {
+        if (versions.isEmpty) {
+          return const Center(child: Text('No Bibles', style: TextStyle(fontSize: 10, color: Colors.grey)));
+        }
+
+        final selectedVersion = ref.watch(selectedBibleVersionProvider) ?? versions.first;
+        final secondaryVersion = _secondaryBibleVersion ?? versions.firstWhere(
+          (version) => version != selectedVersion,
+          orElse: () => selectedVersion,
+        );
+        
+        return Container(
+          height: 28,
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: Colors.black26,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<BibleVersion>(
+              value: secondaryVersion,
+              isExpanded: true,
+              icon: const Icon(Icons.arrow_drop_down, size: 14),
+              style: const TextStyle(fontSize: 11, color: Colors.white),
+              onChanged: (version) {
+                setState(() {
+                  _secondaryBibleVersion = version;
+                });
+              },
+              items: versions.map((version) {
+                return DropdownMenuItem(
+                  value: version,
+                  child: Text(version.abbreviation, overflow: TextOverflow.ellipsis),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+      loading: () => const Center(child: SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokewidth: 2))),
+      error: (e, st) => const Text('Error', style: TextStyle(fontSize: 10)),
+      ),
+    ),
+                ],
             ],
           ),
         ),
