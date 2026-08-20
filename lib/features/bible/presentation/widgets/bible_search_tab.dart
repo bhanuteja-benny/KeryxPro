@@ -665,7 +665,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
           ),
         );
       },
-      loading: () => const Center(child: SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokewidth: 2))),
+      loading: () => const Center(child: SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))),
       error: (e, st) => const Text('Error', style: TextStyle(fontSize: 10)),
       ),
     ),
