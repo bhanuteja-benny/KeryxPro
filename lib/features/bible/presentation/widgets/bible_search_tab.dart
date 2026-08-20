@@ -1092,6 +1092,28 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
   Widget _buildPreviewPane(WidgetRef ref) {
     final previewAsync = ref.watch(biblePreviewVersesProvider);
     final selectedVersion = ref.watch(selectedBibleVersionProvider);
+    final bibleVersions = ref.watch(bibleVersionsProvider).valueOrNull ?? [];
+final selectedBook = ref.watch(selectedBookProvider);
+final selectedChapter = ref.watch(selectedChapterProvider);
+final selectedVerses = ref.watch(selectedVersesProvider);
+final secondaryVersion = _isDualVersionMode
+  ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
+  : null;
+final canShowSecondary = secondaryVersion != null &&
+  secondaryVersion.id != selectedVersion?.id &&
+  selectedBook != null &&
+  selectedChapter != null &&
+  selectedVerses.isNotEmpty;
+final secondaryPreviewAsync = canShowSecondary
+  ? ref.watch(
+      bibleVersesForSelectionProvider((
+        versionId: secondaryVersion.id,
+        book: selectedBook,
+        chapter: selectedChapter,
+        verses: selectedVerses,
+      )),
+    )
+  : const AsyncValue<List<BibleVerse>>.data([]);
 
     return Container(
       height: 250,
@@ -1191,21 +1213,19 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                   data: (verses) {
                     if (verses.isEmpty) return const Text('Select a verse to preview', style: TextStyle(color: Colors.white54, fontSize: 12));
                     
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: verses.map((v) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
-                            children: [
-                              TextSpan(text: '${v.verseNumber} ', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-                              TextSpan(text: v.text),
-                            ],
-                          ),
-                        ),
-                      )).toList(),
-                    );
+                    return secondaryPreviewAsync.when(
+  data: (secondaryVerses) => _buildPreviewVerses(
+    verses,
+    canShowSecondary ? selectedVersion : null,
+    secondaryVerses,
+    canShowSecondary ? secondaryVersion : null,
+  ),
+  loading: () => const Center(child: CircularProgressIndicator()),
+  error: (e, __) => Text(
+    'Error loading secondary verses: $e',
+    style: const TextStyle(color: Colors.redAccent),
+  ),
+);
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
                   error: (e, __) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
@@ -1216,6 +1236,58 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
         ],
       ),
     );
+  }
+
+  Widget _buildPreviewVerses(
+  List<BibleVerse> primaryVerses,
+  BibleVersion? primaryVersion,
+  List<BibleVerse> secondaryVerses,
+  BibleVersion? secondaryVersion,
+) {
+  final primaryByNumber = {for (final verse in primaryVerses) verse.verseNumber: verse};
+  final secondaryByNumber = {for (final verse in secondaryVerses) verse.verseNumber: verse};
+  final verseNumbers = {...primaryByNumber.keys, ...secondaryByNumber.keys}.toList()..sort();
+  final rows = <Widget>[];
+
+  for (final verseNumber in verseNumbers) {
+    final primaryVerse = primaryByNumber[verseNumber];
+    if (primaryVerse != null) {
+      rows.add(_buildPreviewVerseRow(primaryVerse, primaryVersion?.abbreviation));
+    }
+
+    final secondaryVerse = secondaryByNumber[verseNumber];
+    if (secondaryVerse != null) {
+      rows.add(_buildPreviewVerseRow(secondaryVerse, secondaryVersion?.abbreviation));
+    }
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: rows,
+  );
+  }
+
+  Widget _buildPreviewVerseRow(BibleVerse verse, String? versionAbbreviation) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: RichText(
+      text: TextSpan(
+        style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
+        children: [
+          // if (versionAbbreviation != null)
+          //   TextSpan(
+          //     text: '[$versionAbbreviation] ',
+          //     style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white54),
+          //     ),
+          TextSpan(
+            text: '${verse.verseNumber} ',
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
+          ),
+          TextSpan(text: verse.text),
+        ],
+      ),
+    ),
+  );
   }
 }
 
