@@ -552,7 +552,7 @@ suffixIcon: SizedBox(
       IconButton(
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-        icon: const Icon(Icons.add_to_photos_outlined, size: 14),
+        icon: const Icon(Icons.filter_2_outlined, size: 14),
         tooltip: 'Dual Version Mode',
         onPressed: () {
   setState(() {
@@ -1116,7 +1116,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       final book = verses.first.bookName;
                       final chapter = verses.first.chapterNumber;
                       return Text(
-                        '$book $chapter (${verses.length} verses selected)',
+                        '$book $chapter',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blueAccent),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1126,30 +1126,59 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                     error: (_, __) => const Text('Error', style: TextStyle(fontSize: 12, color: Colors.redAccent)),
                   ),
                 ),
-                ElevatedButton.icon(
-                  focusNode: _addButtonFocusNode,
-                  onPressed: () {
-                    final verses = previewAsync.valueOrNull;
-                    if (verses == null || verses.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No verse selected'), duration: Duration(seconds: 2))
-                      );
-                      return;
-                    }
-                    if (selectedVersion != null) {
-                      _addToSetlist(verses, selectedVersion, ref, goLive: false);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                    minimumSize: const Size(0, 24),
-                    textStyle: const TextStyle(fontSize: 11),
-                  ),
-                  icon: const Icon(Icons.add, size: 12),
-                  label: const Text('Add'),
-                ),
+                Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    ElevatedButton.icon(
+      focusNode: _addButtonFocusNode,
+      onPressed: () {
+        final verses = previewAsync.valueOrNull;
+        if (verses == null || verses.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No verse selected'), duration: Duration(seconds: 2))
+          );
+          return;
+        }
+        if (selectedVersion != null) {
+          _addToSetlist(verses, selectedVersion, ref, goLive: false);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+        minimumSize: const Size(0, 24),
+        textStyle: const TextStyle(fontSize: 11),
+      ),
+      icon: const Icon(Icons.add, size: 12),
+      label: const Text('Add'),
+    ),
+    const SizedBox(width: 4),
+    ElevatedButton.icon(
+      onPressed: () {
+        final verses = previewAsync.valueOrNull;
+        if (verses == null || verses.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No verse selected'), duration: Duration(seconds: 2))
+          );
+          return;
+        }
+        if (selectedVersion != null) {
+          _addToSetlist(verses, selectedVersion, ref, goLive: true);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+        minimumSize: const Size(0, 24),
+        textStyle: const TextStyle(fontSize: 11),
+      ),
+      icon: const Icon(Icons.play_arrow, size: 12),
+      label: const Text('Show'),
+    ),
+  ],
+)
               ],
             ),
           ),
