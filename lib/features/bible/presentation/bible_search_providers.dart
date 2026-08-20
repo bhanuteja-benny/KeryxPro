@@ -69,3 +69,20 @@ final biblePreviewVersesProvider = FutureProvider<List<BibleVerse>>((ref) async 
       
   return result;
 });
+
+final bibleVersesForSelectionProvider = FutureProvider.family<
+    List<BibleVerse>,
+    ({int versionId, String book, int chapter, Set<int> verses})>((ref, selection) async {
+  if (selection.verses.isEmpty) return [];
+
+  final isar = await ref.read(isarServiceProvider).db;
+
+  return isar.bibleVerses
+      .filter()
+      .bibleVersionIdEqualTo(selection.versionId)
+      .bookNameEqualTo(selection.book)
+      .chapterNumberEqualTo(selection.chapter)
+      .anyOf(selection.verses.toList(), (q, int verse) => q.verseNumberEqualTo(verse))
+      .sortByVerseNumber()
+      .findAll();
+});
