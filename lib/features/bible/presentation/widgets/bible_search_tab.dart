@@ -1257,7 +1257,7 @@ final secondaryPreviewAsync = canShowSecondary
 
     final secondaryVerse = secondaryByNumber[verseNumber];
     if (secondaryVerse != null) {
-      rows.add(_buildPreviewVerseRow(secondaryVerse, secondaryVersion?.abbreviation));
+      rows.add(_buildPreviewVerseRow(secondaryVerse, secondaryVersion?.abbreviation, isSecondary: true));
     }
   }
 
@@ -1267,7 +1267,7 @@ final secondaryPreviewAsync = canShowSecondary
   );
   }
 
-  Widget _buildPreviewVerseRow(BibleVerse verse, String? versionAbbreviation) {
+  Widget _buildPreviewVerseRow(BibleVerse verse, String? versionAbbreviation, {bool isSecondary = false}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
     child: RichText(
@@ -1283,7 +1283,10 @@ final secondaryPreviewAsync = canShowSecondary
             text: '${verse.verseNumber} ',
             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
           ),
-          TextSpan(text: verse.text),
+          TextSpan(
+  text: '${verse.text} ',
+  style: TextStyle(fontWeight: FontWeight.bold, color: isSecondary ? const Color.fromARGB(255, 205, 181, 143) : Colors.white70),
+),
         ],
       ),
     ),
