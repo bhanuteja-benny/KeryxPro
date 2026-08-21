@@ -1159,7 +1159,7 @@ final secondaryPreviewAsync = canShowSecondary
     IconButton(
   padding: EdgeInsets.zero,
   constraints: const BoxConstraints.tightFor(width: 28, height: 20),
-  icon: const Icon(Icons.view_compact_sharp, size: 18),
+  icon: const Icon(_isButtonViewMode ? Icons.view_week_sharp : Icons.view_compact_sharp, size: 18),
   color: Colors.blueAccent,
   tooltip: _isButtonViewMode ? 'List View Mode' : 'Button View Mode',
   onPressed: () {
