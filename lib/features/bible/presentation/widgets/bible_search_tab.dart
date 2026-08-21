@@ -41,6 +41,7 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   final TextEditingController _searchController = TextEditingController();
   int? _lastVerseToggled;
   bool _isDualVersionMode = false;
+  bool _isButtonViewMode = false;
   BibleVersion? _secondaryBibleVersion;
 
   final FocusNode _otFocusNode = FocusNode();
@@ -675,6 +676,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
         ),
 
         // List Boxes
+        if(!_isButtonViewMode)
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -821,7 +823,10 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
       ),
 
         // Preview Pane
-        _buildPreviewPane(ref),
+        if(_isButtonViewMode)
+            Expanded(child: _buildPreviewPane(ref))
+        else
+            _buildPreviewPane(ref),
       ],
     );
   }
@@ -1116,7 +1121,7 @@ final secondaryPreviewAsync = canShowSecondary
   : const AsyncValue<List<BibleVerse>>.data([]);
 
     return Container(
-      height: 250,
+      height: _isButtonViewMode ? null : 250,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.grey[850],
@@ -1156,8 +1161,12 @@ final secondaryPreviewAsync = canShowSecondary
   constraints: const BoxConstraints.tightFor(width: 28, height: 20),
   icon: const Icon(Icons.view_compact_sharp, size: 18),
   color: Colors.blueAccent,
-  tooltip: 'Button View Mode',
-  onPressed: () {}
+  tooltip: _isButtonViewMode ? 'List View Mode' : 'Button View Mode',
+  onPressed: () {
+    setState(() {
+        _isButtonViewMode = !_isButtonViewMode;
+    });
+  }
 ),
     ElevatedButton.icon(
       focusNode: _addButtonFocusNode,
