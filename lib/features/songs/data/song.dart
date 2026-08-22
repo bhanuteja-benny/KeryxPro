@@ -23,4 +23,13 @@ class Song {
   String? backgroundUrl;
 
   late DateTime lastModified;
+
+  @ignore
+  bool isDualVersion = false;
+
+  @ignore
+  String? secondaryTitle;
+
+  @ignore
+  String? secondaryLyrics;
 }

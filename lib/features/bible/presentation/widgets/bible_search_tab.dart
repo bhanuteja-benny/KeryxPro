@@ -473,7 +473,14 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
   );
 }
   
-  void _addToSetlist(List<BibleVerse> verses, BibleVersion version, WidgetRef ref, {bool goLive = true}) {
+  void _addToSetlist(
+    List<BibleVerse> verses,
+    BibleVersion version,
+    WidgetRef ref, {
+    bool goLive = true,
+    List<BibleVerse>? secondaryVerses,
+    BibleVersion? secondaryVersion,
+  }) {
     if (verses.isEmpty) return;
 
     final book = verses.first.bookName;
@@ -483,26 +490,23 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
     verses.sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
     
     // Determine the verse range string
-    String verseRange;
-    if (verses.length == 1) {
-      verseRange = verses.first.verseNumber.toString();
-    } else {
-      // Check if contiguous
+    String formatVerseRange(List<BibleVerse> vList) {
+      if (vList.length == 1) {
+        return vList.first.verseNumber.toString();
+      }
       bool contiguous = true;
-      for (int i = 1; i < verses.length; i++) {
-        if (verses[i].verseNumber != verses[i-1].verseNumber + 1) {
+      for (int i = 1; i < vList.length; i++) {
+        if (vList[i].verseNumber != vList[i - 1].verseNumber + 1) {
           contiguous = false;
           break;
         }
       }
-      
-      if (contiguous) {
-        verseRange = '${verses.first.verseNumber}-${verses.last.verseNumber}';
-      } else {
-        verseRange = verses.map((v) => v.verseNumber).join(',');
-      }
+      return contiguous
+          ? '${vList.first.verseNumber}-${vList.last.verseNumber}'
+          : vList.map((v) => v.verseNumber).join(',');
     }
 
+    final verseRange = formatVerseRange(verses);
     final title = '$book $chapter:$verseRange ${version.abbreviation}';
     
     // Format lyrics with [V] tags so SlideUtils treats them as individual verses
@@ -518,10 +522,54 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
     final lyrics = lyricsBuffer.toString().trim();
     if (lyrics.isEmpty) return;
 
+    bool isDual = false;
+    String? secTitle;
+    String? secLyrics;
+
+    if (_isDualVersionMode) {
+      final bibleVersions = ref.read(bibleVersionsProvider).valueOrNull ?? [];
+      secondaryVersion ??= _secondaryBibleVersion ?? bibleVersions.where((v) => v.id != version.id).firstOrNull;
+
+      if (secondaryVersion != null && secondaryVersion.id != version.id) {
+        if (secondaryVerses == null || secondaryVerses.isEmpty) {
+          final secSelected = ref.read(secondarySelectedVersesProvider);
+          final versesToFetch = secSelected.isNotEmpty ? secSelected : verses.map((v) => v.verseNumber).toSet();
+          final secAsync = ref.read(bibleVersesForSelectionProvider((
+            versionId: secondaryVersion.id,
+            book: book,
+            chapter: chapter,
+            verses: versesToFetch,
+          )));
+          secondaryVerses = secAsync.valueOrNull;
+        }
+
+        if (secondaryVerses != null && secondaryVerses.isNotEmpty) {
+          secondaryVerses.sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+          final secBook = secondaryVerses.first.bookName;
+          final secChapter = secondaryVerses.first.chapterNumber;
+          final secVerseRange = formatVerseRange(secondaryVerses);
+          secTitle = '$secBook $secChapter:$secVerseRange ${secondaryVersion.abbreviation}';
+
+          final secBuffer = StringBuffer();
+          for (var v in secondaryVerses) {
+            if (v.text.trim().isEmpty) continue;
+            secBuffer.writeln('[${v.verseNumber}]');
+            secBuffer.writeln('${v.verseNumber} ${v.text.trim()}');
+            secBuffer.writeln();
+          }
+          secLyrics = secBuffer.toString().trim();
+          isDual = secLyrics.isNotEmpty;
+        }
+      }
+    }
+
     final mockSong = Song()
       ..title = title
       ..author = 'Bible'
-      ..lyrics = lyrics;
+      ..lyrics = lyrics
+      ..isDualVersion = isDual
+      ..secondaryTitle = isDual ? secTitle : null
+      ..secondaryLyrics = isDual ? secLyrics : null;
 
     final insertAt = ref.read(setlistProvider.notifier).insertSong(
       mockSong,
@@ -542,6 +590,7 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
   Widget build(BuildContext context) {
     final bibleVersionsAsync = ref.watch(bibleVersionsProvider);
     final selectedVersion = ref.watch(selectedBibleVersionProvider);
+    ref.watch(biblePreviewVersesProvider);
     final bibleVersions = bibleVersionsAsync.valueOrNull ?? [];
     final secondaryVersion = _isDualVersionMode
         ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
@@ -1252,8 +1301,10 @@ final selectedVerses = ref.watch(selectedVersesProvider);
           );
           return;
         }
+        final secVerses = canShowSecondary ? secondaryPreviewAsync.valueOrNull : null;
+        final secVer = canShowSecondary ? secondaryVersion : null;
         if (selectedVersion != null) {
-          _addToSetlist(verses, selectedVersion, ref, goLive: false);
+          _addToSetlist(verses, selectedVersion, ref, goLive: false, secondaryVerses: secVerses, secondaryVersion: secVer);
         }
       },
       style: ElevatedButton.styleFrom(
@@ -1276,8 +1327,10 @@ final selectedVerses = ref.watch(selectedVersesProvider);
           );
           return;
         }
+        final secVerses = canShowSecondary ? secondaryPreviewAsync.valueOrNull : null;
+        final secVer = canShowSecondary ? secondaryVersion : null;
         if (selectedVersion != null) {
-          _addToSetlist(verses, selectedVersion, ref, goLive: true);
+          _addToSetlist(verses, selectedVersion, ref, goLive: true, secondaryVerses: secVerses, secondaryVersion: secVer);
         }
       },
       style: ElevatedButton.styleFrom(
@@ -1800,10 +1853,28 @@ final selectedVerses = ref.watch(selectedVersesProvider);
         if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
         if (event.logicalKey == LogicalKeyboardKey.enter) {
-          final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
+          final selectedSet = ref.read(selectedVersesProvider);
+          final currentPrimaryVerses = primaryVerses
+              .where((v) => selectedSet.contains(v.verseNumber))
+              .toList()
+            ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+          final secSelectedSet = ref.read(secondarySelectedVersesProvider);
+          final currentSecVerses = secondaryVerses
+              .where((v) => secSelectedSet.contains(v.verseNumber))
+              .toList()
+            ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
           final version = ref.read(selectedBibleVersionProvider);
-          if (preview != null && preview.isNotEmpty && version != null) {
-            _addToSetlist(preview, version, ref, goLive: true);
+          if (currentPrimaryVerses.isNotEmpty && version != null) {
+            _addToSetlist(
+              currentPrimaryVerses,
+              version,
+              ref,
+              goLive: true,
+              secondaryVerses: canShowSecondary ? currentSecVerses : null,
+              secondaryVersion: canShowSecondary ? secondaryVersion : null,
+            );
           }
           return KeyEventResult.handled;
         }
@@ -1828,6 +1899,32 @@ final selectedVerses = ref.watch(selectedVersesProvider);
             key: isFirstOfVerseNumber ? _buttonVerseKeys[vsNum] : null,
             onTap: () {
               _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
+            },
+            onDoubleTap: () {
+              _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
+              final selectedSet = ref.read(selectedVersesProvider);
+              final currentPrimaryVerses = primaryVerses
+                  .where((v) => selectedSet.contains(v.verseNumber))
+                  .toList()
+                ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+              final secSelectedSet = ref.read(secondarySelectedVersesProvider);
+              final currentSecVerses = secondaryVerses
+                  .where((v) => secSelectedSet.contains(v.verseNumber))
+                  .toList()
+                ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+              final version = ref.read(selectedBibleVersionProvider);
+              if (currentPrimaryVerses.isNotEmpty && version != null) {
+                _addToSetlist(
+                  currentPrimaryVerses,
+                  version,
+                  ref,
+                  goLive: true,
+                  secondaryVerses: canShowSecondary ? currentSecVerses : null,
+                  secondaryVersion: canShowSecondary ? secondaryVersion : null,
+                );
+              }
             },
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
@@ -1920,6 +2017,7 @@ final selectedVerses = ref.watch(selectedVersesProvider);
     }
 
     _lastVerseToggled = val;
+    ref.read(bibleVerseListFocusNodeProvider).requestFocus();
   }
 
   Widget _buildPreviewVerses(

@@ -8,6 +8,9 @@ class Slide {
   final bool isBlank;
   final bool isSong;
   final bool isFavorite;
+  final bool isDualVersion;
+  final String? secondaryTitle;
+  final String? secondaryContent;
 
   Slide({
     required this.title,
@@ -17,6 +20,9 @@ class Slide {
     this.isBlank = false,
     this.isSong = true,
     this.isFavorite = false,
+    this.isDualVersion = false,
+    this.secondaryTitle,
+    this.secondaryContent,
   });
 
   // Factory for blank slides

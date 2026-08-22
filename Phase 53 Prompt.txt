@@ -1,0 +1,21 @@
+Phase 53 Plan
+
+Context: 
+- expanding dual version mode to presentation (setlist, slides and monitors)
+
+Requirement:
+- now when scripture is added to setlist in dual version mode, then the verse text from both the versions should be added. the second version text should be added as separate field (not combined) in database. and also a flag indicating whether it is dual version. also the bible reference of secondary version (because sometimes user may selecting different verse number than of the primary version)
+- in slides, primary version display is enough
+- in Monitors (both previews and window projections) the text should look like below
+- -  in the title it should show the reference of primary version in case if the verse number is different for secondary then add '/' and the verse number
+- - in the body, first show the primary text a line gap and then secondary text
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+

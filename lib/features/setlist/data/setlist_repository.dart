@@ -73,13 +73,24 @@ class SetlistRepository {
         }
       } else if (entry.startsWith('scripture:')) {
         final parts = entry.substring(10).split('|');
-        if (parts.length == 2) {
+        if (parts.length >= 2) {
           final title = Uri.decodeComponent(parts[0]);
           final lyrics = Uri.decodeComponent(parts[1]);
+          bool isDual = false;
+          String? secTitle;
+          String? secLyrics;
+          if (parts.length >= 5) {
+            isDual = parts[2] == '1';
+            secTitle = parts[3].isNotEmpty ? Uri.decodeComponent(parts[3]) : null;
+            secLyrics = parts[4].isNotEmpty ? Uri.decodeComponent(parts[4]) : null;
+          }
           final mockSong = Song()
             ..title = title
             ..author = 'Bible'
-            ..lyrics = lyrics;
+            ..lyrics = lyrics
+            ..isDualVersion = isDual
+            ..secondaryTitle = secTitle
+            ..secondaryLyrics = secLyrics;
           items.add(SongSetlistItem(mockSong, isFavorite: isFav));
         }
       } else if (entry.startsWith('image:')) {
@@ -107,7 +118,10 @@ class SetlistRepository {
           if (song.author == 'Bible') {
             final encodedTitle = Uri.encodeComponent(song.title);
             final encodedLyrics = Uri.encodeComponent(song.lyrics);
-            itemOrder.add('scripture:$encodedTitle|$encodedLyrics');
+            final isDual = song.isDualVersion ? '1' : '0';
+            final encodedSecTitle = Uri.encodeComponent(song.secondaryTitle ?? '');
+            final encodedSecLyrics = Uri.encodeComponent(song.secondaryLyrics ?? '');
+            itemOrder.add('scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics');
           } else {
             songIds.add(song.id);
             itemOrder.add('song:${song.id}');

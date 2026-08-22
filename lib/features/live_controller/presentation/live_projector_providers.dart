@@ -18,7 +18,15 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
     switch (item) {
       case SongSetlistItem(:final song, :final isFavorite):
         final isSong = song.author != 'Bible';
-        allSlides.addAll(SlideUtils.parseLyrics(song.lyrics, song.title, isSong: isSong, isFavorite: isFavorite));
+        allSlides.addAll(SlideUtils.parseLyrics(
+          song.lyrics,
+          song.title,
+          isSong: isSong,
+          isFavorite: isFavorite,
+          isDualVersion: song.isDualVersion,
+          secondaryTitle: song.secondaryTitle,
+          secondaryLyrics: song.secondaryLyrics,
+        ));
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         // Image items produce one special "image" slide
         final title = imagePath.split(RegExp(r'[/\\]')).last;
@@ -49,6 +57,27 @@ case WindowSetlistItem(:final windowHandle, :final windowTitle, :final layout, :
   }
   return allSlides;
 });
+
+/// Helper function to format monitor titles when dual version is enabled and verse numbers differ
+String _formatDualTitle(String primaryTitle, String secondaryTitle) {
+  final regex = RegExp(r'^(.+?\s+\d+:)([^\s]+)\s*(.*)$');
+  final match1 = regex.firstMatch(primaryTitle.trim());
+  final match2 = regex.firstMatch(secondaryTitle.trim());
+
+  if (match1 != null && match2 != null) {
+    final prefix1 = match1.group(1)!;
+    final verse1 = match1.group(2)!;
+    final version1 = match1.group(3)!;
+    final verse2 = match2.group(2)!;
+
+    if (verse1 != verse2) {
+      final space = version1.isNotEmpty ? ' ' : '';
+      return '$prefix1$verse1/$verse2$space$version1';
+    }
+  }
+
+  return primaryTitle;
+}
 
 /// Holds the index of the currently active slide.
 final activeSlideIndexProvider = StateProvider<int>((ref) => 0);
@@ -178,12 +207,24 @@ final m1ActiveSlideProvider = Provider<String?>((ref) {
 
   if (indices.isEmpty || slides.isEmpty) return null;
 
-  if (indices.length == 1) {
-    return slides[indices.first].isBlank ? "" : slides[indices.first].content;
-  }
+  final firstSlide = slides[indices.first];
+  if (firstSlide.isBlank) return "";
 
   final joiner = config.monitor1Format.toLowerCase() == 'paragraph' ? ' ' : '\n';
-  return indices.map((i) => slides[i].content).join(joiner);
+  final primaryText = indices.map((i) => slides[i].content).join(joiner);
+
+  if (firstSlide.isDualVersion) {
+    final secondaryText = indices
+        .map((i) => slides[i].secondaryContent ?? '')
+        .where((s) => s.isNotEmpty)
+        .join(joiner);
+
+    if (secondaryText.isNotEmpty) {
+      return '$primaryText\n\n$secondaryText';
+    }
+  }
+
+  return primaryText;
 });
 
 /// Holds the currently projected text for Monitor 2.
@@ -194,12 +235,24 @@ final m2ActiveSlideProvider = Provider<String?>((ref) {
 
   if (indices.isEmpty || slides.isEmpty) return null;
 
-  if (indices.length == 1) {
-    return slides[indices.first].isBlank ? "" : slides[indices.first].content;
-  }
+  final firstSlide = slides[indices.first];
+  if (firstSlide.isBlank) return "";
 
   final joiner = config.monitor2Format.toLowerCase() == 'paragraph' ? ' ' : '\n';
-  return indices.map((i) => slides[i].content).join(joiner);
+  final primaryText = indices.map((i) => slides[i].content).join(joiner);
+
+  if (firstSlide.isDualVersion) {
+    final secondaryText = indices
+        .map((i) => slides[i].secondaryContent ?? '')
+        .where((s) => s.isNotEmpty)
+        .join(joiner);
+
+    if (secondaryText.isNotEmpty) {
+      return '$primaryText\n\n$secondaryText';
+    }
+  }
+
+  return primaryText;
 });
 
 /// Holds the title of the currently projected slide.
@@ -209,7 +262,13 @@ final activeTitleProvider = Provider<String?>((ref) {
 
   if (slides.isEmpty || index < 0 || index >= slides.length) return null;
 
-  return slides[index].title;
+  final slide = slides[index];
+
+  if (slide.isDualVersion && slide.secondaryTitle != null && slide.secondaryTitle!.isNotEmpty) {
+    return _formatDualTitle(slide.title, slide.secondaryTitle!);
+  }
+
+  return slide.title;
 });
 
 /// Indicates if the currently projected slide is from a song.

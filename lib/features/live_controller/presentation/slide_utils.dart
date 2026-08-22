@@ -1,10 +1,48 @@
 import '../domain/slide.dart';
 
 class SlideUtils {
-  static List<Slide> parseLyrics(String lyrics, String songTitle, {bool isSong = true, bool isFavorite = false}) {
+  static String _cleanStanzaContent(String stanza) {
+    final trimmed = stanza.trim();
+    if (trimmed.isEmpty) return "";
+    final firstLine = trimmed.split('\n').first.trim();
+    if (RegExp(r'^\[.+\]$').hasMatch(firstLine) ||
+        RegExp(r'^\[?(\w+)\s*(\d*)\]?:?$', caseSensitive: false).hasMatch(firstLine)) {
+      final idx = trimmed.indexOf('\n');
+      if (idx != -1) {
+        return trimmed
+            .substring(idx + 1)
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .join('\n');
+      } else {
+        return "";
+      }
+    }
+    return trimmed
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .join('\n');
+  }
+
+  static List<Slide> parseLyrics(
+    String lyrics,
+    String songTitle, {
+    bool isSong = true,
+    bool isFavorite = false,
+    bool isDualVersion = false,
+    String? secondaryTitle,
+    String? secondaryLyrics,
+  }) {
     if (lyrics.trim().isEmpty) return [Slide.blank(title: songTitle, isSong: isSong, isFavorite: isFavorite)];
 
     final stanzas = lyrics.split(RegExp(r'\n\s*\n')).where((s) => s.trim().isNotEmpty).toList();
+    final secondaryStanzas = (secondaryLyrics ?? '')
+        .split(RegExp(r'\n\s*\n'))
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
+
     final List<Slide> slides = [];
     
     int verseCount = 0;
@@ -86,6 +124,11 @@ class SlideUtils {
       // Trim each line to remove any leading spaces (common in OpenSong format)
       content = content.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).join('\n');
 
+      String? secContent;
+      if (isDualVersion && i < secondaryStanzas.length) {
+        secContent = _cleanStanzaContent(secondaryStanzas[i]);
+      }
+
       slides.add(Slide(
         title: songTitle,
         shortcut: shortcut,
@@ -93,6 +136,9 @@ class SlideUtils {
         type: type,
         isSong: isSong,
         isFavorite: isFavorite,
+        isDualVersion: isDualVersion,
+        secondaryTitle: secondaryTitle,
+        secondaryContent: secContent,
       ));
     }
 
