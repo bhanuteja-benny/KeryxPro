@@ -5,9 +5,12 @@ import '../data/bible.dart';
 import '../domain/bible_constants.dart';
 
 final selectedBibleVersionProvider = StateProvider<BibleVersion?>((ref) => null);
+final secondaryBibleVersionProvider = StateProvider<BibleVersion?>((ref) => null);
+final isDualVersionModeProvider = StateProvider<bool>((ref) => false);
 final selectedBookProvider = StateProvider<String?>((ref) => null);
 final selectedChapterProvider = StateProvider<int?>((ref) => null);
 final selectedVersesProvider = StateProvider<Set<int>>((ref) => {});
+final secondarySelectedVersesProvider = StateProvider<Set<int>>((ref) => {});
 
 /// Fetches the available chapters for the selected book and version.
 final availableChaptersProvider = FutureProvider<List<int>>((ref) async {
@@ -24,11 +27,13 @@ final availableChaptersProvider = FutureProvider<List<int>>((ref) async {
   return [];
 });
 
-/// Fetches the available verses for the selected chapter, book, and version.
+/// Fetches the available verses for the selected chapter, book, and version(s).
 final availableVersesProvider = FutureProvider<List<int>>((ref) async {
   final version = ref.watch(selectedBibleVersionProvider);
   final book = ref.watch(selectedBookProvider);
   final chapter = ref.watch(selectedChapterProvider);
+  final isDual = ref.watch(isDualVersionModeProvider);
+  final secondaryVersion = ref.watch(secondaryBibleVersionProvider);
   
   if (version == null || book == null || chapter == null) return [];
 
@@ -42,9 +47,21 @@ final availableVersesProvider = FutureProvider<List<int>>((ref) async {
       .verseNumberProperty()
       .findAll();
       
-  final uniqueVerses = verses.toSet().toList();
-  uniqueVerses.sort();
-  return uniqueVerses;
+  final uniqueVerses = verses.toSet();
+
+  if (isDual && secondaryVersion != null && secondaryVersion.id != version.id) {
+    final secondaryVerses = await isar.bibleVerses
+        .filter()
+        .bibleVersionIdEqualTo(secondaryVersion.id)
+        .bookNameEqualTo(book)
+        .chapterNumberEqualTo(chapter)
+        .verseNumberProperty()
+        .findAll();
+    uniqueVerses.addAll(secondaryVerses);
+  }
+
+  final result = uniqueVerses.toList()..sort();
+  return result;
 });
 
 /// Fetches the actual verse text for the selected verses to show in the preview.
@@ -102,6 +119,21 @@ final chapterAllVersesProvider = FutureProvider<List<BibleVerse>>((ref) async {
       .bibleVersionIdEqualTo(version.id)
       .bookNameEqualTo(book)
       .chapterNumberEqualTo(chapter)
+      .sortByVerseNumber()
+      .findAll();
+});
+
+/// Fetches all verses of a specified chapter, book, and version ID sorted by verseNumber.
+final chapterAllVersesForVersionProvider = FutureProvider.family<
+    List<BibleVerse>,
+    ({int versionId, String book, int chapter})>((ref, args) async {
+  final isar = await ref.read(isarServiceProvider).db;
+  
+  return isar.bibleVerses
+      .filter()
+      .bibleVersionIdEqualTo(args.versionId)
+      .bookNameEqualTo(args.book)
+      .chapterNumberEqualTo(args.chapter)
       .sortByVerseNumber()
       .findAll();
 });

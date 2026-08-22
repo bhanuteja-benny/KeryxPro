@@ -314,6 +314,7 @@ Future<void> _handleSearch(String query, WidgetRef ref) async {
         versesToSelect.add(i);
       }
       ref.read(selectedVersesProvider.notifier).state = versesToSelect;
+      ref.read(secondarySelectedVersesProvider.notifier).state = Set<int>.from(versesToSelect);
       if (mounted) {
         setState(() {
           _lastVerseToggled = q.endVerse;
@@ -540,6 +541,20 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
   @override
   Widget build(BuildContext context) {
     final bibleVersionsAsync = ref.watch(bibleVersionsProvider);
+    final selectedVersion = ref.watch(selectedBibleVersionProvider);
+    final bibleVersions = bibleVersionsAsync.valueOrNull ?? [];
+    final secondaryVersion = _isDualVersionMode
+        ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
+        : null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ref.read(isDualVersionModeProvider) != _isDualVersionMode) {
+        ref.read(isDualVersionModeProvider.notifier).state = _isDualVersionMode;
+      }
+      if (ref.read(secondaryBibleVersionProvider) != secondaryVersion) {
+        ref.read(secondaryBibleVersionProvider.notifier).state = secondaryVersion;
+      }
+    });
 
     ref.listen<String?>(bibleSearchQueryProvider, (previous, next) {
       if (next != null && next.isNotEmpty) {
@@ -747,6 +762,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                     // Default select 1st chapter and 1st verse
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    ref.read(secondarySelectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
                     if (_chScrollController.hasClients) _chScrollController.jumpTo(0);
                     if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
@@ -774,6 +790,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                     // Default select 1st chapter and 1st verse
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    ref.read(secondarySelectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
                     if (_chScrollController.hasClients) _chScrollController.jumpTo(0);
                     if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
@@ -800,6 +817,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                     ref.read(selectedChapterProvider.notifier).state = val;
                     // Default select 1st verse
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    ref.read(secondarySelectedVersesProvider.notifier).state = {1};
                     setState(() => _lastVerseToggled = 1);
                     if (_vsScrollController.hasClients) _vsScrollController.jumpTo(0);
                   },
@@ -834,7 +852,9 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                   onSelectAll: () {
                     final items = ref.read(availableVersesProvider).valueOrNull;
                     if (items != null && items.isNotEmpty) {
-                      ref.read(selectedVersesProvider.notifier).state = items.toSet();
+                      final allVersesSet = items.toSet();
+                      ref.read(selectedVersesProvider.notifier).state = allVersesSet;
+                      ref.read(secondarySelectedVersesProvider.notifier).state = Set<int>.from(allVersesSet);
                     }
                   },
                   onSelected: (val, isSelected, allItems) {
@@ -1154,24 +1174,25 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
 final selectedBook = ref.watch(selectedBookProvider);
 final selectedChapter = ref.watch(selectedChapterProvider);
 final selectedVerses = ref.watch(selectedVersesProvider);
-final secondaryVersion = _isDualVersionMode
-  ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
-  : null;
-final canShowSecondary = secondaryVersion != null &&
-  secondaryVersion.id != selectedVersion?.id &&
-  selectedBook != null &&
-  selectedChapter != null &&
-  selectedVerses.isNotEmpty;
-final secondaryPreviewAsync = canShowSecondary
-  ? ref.watch(
-      bibleVersesForSelectionProvider((
-        versionId: secondaryVersion.id,
-        book: selectedBook,
-        chapter: selectedChapter,
-        verses: selectedVerses,
-      )),
-    )
-  : const AsyncValue<List<BibleVerse>>.data([]);
+    final secondarySelectedVerses = ref.watch(secondarySelectedVersesProvider);
+    final secondaryVersion = _isDualVersionMode
+        ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
+        : null;
+    final canShowSecondary = secondaryVersion != null &&
+        secondaryVersion.id != selectedVersion?.id &&
+        selectedBook != null &&
+        selectedChapter != null &&
+        secondarySelectedVerses.isNotEmpty;
+    final secondaryPreviewAsync = canShowSecondary
+        ? ref.watch(
+            bibleVersesForSelectionProvider((
+              versionId: secondaryVersion.id,
+              book: selectedBook,
+              chapter: selectedChapter,
+              verses: secondarySelectedVerses,
+            )),
+          )
+        : const AsyncValue<List<BibleVerse>>.data([]);
 
     return Container(
       height: _isButtonViewMode ? null : 250,
@@ -1525,6 +1546,7 @@ final secondaryPreviewAsync = canShowSecondary
                     ref.read(selectedBookProvider.notifier).state = canonical;
                     ref.read(selectedChapterProvider.notifier).state = 1;
                     ref.read(selectedVersesProvider.notifier).state = {1};
+                    ref.read(secondarySelectedVersesProvider.notifier).state = {1};
                     setState(() {
                       _lastVerseToggled = 1;
                       _selectedButtonViewTab = 'Chapters';
@@ -1614,6 +1636,7 @@ final secondaryPreviewAsync = canShowSecondary
           onTap: (ch) {
             ref.read(selectedChapterProvider.notifier).state = ch;
             ref.read(selectedVersesProvider.notifier).state = {1};
+            ref.read(secondarySelectedVersesProvider.notifier).state = {1};
             setState(() {
               _lastVerseToggled = 1;
               _selectedButtonViewTab = 'Verses';
@@ -1647,11 +1670,10 @@ final secondaryPreviewAsync = canShowSecondary
           numbers: verses,
           isSelected: (vs) => selectedVerses.contains(vs),
           onTap: (vs) {
-            final current = Set<int>.from(ref.read(selectedVersesProvider));
-            current.clear();
-            current.add(vs);
+            final current = {vs};
             _lastVerseToggled = vs;
             ref.read(selectedVersesProvider.notifier).state = current;
+            ref.read(secondarySelectedVersesProvider.notifier).state = Set<int>.from(current);
             setState(() {
               _showVerseTextList = true;
             });
@@ -1667,16 +1689,55 @@ final secondaryPreviewAsync = canShowSecondary
   Widget _buildButtonVersesTextView(WidgetRef ref) {
     final allVersesAsync = ref.watch(chapterAllVersesProvider);
     final selectedVerses = ref.watch(selectedVersesProvider);
-    final isarVerses = allVersesAsync.valueOrNull ?? [];
+    final secondarySelectedVerses = ref.watch(secondarySelectedVersesProvider);
+    final primaryVerses = allVersesAsync.valueOrNull ?? [];
 
-    if (allVersesAsync.isLoading) {
+    final selectedVersion = ref.watch(selectedBibleVersionProvider);
+    final bibleVersions = ref.watch(bibleVersionsProvider).valueOrNull ?? [];
+    final selectedBook = ref.watch(selectedBookProvider);
+    final selectedChapter = ref.watch(selectedChapterProvider);
+
+    final secondaryVersion = _isDualVersionMode
+        ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
+        : null;
+
+    final canShowSecondary = _isDualVersionMode &&
+        secondaryVersion != null &&
+        secondaryVersion.id != selectedVersion?.id &&
+        selectedBook != null &&
+        selectedChapter != null;
+
+    final secondaryVersesAsync = canShowSecondary
+        ? ref.watch(
+            chapterAllVersesForVersionProvider((
+              versionId: secondaryVersion.id,
+              book: selectedBook,
+              chapter: selectedChapter,
+            )),
+          )
+        : const AsyncValue<List<BibleVerse>>.data([]);
+
+    if (allVersesAsync.isLoading || (canShowSecondary && secondaryVersesAsync.isLoading)) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (allVersesAsync.hasError || isarVerses.isEmpty) {
-      return const Center(
-        child: Text('No verses found', style: TextStyle(color: Colors.white54, fontSize: 12)),
-      );
+    final secondaryVerses = secondaryVersesAsync.valueOrNull ?? [];
+
+    final primaryMap = {for (final v in primaryVerses) v.verseNumber: v};
+    final secondaryMap = {for (final v in secondaryVerses) v.verseNumber: v};
+    final allVerseNumbers = {...primaryMap.keys, ...secondaryMap.keys}.toList()..sort();
+
+    final flatVerseItems = <({int verseNumber, BibleVerse verse, bool isSecondary})>[];
+
+    for (final vsNum in allVerseNumbers) {
+      final primaryVerse = primaryMap[vsNum];
+      if (primaryVerse != null) {
+        flatVerseItems.add((verseNumber: vsNum, verse: primaryVerse, isSecondary: false));
+      }
+      final secondaryVerse = secondaryMap[vsNum];
+      if (canShowSecondary && secondaryVerse != null) {
+        flatVerseItems.add((verseNumber: vsNum, verse: secondaryVerse, isSecondary: true));
+      }
     }
 
     return Focus(
@@ -1698,20 +1759,22 @@ final secondaryPreviewAsync = canShowSecondary
       child: ListView.separated(
         controller: _buttonVerseTextScrollController,
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-        itemCount: isarVerses.length,
+        itemCount: flatVerseItems.length,
         separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.white12),
         itemBuilder: (context, index) {
-          final verse = isarVerses[index];
-          final vsNum = verse.verseNumber;
-          final isSelected = selectedVerses.contains(vsNum);
+          final rowItem = flatVerseItems[index];
+          final vsNum = rowItem.verseNumber;
+          final isSelected = rowItem.isSecondary
+              ? secondarySelectedVerses.contains(vsNum)
+              : selectedVerses.contains(vsNum);
 
           _buttonVerseKeys.putIfAbsent(vsNum, () => GlobalKey());
+          final isFirstOfVerseNumber = !rowItem.isSecondary || primaryMap[vsNum] == null;
 
           return InkWell(
-            key: _buttonVerseKeys[vsNum],
+            key: isFirstOfVerseNumber ? _buttonVerseKeys[vsNum] : null,
             onTap: () {
-              final allNumbers = isarVerses.map((v) => v.verseNumber).toList();
-              _handleButtonVerseTextSelection(vsNum, allNumbers);
+              _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
             },
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
@@ -1726,20 +1789,24 @@ final secondaryPreviewAsync = canShowSecondary
                     ),
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
+                  style: const TextStyle(fontSize: 12, height: 1.4),
                   children: [
                     TextSpan(
-                      text: '${verse.verseNumber} ',
+                      text: '${rowItem.verse.verseNumber} ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: isSelected ? Colors.lightBlueAccent : Colors.blueAccent,
                       ),
                     ),
                     TextSpan(
-                      text: verse.text.trim(),
+                      text: rowItem.verse.text.trim(),
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.white70,
-                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                        color: rowItem.isSecondary
+                            ? const Color.fromARGB(255, 205, 181, 143)
+                            : (isSelected ? Colors.white : Colors.white70),
+                        fontWeight: rowItem.isSecondary
+                            ? FontWeight.bold
+                            : (isSelected ? FontWeight.w500 : FontWeight.normal),
                       ),
                     ),
                   ],
@@ -1752,8 +1819,9 @@ final secondaryPreviewAsync = canShowSecondary
     );
   }
 
-  void _handleButtonVerseTextSelection(int val, List<int> allItems) {
-    final current = Set<int>.from(ref.read(selectedVersesProvider));
+  void _handleButtonVerseTextSelection(int val, List<int> allItems, {bool isSecondary = false}) {
+    final primaryCurrent = Set<int>.from(ref.read(selectedVersesProvider));
+    final secondaryCurrent = Set<int>.from(ref.read(secondarySelectedVersesProvider));
     final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
     final isControlPressed = HardwareKeyboard.instance.isControlPressed;
 
@@ -1765,23 +1833,42 @@ final secondaryPreviewAsync = canShowSecondary
       final rangeEnd = start < end ? end : start;
 
       for (int i = rangeStart; i <= rangeEnd; i++) {
-        current.add(allItems[i]);
+        primaryCurrent.add(allItems[i]);
+        secondaryCurrent.add(allItems[i]);
       }
+      ref.read(selectedVersesProvider.notifier).state = primaryCurrent;
+      ref.read(secondarySelectedVersesProvider.notifier).state = secondaryCurrent;
     } else if (isControlPressed) {
-      // Ctrl+Click: Toggle selection
-      if (current.contains(val)) {
-        current.remove(val);
+      // Ctrl+Click: Independent toggle for specific version row
+      if (_isDualVersionMode && isSecondary) {
+        if (secondaryCurrent.contains(val)) {
+          secondaryCurrent.remove(val);
+        } else {
+          secondaryCurrent.add(val);
+        }
+        ref.read(secondarySelectedVersesProvider.notifier).state = secondaryCurrent;
       } else {
-        current.add(val);
+        if (primaryCurrent.contains(val)) {
+          primaryCurrent.remove(val);
+        } else {
+          primaryCurrent.add(val);
+        }
+        if (!_isDualVersionMode) {
+          ref.read(secondarySelectedVersesProvider.notifier).state = Set<int>.from(primaryCurrent);
+        }
+        ref.read(selectedVersesProvider.notifier).state = primaryCurrent;
       }
     } else {
-      // Normal Click: Select only this one
-      current.clear();
-      current.add(val);
+      // Normal Click: Reset and select val for both primary and secondary
+      primaryCurrent.clear();
+      primaryCurrent.add(val);
+      secondaryCurrent.clear();
+      secondaryCurrent.add(val);
+      ref.read(selectedVersesProvider.notifier).state = primaryCurrent;
+      ref.read(secondarySelectedVersesProvider.notifier).state = secondaryCurrent;
     }
 
     _lastVerseToggled = val;
-    ref.read(selectedVersesProvider.notifier).state = current;
   }
 
   Widget _buildPreviewVerses(
