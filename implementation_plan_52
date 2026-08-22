@@ -1,0 +1,110 @@
+# Implementation Plan - Button View Mode in Bible Search Tab (Preview Pane)
+
+This implementation plan outlines the changes required to add **Button View Mode** to the Preview Pane of the Bible Search tab (`lib/features/bible/presentation/widgets/bible_search_tab.dart`), strictly adhering to all user requirements and constraints.
+
+---
+
+## 1. Requirements Overview
+
+- **Button View Mode (`_isButtonViewMode == true`)**:
+  - Show a custom button view in the Preview Pane containing three side-by-side Button bars: `'Books'`, `'Chapters'`, `'Verses'` (default selection: `'Books'`).
+  - In **'Books'** mode, display the exact row-by-row layout specified below:
+    - **Old Testament** section header
+    - Row 1: `'Gen'`, `'Exo'`, `'Lev'`, `'Num'`, `'Deut'`
+    - Row 2: `'Josh'`, `'Judg'`, `'Ruth'`, `'1 Sam'`, `'2 Sam'`
+    - Row 3: `'1 Kin'`, `'2 Kin'`, `'1 Chr'`, `'2 Chr'`
+    - Row 4: `'Ezra'`, `'Neh'`, `'Esth'`
+    - Row 5: `'Job'`, `'Psa'`, `'Pro'`, `'Eccl'`, `'Songs'`
+    - Row 6: `'Isa'`, `'Jer'`, `'Lam'`, `'Eze'`, `'Dan'`
+    - Row 7: `'Hos'`, `'Joel'`, `'Amos'`, `'Obad'`
+    - Row 8: `'Jona'`, `'Mica'`, `'Nah'`, `'Hab'`
+    - Row 9: `'Zeph'`, `'Hag'`, `'Zech'`, `'Mal'`
+    - A line gap
+    - **New Testament** section header
+    - Row 1: `'Mat'`, `'Mark'`, `'Luke'`, `'John'`
+    - Row 2: `'Acts'`, `'Rom'`, `'1 Cor'`, `'2 Cor'`
+    - Row 3: `'Gal'`, `'Eph'`, `'Philp'`, `'Col'`
+    - Row 4: `'1 Thes'`, `'2 Thes'`, `'1 Tim'`, `'2 Tim'`
+    - Row 5: `'Titus'`, `'Philm'`, `'Heb'`, `'Jam'`
+    - Row 6: `'1 Pet'`, `'2 Pet'`, `'1 Jhn'`, `'2 Jhn'`, `'3 Jhn'`
+    - Row 7: `'Jude'`, `'Rev'`
+- **List View Mode (`_isButtonViewMode == false`)**:
+  - Unchanged UI and functionality in the Preview Pane (continues showing selected verse previews and existing controls).
+
+---
+
+## 2. Assumptions & Presumptions (For Approval)
+
+> [!IMPORTANT]
+> **No Hidden Assumptions Rule**: All assumptions are listed below for explicit approval prior to code implementation.
+
+1. **Button Bar Navigation Segment**:
+   - The three side-by-side button bars (`'Books'`, `'Chapters'`, `'Verses'`) serve as a mode switcher within the Button View Mode.
+   - Selecting `'Books'` shows the Book buttons grid.
+   - Selecting `'Chapters'` shows the available chapter buttons for the currently selected book.
+   - Selecting `'Verses'` shows the available verse buttons for the currently selected chapter.
+
+2. **Book Abbreviation Mapping**:
+   - Each abbreviated label on the book buttons corresponds directly to canonical `BibleConstants` book names:
+     - `'Gen'` -> `'Genesis'`, `'Exo'` -> `'Exodus'`, `'Lev'` -> `'Leviticus'`, `'Num'` -> `'Numbers'`, `'Deut'` -> `'Deuteronomy'`
+     - `'Josh'` -> `'Joshua'`, `'Judg'` -> `'Judges'`, `'Ruth'` -> `'Ruth'`, `'1 Sam'` -> `'1 Samuel'`, `'2 Sam'` -> `'2 Samuel'`
+     - `'1 Kin'` -> `'1 Kings'`, `'2 Kin'` -> `'2 Kings'`, `'1 Chr'` -> `'1 Chronicles'`, `'2 Chr'` -> `'2 Chronicles'`
+     - `'Ezra'` -> `'Ezra'`, `'Neh'` -> `'Nehemiah'`, `'Esth'` -> `'Esther'`
+     - `'Job'` -> `'Job'`, `'Psa'` -> `'Psalms'`, `'Pro'` -> `'Proverbs'`, `'Eccl'` -> `'Ecclesiastes'`, `'Songs'` -> `'Song of Solomon'`
+     - `'Isa'` -> `'Isaiah'`, `'Jer'` -> `'Jeremiah'`, `'Lam'` -> `'Lamentations'`, `'Eze'` -> `'Ezekiel'`, `'Dan'` -> `'Daniel'`
+     - `'Hos'` -> `'Hosea'`, `'Joel'` -> `'Joel'`, `'Amos'` -> `'Amos'`, `'Obad'` -> `'Obadiah'`
+     - `'Jona'` -> `'Jonah'`, `'Mica'` -> `'Micah'`, `'Nah'` -> `'Nahum'`, `'Hab'` -> `'Habakkuk'`
+     - `'Zeph'` -> `'Zephaniah'`, `'Hag'` -> `'Haggai'`, `'Zech'` -> `'Zechariah'`, `'Mal'` -> `'Malachi'`
+     - `'Mat'` -> `'Matthew'`, `'Mark'` -> `'Mark'`, `'Luke'` -> `'Luke'`, `'John'` -> `'John'`
+     - `'Acts'` -> `'Acts'`, `'Rom'` -> `'Romans'`, `'1 Cor'` -> `'1 Corinthians'`, `'2 Cor'` -> `'2 Corinthians'`
+     - `'Gal'` -> `'Galatians'`, `'Eph'` -> `'Ephesians'`, `'Philp'` -> `'Philippians'`, `'Col'` -> `'Colossians'`
+     - `'1 Thes'` -> `'1 Thessalonians'`, `'2 Thes'` -> `'2 Thessalonians'`, `'1 Tim'` -> `'1 Timothy'`, `'2 Tim'` -> `'2 Timothy'`
+     - `'Titus'` -> `'Titus'`, `'Philm'` -> `'Philemon'`, `'Heb'` -> `'Hebrews'`, `'Jam'` -> `'James'`
+     - `'1 Pet'` -> `'1 Peter'`, `'2 Pet'` -> `'2 Peter'`, `'1 Jhn'` -> `'1 John'`, `'2 Jhn'` -> `'2 John'`, `'3 Jhn'` -> `'3 John'`
+     - `'Jude'` -> `'Jude'`, `'Rev'` -> `'Revelation'`
+
+3. **Selection Interactions**:
+   - **Book selection**: Updates `selectedBookProvider`, sets default chapter to 1, sets default verse to 1, and automatically switches the active button view tab to `'Chapters'`.
+   - **Chapter selection**: Updates `selectedChapterProvider`, sets default verse to 1, and automatically switches the active button view tab to `'Verses'`.
+   - **Verse selection**: Updates `selectedVersesProvider` with the tapped verse.
+
+4. **Preview Pane Header Controls**:
+   - The top header row of the Preview Pane (mode toggle icon, `Add` button, `Show` button) will remain visible so that users can switch back to List View Mode or add/show verses.
+
+---
+
+## 3. Proposed Implementation Details
+
+### Target File
+- `lib/features/bible/presentation/widgets/bible_search_tab.dart`
+
+### State Changes
+- Add state variable `String _selectedButtonViewTab = 'Books';` in `_BibleSearchTabState`.
+
+### Component Changes
+1. **Button View Pane Builder (`_buildButtonViewPane`)**:
+   - Renders top side-by-side selection bar: `['Books', 'Chapters', 'Verses']`.
+   - Based on `_selectedButtonViewTab`:
+     - If `'Books'`: Renders the specified OT and NT book button rows inside a `SingleChildScrollView`.
+     - If `'Chapters'`: Renders grid/wrap of chapter buttons (1 to total chapters of selected book).
+     - If `'Verses'`: Renders grid/wrap of verse buttons (1 to total verses of selected chapter).
+
+2. **Integration in `_buildPreviewPane`**:
+   - If `_isButtonViewMode == true`: Render `_buildButtonViewPane()` inside the main content area of the Preview Pane instead of the verse text list.
+   - If `_isButtonViewMode == false`: Render the verse text list exactly as before.
+
+---
+
+## 4. Verification Plan
+
+### Automated / Static Analysis
+- Run `flutter analyze` to ensure no syntax or type errors are introduced.
+
+### Manual Testing
+1. Launch app on Windows (`flutter run -d windows`).
+2. Navigate to Bible Search tab.
+3. Toggle to **Button View Mode**.
+4. Confirm side-by-side `'Books'`, `'Chapters'`, `'Verses'` button bars appear with `'Books'` active by default.
+5. Verify the OT and NT book layout match all specified rows.
+6. Click a Book button -> verify chapter view opens -> click Chapter button -> verify verse view opens -> click Verse button -> verify selection is updated.
+7. Switch back to **List View Mode** -> verify exact original Preview Pane UI and verse text list are preserved.

@@ -1,0 +1,85 @@
+# Revised Implementation Plan - Bible Button View Mode Phase 52.2
+
+## User Objective & Context
+Refine the Button View Mode in the Bible Search tab's Preview Pane according to user feedback:
+1. Retain the **number-only grid buttons view** in the `'Verses'` tab when first navigating to a chapter.
+2. Upon **clicking a verse number button**, transition the `'Verses'` view to display **all verse texts** of the chapter with thin dim line separators, **highlighting** and **automatically scrolling** to the selected verse.
+3. Integrate search behavior: Pressing **Enter once** in the search box directly loads all verse texts, highlights the searched verse(s), and **scrolls** to it automatically.
+4. Support verse text selection (`Click`, `Shift + Click` for range, `Ctrl + Click` for toggle) and pressing **Enter** on selected verse text to add and project live.
+
+---
+
+## Detailed Specifications & UI Workflows
+
+### 1. Two-Stage View in 'Verses' Tab
+- **Stage 1 (Grid Mode - Default)**:
+  - When user selects a Book or Chapter, the `'Verses'` tab opens showing the **number-only grid buttons** (5 buttons per row).
+- **Stage 2 (Verse Text Mode)**:
+  - When user **clicks any verse number button**:
+    - The `'Verses'` view transitions to display **all verse texts** for the active book and chapter sequentially.
+    - Each verse row contains verse number + verse text, separated by a thin dim line (`Divider(height: 1, color: Colors.white12)`).
+    - The selected verse(s) are **highlighted** (e.g. `Colors.blueAccent.withOpacity(0.35)` background with a blue border).
+    - The list **automatically scrolls** to bring the selected verse into view immediately.
+
+### 2. Search Integration & Single Enter Shortcut
+- When typing a scripture reference in the search input (e.g. `John 3:16`):
+  - **Pressing Enter once**:
+    - Updates `selectedBook`, `selectedChapter`, `selectedVerses`.
+    - If Button View Mode is active, switches to the `'Verses'` tab in **Stage 2 (Verse Text Mode)**.
+    - Populates all chapter verses, **highlights** verse 16, and **automatically scrolls** to verse 16.
+  - **Double Enter**: Adds to setlist and displays live (unmodified).
+  - **Enter-Tab-Enter**: Adds to setlist without live display (unmodified).
+
+### 3. Selection & Key Actions in Verse Text Mode
+- **Click**: Selects single verse.
+- **`Shift + Click`**: Performs range selection from `_lastVerseToggled` to clicked verse.
+- **`Ctrl + Click`**: Toggles individual verse selection.
+- **`Enter` Key**: When verse(s) are selected in Verse Text Mode, pressing `Enter` calls `_addToSetlist(preview, version, ref, goLive: true)` to add and project live.
+
+---
+
+## Technical Approach & Architecture
+
+1. **State Variable**:
+   - Add `bool _showVerseTextList = false;` to `_BibleSearchTabState`.
+   - Set `_showVerseTextList = false` when selecting a new book or chapter.
+   - Set `_showVerseTextList = true` when tapping a verse number box or when performing a single-Enter search.
+
+2. **Auto-Scroll Mechanism**:
+   - Maintain a `ScrollController _verseTextScrollController = ScrollController();` or use `Scrollable.ensureVisible` / `GlobalKey` per verse item to scroll to the target verse index after frame rendering (`WidgetsBinding.instance.addPostFrameCallback`).
+
+3. **Provider Integration**:
+   - Add `chapterAllVersesProvider` in `bible_search_providers.dart`:
+     ```dart
+     final chapterAllVersesProvider = FutureProvider<List<BibleVerse>>((ref) async {
+       final version = ref.watch(selectedBibleVersionProvider);
+       final book = ref.watch(selectedBookProvider);
+       final chapter = ref.watch(selectedChapterProvider);
+       if (version == null || book == null || chapter == null) return [];
+       final isar = await ref.read(isarServiceProvider).db;
+       return isar.bibleVerses
+           .filter()
+           .bibleVersionIdEqualTo(version.id)
+           .bookNameEqualTo(book)
+           .chapterNumberEqualTo(chapter)
+           .sortByVerseNumber()
+           .findAll();
+     });
+     ```
+
+---
+
+## Presumptions & Assumptions (Explicit Transparency)
+
+1. **Presumption 1**: The `'Verses'` tab starts in Grid Mode (number-only buttons) when a chapter is picked, and transitions to Verse Text Mode (full chapter text list) upon clicking any verse button.
+2. **Presumption 2**: Clicking the `'Verses'` tab button header at the top will allow toggling back to the grid view if desired.
+3. **Presumption 3**: Single Enter in the search bar loads Verse Text Mode, highlights the searched verse, and scrolls to it automatically.
+4. **Presumption 4**: No extra UI controls or unrequested buttons will be added.
+
+---
+
+## Verification & Testing Plan
+- **Grid to Text Transition**: Confirm clicking a verse button in the grid switches to full verse text list with thin line dividers.
+- **Highlight & Auto-Scroll**: Verify the selected verse is highlighted and the view scrolls to bring it into view automatically.
+- **Search Single-Enter**: Search for a verse (e.g. `Gen 1:5`), press Enter once, and verify it transitions to verse text mode, highlights verse 5, and scrolls to verse 5.
+- **Multi-select & Enter**: Test `Shift+Click` range selection and pressing `Enter` to add & display.

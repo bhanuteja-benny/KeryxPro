@@ -1,0 +1,39 @@
+Context:
+- Implementing Button View Mode in Bible Search Tab - Preview Pane
+
+UI Requirement:
+- When Button View Mode is true need to show below UI in Preview Pane
+- - three side by side Button bars required 'Books', 'Chapters', 'Verses' (by default Books is selected)
+- - - In 'Books' show below buttons (take each line as each row)
+- - - - Old Testament
+- - - - 'Gen', 'Exo', 'Lev', 'Num', 'Deut'
+- - - - 'Josh', 'Judg', 'Ruth', '1 Sam', '2 Sam'
+- - - - '1 Kin', '2 Kin', '1 Chr', '2 Chr'
+- - - - 'Ezra', 'Neh', 'Esth'
+- - - - 'Job', 'Psa', 'Pro', 'Eccl', 'Songs'
+- - - - 'Isa', 'Jer', 'Lam', 'Eze', 'Dan'
+- - - - 'Hos', 'Joel', 'Amos', 'Obad'
+- - - - 'Jona', 'Mica', 'Nah', 'Hab'
+- - - - 'Zeph', 'Hag', 'Zech', 'Mal'
+- - - - a line gap
+- - - - New Testament
+- - - - 'Mat', 'Mark', 'Luke', 'John'
+- - - - 'Acts', 'Rom', '1 Cor', '2 Cor'
+- - - - 'Gal', 'Eph', 'Philp', 'Col'
+- - - - '1 Thes', '2 Thes', '1 Tim', '2 Tim'
+- - - - 'Titus', 'Philm', 'Heb', 'Jam'
+- - - - '1 Pet', '2 Pet', '1 Jhn', '2 Jhn', '3 Jhn'
+- - - - 'Jude', 'Rev'
+- When Button View Mode is false (i.e., when it is in List View Mode), there are no change in UI or funtionality in Preview Pane (it is same as previous, showing the selected verses)
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+Deliverables:
+- Implementation Plan

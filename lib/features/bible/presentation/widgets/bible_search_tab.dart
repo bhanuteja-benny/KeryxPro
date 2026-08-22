@@ -42,12 +42,46 @@ class _BibleSearchTabState extends ConsumerState<BibleSearchTab> {
   int? _lastVerseToggled;
   bool _isDualVersionMode = false;
   bool _isButtonViewMode = false;
+  String _selectedButtonViewTab = 'Books';
   BibleVersion? _secondaryBibleVersion;
 
   final FocusNode _otFocusNode = FocusNode();
   final FocusNode _ntFocusNode = FocusNode();
   final FocusNode _chFocusNode = FocusNode();
   final FocusNode _addButtonFocusNode = FocusNode(debugLabel: 'BibleAddButton');
+
+  bool _showVerseTextList = false;
+  final ScrollController _buttonVerseTextScrollController = ScrollController();
+  final Map<int, GlobalKey> _buttonVerseKeys = {};
+
+  void _scrollToSelectedVerse(int verseNumber, [List<int>? totalVerses]) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (!mounted) return;
+
+        if (totalVerses != null && totalVerses.isNotEmpty && _buttonVerseTextScrollController.hasClients) {
+          final index = totalVerses.indexOf(verseNumber);
+          if (index != -1) {
+            final maxExtent = _buttonVerseTextScrollController.position.maxScrollExtent;
+            final targetOffset = (index / totalVerses.length) * maxExtent;
+            _buttonVerseTextScrollController.jumpTo(targetOffset);
+          }
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final key = _buttonVerseKeys[verseNumber];
+          if (key?.currentContext != null) {
+            Scrollable.ensureVisible(
+              key!.currentContext!,
+              alignment: 0.1,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
+      });
+    });
+  }
 
   final ScrollController _otScrollController = ScrollController();
   final ScrollController _ntScrollController = ScrollController();
@@ -283,7 +317,15 @@ Future<void> _handleSearch(String query, WidgetRef ref) async {
       if (mounted) {
         setState(() {
           _lastVerseToggled = q.endVerse;
+          if (_isButtonViewMode) {
+            _selectedButtonViewTab = 'Verses';
+            _showVerseTextList = true;
+          }
         });
+        if (_isButtonViewMode) {
+          final verses = ref.read(availableVersesProvider).valueOrNull ?? [];
+          _scrollToSelectedVerse(q.startVerse, verses);
+        }
       }
 
       ref.read(bibleVerseListFocusNodeProvider).requestFocus();
@@ -590,7 +632,11 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       }
                     });
 
-                    final selectedVersion = ref.watch(selectedBibleVersionProvider) ?? versions.first;
+                    final currentSelected = ref.watch(selectedBibleVersionProvider);
+                    final selectedVersion = versions.firstWhere(
+                      (v) => currentSelected != null && (v.id == currentSelected.id || (v.abbreviation.isNotEmpty && v.abbreviation == currentSelected.abbreviation)),
+                      orElse: () => versions.first,
+                    );
 
                     return Container(
                       height: 28,
@@ -632,10 +678,17 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
           return const Center(child: Text('No Bibles', style: TextStyle(fontSize: 10, color: Colors.grey)));
         }
 
-        final selectedVersion = ref.watch(selectedBibleVersionProvider) ?? versions.first;
-        final secondaryVersion = _secondaryBibleVersion ?? versions.firstWhere(
-          (version) => version != selectedVersion,
-          orElse: () => selectedVersion,
+        final currentSelected = ref.watch(selectedBibleVersionProvider);
+        final selectedVersion = versions.firstWhere(
+          (v) => currentSelected != null && (v.id == currentSelected.id || (v.abbreviation.isNotEmpty && v.abbreviation == currentSelected.abbreviation)),
+          orElse: () => versions.first,
+        );
+        final secondaryVersion = versions.firstWhere(
+          (v) => _secondaryBibleVersion != null && (v.id == _secondaryBibleVersion!.id || (v.abbreviation.isNotEmpty && v.abbreviation == _secondaryBibleVersion!.abbreviation)),
+          orElse: () => versions.firstWhere(
+            (version) => version != selectedVersion,
+            orElse: () => selectedVersion,
+          ),
         );
         
         return Container(
@@ -1159,7 +1212,7 @@ final secondaryPreviewAsync = canShowSecondary
     IconButton(
   padding: EdgeInsets.zero,
   constraints: const BoxConstraints.tightFor(width: 28, height: 20),
-  icon: Icon(_isButtonViewMode ? Icons.view_week_sharp : Icons.view_compact_sharp, size: 18),
+  icon: Icon(_isButtonViewMode ? Icons.view_week_sharp : Icons.apps, size: 18),
   color: Colors.blueAccent,
   tooltip: _isButtonViewMode ? 'List View Mode' : 'Button View Mode',
   onPressed: () {
@@ -1222,37 +1275,513 @@ final secondaryPreviewAsync = canShowSecondary
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: SizedBox(
-                width: double.infinity,
-                child: previewAsync.when(
-                  data: (verses) {
-                    if (verses.isEmpty) return const Text('Select a verse to preview', style: TextStyle(color: Colors.white54, fontSize: 12));
-                    
-                    return secondaryPreviewAsync.when(
-  data: (secondaryVerses) => _buildPreviewVerses(
-    verses,
-    canShowSecondary ? selectedVersion : null,
-    secondaryVerses,
-    canShowSecondary ? secondaryVersion : null,
-  ),
-  loading: () => const Center(child: CircularProgressIndicator()),
-  error: (e, __) => Text(
-    'Error loading secondary verses: $e',
-    style: const TextStyle(color: Colors.redAccent),
-  ),
-);
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, __) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
-                ),
-              ),
-            ),
+            child: _isButtonViewMode
+                ? _buildButtonViewPane(ref)
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: previewAsync.when(
+                        data: (verses) {
+                          if (verses.isEmpty) return const Text('Select a verse to preview', style: TextStyle(color: Colors.white54, fontSize: 12));
+                          
+                          return secondaryPreviewAsync.when(
+                            data: (secondaryVerses) => _buildPreviewVerses(
+                              verses,
+                              canShowSecondary ? selectedVersion : null,
+                              secondaryVerses,
+                              canShowSecondary ? secondaryVersion : null,
+                            ),
+                            loading: () => const Center(child: CircularProgressIndicator()),
+                            error: (e, __) => Text(
+                              'Error loading secondary verses: $e',
+                              style: const TextStyle(color: Colors.redAccent),
+                            ),
+                          );
+                        },
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (e, __) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
     );
+  }
+
+  static const Map<String, String> _buttonBookToCanonical = {
+    'Gen': 'Genesis',
+    'Exo': 'Exodus',
+    'Lev': 'Leviticus',
+    'Num': 'Numbers',
+    'Deut': 'Deuteronomy',
+    'Josh': 'Joshua',
+    'Judg': 'Judges',
+    'Ruth': 'Ruth',
+    '1 Sam': '1 Samuel',
+    '2 Sam': '2 Samuel',
+    '1 Kin': '1 Kings',
+    '2 Kin': '2 Kings',
+    '1 Chr': '1 Chronicles',
+    '2 Chr': '2 Chronicles',
+    'Ezra': 'Ezra',
+    'Neh': 'Nehemiah',
+    'Esth': 'Esther',
+    'Job': 'Job',
+    'Psa': 'Psalms',
+    'Pro': 'Proverbs',
+    'Eccl': 'Ecclesiastes',
+    'Songs': 'Song of Solomon',
+    'Isa': 'Isaiah',
+    'Jer': 'Jeremiah',
+    'Lam': 'Lamentations',
+    'Eze': 'Ezekiel',
+    'Dan': 'Daniel',
+    'Hos': 'Hosea',
+    'Joel': 'Joel',
+    'Amos': 'Amos',
+    'Obad': 'Obadiah',
+    'Jona': 'Jonah',
+    'Mica': 'Micah',
+    'Nah': 'Nahum',
+    'Hab': 'Habakkuk',
+    'Zeph': 'Zephaniah',
+    'Hag': 'Haggai',
+    'Zech': 'Zechariah',
+    'Mal': 'Malachi',
+    'Mat': 'Matthew',
+    'Mark': 'Mark',
+    'Luke': 'Luke',
+    'John': 'John',
+    'Acts': 'Acts',
+    'Rom': 'Romans',
+    '1 Cor': '1 Corinthians',
+    '2 Cor': '2 Corinthians',
+    'Gal': 'Galatians',
+    'Eph': 'Ephesians',
+    'Philp': 'Philippians',
+    'Col': 'Colossians',
+    '1 Thes': '1 Thessalonians',
+    '2 Thes': '2 Thessalonians',
+    '1 Tim': '1 Timothy',
+    '2 Tim': '2 Timothy',
+    'Titus': 'Titus',
+    'Philm': 'Philemon',
+    'Heb': 'Hebrews',
+    'Jam': 'James',
+    '1 Pet': '1 Peter',
+    '2 Pet': '2 Peter',
+    '1 Jhn': '1 John',
+    '2 Jhn': '2 John',
+    '3 Jhn': '3 John',
+    'Jude': 'Jude',
+    'Rev': 'Revelation',
+  };
+
+  Widget _buildButtonViewPane(WidgetRef ref) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          color: Colors.black26,
+          child: Row(
+            children: [
+              _buildTabSegmentButton('Books'),
+              const SizedBox(width: 4),
+              _buildTabSegmentButton('Chapters'),
+              const SizedBox(width: 4),
+              _buildTabSegmentButton('Verses'),
+            ],
+          ),
+        ),
+        Expanded(
+          child: (_selectedButtonViewTab == 'Verses' && _showVerseTextList)
+              ? Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: _buildButtonVersesView(ref),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: _selectedButtonViewTab == 'Books'
+                        ? _buildButtonBooksView(ref)
+                        : _selectedButtonViewTab == 'Chapters'
+                            ? _buildButtonChaptersView(ref)
+                            : _buildButtonVersesView(ref),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabSegmentButton(String title) {
+    final isSelected = _selectedButtonViewTab == title;
+    return Expanded(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected ? Colors.blueAccent : Colors.black45,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          minimumSize: const Size(0, 24),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        onPressed: () {
+          setState(() {
+            _selectedButtonViewTab = title;
+            if (title == 'Verses') {
+              _showVerseTextList = false;
+            }
+          });
+        },
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonBooksView(WidgetRef ref) {
+    final selectedBook = ref.watch(selectedBookProvider);
+    const otRows = [
+      ['Gen', 'Exo', 'Lev', 'Num', 'Deut'],
+      ['Josh', 'Judg', 'Ruth', '1 Sam', '2 Sam'],
+      ['1 Kin', '2 Kin', '1 Chr', '2 Chr'],
+      ['Ezra', 'Neh', 'Esth'],
+      ['Job', 'Psa', 'Pro', 'Eccl', 'Songs'],
+      ['Isa', 'Jer', 'Lam', 'Eze', 'Dan'],
+      ['Hos', 'Joel', 'Amos', 'Obad'],
+      ['Jona', 'Mica', 'Nah', 'Hab'],
+      ['Zeph', 'Hag', 'Zech', 'Mal'],
+    ];
+
+    const ntRows = [
+      ['Mat', 'Mark', 'Luke', 'John'],
+      ['Acts', 'Rom', '1 Cor', '2 Cor'],
+      ['Gal', 'Eph', 'Philp', 'Col'],
+      ['1 Thes', '2 Thes', '1 Tim', '2 Tim'],
+      ['Titus', 'Philm', 'Heb', 'Jam'],
+      ['1 Pet', '2 Pet', '1 Jhn', '2 Jhn', '3 Jhn'],
+      ['Jude', 'Rev'],
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(bottom: 4.0, left: 2.0),
+          child: Text(
+            'Old Testament',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white70),
+          ),
+        ),
+        ...otRows.map((row) => _buildBookButtonRow(row, selectedBook, ref)),
+        const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 4.0, left: 2.0),
+          child: Text(
+            'New Testament',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white70),
+          ),
+        ),
+        ...ntRows.map((row) => _buildBookButtonRow(row, selectedBook, ref)),
+      ],
+    );
+  }
+
+  Widget _buildBookButtonRow(List<String> books, String? selectedBook, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: books.map((abbrev) {
+          final canonical = _buttonBookToCanonical[abbrev];
+          final isSelected = canonical != null && canonical == selectedBook;
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSelected ? Colors.blueAccent : Colors.black38,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+                  minimumSize: const Size(0, 34),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    side: isSelected ? const BorderSide(color: Colors.blue, width: 1) : BorderSide.none,
+                  ),
+                ),
+                onPressed: () {
+                  if (canonical != null) {
+                    ref.read(selectedBookProvider.notifier).state = canonical;
+                    ref.read(selectedChapterProvider.notifier).state = 1;
+                    ref.read(selectedVersesProvider.notifier).state = {1};
+                    setState(() {
+                      _lastVerseToggled = 1;
+                      _selectedButtonViewTab = 'Chapters';
+                      _showVerseTextList = false;
+                    });
+                  }
+                },
+                child: Text(
+                  abbrev,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildNumberGridRows({
+    required List<int> numbers,
+    required bool Function(int) isSelected,
+    required void Function(int) onTap,
+  }) {
+    const int itemsPerRow = 5;
+    final rows = <List<int>>[];
+    for (int i = 0; i < numbers.length; i += itemsPerRow) {
+      rows.add(numbers.sublist(i, (i + itemsPerRow > numbers.length) ? numbers.length : i + itemsPerRow));
+    }
+
+    return Column(
+      children: rows.map((rowItems) {
+        final children = <Widget>[];
+        for (final n in rowItems) {
+          final sel = isSelected(n);
+          children.add(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: sel ? Colors.blueAccent : Colors.black38,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    minimumSize: const Size(0, 34),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      side: sel ? const BorderSide(color: Colors.blue, width: 1) : BorderSide.none,
+                    ),
+                  ),
+                  onPressed: () => onTap(n),
+                  child: Text('$n', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                ),
+              ),
+            ),
+          );
+        }
+        while (children.length < itemsPerRow) {
+          children.add(const Expanded(child: SizedBox()));
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4.0),
+          child: Row(children: children),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildButtonChaptersView(WidgetRef ref) {
+    final selectedBook = ref.watch(selectedBookProvider);
+    if (selectedBook == null) {
+      return const Center(
+        child: Text('Select a book first', style: TextStyle(color: Colors.white54, fontSize: 12)),
+      );
+    }
+    final chaptersAsync = ref.watch(availableChaptersProvider);
+    return chaptersAsync.when(
+      data: (chapters) {
+        final selectedChapter = ref.watch(selectedChapterProvider);
+        return _buildNumberGridRows(
+          numbers: chapters,
+          isSelected: (ch) => ch == selectedChapter,
+          onTap: (ch) {
+            ref.read(selectedChapterProvider.notifier).state = ch;
+            ref.read(selectedVersesProvider.notifier).state = {1};
+            setState(() {
+              _lastVerseToggled = 1;
+              _selectedButtonViewTab = 'Verses';
+              _showVerseTextList = false;
+            });
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Text('Error loading chapters: $e', style: const TextStyle(color: Colors.redAccent)),
+    );
+  }
+
+  Widget _buildButtonVersesView(WidgetRef ref) {
+    final selectedChapter = ref.watch(selectedChapterProvider);
+    if (selectedChapter == null) {
+      return const Center(
+        child: Text('Select a chapter first', style: TextStyle(color: Colors.white54, fontSize: 12)),
+      );
+    }
+
+    if (_showVerseTextList) {
+      return _buildButtonVersesTextView(ref);
+    }
+
+    final versesAsync = ref.watch(availableVersesProvider);
+    return versesAsync.when(
+      data: (verses) {
+        final selectedVerses = ref.watch(selectedVersesProvider);
+        return _buildNumberGridRows(
+          numbers: verses,
+          isSelected: (vs) => selectedVerses.contains(vs),
+          onTap: (vs) {
+            final current = Set<int>.from(ref.read(selectedVersesProvider));
+            current.clear();
+            current.add(vs);
+            _lastVerseToggled = vs;
+            ref.read(selectedVersesProvider.notifier).state = current;
+            setState(() {
+              _showVerseTextList = true;
+            });
+            _scrollToSelectedVerse(vs, verses);
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
+    );
+  }
+
+  Widget _buildButtonVersesTextView(WidgetRef ref) {
+    final allVersesAsync = ref.watch(chapterAllVersesProvider);
+    final selectedVerses = ref.watch(selectedVersesProvider);
+    final isarVerses = allVersesAsync.valueOrNull ?? [];
+
+    if (allVersesAsync.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (allVersesAsync.hasError || isarVerses.isEmpty) {
+      return const Center(
+        child: Text('No verses found', style: TextStyle(color: Colors.white54, fontSize: 12)),
+      );
+    }
+
+    return Focus(
+      focusNode: ref.read(bibleVerseListFocusNodeProvider),
+      autofocus: true,
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+        if (event.logicalKey == LogicalKeyboardKey.enter) {
+          final preview = ref.read(biblePreviewVersesProvider).valueOrNull;
+          final version = ref.read(selectedBibleVersionProvider);
+          if (preview != null && preview.isNotEmpty && version != null) {
+            _addToSetlist(preview, version, ref, goLive: true);
+          }
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: ListView.separated(
+        controller: _buttonVerseTextScrollController,
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        itemCount: isarVerses.length,
+        separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.white12),
+        itemBuilder: (context, index) {
+          final verse = isarVerses[index];
+          final vsNum = verse.verseNumber;
+          final isSelected = selectedVerses.contains(vsNum);
+
+          _buttonVerseKeys.putIfAbsent(vsNum, () => GlobalKey());
+
+          return InkWell(
+            key: _buttonVerseKeys[vsNum],
+            onTap: () {
+              final allNumbers = isarVerses.map((v) => v.verseNumber).toList();
+              _handleButtonVerseTextSelection(vsNum, allNumbers);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+              decoration: isSelected
+                  ? BoxDecoration(
+                      color: Colors.blueAccent.withValues(alpha: 0.35),
+                      border: Border.all(color: Colors.blueAccent, width: 1),
+                      borderRadius: BorderRadius.circular(4),
+                    )
+                  : const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
+                  children: [
+                    TextSpan(
+                      text: '${verse.verseNumber} ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.lightBlueAccent : Colors.blueAccent,
+                      ),
+                    ),
+                    TextSpan(
+                      text: verse.text.trim(),
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.white70,
+                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _handleButtonVerseTextSelection(int val, List<int> allItems) {
+    final current = Set<int>.from(ref.read(selectedVersesProvider));
+    final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+    final isControlPressed = HardwareKeyboard.instance.isControlPressed;
+
+    if (isShiftPressed && _lastVerseToggled != null && allItems.contains(_lastVerseToggled)) {
+      // Shift+Click: Range selection
+      final start = allItems.indexOf(_lastVerseToggled!);
+      final end = allItems.indexOf(val);
+      final rangeStart = start < end ? start : end;
+      final rangeEnd = start < end ? end : start;
+
+      for (int i = rangeStart; i <= rangeEnd; i++) {
+        current.add(allItems[i]);
+      }
+    } else if (isControlPressed) {
+      // Ctrl+Click: Toggle selection
+      if (current.contains(val)) {
+        current.remove(val);
+      } else {
+        current.add(val);
+      }
+    } else {
+      // Normal Click: Select only this one
+      current.clear();
+      current.add(val);
+    }
+
+    _lastVerseToggled = val;
+    ref.read(selectedVersesProvider.notifier).state = current;
   }
 
   Widget _buildPreviewVerses(

@@ -493,9 +493,22 @@ if (contentOnlyIt != args->end()) {
   int adjustedW = rect.right - rect.left;
   int adjustedH = rect.bottom - rect.top;
 
-  exStyle |= WS_EX_LAYERED;
-  SetWindowLong(mainHwnd, GWL_EXSTYLE, exStyle);
-  SetLayeredWindowAttributes(mainHwnd, RGB(1, 0, 1), 0, LWA_COLORKEY);
+  auto getBool = [&](const std::string& key, bool def) -> bool {
+    auto it = args->find(flutter::EncodableValue(key));
+    if (it != args->end())
+      if (auto* b = std::get_if<bool>(&it->second)) return *b;
+    return def;
+  };
+
+  bool transparent = getBool("transparent", false);
+  if (transparent) {
+    exStyle |= WS_EX_LAYERED;
+    SetWindowLong(mainHwnd, GWL_EXSTYLE, exStyle);
+    SetLayeredWindowAttributes(mainHwnd, RGB(1, 0, 1), 0, LWA_COLORKEY);
+  } else {
+    exStyle &= ~WS_EX_LAYERED;
+    SetWindowLong(mainHwnd, GWL_EXSTYLE, exStyle);
+  }
 
   HWND insertAfter = (monitorIndex == 2) ? HWND_NOTOPMOST : HWND_TOPMOST;
   SetWindowPos(

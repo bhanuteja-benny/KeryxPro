@@ -182,6 +182,13 @@ Future<void> _applyCurrentWindowSizeIfNeeded({
 
   final size = _getTargetWindowSize();
   if (size == null) return;
+
+  final bool isBlank = _activeSlideText == "";
+  final bool isWindowSlide = _activeSlideText?.startsWith('WINDOW:') ?? false;
+  final isTransparent = isBlank
+      ? _settings.isBlankTransparent
+      : (isWindowSlide ? _settings.isWindowTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent));
+
   for (var i = 0; i < attempts; i++) {
     try {
       const channel = MethodChannel('keryx/window');
@@ -189,6 +196,7 @@ Future<void> _applyCurrentWindowSizeIfNeeded({
         'w': size.width,
         'h': size.height,
         'monitorIndex': 2,
+        'transparent': isTransparent,
       });
       return;
     } catch (_) {

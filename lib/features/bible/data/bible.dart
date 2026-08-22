@@ -16,6 +16,16 @@ class BibleVersion {
   
   late String name;         // e.g., "King James Version"
   late String language;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BibleVersion &&
+          runtimeType == other.runtimeType &&
+          (id == other.id || (abbreviation.isNotEmpty && abbreviation == other.abbreviation));
+
+  @override
+  int get hashCode => id.hashCode ^ abbreviation.hashCode;
 }
 
 @collection

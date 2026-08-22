@@ -86,3 +86,22 @@ final bibleVersesForSelectionProvider = FutureProvider.family<
       .sortByVerseNumber()
       .findAll();
 });
+
+/// Fetches all verses of the currently selected chapter, book, and version sorted by verseNumber.
+final chapterAllVersesProvider = FutureProvider<List<BibleVerse>>((ref) async {
+  final version = ref.watch(selectedBibleVersionProvider);
+  final book = ref.watch(selectedBookProvider);
+  final chapter = ref.watch(selectedChapterProvider);
+  
+  if (version == null || book == null || chapter == null) return [];
+
+  final isar = await ref.read(isarServiceProvider).db;
+  
+  return isar.bibleVerses
+      .filter()
+      .bibleVersionIdEqualTo(version.id)
+      .bookNameEqualTo(book)
+      .chapterNumberEqualTo(chapter)
+      .sortByVerseNumber()
+      .findAll();
+});

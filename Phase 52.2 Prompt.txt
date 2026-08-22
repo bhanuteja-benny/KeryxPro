@@ -1,0 +1,22 @@
+Phase 52.2
+
+Context:
+- more UI enhancements in button view mode
+
+UI Requirements:
+- when user clicks on verse number (box)
+- - then all the verses (verse text) in the selected chapter and book should be displayed one after the other (a thin dim line separation is required). and the selected verse should be highlighted.
+- - user should be able to select required verse by clicking
+- - to select multiple verses, user should use shift + click 
+- - this selection logic is similar to verse number listbox but here we are displaying directly the verse text instead of only numbers.
+- - when user clicks enter on the selected verse, then it should be added and displayed.
+- the search functionality should work as it is in the button mode as well as in the list mode. (like double enter will add and display, enter tab enter will just add etc)
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
