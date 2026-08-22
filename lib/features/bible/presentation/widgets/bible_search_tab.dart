@@ -1505,7 +1505,7 @@ final selectedVerses = ref.watch(selectedVersesProvider);
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white70),
           ),
         ),
-        ...otRows.map((row) => _buildBookButtonRow(row, selectedBook, ref)),
+        ...otRows.map((row) => _buildBookButtonRow(row, selectedBook, ref, isOT: true)),
         const SizedBox(height: 12),
         const Padding(
           padding: EdgeInsets.only(bottom: 4.0, left: 2.0),
@@ -1514,34 +1514,102 @@ final selectedVerses = ref.watch(selectedVersesProvider);
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white70),
           ),
         ),
-        ...ntRows.map((row) => _buildBookButtonRow(row, selectedBook, ref)),
+        ...ntRows.map((row) => _buildBookButtonRow(row, selectedBook, ref, isOT: false)),
       ],
     );
   }
 
-  Widget _buildBookButtonRow(List<String> books, String? selectedBook, WidgetRef ref) {
+  Widget _buildTactilePillButton({
+    required String text,
+    required bool isSelected,
+    required VoidCallback onTap,
+    Color? selectedColor,
+    double height = 24,
+    double fontSize = 10.5,
+  }) {
+    final isGreen = selectedColor == const Color(0xFF88C025) || selectedColor == const Color(0xFF8DB82E);
+
+    final List<Color> gradientColors;
+    final Color textColor;
+
+    if (isSelected) {
+      if (isGreen) {
+        gradientColors = const [Color(0xFF9EC433), Color(0xFF6F981C)];
+        textColor = const Color(0xFF1E2B00);
+      } else {
+        gradientColors = const [Color(0xFF4FB5D7), Color(0xFF3690B2)];
+        textColor = const Color(0xFF0F2B3B);
+      }
+    } else {
+      gradientColors = const [Color(0xFFACAFB5), Color(0xFF878A90)];
+      textColor = const Color(0xFF1E2023);
+    }
+
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.45),
+            offset: const Offset(0, 2),
+            blurRadius: 2,
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.4),
+            offset: const Offset(0, 1),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(6),
+          onTap: onTap,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookButtonRow(List<String> books, String? selectedBook, WidgetRef ref, {required bool isOT}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
         children: books.map((abbrev) {
           final canonical = _buttonBookToCanonical[abbrev];
           final isSelected = canonical != null && canonical == selectedBook;
+          final selectedColor = isOT ? const Color(0xFF88C025) : const Color(0xFF4FB5D7);
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.blueAccent : Colors.black38,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-                  minimumSize: const Size(0, 34),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    side: isSelected ? const BorderSide(color: Colors.blue, width: 1) : BorderSide.none,
-                  ),
-                ),
-                onPressed: () {
+              child: _buildTactilePillButton(
+                text: abbrev,
+                isSelected: isSelected,
+                selectedColor: selectedColor,
+                onTap: () {
                   if (canonical != null) {
                     ref.read(selectedBookProvider.notifier).state = canonical;
                     ref.read(selectedChapterProvider.notifier).state = 1;
@@ -1554,12 +1622,6 @@ final selectedVerses = ref.watch(selectedVersesProvider);
                     });
                   }
                 },
-                child: Text(
-                  abbrev,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-                  overflow: TextOverflow.ellipsis,
-                ),
               ),
             ),
           );
@@ -1588,20 +1650,11 @@ final selectedVerses = ref.watch(selectedVersesProvider);
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: sel ? Colors.blueAccent : Colors.black38,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    minimumSize: const Size(0, 34),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      side: sel ? const BorderSide(color: Colors.blue, width: 1) : BorderSide.none,
-                    ),
-                  ),
-                  onPressed: () => onTap(n),
-                  child: Text('$n', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                child: _buildTactilePillButton(
+                  text: '$n',
+                  isSelected: sel,
+                  selectedColor: const Color(0xFF4FB5D7),
+                  onTap: () => onTap(n),
                 ),
               ),
             ),
@@ -1804,9 +1857,7 @@ final selectedVerses = ref.watch(selectedVersesProvider);
                         color: rowItem.isSecondary
                             ? const Color.fromARGB(255, 205, 181, 143)
                             : (isSelected ? Colors.white : Colors.white70),
-                        fontWeight: rowItem.isSecondary
-                            ? FontWeight.bold
-                            : (isSelected ? FontWeight.w500 : FontWeight.normal),
+                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                       ),
                     ),
                   ],
