@@ -3,6 +3,7 @@ import 'package:xml/xml.dart';
 import 'package:path/path.dart' as p;
 import 'dart:convert';
 import 'bible.dart';
+import '../domain/bible_constants.dart';
 
 class BibleImportResult {
   final BibleVersion version;
@@ -63,7 +64,8 @@ try {
     if (bibleElement != null) {
       final books = bibleElement.findElements('b');
       for (final book in books) {
-        final bookName = book.getAttribute('n') ?? 'Unknown Book';
+        final rawBookName = book.getAttribute('n') ?? 'Unknown Book';
+        final bookName = BibleConstants.normalizeBookName(rawBookName) ?? rawBookName;
         
         final chapters = book.findElements('c');
         for (final chapter in chapters) {
@@ -119,7 +121,8 @@ try {
     if (bibleElement != null) {
       final books = bibleElement.findElements('BIBLEBOOK');
       for (final book in books) {
-        final bookName = book.getAttribute('bname') ?? 'Unknown Book';
+        final rawBookName = book.getAttribute('bname') ?? 'Unknown Book';
+        final bookName = BibleConstants.normalizeBookName(rawBookName) ?? rawBookName;
         
         final chapters = book.findElements('CHAPTER');
         for (final chapter in chapters) {

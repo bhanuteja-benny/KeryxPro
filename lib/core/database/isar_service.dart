@@ -22,6 +22,15 @@ class IsarService {
 
   void _warmUp(Isar isar) async {
     try {
+      final legacyPsalms = await isar.bibleVerses.filter().bookNameEqualTo('Psalm').findAll();
+      if (legacyPsalms.isNotEmpty) {
+        await isar.writeTxn(() async {
+          for (var v in legacyPsalms) {
+            v.bookName = 'Psalms';
+          }
+          await isar.bibleVerses.putAll(legacyPsalms);
+        });
+      }
       await isar.bibleVerses.where().findFirst();
       await isar.bibleVersions.where().findFirst();
     } catch (_) {}

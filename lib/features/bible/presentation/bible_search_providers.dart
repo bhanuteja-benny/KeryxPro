@@ -19,7 +19,8 @@ final availableChaptersProvider = FutureProvider<List<int>>((ref) async {
   
   if (version == null || book == null) return [];
 
-  final chapterCount = BibleConstants.getChapterCount(book);
+  final normBook = BibleConstants.normalizeBookName(book) ?? book;
+  final chapterCount = BibleConstants.getChapterCount(normBook);
   if (chapterCount > 0) {
     return List.generate(chapterCount, (i) => i + 1);
   }
@@ -37,12 +38,13 @@ final availableVersesProvider = FutureProvider<List<int>>((ref) async {
   
   if (version == null || book == null || chapter == null) return [];
 
+  final normBook = BibleConstants.normalizeBookName(book) ?? book;
   final isar = await ref.read(isarServiceProvider).db;
   
   final verses = await isar.bibleVerses
       .filter()
       .bibleVersionIdEqualTo(version.id)
-      .bookNameEqualTo(book)
+      .bookNameEqualTo(normBook)
       .chapterNumberEqualTo(chapter)
       .verseNumberProperty()
       .findAll();
@@ -53,7 +55,7 @@ final availableVersesProvider = FutureProvider<List<int>>((ref) async {
     final secondaryVerses = await isar.bibleVerses
         .filter()
         .bibleVersionIdEqualTo(secondaryVersion.id)
-        .bookNameEqualTo(book)
+        .bookNameEqualTo(normBook)
         .chapterNumberEqualTo(chapter)
         .verseNumberProperty()
         .findAll();
@@ -73,12 +75,13 @@ final biblePreviewVersesProvider = FutureProvider<List<BibleVerse>>((ref) async 
   
   if (version == null || book == null || chapter == null || verses.isEmpty) return [];
 
+  final normBook = BibleConstants.normalizeBookName(book) ?? book;
   final isar = await ref.read(isarServiceProvider).db;
   
   final result = await isar.bibleVerses
       .filter()
       .bibleVersionIdEqualTo(version.id)
-      .bookNameEqualTo(book)
+      .bookNameEqualTo(normBook)
       .chapterNumberEqualTo(chapter)
       .anyOf(verses.toList(), (q, int v) => q.verseNumberEqualTo(v))
       .sortByVerseNumber()
@@ -92,12 +95,13 @@ final bibleVersesForSelectionProvider = FutureProvider.family<
     ({int versionId, String book, int chapter, Set<int> verses})>((ref, selection) async {
   if (selection.verses.isEmpty) return [];
 
+  final normBook = BibleConstants.normalizeBookName(selection.book) ?? selection.book;
   final isar = await ref.read(isarServiceProvider).db;
 
   return isar.bibleVerses
       .filter()
       .bibleVersionIdEqualTo(selection.versionId)
-      .bookNameEqualTo(selection.book)
+      .bookNameEqualTo(normBook)
       .chapterNumberEqualTo(selection.chapter)
       .anyOf(selection.verses.toList(), (q, int verse) => q.verseNumberEqualTo(verse))
       .sortByVerseNumber()
@@ -112,12 +116,13 @@ final chapterAllVersesProvider = FutureProvider<List<BibleVerse>>((ref) async {
   
   if (version == null || book == null || chapter == null) return [];
 
+  final normBook = BibleConstants.normalizeBookName(book) ?? book;
   final isar = await ref.read(isarServiceProvider).db;
   
   return isar.bibleVerses
       .filter()
       .bibleVersionIdEqualTo(version.id)
-      .bookNameEqualTo(book)
+      .bookNameEqualTo(normBook)
       .chapterNumberEqualTo(chapter)
       .sortByVerseNumber()
       .findAll();
@@ -127,12 +132,13 @@ final chapterAllVersesProvider = FutureProvider<List<BibleVerse>>((ref) async {
 final chapterAllVersesForVersionProvider = FutureProvider.family<
     List<BibleVerse>,
     ({int versionId, String book, int chapter})>((ref, args) async {
+  final normBook = BibleConstants.normalizeBookName(args.book) ?? args.book;
   final isar = await ref.read(isarServiceProvider).db;
   
   return isar.bibleVerses
       .filter()
       .bibleVersionIdEqualTo(args.versionId)
-      .bookNameEqualTo(args.book)
+      .bookNameEqualTo(normBook)
       .chapterNumberEqualTo(args.chapter)
       .sortByVerseNumber()
       .findAll();

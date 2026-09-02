@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import '../../../core/database/isar_service.dart';
+import '../domain/bible_constants.dart';
 import 'bible.dart';
 
 class BibleRepository {
@@ -31,8 +32,9 @@ class BibleRepository {
         versionId = await isar.bibleVersions.put(version);
       }
 
-      // Link verses to the version
+      // Link verses to the version and normalize book names
       for (var verse in verses) {
+        verse.bookName = BibleConstants.normalizeBookName(verse.bookName) ?? verse.bookName;
         verse.bibleVersionId = versionId;
       }
 
@@ -44,6 +46,20 @@ class BibleRepository {
 
   Future<List<BibleVersion>> getVersions() async {
     final isar = await _isarService.db;
+    await fixLegacyBookNames();
     return await isar.bibleVersions.where().findAll();
+  }
+
+  Future<void> fixLegacyBookNames() async {
+    final isar = await _isarService.db;
+    final legacyPsalms = await isar.bibleVerses.filter().bookNameEqualTo('Psalm').findAll();
+    if (legacyPsalms.isNotEmpty) {
+      await isar.writeTxn(() async {
+        for (var v in legacyPsalms) {
+          v.bookName = 'Psalms';
+        }
+        await isar.bibleVerses.putAll(legacyPsalms);
+      });
+    }
   }
 }

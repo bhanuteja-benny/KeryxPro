@@ -19,7 +19,7 @@ class BibleConstants {
     'josh': 'Joshua', 'judg': 'Judges', 'jdg': 'Judges', 'rut': 'Ruth', 'rth': 'Ruth',
     '1 sam': '1 Samuel', '2 sam': '2 Samuel', '1 kgs': '1 Kings', '2 kgs': '2 Kings',
     '1 chron': '1 Chronicles', '2 chron': '2 Chronicles', '1 chr': '1 Chronicles', '2 chr': '2 Chronicles', '1 chro': '1 Chronicles', '2 chro': '2 Chronicles', '1 cho': '1 Chronicles', '2 cho': '2 Chronicles', 'cho': '1 Chronicles', 'chro': '1 Chronicles',
-    'ezr': 'Ezra', 'neh': 'Nehemiah', 'est': 'Esther', 'job': 'Job', 'ps': 'Psalms', 'psa': 'Psalms', 'prov': 'Proverbs', 'pro': 'Proverbs',
+    'ezr': 'Ezra', 'neh': 'Nehemiah', 'est': 'Esther', 'job': 'Job', 'ps': 'Psalms', 'psa': 'Psalms', 'psalm': 'Psalms', 'psalms': 'Psalms', 'prov': 'Proverbs', 'pro': 'Proverbs',
     'ecc': 'Ecclesiastes', 'song': 'Song of Solomon', 'sos': 'Song of Solomon',
     'isa': 'Isaiah', 'jer': 'Jeremiah', 'lam': 'Lamentations', 'eze': 'Ezekiel', 'dan': 'Daniel',
     'hos': 'Hosea', 'joe': 'Joel', 'amo': 'Amos', 'oba': 'Obadiah', 'jon': 'Jonah', 'mic': 'Micah',

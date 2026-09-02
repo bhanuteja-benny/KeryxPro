@@ -299,8 +299,9 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     required bool forward,
   }) async {
     final isar = await ref.read(isarServiceProvider).db;
+    final normBook = BibleConstants.normalizeBookName(book) ?? book;
     final allBooks = [...BibleConstants.oldTestamentBooks, ...BibleConstants.newTestamentBooks];
-    final currentBookIndex = allBooks.indexWhere((b) => b.toLowerCase() == book.toLowerCase());
+    final currentBookIndex = allBooks.indexWhere((b) => b.toLowerCase() == normBook.toLowerCase());
     if (currentBookIndex == -1) return [];
 
     Future<BibleVerse?> stepOne(String b, int c, int v) async {
