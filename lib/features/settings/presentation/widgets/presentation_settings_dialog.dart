@@ -174,48 +174,63 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
       final settings = ref.watch(editingPresetProvider);
       return Container(
         color: Theme.of(context).primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           children: [
             InkWell(
               onTap: () => setState(() => _mode = ViewMode.choose),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                    const SizedBox(width: 8),
-                    Text(settings.presetName, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 6),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 140),
+                      child: Text(
+                        settings.presetName,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            const Spacer(),
-            SegmentedButton<int>(
-              style: SegmentedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white70,
-                selectedForegroundColor: Colors.white,
-                selectedBackgroundColor: Colors.white12,
-                side: const BorderSide(color: Colors.transparent),
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SegmentedButton<int>(
+                    style: SegmentedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                      visualDensity: VisualDensity.compact,
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white70,
+                      selectedForegroundColor: Colors.white,
+                      selectedBackgroundColor: Colors.white12,
+                      side: const BorderSide(color: Colors.transparent),
+                    ),
+                    showSelectedIcon: false,
+                    segments: const [
+                      ButtonSegment(value: 0, label: Text('Song', style: TextStyle(fontSize: 12))),
+                      ButtonSegment(value: 1, label: Text('Scripture', style: TextStyle(fontSize: 12))),
+                      ButtonSegment(value: 2, label: Text('Dual Scripture', style: TextStyle(fontSize: 12))),
+                      ButtonSegment(value: 3, label: Text('Blank Screen', style: TextStyle(fontSize: 12))),
+                      ButtonSegment(value: 4, label: Text('Window', style: TextStyle(fontSize: 12))),
+                    ],
+                    selected: {_editTabIndex},
+                    onSelectionChanged: (set) {
+                      setState(() {
+                        _editTabIndex = set.first;
+                        _updateControllers(); // Sync when switching tabs
+                      });
+                    },
+                  ),
+                ),
               ),
-              showSelectedIcon: false,
-              segments: const [
-                ButtonSegment(value: 0, label: Text('Song')),
-                ButtonSegment(value: 1, label: Text('Scripture')),
-                ButtonSegment(value: 2, label: Text('Dual Scripture')),
-                ButtonSegment(value: 3, label: Text('Blank Screen')),
-                ButtonSegment(value: 4, label: Text('Window')),
-              ],
-              selected: {_editTabIndex},
-              onSelectionChanged: (set) {
-                setState(() {
-                  _editTabIndex = set.first;
-                  _updateControllers(); // Sync when switching tabs
-                });
-              },
             ),
-            const Spacer(),
             IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
               onPressed: () => Navigator.pop(context),
@@ -233,46 +248,49 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (kDebugMode) ...[
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (kDebugMode) ...[
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.palette),
+                    label: const Text('Create Theme'),
+                    onPressed: _showCreateThemeDialog,
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.palette),
-                  label: const Text('Create Theme'),
-                  onPressed: _showCreateThemeDialog,
+                  icon: const Icon(Icons.download),
+                  label: const Text('Import Theme'),
+                  onPressed: _importTheme,
                 ),
-                const SizedBox(width: 8),
-              ],
-              ElevatedButton.icon(
-                icon: const Icon(Icons.download),
-                label: const Text('Import Theme'),
-                onPressed: _importTheme,
-              ),
-              const Spacer(),
-              SizedBox(
-                width: 200,
-                child: TextField(
-                  controller: _newPresetCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'New Preset Name',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+                const SizedBox(width: 16),
+                SizedBox(
+                  width: 200,
+                  child: TextField(
+                    controller: _newPresetCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'New Preset Name',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: const Text('Add New Preset'),
-                onPressed: () async {
-                  if (_newPresetCtrl.text.trim().isNotEmpty) {
-                    await ref.read(editingPresetProvider.notifier).createNewPreset(_newPresetCtrl.text.trim());
-                    _newPresetCtrl.clear();
-                  }
-                },
-              ),
-            ],
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add New Preset'),
+                  onPressed: () async {
+                    if (_newPresetCtrl.text.trim().isNotEmpty) {
+                      await ref.read(editingPresetProvider.notifier).createNewPreset(_newPresetCtrl.text.trim());
+                      _newPresetCtrl.clear();
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
           Expanded(

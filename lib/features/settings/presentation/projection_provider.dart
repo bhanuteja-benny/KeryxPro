@@ -343,6 +343,7 @@ Duration retryDelay = const Duration(milliseconds: 120),
     String? text,
     String? title,
     bool isSong = true,
+    bool isDualVersion = false,
   }) async {
     final mainWindowController = await WindowController.fromCurrentEngine(); 
     final mainWindowId = mainWindowController.windowId;
@@ -358,6 +359,7 @@ final presetId = preset?.id;
       'text': text,
       'title': title,
       'isSong': isSong,
+      'isDualVersion': isDualVersion,
       'mainWindowId': mainWindowId,
     };
 
@@ -425,6 +427,7 @@ final presetId = preset?.id;
     String? text,
     String? title,
     bool isSong = true,
+    bool isDualVersion = false,
   }) async {
     final mainWindowController = await WindowController.fromCurrentEngine(); 
     final mainWindowId = mainWindowController.windowId;
@@ -457,6 +460,7 @@ final presetId = preset?.id;
       'text': text,
       'title': title,
       'isSong': isSong,
+      'isDualVersion': isDualVersion,
       'mainWindowId': mainWindowId,
       'displayX': displayX,
       'displayY': displayY,

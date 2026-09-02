@@ -36,6 +36,7 @@ void _broadcastContentM1(Ref ref, String? text) {
 
   final title = ref.read(activeTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
+  final isDualVersion = ref.read(isDualVersionActiveProvider);
   final state = ref.read(projectionProvider);
   
   if (state.monitor1WindowId != null) {
@@ -43,6 +44,7 @@ void _broadcastContentM1(Ref ref, String? text) {
       'text': text,
       'title': title,
       'isSong': isSong,
+      'isDualVersion': isDualVersion,
     };
     WindowController.fromWindowId(state.monitor1WindowId!)
         .invokeMethod('update_content', args)
@@ -57,6 +59,7 @@ void _broadcastContentM2(Ref ref, String? text) {
 
   final title = ref.read(activeTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
+  final isDualVersion = ref.read(isDualVersionActiveProvider);
   final state = ref.read(projectionProvider);
   
   if (state.monitor2WindowId != null) {
@@ -64,6 +67,7 @@ void _broadcastContentM2(Ref ref, String? text) {
       'text': text,
       'title': title,
       'isSong': isSong,
+      'isDualVersion': isDualVersion,
     };
     WindowController.fromWindowId(state.monitor2WindowId!)
         .invokeMethod('update_content', args)

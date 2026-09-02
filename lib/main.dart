@@ -130,6 +130,7 @@ class _ProjectorAppState extends State<ProjectorApp> {
   String? _activeSlideText;
   String? _titleText;
   bool _isSong = true;
+  bool _isDualVersion = false;
   PresentationSettings _settings = PresentationSettings();
   int? _presetId;
   int? _monitorIndex;
@@ -146,7 +147,9 @@ Size? _getTargetWindowSize() {
       ? _settings.blankAspectRatio
       : (isWindowSlide
           ? _settings.windowAspectRatio
-          : (_isSong ? _settings.songAspectRatio : _settings.scriptureAspectRatio));
+          : (_isDualVersion
+              ? _settings.dualScriptureAspectRatio
+              : (_isSong ? _settings.songAspectRatio : _settings.scriptureAspectRatio)));
 
   switch (ratio) {
     case '4:3':
@@ -158,12 +161,16 @@ Size? _getTargetWindowSize() {
           ? _settings.blankCustomWidth
           : (isWindowSlide
               ? _settings.windowCustomWidth
-              : (_isSong ? _settings.songCustomWidth : _settings.scriptureCustomWidth));
+              : (_isDualVersion
+                  ? _settings.dualScriptureCustomWidth
+                  : (_isSong ? _settings.songCustomWidth : _settings.scriptureCustomWidth)));
       final h = isBlank
           ? _settings.blankCustomHeight
           : (isWindowSlide
               ? _settings.windowCustomHeight
-              : (_isSong ? _settings.songCustomHeight : _settings.scriptureCustomHeight));
+              : (_isDualVersion
+                  ? _settings.dualScriptureCustomHeight
+                  : (_isSong ? _settings.songCustomHeight : _settings.scriptureCustomHeight)));
       if (w > 0 && h > 0) {
         return Size(w, h);
       }
@@ -187,7 +194,7 @@ Future<void> _applyCurrentWindowSizeIfNeeded({
   final bool isWindowSlide = _activeSlideText?.startsWith('WINDOW:') ?? false;
   final isTransparent = isBlank
       ? _settings.isBlankTransparent
-      : (isWindowSlide ? _settings.isWindowTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent));
+      : (isWindowSlide ? _settings.isWindowTransparent : (_isDualVersion ? _settings.isDualScriptureTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent)));
 
   for (var i = 0; i < attempts; i++) {
     try {
@@ -236,10 +243,12 @@ void _scheduleMonitor2SizeStabilization() {
         final args = call.arguments as Map?;
         if (args != null) {
           final isSong = args['isSong'] as bool? ?? true;
+          final isDualVersion = args['isDualVersion'] as bool? ?? false;
           setState(() {
             _activeSlideText = args['text'] as String?;
             _titleText = args['title'] as String?;
             _isSong = isSong;
+            _isDualVersion = isDualVersion;
           });
           await _applyCurrentWindowSizeIfNeeded(attempts: 3);
           _scheduleMonitor2SizeStabilization();
@@ -276,6 +285,7 @@ void _scheduleMonitor2SizeStabilization() {
         _activeSlideText = parsed['text'] as String?;
         _titleText = parsed['title'] as String?;
         _isSong = parsed['isSong'] as bool? ?? true;
+        _isDualVersion = parsed['isDualVersion'] as bool? ?? false;
         _monitorIndex = parsed['monitorIndex'] as int?;
         _mainWindowId = parsed['mainWindowId'] as String?;
 
@@ -295,6 +305,7 @@ void _scheduleMonitor2SizeStabilization() {
         activeSlideText: _activeSlideText,
         titleText: _titleText,
         isSong: _isSong,
+        isDualVersion: _isDualVersion,
         monitorIndex: _monitorIndex,
         captureBridgeWindowId: _mainWindowId,
       ),
@@ -304,7 +315,7 @@ void _scheduleMonitor2SizeStabilization() {
     final bool isWindowSlide = _activeSlideText?.startsWith('WINDOW:') ?? false;
     final isTransparent = isBlank
         ? _settings.isBlankTransparent
-        : (isWindowSlide ? _settings.isWindowTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent));
+        : (isWindowSlide ? _settings.isWindowTransparent : (_isDualVersion ? _settings.isDualScriptureTransparent : (_isSong ? _settings.isSongTransparent : _settings.isScriptureTransparent)));
     final Color scaffoldBgColor = isTransparent
         ? (Platform.isWindows ? const Color(0xFF010001) : Colors.transparent)
         : Colors.black;

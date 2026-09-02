@@ -130,6 +130,7 @@ class _Monitor1View extends ConsumerWidget {
     final activeSlideText = ref.watch(m1ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
+    final isDualVersion = ref.watch(isDualVersionActiveProvider);
     final isFrozen = ref.watch(isLiveScreenFrozenProvider);
 
     final selectedPresetId = projectionState.config.monitor1PresetId;
@@ -210,6 +211,7 @@ class _Monitor1View extends ConsumerWidget {
                           text: activeSlideText,
                           title: activeTitle,
                           isSong: isSong,
+                          isDualVersion: isDualVersion,
                         );
                       }
                     }
@@ -240,7 +242,7 @@ class _Monitor1View extends ConsumerWidget {
                       );
                       final isBlank = activeSlideText == "";
                       final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
-                      final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide); 
+                      final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide, isDual: isDualVersion); 
 
                       return AspectRatio(
                         aspectRatio: aspectRatio,
@@ -255,6 +257,7 @@ class _Monitor1View extends ConsumerWidget {
                               activeSlideText: activeSlideText,
                               titleText: activeTitle,
                               isSong: isSong,
+                              isDualVersion: isDualVersion,
                               showCheckerboard: true,
                             ),
                           ),
@@ -292,6 +295,7 @@ class _Monitor2View extends ConsumerWidget {
     final activeSlideText = ref.watch(m2ActiveSlideProvider);
     final activeTitle = ref.watch(activeTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
+    final isDualVersion = ref.watch(isDualVersionActiveProvider);
     final isFrozen = ref.watch(isLiveScreenFrozenProvider);
 
     final selectedPresetId = projectionState.config.monitor2PresetId;
@@ -347,6 +351,7 @@ class _Monitor2View extends ConsumerWidget {
                       text: activeSlideText,
                       title: activeTitle,
                       isSong: isSong,
+                      isDualVersion: isDualVersion,
                     );
                   }
                 },
@@ -375,7 +380,7 @@ class _Monitor2View extends ConsumerWidget {
                   );
                   final isBlank = activeSlideText == "";
                   final isWindowSlide = activeSlideText?.startsWith('WINDOW:') ?? false;
-                  final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide); 
+                  final aspectRatio = _getAspectRatio(settings, isSong, isBlank: isBlank, isWindow: isWindowSlide, isDual: isDualVersion); 
 
                   return AspectRatio(
                     aspectRatio: aspectRatio,
@@ -390,6 +395,7 @@ class _Monitor2View extends ConsumerWidget {
                           activeSlideText: activeSlideText,
                           titleText: activeTitle,
                           isSong: isSong,
+                          isDualVersion: isDualVersion,
                           showCheckerboard: true,
                         ),
                       ),
@@ -409,10 +415,14 @@ class _Monitor2View extends ConsumerWidget {
 
 // ─── Helpers ───
 
-double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank = false, bool isWindow = false}) {
+double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank = false, bool isWindow = false, bool isDual = false}) {
   final ratio = isBlank
       ? settings.blankAspectRatio
-      : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
+      : (isWindow
+          ? settings.windowAspectRatio
+          : (isDual
+              ? settings.dualScriptureAspectRatio
+              : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio)));
   switch (ratio) {
     case '4:3':
       return 4 / 3;
@@ -421,10 +431,18 @@ double _getAspectRatio(PresentationSettings settings, bool isSong, {bool isBlank
     case 'Custom':
       final w = isBlank
           ? settings.blankCustomWidth
-          : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
+          : (isWindow
+              ? settings.windowCustomWidth
+              : (isDual
+                  ? settings.dualScriptureCustomWidth
+                  : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)));
       final h = isBlank
           ? settings.blankCustomHeight
-          : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
+          : (isWindow
+              ? settings.windowCustomHeight
+              : (isDual
+                  ? settings.dualScriptureCustomHeight
+                  : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)));
       return (w > 0 && h > 0) ? w / h : 16 / 9;
     case '16:9':
     default:

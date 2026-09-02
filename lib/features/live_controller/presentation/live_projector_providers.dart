@@ -220,7 +220,7 @@ final m1ActiveSlideProvider = Provider<String?>((ref) {
         .join(joiner);
 
     if (secondaryText.isNotEmpty) {
-      return '$primaryText\n\n$secondaryText';
+      return '$primaryText\n[DUAL_SEP]\n$secondaryText';
     }
   }
 
@@ -248,7 +248,7 @@ final m2ActiveSlideProvider = Provider<String?>((ref) {
         .join(joiner);
 
     if (secondaryText.isNotEmpty) {
-      return '$primaryText\n\n$secondaryText';
+      return '$primaryText\n[DUAL_SEP]\n$secondaryText';
     }
   }
 
@@ -279,6 +279,16 @@ final isSongActiveProvider = Provider<bool>((ref) {
   if (slides.isEmpty || index < 0 || index >= slides.length) return false;
 
   return slides[index].isSong;
+});
+
+/// Indicates if the currently projected slide is Dual Version.
+final isDualVersionActiveProvider = Provider<bool>((ref) {
+  final slides = ref.watch(currentSlidesProvider);
+  final index = ref.watch(activeSlideIndexProvider);
+
+  if (slides.isEmpty || index < 0 || index >= slides.length) return false;
+
+  return slides[index].isDualVersion;
 });
 
 class SlideNavigationState {

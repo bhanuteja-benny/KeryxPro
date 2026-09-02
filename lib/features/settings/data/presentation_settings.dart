@@ -78,7 +78,7 @@ bool isWindowTransparent = false;
   // Dual Scripture Layout Controls
   String dualScriptureLayoutDirection = 'topBottom'; // 'topBottom', 'sideBySide'
   String dualScripturePrimaryPosition = 'primaryFirst'; // 'primaryFirst', 'secondaryFirst'
-  double dualScripturePrimaryRatio = 50.0; // 20.0 to 80.0
+  double dualScripturePrimaryRatio = 0.5; // 0.2 to 0.8
 
   // Chapter Settings (Dual Scripture)
   bool showDualChapter = true;
@@ -272,8 +272,12 @@ bool isWindowTransparent = false;
     if (!windowCustomWidth.isFinite || windowCustomWidth <= 0) windowCustomWidth = 1920.0;
     if (!windowCustomHeight.isFinite || windowCustomHeight <= 0) windowCustomHeight = 1080.0;
 
-    if (!dualScripturePrimaryRatio.isFinite || dualScripturePrimaryRatio < 20.0 || dualScripturePrimaryRatio > 80.0) {
-      dualScripturePrimaryRatio = 50.0;
+    if (!dualScripturePrimaryRatio.isFinite) {
+      dualScripturePrimaryRatio = 0.5;
+    } else if (dualScripturePrimaryRatio > 1.0) {
+      dualScripturePrimaryRatio = (dualScripturePrimaryRatio / 100.0).clamp(0.2, 0.8);
+    } else if (dualScripturePrimaryRatio < 0.2 || dualScripturePrimaryRatio > 0.8) {
+      dualScripturePrimaryRatio = 0.5;
     }
 
     if (!titleFontSize.isFinite || titleFontSize <= 0) titleFontSize = 24.0;
@@ -676,7 +680,7 @@ bool isWindowTransparent = false;
       ..isDualScriptureTransparent = map['isDualScriptureTransparent'] as bool? ?? false
       ..dualScriptureLayoutDirection = map['dualScriptureLayoutDirection'] as String? ?? 'topBottom'
       ..dualScripturePrimaryPosition = map['dualScripturePrimaryPosition'] as String? ?? 'primaryFirst'
-      ..dualScripturePrimaryRatio = (map['dualScripturePrimaryRatio'] as num?)?.toDouble() ?? 50.0
+      ..dualScripturePrimaryRatio = (map['dualScripturePrimaryRatio'] as num?)?.toDouble() ?? 0.5
       ..blankAspectRatio = map['blankAspectRatio'] as String? ?? '16:9'
       ..blankCustomWidth = (map['blankCustomWidth'] as num?)?.toDouble() ?? 1920.0
       ..blankCustomHeight = (map['blankCustomHeight'] as num?)?.toDouble() ?? 1080.0
