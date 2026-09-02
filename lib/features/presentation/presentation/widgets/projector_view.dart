@@ -18,8 +18,11 @@ class ProjectorView extends ConsumerWidget {
       : Colors.transparent;
   final PresentationSettings settings;
   final String? activeSlideText;
+  final String? secondarySlideText;
   final String? titleText;
   final bool isSong;
+  final bool isDualVersion;
+  final bool isPreviewMode;
   final bool showCheckerboard;
   final int? monitorIndex;
   final String? captureBridgeWindowId;
@@ -28,8 +31,11 @@ class ProjectorView extends ConsumerWidget {
     super.key,
     required this.settings,
     this.activeSlideText,
+    this.secondarySlideText,
     this.titleText,
     this.isSong = true,
+    this.isDualVersion = false,
+    this.isPreviewMode = false,
     this.showCheckerboard = false,
     this.monitorIndex,
     this.captureBridgeWindowId,
@@ -40,12 +46,17 @@ class ProjectorView extends ConsumerWidget {
     required bool isSong,
     required bool isBlank,
     bool isWindow = false,
+    bool isDualVersion = false,
     BuildContext? context,
     int? monitorIndex,
   }) {
     final aspectRatioStr = isBlank
-    ? settings.blankAspectRatio
-    : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
+        ? settings.blankAspectRatio
+        : (isWindow
+            ? settings.windowAspectRatio
+            : (isDualVersion
+                ? settings.dualScriptureAspectRatio
+                : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio)));
     double canvasWidth = 1920;
     double canvasHeight = 1080;
 
@@ -57,11 +68,19 @@ class ProjectorView extends ConsumerWidget {
       canvasHeight = 480;
     } else if (aspectRatioStr == 'Custom') {
       canvasWidth = isBlank
-    ? settings.blankCustomWidth
-    : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
-canvasHeight = isBlank
-    ? settings.blankCustomHeight
-    : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
+          ? settings.blankCustomWidth
+          : (isWindow
+              ? settings.windowCustomWidth
+              : (isDualVersion
+                  ? settings.dualScriptureCustomWidth
+                  : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)));
+      canvasHeight = isBlank
+          ? settings.blankCustomHeight
+          : (isWindow
+              ? settings.windowCustomHeight
+              : (isDualVersion
+                  ? settings.dualScriptureCustomHeight
+                  : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)));
       if (canvasWidth <= 0) canvasWidth = 1920;
       if (canvasHeight <= 0) canvasHeight = 1080;
     } else if (aspectRatioStr == 'Fit to screen') {
@@ -95,24 +114,48 @@ canvasHeight = isBlank
     final bool isBlank = activeSlideText == "";
 
     final isTransparent = isBlank
-    ? settings.isBlankTransparent
-    : (isWindowSlide ? settings.isWindowTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent));
-final backgroundColorValue = Color(isBlank
-    ? settings.blankBackgroundColor
-    : (isWindowSlide ? settings.windowBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor)));
-final isImageEnabled = isBlank
-    ? settings.isBlankImageEnabled
-    : (isWindowSlide ? settings.isWindowImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled));
-final rawBackgroundImage = isBlank
-    ? settings.blankBackgroundImage
-    : (isWindowSlide ? settings.windowBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage));
-final backgroundImage = rawBackgroundImage.isNotEmpty ? mediaSync.resolveMediaPath(rawBackgroundImage) : '';
-final backgroundLayout = isBlank
-    ? settings.blankBackgroundImageLayout
-    : (isWindowSlide ? settings.windowBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout));
-final backgroundAlignment = isBlank
-    ? settings.blankBackgroundImageAlignment
-    : (isWindowSlide ? settings.windowBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment));
+        ? settings.isBlankTransparent
+        : (isWindowSlide
+            ? settings.isWindowTransparent
+            : (isDualVersion
+                ? settings.isDualScriptureTransparent
+                : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent)));
+    final backgroundColorValue = Color(isBlank
+        ? settings.blankBackgroundColor
+        : (isWindowSlide
+            ? settings.windowBackgroundColor
+            : (isDualVersion
+                ? settings.dualScriptureBackgroundColor
+                : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor))));
+    final isImageEnabled = isBlank
+        ? settings.isBlankImageEnabled
+        : (isWindowSlide
+            ? settings.isWindowImageEnabled
+            : (isDualVersion
+                ? settings.isDualScriptureImageEnabled
+                : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled)));
+    final rawBackgroundImage = isBlank
+        ? settings.blankBackgroundImage
+        : (isWindowSlide
+            ? settings.windowBackgroundImage
+            : (isDualVersion
+                ? settings.dualScriptureBackgroundImage
+                : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage)));
+    final backgroundImage = rawBackgroundImage.isNotEmpty ? mediaSync.resolveMediaPath(rawBackgroundImage) : '';
+    final backgroundLayout = isBlank
+        ? settings.blankBackgroundImageLayout
+        : (isWindowSlide
+            ? settings.windowBackgroundImageLayout
+            : (isDualVersion
+                ? settings.dualScriptureBackgroundImageLayout
+                : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout)));
+    final backgroundAlignment = isBlank
+        ? settings.blankBackgroundImageAlignment
+        : (isWindowSlide
+            ? settings.windowBackgroundImageAlignment
+            : (isDualVersion
+                ? settings.dualScriptureBackgroundImageAlignment
+                : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment)));
 
     final alignStr = isSong ? settings.lyricsAlignment : settings.verseAlignment;
     final vAlignStr = isSong ? settings.lyricsVerticalAlignment : settings.verseVerticalAlignment;
@@ -123,6 +166,7 @@ final backgroundAlignment = isBlank
       isSong: isSong,
       isBlank: isBlank,
       isWindow: isWindowSlide,
+      isDualVersion: isDualVersion,
       context: context,
       monitorIndex: monitorIndex,
     );
@@ -272,6 +316,9 @@ final backgroundAlignment = isBlank
               ),
             ),
           if (!isBlankScreen) ...[
+            if (isDualVersion)
+              _buildDualScriptureLayer(canvasWidth, canvasHeight)
+            else ...[
               // Body Layer
               if (isImageSlide)
                 _buildImageWidget(activeSlideText!, canvasWidth, canvasHeight, mediaSync)
@@ -344,8 +391,8 @@ final backgroundAlignment = isBlank
                                 ),
                               ],
                             ),
+                  ),
                 ),
-              ),
 
               // Title Layer
               if (showTitle && titleText != null && !isImageSlide && !isWindowSlide)
@@ -395,6 +442,7 @@ final backgroundAlignment = isBlank
                     ),
                   ),
                 ),
+            ],
           ],
         ],
       ),
@@ -416,6 +464,292 @@ final backgroundAlignment = isBlank
       ),
     );
   }
+
+  Widget _buildDualScriptureLayer(double canvasWidth, double canvasHeight) {
+    String primaryText = activeSlideText ?? "";
+    String secText = secondarySlideText ?? "";
+
+    if (primaryText.contains('\n[DUAL_SEP]\n')) {
+      final parts = primaryText.split('\n[DUAL_SEP]\n');
+      primaryText = parts[0];
+      secText = parts.length > 1 ? parts[1] : secText;
+    }
+
+    final isTopBottom = settings.dualScriptureLayoutDirection == 'topBottom';
+    final isPrimaryFirst = isTopBottom
+        ? settings.dualScripturePrimaryPosition == 'top'
+        : settings.dualScripturePrimaryPosition == 'left';
+
+    final primaryRatio = settings.dualScripturePrimaryRatio.clamp(0.1, 0.9);
+    final secondaryRatio = 1.0 - primaryRatio;
+
+    final primaryFlex = (primaryRatio * 1000).round();
+    final secondaryFlex = (secondaryRatio * 1000).round();
+
+    // Primary Verse Box
+    Widget primaryBox = Container(
+      decoration: isPreviewMode
+          ? BoxDecoration(
+              border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.8), width: 1.5),
+            )
+          : null,
+      alignment: _getAlignmentGeometry(settings.primaryVerseAlignment, settings.primaryVerseVerticalAlignment),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          settings.primaryVerseMarginLeft,
+          settings.primaryVerseMarginTop,
+          settings.primaryVerseMarginRight,
+          settings.primaryVerseMarginBottom,
+        ),
+        child: _buildFormattedText(
+          text: primaryText.isEmpty ? 'Primary Verse Content' : primaryText,
+          fontSize: settings.primaryVerseFontSize <= 0 ? 60.0 : settings.primaryVerseFontSize,
+          fontFamily: settings.primaryVerseFontFamily,
+          fontColor: Color(settings.primaryVerseFontColor),
+          bold: settings.primaryVerseBold,
+          italic: settings.primaryVerseItalic,
+          underline: settings.primaryVerseUnderline,
+          alignment: settings.primaryVerseAlignment,
+          hasFill: settings.primaryVerseHasFill,
+          fillColor: Color(settings.primaryVerseFillColor),
+          hasStroke: settings.primaryVerseHasStroke,
+          strokeColor: Color(settings.primaryVerseStrokeColor),
+          strokeWidthFactor: settings.primaryVerseStrokeWidth,
+          lineHeight: settings.primaryVerseLineHeight,
+          hasShadow: settings.primaryVerseHasShadow,
+          shadowColor: Color(settings.primaryVerseShadowColor),
+          shadowOffsetX: settings.primaryVerseShadowOffsetX,
+          shadowOffsetY: settings.primaryVerseShadowOffsetY,
+          shadowRadius: settings.primaryVerseShadowRadius,
+        ),
+      ),
+    );
+
+    // Secondary Verse Box
+    Widget secondaryBox = Container(
+      decoration: isPreviewMode
+          ? BoxDecoration(
+              border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.8), width: 1.5),
+            )
+          : null,
+      alignment: _getAlignmentGeometry(settings.secVerseAlignment, settings.secVerseVerticalAlignment),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          settings.secVerseMarginLeft,
+          settings.secVerseMarginTop,
+          settings.secVerseMarginRight,
+          settings.secVerseMarginBottom,
+        ),
+        child: _buildFormattedText(
+          text: secText.isEmpty ? 'Secondary Verse Content' : secText,
+          fontSize: settings.secVerseFontSize <= 0 ? 60.0 : settings.secVerseFontSize,
+          fontFamily: settings.secVerseFontFamily,
+          fontColor: Color(settings.secVerseFontColor),
+          bold: settings.secVerseBold,
+          italic: settings.secVerseItalic,
+          underline: settings.secVerseUnderline,
+          alignment: settings.secVerseAlignment,
+          hasFill: settings.secVerseHasFill,
+          fillColor: Color(settings.secVerseFillColor),
+          hasStroke: settings.secVerseHasStroke,
+          strokeColor: Color(settings.secVerseStrokeColor),
+          strokeWidthFactor: settings.secVerseStrokeWidth,
+          lineHeight: settings.secVerseLineHeight,
+          hasShadow: settings.secVerseHasShadow,
+          shadowColor: Color(settings.secVerseShadowColor),
+          shadowOffsetX: settings.secVerseShadowOffsetX,
+          shadowOffsetY: settings.secVerseShadowOffsetY,
+          shadowRadius: settings.secVerseShadowRadius,
+        ),
+      ),
+    );
+
+    List<Widget> children = isPrimaryFirst
+        ? [Expanded(flex: primaryFlex, child: primaryBox), Expanded(flex: secondaryFlex, child: secondaryBox)]
+        : [Expanded(flex: secondaryFlex, child: secondaryBox), Expanded(flex: primaryFlex, child: primaryBox)];
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: isTopBottom
+              ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)
+              : Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+        ),
+        if (settings.showDualChapter && titleText != null && titleText!.isNotEmpty)
+          Align(
+            alignment: _getAlignmentGeometry(settings.dualChapterAlignment, settings.dualChapterVerticalAlignment),
+            child: Container(
+              decoration: isPreviewMode
+                  ? BoxDecoration(
+                      border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.8), width: 1.5),
+                    )
+                  : null,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  settings.dualChapterMarginLeft,
+                  settings.dualChapterMarginTop,
+                  settings.dualChapterMarginRight,
+                  settings.dualChapterMarginBottom,
+                ),
+                child: _buildFormattedText(
+                  text: titleText!,
+                  fontSize: settings.dualChapterFontSize <= 0 ? 24.0 : settings.dualChapterFontSize,
+                  fontFamily: settings.dualChapterFontFamily,
+                  fontColor: Color(settings.dualChapterFontColor),
+                  bold: settings.dualChapterBold,
+                  italic: settings.dualChapterItalic,
+                  underline: settings.dualChapterUnderline,
+                  alignment: settings.dualChapterAlignment,
+                  hasFill: settings.dualChapterHasFill,
+                  fillColor: Color(settings.dualChapterFillColor),
+                  hasStroke: settings.dualChapterHasStroke,
+                  strokeColor: Color(settings.dualChapterStrokeColor),
+                  strokeWidthFactor: settings.dualChapterStrokeWidth,
+                  lineHeight: settings.dualChapterLineHeight,
+                  hasShadow: settings.dualChapterHasShadow,
+                  shadowColor: Color(settings.dualChapterShadowColor),
+                  shadowOffsetX: settings.dualChapterShadowOffsetX,
+                  shadowOffsetY: settings.dualChapterShadowOffsetY,
+                  shadowRadius: settings.dualChapterShadowRadius,
+                  isSingleLineText: true,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildFormattedText({
+    required String text,
+    required double fontSize,
+    required String fontFamily,
+    required Color fontColor,
+    required bool bold,
+    required bool italic,
+    required bool underline,
+    required String alignment,
+    required bool hasFill,
+    required Color fillColor,
+    required bool hasStroke,
+    required Color strokeColor,
+    required double strokeWidthFactor,
+    required double lineHeight,
+    required bool hasShadow,
+    required Color shadowColor,
+    required double shadowOffsetX,
+    required double shadowOffsetY,
+    required double shadowRadius,
+    bool isSingleLineText = false,
+  }) {
+    var textColor = fontColor;
+    if (textColor.a == 0) textColor = Colors.white;
+
+    final shadows = hasShadow
+        ? [
+            Shadow(
+              color: shadowColor,
+              offset: Offset(shadowOffsetX, shadowOffsetY),
+              blurRadius: shadowRadius,
+            )
+          ]
+        : null;
+
+    final textAlign = _getTextAlign(alignment);
+
+    if (isSingleLineText) {
+      return Stack(
+        children: [
+          if (hasStroke)
+            Text(
+              text,
+              textAlign: textAlign,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontFamily: fontFamily,
+                fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+                height: lineHeight,
+                decoration: underline ? TextDecoration.underline : TextDecoration.none,
+                backgroundColor: hasFill ? fillColor : null,
+                shadows: shadows,
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = fontSize * strokeWidthFactor
+                  ..strokeJoin = StrokeJoin.round
+                  ..strokeCap = StrokeCap.round
+                  ..color = strokeColor,
+              ),
+            ),
+          Text(
+            text,
+            textAlign: textAlign,
+            style: TextStyle(
+              color: textColor,
+              fontSize: fontSize,
+              fontFamily: fontFamily,
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+              fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+              height: lineHeight,
+              decoration: underline ? TextDecoration.underline : TextDecoration.none,
+              backgroundColor: hasFill ? fillColor : null,
+              shadows: shadows,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Stack(
+      children: [
+        if (hasStroke)
+          AutoSizeText(
+            text,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: fontFamily,
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+              fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+              height: lineHeight,
+              decoration: underline ? TextDecoration.underline : TextDecoration.none,
+              backgroundColor: hasFill ? fillColor : null,
+              shadows: shadows,
+              foreground: Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = fontSize * strokeWidthFactor
+                ..strokeJoin = StrokeJoin.round
+                ..strokeCap = StrokeCap.round
+                ..color = strokeColor,
+            ),
+            textAlign: textAlign,
+            maxLines: 30,
+            minFontSize: 8,
+            wrapWords: true,
+            softWrap: true,
+          ),
+        AutoSizeText(
+          text,
+          style: TextStyle(
+            color: textColor,
+            fontSize: fontSize,
+            fontFamily: fontFamily,
+            fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+            fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+            height: lineHeight,
+            decoration: underline ? TextDecoration.underline : TextDecoration.none,
+            backgroundColor: hasFill ? fillColor : null,
+            shadows: shadows,
+          ),
+          textAlign: textAlign,
+          maxLines: 30,
+          minFontSize: 8,
+          wrapWords: true,
+          softWrap: true,
+        ),
+      ],
+    );
+  }
+
 
   TextAlign _getTextAlign(String alignment) {
     switch (alignment) {

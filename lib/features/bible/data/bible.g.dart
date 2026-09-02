@@ -22,18 +22,23 @@ const BibleVersionSchema = CollectionSchema(
       name: r'abbreviation',
       type: IsarType.string,
     ),
-    r'language': PropertySchema(
+    r'hashCode': PropertySchema(
       id: 1,
+      name: r'hashCode',
+      type: IsarType.long,
+    ),
+    r'language': PropertySchema(
+      id: 2,
       name: r'language',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'syncId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'syncId',
       type: IsarType.string,
     )
@@ -99,9 +104,10 @@ void _bibleVersionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.abbreviation);
-  writer.writeString(offsets[1], object.language);
-  writer.writeString(offsets[2], object.name);
-  writer.writeString(offsets[3], object.syncId);
+  writer.writeLong(offsets[1], object.hashCode);
+  writer.writeString(offsets[2], object.language);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.syncId);
 }
 
 BibleVersion _bibleVersionDeserialize(
@@ -113,9 +119,9 @@ BibleVersion _bibleVersionDeserialize(
   final object = BibleVersion();
   object.abbreviation = reader.readString(offsets[0]);
   object.id = id;
-  object.language = reader.readString(offsets[1]);
-  object.name = reader.readString(offsets[2]);
-  object.syncId = reader.readString(offsets[3]);
+  object.language = reader.readString(offsets[2]);
+  object.name = reader.readString(offsets[3]);
+  object.syncId = reader.readString(offsets[4]);
   return object;
 }
 
@@ -129,10 +135,12 @@ P _bibleVersionDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -565,6 +573,62 @@ extension BibleVersionQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'abbreviation',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hashCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -1049,6 +1113,18 @@ extension BibleVersionQuerySortBy
     });
   }
 
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortByLanguage() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'language', Sort.asc);
@@ -1098,6 +1174,18 @@ extension BibleVersionQuerySortThenBy
       thenByAbbreviationDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'abbreviation', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
     });
   }
 
@@ -1159,6 +1247,12 @@ extension BibleVersionQueryWhereDistinct
     });
   }
 
+  QueryBuilder<BibleVersion, BibleVersion, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
   QueryBuilder<BibleVersion, BibleVersion, QDistinct> distinctByLanguage(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1192,6 +1286,12 @@ extension BibleVersionQueryProperty
   QueryBuilder<BibleVersion, String, QQueryOperations> abbreviationProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'abbreviation');
+    });
+  }
+
+  QueryBuilder<BibleVersion, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 

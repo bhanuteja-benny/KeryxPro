@@ -1,0 +1,30 @@
+
+Phase 54 Plan
+
+Context: 
+- Presentation settings for dual version scripture
+
+UI Requirement:
+- In Presentation preset settings, add another tab, 'Dual Scripture'
+- these settings should be applied to Dual version scripture slides (a separate presentation settings instead of using same scripture settings)
+- replicate same settings from scripture and should have additional settings like below
+- - it should have two verse boxes for typography (name them primary verse and secondary verse), you can reduce the height of chapter and primary verse typography boxes. 
+- - the secondary verse typography settings should also be stored in database
+- - since we have two versions of verses, it is better to show border lines (or box type of view) in Preview screen to easily distinguish the boxes in preivew (this is only in preview), the borders should not come in Monitor previews and projections. 
+- - Also user should be able to choose, whether primary verse should appear top or secondary 
+- - Also user should be able to choose, whether primary and secondary should appear side by side or top and bottom.
+- - user should be able to choose size of textbox for each version (primary and secondary), may be in percentage (you suggest). like if user selected top and bottom and primary version textbox is 60% and secondary version 40% then the height should be occupied accordingly, similary width should be occupied when user selects side by side.
+- - Need your suggestions on how to give the settings, so that user can choose side by side or top and bottom and whether the positions and sizes can be managed by paddings? or should we have to give any additional settings so that user can easily position them and size them
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan

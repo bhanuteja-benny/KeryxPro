@@ -55,20 +55,25 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final isThemeMode = _mode == ViewMode.editTheme;
     final settings = isThemeMode ? _themeSettings : ref.read(editingPresetProvider);
     final isSong = isThemeMode ? true : (_editTabIndex == 0);
-    final isBlank = isThemeMode ? false : (_editTabIndex == 2);
-    final isWindow = isThemeMode ? false : (_editTabIndex == 3);
+    final isDual = isThemeMode ? false : (_editTabIndex == 2);
+    final isBlank = isThemeMode ? false : (_editTabIndex == 3);
+    final isWindow = isThemeMode ? false : (_editTabIndex == 4);
     _widthCtrl.text = (isBlank
-    ? settings.blankCustomWidth
-    : (isWindow
-        ? settings.windowCustomWidth
-        : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)))
-    .toStringAsFixed(0);
+            ? settings.blankCustomWidth
+            : (isWindow
+                ? settings.windowCustomWidth
+                : (isDual
+                    ? settings.dualScriptureCustomWidth
+                    : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth))))
+        .toStringAsFixed(0);
     _heightCtrl.text = (isBlank
-    ? settings.blankCustomHeight
-    : (isWindow
-        ? settings.windowCustomHeight
-        : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)))
-    .toStringAsFixed(0);
+            ? settings.blankCustomHeight
+            : (isWindow
+                ? settings.windowCustomHeight
+                : (isDual
+                    ? settings.dualScriptureCustomHeight
+                    : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight))))
+        .toStringAsFixed(0);
   }
 
   @override
@@ -198,8 +203,9 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               segments: const [
                 ButtonSegment(value: 0, label: Text('Song')),
                 ButtonSegment(value: 1, label: Text('Scripture')),
-                ButtonSegment(value: 2, label: Text('Blank Screen')),
-                ButtonSegment(value: 3, label: Text('Window')),
+                ButtonSegment(value: 2, label: Text('Dual Scripture')),
+                ButtonSegment(value: 3, label: Text('Blank Screen')),
+                ButtonSegment(value: 4, label: Text('Window')),
               ],
               selected: {_editTabIndex},
               onSelectionChanged: (set) {
@@ -483,7 +489,7 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
               children: [
                 _buildAspectRatioSelector(),
                 const SizedBox(height: 12),
-                if (_editTabIndex != 2 && _editTabIndex != 3) ...[
+                if (_editTabIndex == 0 || _editTabIndex == 1 || _editTabIndex == 2) ...[
                   Align(
                     alignment: Alignment.centerLeft,
                     child: ElevatedButton.icon(
@@ -506,33 +512,50 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
         Expanded(
           flex: 1,
           child: Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+            color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
             child: Column(
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
-                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? _buildTitleSettings() : const SizedBox.shrink(),
+                if (_editTabIndex == 0 || _editTabIndex == 1) ...[
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
+                      child: _buildTitleSettings(),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: (_editTabIndex != 2 && _editTabIndex != 3) ? _buildBodySettings() : const SizedBox.shrink(),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildBodySettings(),
+                    ),
                   ),
-                ),
+                ] else if (_editTabIndex == 2) ...[
+                  Expanded(
+                    child: _buildDualScriptureSettings(),
+                  ),
+                ] else ...[
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'No typography controls needed for this slide mode.',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                    ),
+                  ),
+                ],
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.save),
-                    label: Text('Save ${_editTabIndex == 0 ? 'Song' : _editTabIndex == 1 ? 'Scripture' : _editTabIndex == 2 ? 'Blank Screen' : 'Window'} Settings'),
+                    label: Text(
+                      'Save ${_editTabIndex == 0 ? 'Song' : _editTabIndex == 1 ? 'Scripture' : _editTabIndex == 2 ? 'Dual Scripture' : _editTabIndex == 3 ? 'Blank Screen' : 'Window'} Settings',
+                    ),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(48),
                     ),
                     onPressed: () {
                       final s = ref.read(editingPresetProvider);
                       // Validation
-                      if (_editTabIndex != 2 && _editTabIndex != 3) {
+                      if (_editTabIndex == 0 || _editTabIndex == 1) {
                         bool isValid = s.titleFontFamily.isNotEmpty && s.titleFontSize > 0 &&
                                       s.lyricsFontFamily.isNotEmpty && s.lyricsFontSize > 0 &&
                                       s.chapterFontFamily.isNotEmpty && s.chapterFontSize > 0 &&
@@ -543,7 +566,21 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                             const SnackBar(
                               content: Text('Please ensure Font and Size are selected for all sections.'),
                               backgroundColor: Colors.red,
-                            )
+                            ),
+                          );
+                          return;
+                        }
+                      } else if (_editTabIndex == 2) {
+                        bool isValid = s.dualChapterFontFamily.isNotEmpty && s.dualChapterFontSize > 0 &&
+                                      s.primaryVerseFontFamily.isNotEmpty && s.primaryVerseFontSize > 0 &&
+                                      s.secVerseFontFamily.isNotEmpty && s.secVerseFontSize > 0;
+                        
+                        if (!isValid) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please ensure Font and Size are selected for all Dual Scripture sections.'),
+                              backgroundColor: Colors.red,
+                            ),
                           );
                           return;
                         }
@@ -559,6 +596,371 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDualScriptureSettings() {
+    final settings = ref.watch(editingPresetProvider);
+    final notifier = ref.read(editingPresetProvider.notifier);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Layout & Partitioning Controls
+          Card(
+            color: Colors.white.withValues(alpha: 0.05),
+            margin: const EdgeInsets.only(bottom: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Dual Scripture Layout', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Direction: '),
+                      const SizedBox(width: 8),
+                      SegmentedButton<String>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          ButtonSegment(value: 'topBottom', label: Text('Top-Bottom')),
+                          ButtonSegment(value: 'sideBySide', label: Text('Side-by-Side')),
+                        ],
+                        selected: {settings.dualScriptureLayoutDirection},
+                        onSelectionChanged: (set) {
+                          notifier.updateDualScriptureLayoutDirection(set.first);
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Primary Position: '),
+                      const SizedBox(width: 8),
+                      SegmentedButton<String>(
+                        showSelectedIcon: false,
+                        segments: settings.dualScriptureLayoutDirection == 'topBottom'
+                            ? const [
+                                ButtonSegment(value: 'top', label: Text('Top')),
+                                ButtonSegment(value: 'bottom', label: Text('Bottom')),
+                              ]
+                            : const [
+                                ButtonSegment(value: 'left', label: Text('Left')),
+                                ButtonSegment(value: 'right', label: Text('Right')),
+                              ],
+                        selected: {
+                          settings.dualScriptureLayoutDirection == 'topBottom'
+                              ? (settings.dualScripturePrimaryPosition == 'bottom' ? 'bottom' : 'top')
+                              : (settings.dualScripturePrimaryPosition == 'right' ? 'right' : 'left')
+                        },
+                        onSelectionChanged: (set) {
+                          notifier.updateDualScripturePrimaryPosition(set.first);
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text('Primary Box Ratio: ${(settings.dualScripturePrimaryRatio * 100).round()}%'),
+                      Expanded(
+                        child: Slider(
+                          value: settings.dualScripturePrimaryRatio.clamp(0.2, 0.8),
+                          min: 0.2,
+                          max: 0.8,
+                          divisions: 12,
+                          label: '${(settings.dualScripturePrimaryRatio * 100).round()}%',
+                          onChanged: (val) {
+                            notifier.updateDualScripturePrimaryRatio(val);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 2. Dual Chapter Typography Box
+          Card(
+            color: Colors.white.withValues(alpha: 0.05),
+            margin: const EdgeInsets.only(bottom: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text('Chapter Header', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      const Spacer(),
+                      Checkbox(
+                        value: settings.showDualChapter,
+                        onChanged: (v) => notifier.updateShowDualChapter(v ?? true),
+                      ),
+                      const Text('Show Chapter'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      _showTypographyDialog(
+                        context: context,
+                        initialFontFamily: settings.dualChapterFontFamily,
+                        initialFontSize: settings.dualChapterFontSize,
+                        initialFontColor: settings.dualChapterFontColor,
+                        initialBold: settings.dualChapterBold,
+                        initialItalic: settings.dualChapterItalic,
+                        initialUnderline: settings.dualChapterUnderline,
+                        initialHasFill: settings.dualChapterHasFill,
+                        initialFillColor: settings.dualChapterFillColor,
+                        initialHasStroke: settings.dualChapterHasStroke,
+                        initialStrokeColor: settings.dualChapterStrokeColor,
+                        initialLineHeight: settings.dualChapterLineHeight,
+                        initialStrokeWidth: settings.dualChapterStrokeWidth,
+                        initialHasShadow: settings.dualChapterHasShadow,
+                        initialShadowColor: settings.dualChapterShadowColor,
+                        initialShadowOffsetX: settings.dualChapterShadowOffsetX,
+                        initialShadowOffsetY: settings.dualChapterShadowOffsetY,
+                        initialShadowRadius: settings.dualChapterShadowRadius,
+                        onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
+                          final cs = ref.read(editingPresetProvider);
+                          if (fontFamily != null) notifier.updateDualChapterFontFamily(fontFamily);
+                          if (fontSize != null) notifier.updateDualChapterFontSize(fontSize);
+                          if (fontColor != null) notifier.updateDualChapterFontColor(fontColor);
+                          if (bold != null) notifier.updateDualChapterBold(bold);
+                          if (italic != null) notifier.updateDualChapterItalic(italic);
+                          if (underline != null) notifier.updateDualChapterUnderline(underline);
+                          if (hasFill != null || fillColor != null) {
+                            notifier.updateDualChapterFill(hasFill ?? cs.dualChapterHasFill, fillColor ?? cs.dualChapterFillColor);
+                          }
+                          if (hasStroke != null || strokeColor != null) {
+                            notifier.updateDualChapterStroke(hasStroke ?? cs.dualChapterHasStroke, strokeColor ?? cs.dualChapterStrokeColor);
+                          }
+                          if (lineHeight != null) notifier.updateDualChapterLineHeight(lineHeight);
+                          if (strokeWidth != null) notifier.updateDualChapterStrokeWidth(strokeWidth);
+                          if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                            notifier.updateDualChapterShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius);
+                          }
+                        },
+                      );
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Chapter Typography',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      child: Text('${settings.dualChapterFontFamily} ${settings.dualChapterFontSize.toInt()}pt'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildAlignmentGridWidget(settings.dualChapterAlignment, settings.dualChapterVerticalAlignment, (h, v) {
+                        notifier.updateDualChapterAlignment(h);
+                        notifier.updateDualChapterVerticalAlignment(v);
+                      }),
+                      const SizedBox(width: 16),
+                      _buildMarginMatrixWidget(
+                        settings.dualChapterMarginTop,
+                        settings.dualChapterMarginBottom,
+                        settings.dualChapterMarginLeft,
+                        settings.dualChapterMarginRight,
+                        'dual_chapter',
+                        ({b, l, r, t}) {
+                          notifier.updateDualChapterMargins(top: t, bottom: b, left: l, right: r);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 3. Primary Verse Typography Box
+          Card(
+            color: Colors.white.withValues(alpha: 0.05),
+            margin: const EdgeInsets.only(bottom: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Primary Verse', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      _showTypographyDialog(
+                        context: context,
+                        initialFontFamily: settings.primaryVerseFontFamily,
+                        initialFontSize: settings.primaryVerseFontSize,
+                        initialFontColor: settings.primaryVerseFontColor,
+                        initialBold: settings.primaryVerseBold,
+                        initialItalic: settings.primaryVerseItalic,
+                        initialUnderline: settings.primaryVerseUnderline,
+                        initialHasFill: settings.primaryVerseHasFill,
+                        initialFillColor: settings.primaryVerseFillColor,
+                        initialHasStroke: settings.primaryVerseHasStroke,
+                        initialStrokeColor: settings.primaryVerseStrokeColor,
+                        initialLineHeight: settings.primaryVerseLineHeight,
+                        initialStrokeWidth: settings.primaryVerseStrokeWidth,
+                        initialHasShadow: settings.primaryVerseHasShadow,
+                        initialShadowColor: settings.primaryVerseShadowColor,
+                        initialShadowOffsetX: settings.primaryVerseShadowOffsetX,
+                        initialShadowOffsetY: settings.primaryVerseShadowOffsetY,
+                        initialShadowRadius: settings.primaryVerseShadowRadius,
+                        onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
+                          final cs = ref.read(editingPresetProvider);
+                          if (fontFamily != null) notifier.updatePrimaryVerseFontFamily(fontFamily);
+                          if (fontSize != null) notifier.updatePrimaryVerseFontSize(fontSize);
+                          if (fontColor != null) notifier.updatePrimaryVerseFontColor(fontColor);
+                          if (bold != null) notifier.updatePrimaryVerseBold(bold);
+                          if (italic != null) notifier.updatePrimaryVerseItalic(italic);
+                          if (underline != null) notifier.updatePrimaryVerseUnderline(underline);
+                          if (hasFill != null || fillColor != null) {
+                            notifier.updatePrimaryVerseFill(hasFill ?? cs.primaryVerseHasFill, fillColor ?? cs.primaryVerseFillColor);
+                          }
+                          if (hasStroke != null || strokeColor != null) {
+                            notifier.updatePrimaryVerseStroke(hasStroke ?? cs.primaryVerseHasStroke, strokeColor ?? cs.primaryVerseStrokeColor);
+                          }
+                          if (lineHeight != null) notifier.updatePrimaryVerseLineHeight(lineHeight);
+                          if (strokeWidth != null) notifier.updatePrimaryVerseStrokeWidth(strokeWidth);
+                          if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                            notifier.updatePrimaryVerseShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius);
+                          }
+                        },
+                      );
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Primary Verse Typography',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      child: Text('${settings.primaryVerseFontFamily} ${settings.primaryVerseFontSize.toInt()}pt'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildAlignmentGridWidget(settings.primaryVerseAlignment, settings.primaryVerseVerticalAlignment, (h, v) {
+                        notifier.updatePrimaryVerseAlignment(h);
+                        notifier.updatePrimaryVerseVerticalAlignment(v);
+                      }),
+                      const SizedBox(width: 16),
+                      _buildMarginMatrixWidget(
+                        settings.primaryVerseMarginTop,
+                        settings.primaryVerseMarginBottom,
+                        settings.primaryVerseMarginLeft,
+                        settings.primaryVerseMarginRight,
+                        'primary_verse',
+                        ({b, l, r, t}) {
+                          notifier.updatePrimaryVerseMargins(top: t, bottom: b, left: l, right: r);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 4. Secondary Verse Typography Box
+          Card(
+            color: Colors.white.withValues(alpha: 0.05),
+            margin: const EdgeInsets.only(bottom: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Secondary Verse', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      _showTypographyDialog(
+                        context: context,
+                        initialFontFamily: settings.secVerseFontFamily,
+                        initialFontSize: settings.secVerseFontSize,
+                        initialFontColor: settings.secVerseFontColor,
+                        initialBold: settings.secVerseBold,
+                        initialItalic: settings.secVerseItalic,
+                        initialUnderline: settings.secVerseUnderline,
+                        initialHasFill: settings.secVerseHasFill,
+                        initialFillColor: settings.secVerseFillColor,
+                        initialHasStroke: settings.secVerseHasStroke,
+                        initialStrokeColor: settings.secVerseStrokeColor,
+                        initialLineHeight: settings.secVerseLineHeight,
+                        initialStrokeWidth: settings.secVerseStrokeWidth,
+                        initialHasShadow: settings.secVerseHasShadow,
+                        initialShadowColor: settings.secVerseShadowColor,
+                        initialShadowOffsetX: settings.secVerseShadowOffsetX,
+                        initialShadowOffsetY: settings.secVerseShadowOffsetY,
+                        initialShadowRadius: settings.secVerseShadowRadius,
+                        onChanged: ({fontFamily, fontSize, fontColor, bold, italic, underline, hasFill, fillColor, hasStroke, strokeColor, lineHeight, strokeWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowRadius, lineBreak}) {
+                          final cs = ref.read(editingPresetProvider);
+                          if (fontFamily != null) notifier.updateSecVerseFontFamily(fontFamily);
+                          if (fontSize != null) notifier.updateSecVerseFontSize(fontSize);
+                          if (fontColor != null) notifier.updateSecVerseFontColor(fontColor);
+                          if (bold != null) notifier.updateSecVerseBold(bold);
+                          if (italic != null) notifier.updateSecVerseItalic(italic);
+                          if (underline != null) notifier.updateSecVerseUnderline(underline);
+                          if (hasFill != null || fillColor != null) {
+                            notifier.updateSecVerseFill(hasFill ?? cs.secVerseHasFill, fillColor ?? cs.secVerseFillColor);
+                          }
+                          if (hasStroke != null || strokeColor != null) {
+                            notifier.updateSecVerseStroke(hasStroke ?? cs.secVerseHasStroke, strokeColor ?? cs.secVerseStrokeColor);
+                          }
+                          if (lineHeight != null) notifier.updateSecVerseLineHeight(lineHeight);
+                          if (strokeWidth != null) notifier.updateSecVerseStrokeWidth(strokeWidth);
+                          if (hasShadow != null || shadowColor != null || shadowOffsetX != null || shadowOffsetY != null || shadowRadius != null) {
+                            notifier.updateSecVerseShadow(hasShadow: hasShadow, color: shadowColor, offsetX: shadowOffsetX, offsetY: shadowOffsetY, radius: shadowRadius);
+                          }
+                        },
+                      );
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Secondary Verse Typography',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      child: Text('${settings.secVerseFontFamily} ${settings.secVerseFontSize.toInt()}pt'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildAlignmentGridWidget(settings.secVerseAlignment, settings.secVerseVerticalAlignment, (h, v) {
+                        notifier.updateSecVerseAlignment(h);
+                        notifier.updateSecVerseVerticalAlignment(v);
+                      }),
+                      const SizedBox(width: 16),
+                      _buildMarginMatrixWidget(
+                        settings.secVerseMarginTop,
+                        settings.secVerseMarginBottom,
+                        settings.secVerseMarginLeft,
+                        settings.secVerseMarginRight,
+                        'sec_verse',
+                        ({b, l, r, t}) {
+                          notifier.updateSecVerseMargins(top: t, bottom: b, left: l, right: r);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -842,12 +1244,17 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
-    final isBlank = _editTabIndex == 2;
-    final isWindow = _editTabIndex == 3;
+    final isDual = _editTabIndex == 2;
+    final isBlank = _editTabIndex == 3;
+    final isWindow = _editTabIndex == 4;
 
     final aspectRatio = isBlank
         ? settings.blankAspectRatio
-        : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
+        : (isWindow
+            ? settings.windowAspectRatio
+            : (isDual
+                ? settings.dualScriptureAspectRatio
+                : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio)));
 
     return Row(
       children: [
@@ -908,27 +1315,52 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final settings = ref.watch(editingPresetProvider);
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
-    final isBlank = _editTabIndex == 2;
-    final isWindow = _editTabIndex == 3;
+    final isDual = _editTabIndex == 2;
+    final isBlank = _editTabIndex == 3;
+    final isWindow = _editTabIndex == 4;
 
-final isTransparent = isBlank
-    ? settings.isBlankTransparent
-    : (isWindow ? settings.isWindowTransparent : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent));
-final backgroundColor = isBlank
-    ? settings.blankBackgroundColor
-    : (isWindow ? settings.windowBackgroundColor : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor));
-final isImageEnabled = isBlank
-    ? settings.isBlankImageEnabled
-    : (isWindow ? settings.isWindowImageEnabled : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled));
-final backgroundImage = isBlank
-    ? settings.blankBackgroundImage
-    : (isWindow ? settings.windowBackgroundImage : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage));
-final backgroundImageLayout = isBlank
-    ? settings.blankBackgroundImageLayout
-    : (isWindow ? settings.windowBackgroundImageLayout : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout));
-final backgroundImageAlignment = isBlank
-    ? settings.blankBackgroundImageAlignment
-    : (isWindow ? settings.windowBackgroundImageAlignment : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment));
+    final isTransparent = isBlank
+        ? settings.isBlankTransparent
+        : (isWindow
+            ? settings.isWindowTransparent
+            : (isDual
+                ? settings.isDualScriptureTransparent
+                : (isSong ? settings.isSongTransparent : settings.isScriptureTransparent)));
+    final backgroundColor = isBlank
+        ? settings.blankBackgroundColor
+        : (isWindow
+            ? settings.windowBackgroundColor
+            : (isDual
+                ? settings.dualScriptureBackgroundColor
+                : (isSong ? settings.songBackgroundColor : settings.scriptureBackgroundColor)));
+    final isImageEnabled = isBlank
+        ? settings.isBlankImageEnabled
+        : (isWindow
+            ? settings.isWindowImageEnabled
+            : (isDual
+                ? settings.isDualScriptureImageEnabled
+                : (isSong ? settings.isSongImageEnabled : settings.isScriptureImageEnabled)));
+    final backgroundImage = isBlank
+        ? settings.blankBackgroundImage
+        : (isWindow
+            ? settings.windowBackgroundImage
+            : (isDual
+                ? settings.dualScriptureBackgroundImage
+                : (isSong ? settings.songBackgroundImage : settings.scriptureBackgroundImage)));
+    final backgroundImageLayout = isBlank
+        ? settings.blankBackgroundImageLayout
+        : (isWindow
+            ? settings.windowBackgroundImageLayout
+            : (isDual
+                ? settings.dualScriptureBackgroundImageLayout
+                : (isSong ? settings.songBackgroundImageLayout : settings.scriptureBackgroundImageLayout)));
+    final backgroundImageAlignment = isBlank
+        ? settings.blankBackgroundImageAlignment
+        : (isWindow
+            ? settings.windowBackgroundImageAlignment
+            : (isDual
+                ? settings.dualScriptureBackgroundImageAlignment
+                : (isSong ? settings.songBackgroundImageAlignment : settings.scriptureBackgroundImageAlignment)));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1501,33 +1933,52 @@ final backgroundImageAlignment = isBlank
   Widget _buildPreviewPane() {
     final settings = ref.watch(editingPresetProvider);
     final isSong = _editTabIndex == 0;
-    final isBlank = _editTabIndex == 2;
-    final isWindow = _editTabIndex == 3;
+    final isDual = _editTabIndex == 2;
+    final isBlank = _editTabIndex == 3;
+    final isWindow = _editTabIndex == 4;
 
-final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
-final previewText = isBlank
-    ? ""
-    : (isWindow
-        ? "WINDOW:preview|Window%20Preview|contain|0"
-        : (isSong
-            ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
-            : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."));
+    final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
+    final previewText = isBlank
+        ? ""
+        : (isWindow
+            ? "WINDOW:preview|Window%20Preview|contain|0"
+            : (isDual
+                ? "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+                : (isSong
+                    ? "Amazing grace how sweet the sound\nThat saved a wretch like me"
+                    : "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.")));
 
-final aspectRatioStr = isBlank
-    ? settings.blankAspectRatio
-    : (isWindow ? settings.windowAspectRatio : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio));
-double aspectRatio = 16 / 9;
-if (aspectRatioStr == '4:3') {
-  aspectRatio = 4 / 3;
-} else if (aspectRatioStr == '4:1') {
-  aspectRatio = 4 / 1;
-} else if (aspectRatioStr == 'Custom') {
-  final w = isBlank
-      ? settings.blankCustomWidth
-      : (isWindow ? settings.windowCustomWidth : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth));
-  final h = isBlank
-      ? settings.blankCustomHeight
-      : (isWindow ? settings.windowCustomHeight : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight));
+    final previewSecText = isDual
+        ? "Because God loved the world so much, he gave his one and only Son, so that everyone who believes in him will not perish but have eternal life."
+        : null;
+
+    final aspectRatioStr = isBlank
+        ? settings.blankAspectRatio
+        : (isWindow
+            ? settings.windowAspectRatio
+            : (isDual
+                ? settings.dualScriptureAspectRatio
+                : (isSong ? settings.songAspectRatio : settings.scriptureAspectRatio)));
+    double aspectRatio = 16 / 9;
+    if (aspectRatioStr == '4:3') {
+      aspectRatio = 4 / 3;
+    } else if (aspectRatioStr == '4:1') {
+      aspectRatio = 4 / 1;
+    } else if (aspectRatioStr == 'Custom') {
+      final w = isBlank
+          ? settings.blankCustomWidth
+          : (isWindow
+              ? settings.windowCustomWidth
+              : (isDual
+                  ? settings.dualScriptureCustomWidth
+                  : (isSong ? settings.songCustomWidth : settings.scriptureCustomWidth)));
+      final h = isBlank
+          ? settings.blankCustomHeight
+          : (isWindow
+              ? settings.windowCustomHeight
+              : (isDual
+                  ? settings.dualScriptureCustomHeight
+                  : (isSong ? settings.songCustomHeight : settings.scriptureCustomHeight)));
       aspectRatio = (w > 0 && h > 0) ? w / h : 16 / 9;
     }
 
@@ -1541,8 +1992,11 @@ if (aspectRatioStr == '4:3') {
           child: ProjectorView(
             settings: settings,
             activeSlideText: previewText,
+            secondarySlideText: previewSecText,
             titleText: previewTitle,
             isSong: isSong,
+            isDualVersion: isDual,
+            isPreviewMode: true,
             showCheckerboard: true,
           ),
         ),

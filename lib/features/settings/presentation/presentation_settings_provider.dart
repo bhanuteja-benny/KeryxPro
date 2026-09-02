@@ -136,8 +136,10 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureAspectRatio = ratio;
     } else if (tabIndex == 2) {
-      state = cloneState(state)..blankAspectRatio = ratio;
+      state = cloneState(state)..dualScriptureAspectRatio = ratio;
     } else if (tabIndex == 3) {
+      state = cloneState(state)..blankAspectRatio = ratio;
+    } else if (tabIndex == 4) {
       state = cloneState(state)..windowAspectRatio = ratio;
     }
   }
@@ -148,8 +150,10 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureCustomWidth = w;
     } else if (tabIndex == 2) {
-      state = cloneState(state)..blankCustomWidth = w;
+      state = cloneState(state)..dualScriptureCustomWidth = w;
     } else if (tabIndex == 3) {
+      state = cloneState(state)..blankCustomWidth = w;
+    } else if (tabIndex == 4) {
       state = cloneState(state)..windowCustomWidth = w;
     }
   }
@@ -160,12 +164,15 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 1) {
       state = cloneState(state)..scriptureCustomHeight = h;
     } else if (tabIndex == 2) {
-      state = cloneState(state)..blankCustomHeight = h;
+      state = cloneState(state)..dualScriptureCustomHeight = h;
     } else if (tabIndex == 3) {
+      state = cloneState(state)..blankCustomHeight = h;
+    } else if (tabIndex == 4) {
       state = cloneState(state)..windowCustomHeight = h;
     }
   }
-  // Background updates now take an int to distinguish song/scripture/blank
+
+  // Background updates take an int tabIndex
   void updateBackgroundColor(int color, int tabIndex) {
     final s = cloneState(state);
     if (tabIndex == 0) {
@@ -175,9 +182,12 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       s.scriptureBackgroundColor = color;
       s.isScriptureTransparent = false;
     } else if (tabIndex == 2) {
+      s.dualScriptureBackgroundColor = color;
+      s.isDualScriptureTransparent = false;
+    } else if (tabIndex == 3) {
       s.blankBackgroundColor = color;
       s.isBlankTransparent = false;
-    } else if (tabIndex == 3) {
+    } else if (tabIndex == 4) {
       s.windowBackgroundColor = color;
       s.isWindowTransparent = false;
     }   
@@ -197,11 +207,16 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       s.scriptureBackgroundImageAlignment = alignment;
       s.isScriptureImageEnabled = true;
     } else if (tabIndex == 2) {
+      s.dualScriptureBackgroundImage = path;
+      s.dualScriptureBackgroundImageLayout = layout;
+      s.dualScriptureBackgroundImageAlignment = alignment;
+      s.isDualScriptureImageEnabled = true;
+    } else if (tabIndex == 3) {
       s.blankBackgroundImage = path;
       s.blankBackgroundImageLayout = layout;
       s.blankBackgroundImageAlignment = alignment;
       s.isBlankImageEnabled = true;
-    } else if (tabIndex == 3) {
+    } else if (tabIndex == 4) {
       s.windowBackgroundImage = path;
       s.windowBackgroundImageLayout = layout;
       s.windowBackgroundImageAlignment = alignment;
@@ -217,8 +232,10 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 1) {
       s.isScriptureImageEnabled = enabled;
     } else if (tabIndex == 2) {
-      s.isBlankImageEnabled = enabled;
+      s.isDualScriptureImageEnabled = enabled;
     } else if (tabIndex == 3) {
+      s.isBlankImageEnabled = enabled;
+    } else if (tabIndex == 4) {
       s.isWindowImageEnabled = enabled;
     }   
     state = s;
@@ -231,12 +248,19 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     } else if (tabIndex == 1) {
       s.isScriptureTransparent = transparent;
     } else if (tabIndex == 2) {
-      s.isBlankTransparent = transparent;
+      s.isDualScriptureTransparent = transparent;
     } else if (tabIndex == 3) {
+      s.isBlankTransparent = transparent;
+    } else if (tabIndex == 4) {
       s.isWindowTransparent = transparent;
     }   
     state = s;
   }
+
+  // Dual Scripture Layout Updates
+  void updateDualScriptureLayoutDirection(String dir) => state = cloneState(state)..dualScriptureLayoutDirection = dir;
+  void updateDualScripturePrimaryPosition(String pos) => state = cloneState(state)..dualScripturePrimaryPosition = pos;
+  void updateDualScripturePrimaryRatio(double ratio) => state = cloneState(state)..dualScripturePrimaryRatio = ratio;
 
   // Title Updates
   void updateShowTitle(bool show) => state = cloneState(state)..showTitle = show;
@@ -334,6 +358,38 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     state = s;
   }
 
+  // Dual Chapter Updates
+  void updateShowDualChapter(bool show) => state = cloneState(state)..showDualChapter = show;
+  void updateDualChapterAlignment(String horizontal) => state = cloneState(state)..dualChapterAlignment = horizontal;
+  void updateDualChapterVerticalAlignment(String vertical) => state = cloneState(state)..dualChapterVerticalAlignment = vertical;
+  void updateDualChapterFontSize(double size) => state = cloneState(state)..dualChapterFontSize = size;
+  void updateDualChapterFontFamily(String family) => state = cloneState(state)..dualChapterFontFamily = family;
+  void updateDualChapterFontColor(int color) => state = cloneState(state)..dualChapterFontColor = color;
+  void updateDualChapterBold(bool v) => state = cloneState(state)..dualChapterBold = v;
+  void updateDualChapterItalic(bool v) => state = cloneState(state)..dualChapterItalic = v;
+  void updateDualChapterUnderline(bool v) => state = cloneState(state)..dualChapterUnderline = v;
+  void updateDualChapterFill(bool hasFill, int color) => state = cloneState(state)..dualChapterHasFill = hasFill..dualChapterFillColor = color;
+  void updateDualChapterStroke(bool hasStroke, int color) => state = cloneState(state)..dualChapterHasStroke = hasStroke..dualChapterStrokeColor = color;
+  void updateDualChapterLineHeight(double v) => state = cloneState(state)..dualChapterLineHeight = v;
+  void updateDualChapterStrokeWidth(double v) => state = cloneState(state)..dualChapterStrokeWidth = v;
+  void updateDualChapterShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.dualChapterHasShadow = hasShadow;
+    if (color != null) s.dualChapterShadowColor = color;
+    if (offsetX != null) s.dualChapterShadowOffsetX = offsetX;
+    if (offsetY != null) s.dualChapterShadowOffsetY = offsetY;
+    if (radius != null) s.dualChapterShadowRadius = radius;
+    state = s;
+  }
+  void updateDualChapterMargins({double? top, double? bottom, double? left, double? right}) {
+    final s = cloneState(state);
+    if (top != null) s.dualChapterMarginTop = top;
+    if (bottom != null) s.dualChapterMarginBottom = bottom;
+    if (left != null) s.dualChapterMarginLeft = left;
+    if (right != null) s.dualChapterMarginRight = right;
+    state = s;
+  }
+
   // Verse Updates
   void updateVerseAlignment(String alignment) => state = cloneState(state)..verseAlignment = alignment;
   void updateVerseVerticalAlignment(String alignment) => state = cloneState(state)..verseVerticalAlignment = alignment;
@@ -365,6 +421,68 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     state = s;
   }
 
+  // Primary Verse Updates (Dual Scripture)
+  void updatePrimaryVerseAlignment(String alignment) => state = cloneState(state)..primaryVerseAlignment = alignment;
+  void updatePrimaryVerseVerticalAlignment(String alignment) => state = cloneState(state)..primaryVerseVerticalAlignment = alignment;
+  void updatePrimaryVerseFontSize(double size) => state = cloneState(state)..primaryVerseFontSize = size;
+  void updatePrimaryVerseFontFamily(String family) => state = cloneState(state)..primaryVerseFontFamily = family;
+  void updatePrimaryVerseFontColor(int color) => state = cloneState(state)..primaryVerseFontColor = color;
+  void updatePrimaryVerseBold(bool v) => state = cloneState(state)..primaryVerseBold = v;
+  void updatePrimaryVerseItalic(bool v) => state = cloneState(state)..primaryVerseItalic = v;
+  void updatePrimaryVerseUnderline(bool v) => state = cloneState(state)..primaryVerseUnderline = v;
+  void updatePrimaryVerseFill(bool hasFill, int color) => state = cloneState(state)..primaryVerseHasFill = hasFill..primaryVerseFillColor = color;
+  void updatePrimaryVerseStroke(bool hasStroke, int color) => state = cloneState(state)..primaryVerseHasStroke = hasStroke..primaryVerseStrokeColor = color;
+  void updatePrimaryVerseLineHeight(double v) => state = cloneState(state)..primaryVerseLineHeight = v;
+  void updatePrimaryVerseStrokeWidth(double v) => state = cloneState(state)..primaryVerseStrokeWidth = v;
+  void updatePrimaryVerseShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.primaryVerseHasShadow = hasShadow;
+    if (color != null) s.primaryVerseShadowColor = color;
+    if (offsetX != null) s.primaryVerseShadowOffsetX = offsetX;
+    if (offsetY != null) s.primaryVerseShadowOffsetY = offsetY;
+    if (radius != null) s.primaryVerseShadowRadius = radius;
+    state = s;
+  }
+  void updatePrimaryVerseMargins({double? top, double? bottom, double? left, double? right}) {
+    final s = cloneState(state);
+    if (top != null) s.primaryVerseMarginTop = top;
+    if (bottom != null) s.primaryVerseMarginBottom = bottom;
+    if (left != null) s.primaryVerseMarginLeft = left;
+    if (right != null) s.primaryVerseMarginRight = right;
+    state = s;
+  }
+
+  // Secondary Verse Updates (Dual Scripture)
+  void updateSecVerseAlignment(String alignment) => state = cloneState(state)..secVerseAlignment = alignment;
+  void updateSecVerseVerticalAlignment(String alignment) => state = cloneState(state)..secVerseVerticalAlignment = alignment;
+  void updateSecVerseFontSize(double size) => state = cloneState(state)..secVerseFontSize = size;
+  void updateSecVerseFontFamily(String family) => state = cloneState(state)..secVerseFontFamily = family;
+  void updateSecVerseFontColor(int color) => state = cloneState(state)..secVerseFontColor = color;
+  void updateSecVerseBold(bool v) => state = cloneState(state)..secVerseBold = v;
+  void updateSecVerseItalic(bool v) => state = cloneState(state)..secVerseItalic = v;
+  void updateSecVerseUnderline(bool v) => state = cloneState(state)..secVerseUnderline = v;
+  void updateSecVerseFill(bool hasFill, int color) => state = cloneState(state)..secVerseHasFill = hasFill..secVerseFillColor = color;
+  void updateSecVerseStroke(bool hasStroke, int color) => state = cloneState(state)..secVerseHasStroke = hasStroke..secVerseStrokeColor = color;
+  void updateSecVerseLineHeight(double v) => state = cloneState(state)..secVerseLineHeight = v;
+  void updateSecVerseStrokeWidth(double v) => state = cloneState(state)..secVerseStrokeWidth = v;
+  void updateSecVerseShadow({bool? hasShadow, int? color, double? offsetX, double? offsetY, double? radius}) {
+    final s = cloneState(state);
+    if (hasShadow != null) s.secVerseHasShadow = hasShadow;
+    if (color != null) s.secVerseShadowColor = color;
+    if (offsetX != null) s.secVerseShadowOffsetX = offsetX;
+    if (offsetY != null) s.secVerseShadowOffsetY = offsetY;
+    if (radius != null) s.secVerseShadowRadius = radius;
+    state = s;
+  }
+  void updateSecVerseMargins({double? top, double? bottom, double? left, double? right}) {
+    final s = cloneState(state);
+    if (top != null) s.secVerseMarginTop = top;
+    if (bottom != null) s.secVerseMarginBottom = bottom;
+    if (left != null) s.secVerseMarginLeft = left;
+    if (right != null) s.secVerseMarginRight = right;
+    state = s;
+  }
+
   PresentationSettings cloneState(PresentationSettings src) {
     return PresentationSettings()
       ..id = src.id
@@ -376,6 +494,9 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..scriptureAspectRatio = src.scriptureAspectRatio
       ..scriptureCustomWidth = src.scriptureCustomWidth
       ..scriptureCustomHeight = src.scriptureCustomHeight
+      ..dualScriptureAspectRatio = src.dualScriptureAspectRatio
+      ..dualScriptureCustomWidth = src.dualScriptureCustomWidth
+      ..dualScriptureCustomHeight = src.dualScriptureCustomHeight
       ..isSongImageEnabled = src.isSongImageEnabled
       ..isSongTransparent = src.isSongTransparent
       ..songBackgroundColor = src.songBackgroundColor
@@ -388,6 +509,15 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..scriptureBackgroundImage = src.scriptureBackgroundImage
       ..scriptureBackgroundImageLayout = src.scriptureBackgroundImageLayout
       ..scriptureBackgroundImageAlignment = src.scriptureBackgroundImageAlignment
+      ..isDualScriptureImageEnabled = src.isDualScriptureImageEnabled
+      ..isDualScriptureTransparent = src.isDualScriptureTransparent
+      ..dualScriptureBackgroundColor = src.dualScriptureBackgroundColor
+      ..dualScriptureBackgroundImage = src.dualScriptureBackgroundImage
+      ..dualScriptureBackgroundImageLayout = src.dualScriptureBackgroundImageLayout
+      ..dualScriptureBackgroundImageAlignment = src.dualScriptureBackgroundImageAlignment
+      ..dualScriptureLayoutDirection = src.dualScriptureLayoutDirection
+      ..dualScripturePrimaryPosition = src.dualScripturePrimaryPosition
+      ..dualScripturePrimaryRatio = src.dualScripturePrimaryRatio
       ..blankAspectRatio = src.blankAspectRatio
       ..blankCustomWidth = src.blankCustomWidth
       ..blankCustomHeight = src.blankCustomHeight
@@ -500,6 +630,76 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..verseMarginTop = src.verseMarginTop
       ..verseMarginBottom = src.verseMarginBottom
       ..verseMarginLeft = src.verseMarginLeft
-      ..verseMarginRight = src.verseMarginRight;
+      ..verseMarginRight = src.verseMarginRight
+      ..showDualChapter = src.showDualChapter
+      ..dualChapterAlignment = src.dualChapterAlignment
+      ..dualChapterVerticalAlignment = src.dualChapterVerticalAlignment
+      ..dualChapterFontSize = src.dualChapterFontSize
+      ..dualChapterFontFamily = src.dualChapterFontFamily
+      ..dualChapterFontColor = src.dualChapterFontColor
+      ..dualChapterBold = src.dualChapterBold
+      ..dualChapterItalic = src.dualChapterItalic
+      ..dualChapterUnderline = src.dualChapterUnderline
+      ..dualChapterHasFill = src.dualChapterHasFill
+      ..dualChapterFillColor = src.dualChapterFillColor
+      ..dualChapterHasStroke = src.dualChapterHasStroke
+      ..dualChapterStrokeColor = src.dualChapterStrokeColor
+      ..dualChapterLineHeight = src.dualChapterLineHeight
+      ..dualChapterStrokeWidth = src.dualChapterStrokeWidth
+      ..dualChapterHasShadow = src.dualChapterHasShadow
+      ..dualChapterShadowColor = src.dualChapterShadowColor
+      ..dualChapterShadowOffsetX = src.dualChapterShadowOffsetX
+      ..dualChapterShadowOffsetY = src.dualChapterShadowOffsetY
+      ..dualChapterShadowRadius = src.dualChapterShadowRadius
+      ..dualChapterMarginTop = src.dualChapterMarginTop
+      ..dualChapterMarginBottom = src.dualChapterMarginBottom
+      ..dualChapterMarginLeft = src.dualChapterMarginLeft
+      ..dualChapterMarginRight = src.dualChapterMarginRight
+      ..primaryVerseAlignment = src.primaryVerseAlignment
+      ..primaryVerseVerticalAlignment = src.primaryVerseVerticalAlignment
+      ..primaryVerseFontSize = src.primaryVerseFontSize
+      ..primaryVerseFontFamily = src.primaryVerseFontFamily
+      ..primaryVerseFontColor = src.primaryVerseFontColor
+      ..primaryVerseBold = src.primaryVerseBold
+      ..primaryVerseItalic = src.primaryVerseItalic
+      ..primaryVerseUnderline = src.primaryVerseUnderline
+      ..primaryVerseHasFill = src.primaryVerseHasFill
+      ..primaryVerseFillColor = src.primaryVerseFillColor
+      ..primaryVerseHasStroke = src.primaryVerseHasStroke
+      ..primaryVerseStrokeColor = src.primaryVerseStrokeColor
+      ..primaryVerseLineHeight = src.primaryVerseLineHeight
+      ..primaryVerseStrokeWidth = src.primaryVerseStrokeWidth
+      ..primaryVerseHasShadow = src.primaryVerseHasShadow
+      ..primaryVerseShadowColor = src.primaryVerseShadowColor
+      ..primaryVerseShadowOffsetX = src.primaryVerseShadowOffsetX
+      ..primaryVerseShadowOffsetY = src.primaryVerseShadowOffsetY
+      ..primaryVerseShadowRadius = src.primaryVerseShadowRadius
+      ..primaryVerseMarginTop = src.primaryVerseMarginTop
+      ..primaryVerseMarginBottom = src.primaryVerseMarginBottom
+      ..primaryVerseMarginLeft = src.primaryVerseMarginLeft
+      ..primaryVerseMarginRight = src.primaryVerseMarginRight
+      ..secVerseAlignment = src.secVerseAlignment
+      ..secVerseVerticalAlignment = src.secVerseVerticalAlignment
+      ..secVerseFontSize = src.secVerseFontSize
+      ..secVerseFontFamily = src.secVerseFontFamily
+      ..secVerseFontColor = src.secVerseFontColor
+      ..secVerseBold = src.secVerseBold
+      ..secVerseItalic = src.secVerseItalic
+      ..secVerseUnderline = src.secVerseUnderline
+      ..secVerseHasFill = src.secVerseHasFill
+      ..secVerseFillColor = src.secVerseFillColor
+      ..secVerseHasStroke = src.secVerseHasStroke
+      ..secVerseStrokeColor = src.secVerseStrokeColor
+      ..secVerseLineHeight = src.secVerseLineHeight
+      ..secVerseStrokeWidth = src.secVerseStrokeWidth
+      ..secVerseHasShadow = src.secVerseHasShadow
+      ..secVerseShadowColor = src.secVerseShadowColor
+      ..secVerseShadowOffsetX = src.secVerseShadowOffsetX
+      ..secVerseShadowOffsetY = src.secVerseShadowOffsetY
+      ..secVerseShadowRadius = src.secVerseShadowRadius
+      ..secVerseMarginTop = src.secVerseMarginTop
+      ..secVerseMarginBottom = src.secVerseMarginBottom
+      ..secVerseMarginLeft = src.secVerseMarginLeft
+      ..secVerseMarginRight = src.secVerseMarginRight;
   }
 }

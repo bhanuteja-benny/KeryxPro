@@ -63,6 +63,99 @@ String windowBackgroundImageAlignment = 'center';
 bool isWindowImageEnabled = false;
 bool isWindowTransparent = false;
 
+  // View Settings (Dual Scripture)
+  String dualScriptureAspectRatio = '16:9';
+  double dualScriptureCustomWidth = 1920.0;
+  double dualScriptureCustomHeight = 1080.0;
+
+  int dualScriptureBackgroundColor = 0xFF000000;
+  String dualScriptureBackgroundImage = '';
+  String dualScriptureBackgroundImageLayout = 'stretch';
+  String dualScriptureBackgroundImageAlignment = 'center';
+  bool isDualScriptureImageEnabled = false;
+  bool isDualScriptureTransparent = false;
+
+  // Dual Scripture Layout Controls
+  String dualScriptureLayoutDirection = 'topBottom'; // 'topBottom', 'sideBySide'
+  String dualScripturePrimaryPosition = 'primaryFirst'; // 'primaryFirst', 'secondaryFirst'
+  double dualScripturePrimaryRatio = 50.0; // 20.0 to 80.0
+
+  // Chapter Settings (Dual Scripture)
+  bool showDualChapter = true;
+  String dualChapterAlignment = 'center';
+  String dualChapterVerticalAlignment = 'bottom';
+  double dualChapterFontSize = 24.0;
+  String dualChapterFontFamily = 'Arial';
+  int dualChapterFontColor = 0x8FFFFFFF; 
+  bool dualChapterBold = true;
+  bool dualChapterItalic = false;
+  bool dualChapterUnderline = false;
+  bool dualChapterHasFill = false;
+  int dualChapterFillColor = 0x00000000;
+  bool dualChapterHasStroke = false;
+  int dualChapterStrokeColor = 0xFF000000;
+  double dualChapterMarginTop = 16.0;
+  double dualChapterMarginBottom = 16.0;
+  double dualChapterMarginLeft = 16.0;
+  double dualChapterMarginRight = 16.0;
+  double dualChapterLineHeight = 1.2;
+  double dualChapterStrokeWidth = 0.08;
+  bool dualChapterHasShadow = false;
+  int dualChapterShadowColor = 0xFF000000;
+  double dualChapterShadowOffsetX = 2.0;
+  double dualChapterShadowOffsetY = 2.0;
+  double dualChapterShadowRadius = 4.0;
+
+  // Primary Verse Settings (Dual Scripture)
+  String primaryVerseAlignment = 'center';
+  String primaryVerseVerticalAlignment = 'center';
+  double primaryVerseFontSize = 60.0;
+  String primaryVerseFontFamily = 'Arial';
+  int primaryVerseFontColor = 0xFFFFFFFF;
+  bool primaryVerseBold = true;
+  bool primaryVerseItalic = false;
+  bool primaryVerseUnderline = false;
+  bool primaryVerseHasFill = false;
+  int primaryVerseFillColor = 0x00000000;
+  bool primaryVerseHasStroke = false;
+  int primaryVerseStrokeColor = 0xFF000000;
+  double primaryVerseMarginTop = 16.0;
+  double primaryVerseMarginBottom = 16.0;
+  double primaryVerseMarginLeft = 16.0;
+  double primaryVerseMarginRight = 16.0;
+  double primaryVerseLineHeight = 1.4;
+  double primaryVerseStrokeWidth = 0.08;
+  bool primaryVerseHasShadow = false;
+  int primaryVerseShadowColor = 0xFF000000;
+  double primaryVerseShadowOffsetX = 2.0;
+  double primaryVerseShadowOffsetY = 2.0;
+  double primaryVerseShadowRadius = 4.0;
+
+  // Secondary Verse Settings (Dual Scripture)
+  String secVerseAlignment = 'center';
+  String secVerseVerticalAlignment = 'center';
+  double secVerseFontSize = 60.0;
+  String secVerseFontFamily = 'Arial';
+  int secVerseFontColor = 0xFFFFFFFF;
+  bool secVerseBold = true;
+  bool secVerseItalic = false;
+  bool secVerseUnderline = false;
+  bool secVerseHasFill = false;
+  int secVerseFillColor = 0x00000000;
+  bool secVerseHasStroke = false;
+  int secVerseStrokeColor = 0xFF000000;
+  double secVerseMarginTop = 16.0;
+  double secVerseMarginBottom = 16.0;
+  double secVerseMarginLeft = 16.0;
+  double secVerseMarginRight = 16.0;
+  double secVerseLineHeight = 1.4;
+  double secVerseStrokeWidth = 0.08;
+  bool secVerseHasShadow = false;
+  int secVerseShadowColor = 0xFF000000;
+  double secVerseShadowOffsetX = 2.0;
+  double secVerseShadowOffsetY = 2.0;
+  double secVerseShadowRadius = 4.0;
+
   // Title Settings
   bool showTitle = true;
   String titleAlignment = 'center';
@@ -172,10 +265,16 @@ bool isWindowTransparent = false;
     if (!songCustomHeight.isFinite || songCustomHeight <= 0) songCustomHeight = 1080.0;
     if (!scriptureCustomWidth.isFinite || scriptureCustomWidth <= 0) scriptureCustomWidth = 1920.0;
     if (!scriptureCustomHeight.isFinite || scriptureCustomHeight <= 0) scriptureCustomHeight = 1080.0;
+    if (!dualScriptureCustomWidth.isFinite || dualScriptureCustomWidth <= 0) dualScriptureCustomWidth = 1920.0;
+    if (!dualScriptureCustomHeight.isFinite || dualScriptureCustomHeight <= 0) dualScriptureCustomHeight = 1080.0;
     if (!blankCustomWidth.isFinite || blankCustomWidth <= 0) blankCustomWidth = 1920.0;
     if (!blankCustomHeight.isFinite || blankCustomHeight <= 0) blankCustomHeight = 1080.0;
     if (!windowCustomWidth.isFinite || windowCustomWidth <= 0) windowCustomWidth = 1920.0;
     if (!windowCustomHeight.isFinite || windowCustomHeight <= 0) windowCustomHeight = 1080.0;
+
+    if (!dualScripturePrimaryRatio.isFinite || dualScripturePrimaryRatio < 20.0 || dualScripturePrimaryRatio > 80.0) {
+      dualScripturePrimaryRatio = 50.0;
+    }
 
     if (!titleFontSize.isFinite || titleFontSize <= 0) titleFontSize = 24.0;
     if (!titleLineHeight.isFinite || titleLineHeight <= 0) titleLineHeight = 1.2;
@@ -221,6 +320,39 @@ bool isWindowTransparent = false;
     if (!verseMarginLeft.isFinite || verseMarginLeft < 0) verseMarginLeft = 32.0;
     if (!verseMarginRight.isFinite || verseMarginRight < 0) verseMarginRight = 32.0;
 
+    if (!dualChapterFontSize.isFinite || dualChapterFontSize <= 0) dualChapterFontSize = 24.0;
+    if (!dualChapterLineHeight.isFinite || dualChapterLineHeight <= 0) dualChapterLineHeight = 1.2;
+    if (!dualChapterStrokeWidth.isFinite || dualChapterStrokeWidth <= 0) dualChapterStrokeWidth = 0.08;
+    if (!dualChapterShadowOffsetX.isFinite) dualChapterShadowOffsetX = 2.0;
+    if (!dualChapterShadowOffsetY.isFinite) dualChapterShadowOffsetY = 2.0;
+    if (!dualChapterShadowRadius.isFinite || dualChapterShadowRadius < 0) dualChapterShadowRadius = 4.0;
+    if (!dualChapterMarginTop.isFinite || dualChapterMarginTop < 0) dualChapterMarginTop = 16.0;
+    if (!dualChapterMarginBottom.isFinite || dualChapterMarginBottom < 0) dualChapterMarginBottom = 16.0;
+    if (!dualChapterMarginLeft.isFinite || dualChapterMarginLeft < 0) dualChapterMarginLeft = 16.0;
+    if (!dualChapterMarginRight.isFinite || dualChapterMarginRight < 0) dualChapterMarginRight = 16.0;
+
+    if (!primaryVerseFontSize.isFinite || primaryVerseFontSize <= 0) primaryVerseFontSize = 60.0;
+    if (!primaryVerseLineHeight.isFinite || primaryVerseLineHeight <= 0) primaryVerseLineHeight = 1.4;
+    if (!primaryVerseStrokeWidth.isFinite || primaryVerseStrokeWidth <= 0) primaryVerseStrokeWidth = 0.08;
+    if (!primaryVerseShadowOffsetX.isFinite) primaryVerseShadowOffsetX = 2.0;
+    if (!primaryVerseShadowOffsetY.isFinite) primaryVerseShadowOffsetY = 2.0;
+    if (!primaryVerseShadowRadius.isFinite || primaryVerseShadowRadius < 0) primaryVerseShadowRadius = 4.0;
+    if (!primaryVerseMarginTop.isFinite || primaryVerseMarginTop < 0) primaryVerseMarginTop = 16.0;
+    if (!primaryVerseMarginBottom.isFinite || primaryVerseMarginBottom < 0) primaryVerseMarginBottom = 16.0;
+    if (!primaryVerseMarginLeft.isFinite || primaryVerseMarginLeft < 0) primaryVerseMarginLeft = 16.0;
+    if (!primaryVerseMarginRight.isFinite || primaryVerseMarginRight < 0) primaryVerseMarginRight = 16.0;
+
+    if (!secVerseFontSize.isFinite || secVerseFontSize <= 0) secVerseFontSize = 60.0;
+    if (!secVerseLineHeight.isFinite || secVerseLineHeight <= 0) secVerseLineHeight = 1.4;
+    if (!secVerseStrokeWidth.isFinite || secVerseStrokeWidth <= 0) secVerseStrokeWidth = 0.08;
+    if (!secVerseShadowOffsetX.isFinite) secVerseShadowOffsetX = 2.0;
+    if (!secVerseShadowOffsetY.isFinite) secVerseShadowOffsetY = 2.0;
+    if (!secVerseShadowRadius.isFinite || secVerseShadowRadius < 0) secVerseShadowRadius = 4.0;
+    if (!secVerseMarginTop.isFinite || secVerseMarginTop < 0) secVerseMarginTop = 16.0;
+    if (!secVerseMarginBottom.isFinite || secVerseMarginBottom < 0) secVerseMarginBottom = 16.0;
+    if (!secVerseMarginLeft.isFinite || secVerseMarginLeft < 0) secVerseMarginLeft = 16.0;
+    if (!secVerseMarginRight.isFinite || secVerseMarginRight < 0) secVerseMarginRight = 16.0;
+
     // Strings Fallback
     if (presetName.isEmpty) {
       presetName = (isDefault || id == 1) ? 'Default' : 'Preset $id';
@@ -231,18 +363,31 @@ bool isWindowTransparent = false;
 
     if (songAspectRatio.isEmpty) songAspectRatio = '16:9';
     if (scriptureAspectRatio.isEmpty) scriptureAspectRatio = '16:9';
+    if (dualScriptureAspectRatio.isEmpty) dualScriptureAspectRatio = '16:9';
     if (blankAspectRatio.isEmpty) blankAspectRatio = '16:9';
     if (windowAspectRatio.isEmpty) windowAspectRatio = '16:9';
+    if (dualScriptureLayoutDirection.isEmpty) dualScriptureLayoutDirection = 'topBottom';
+    if (dualScripturePrimaryPosition.isEmpty) dualScripturePrimaryPosition = 'primaryFirst';
+
     if (titleAlignment.isEmpty) titleAlignment = 'center';
     if (titleVerticalAlignment.isEmpty) titleVerticalAlignment = 'bottom';
     if (chapterAlignment.isEmpty) chapterAlignment = 'center';
     if (chapterVerticalAlignment.isEmpty) chapterVerticalAlignment = 'bottom';
     if (verseAlignment.isEmpty) verseAlignment = 'center';
     if (verseVerticalAlignment.isEmpty) verseVerticalAlignment = 'center';
+    if (dualChapterAlignment.isEmpty) dualChapterAlignment = 'center';
+    if (dualChapterVerticalAlignment.isEmpty) dualChapterVerticalAlignment = 'bottom';
+    if (primaryVerseAlignment.isEmpty) primaryVerseAlignment = 'center';
+    if (primaryVerseVerticalAlignment.isEmpty) primaryVerseVerticalAlignment = 'center';
+    if (secVerseAlignment.isEmpty) secVerseAlignment = 'center';
+    if (secVerseVerticalAlignment.isEmpty) secVerseVerticalAlignment = 'center';
     if (lyricsAlignment.isEmpty) lyricsAlignment = 'center';
     if (lyricsVerticalAlignment.isEmpty) lyricsVerticalAlignment = 'center';
     if (chapterFontFamily.isEmpty) chapterFontFamily = 'Arial';
     if (verseFontFamily.isEmpty) verseFontFamily = 'Arial';
+    if (dualChapterFontFamily.isEmpty) dualChapterFontFamily = 'Arial';
+    if (primaryVerseFontFamily.isEmpty) primaryVerseFontFamily = 'Arial';
+    if (secVerseFontFamily.isEmpty) secVerseFontFamily = 'Arial';
     if (lyricsFontFamily.isEmpty) lyricsFontFamily = 'Arial';
     if (titleFontFamily.isEmpty) titleFontFamily = 'Arial';
 
@@ -250,6 +395,8 @@ bool isWindowTransparent = false;
     if (songBackgroundImageAlignment.isEmpty) songBackgroundImageAlignment = 'center';
     if (scriptureBackgroundImageLayout.isEmpty) scriptureBackgroundImageLayout = 'stretch';
     if (scriptureBackgroundImageAlignment.isEmpty) scriptureBackgroundImageAlignment = 'center';
+    if (dualScriptureBackgroundImageLayout.isEmpty) dualScriptureBackgroundImageLayout = 'stretch';
+    if (dualScriptureBackgroundImageAlignment.isEmpty) dualScriptureBackgroundImageAlignment = 'center';
     if (blankBackgroundImageLayout.isEmpty) blankBackgroundImageLayout = 'stretch';
     if (blankBackgroundImageAlignment.isEmpty) blankBackgroundImageAlignment = 'center';
     if (windowBackgroundImageLayout.isEmpty) windowBackgroundImageLayout = 'stretch';
@@ -257,12 +404,16 @@ bool isWindowTransparent = false;
 
     if (songBackgroundColor == 0) songBackgroundColor = 0xFF000000;
     if (scriptureBackgroundColor == 0) scriptureBackgroundColor = 0xFF000000;
+    if (dualScriptureBackgroundColor == 0) dualScriptureBackgroundColor = 0xFF000000;
     if (blankBackgroundColor == 0) blankBackgroundColor = 0xFF000000;
     if (windowBackgroundColor == 0) windowBackgroundColor = 0xFF000000;
     if ((lyricsFontColor & 0xFF000000) == 0) lyricsFontColor = 0xFFFFFFFF;
     if ((titleFontColor & 0xFF000000) == 0) titleFontColor = 0x8FFFFFFF;
     if ((chapterFontColor & 0xFF000000) == 0) chapterFontColor = 0x8FFFFFFF;
     if ((verseFontColor & 0xFF000000) == 0) verseFontColor = 0xFFFFFFFF;
+    if ((dualChapterFontColor & 0xFF000000) == 0) dualChapterFontColor = 0x8FFFFFFF;
+    if ((primaryVerseFontColor & 0xFF000000) == 0) primaryVerseFontColor = 0xFFFFFFFF;
+    if ((secVerseFontColor & 0xFF000000) == 0) secVerseFontColor = 0xFFFFFFFF;
 
     return this;
   }
@@ -280,6 +431,9 @@ bool isWindowTransparent = false;
       'scriptureAspectRatio': scriptureAspectRatio,
       'scriptureCustomWidth': scriptureCustomWidth,
       'scriptureCustomHeight': scriptureCustomHeight,
+      'dualScriptureAspectRatio': dualScriptureAspectRatio,
+      'dualScriptureCustomWidth': dualScriptureCustomWidth,
+      'dualScriptureCustomHeight': dualScriptureCustomHeight,
       'songBackgroundColor': songBackgroundColor,
       'songBackgroundImage': songBackgroundImage,
       'songBackgroundImageLayout': songBackgroundImageLayout,
@@ -292,6 +446,15 @@ bool isWindowTransparent = false;
       'scriptureBackgroundImageAlignment': scriptureBackgroundImageAlignment,
       'isScriptureImageEnabled': isScriptureImageEnabled,
       'isScriptureTransparent': isScriptureTransparent,
+      'dualScriptureBackgroundColor': dualScriptureBackgroundColor,
+      'dualScriptureBackgroundImage': dualScriptureBackgroundImage,
+      'dualScriptureBackgroundImageLayout': dualScriptureBackgroundImageLayout,
+      'dualScriptureBackgroundImageAlignment': dualScriptureBackgroundImageAlignment,
+      'isDualScriptureImageEnabled': isDualScriptureImageEnabled,
+      'isDualScriptureTransparent': isDualScriptureTransparent,
+      'dualScriptureLayoutDirection': dualScriptureLayoutDirection,
+      'dualScripturePrimaryPosition': dualScripturePrimaryPosition,
+      'dualScripturePrimaryRatio': dualScripturePrimaryRatio,
       'blankAspectRatio': blankAspectRatio,
       'blankCustomWidth': blankCustomWidth,
       'blankCustomHeight': blankCustomHeight,
@@ -302,14 +465,14 @@ bool isWindowTransparent = false;
       'isBlankImageEnabled': isBlankImageEnabled,
       'isBlankTransparent': isBlankTransparent,
       'windowAspectRatio': windowAspectRatio,
-'windowCustomWidth': windowCustomWidth,
-'windowCustomHeight': windowCustomHeight,
-'windowBackgroundColor': windowBackgroundColor,
-'windowBackgroundImage': windowBackgroundImage,
-'windowBackgroundImageLayout': windowBackgroundImageLayout,
-'windowBackgroundImageAlignment': windowBackgroundImageAlignment,
-'isWindowImageEnabled': isWindowImageEnabled,
-'isWindowTransparent': isWindowTransparent,
+      'windowCustomWidth': windowCustomWidth,
+      'windowCustomHeight': windowCustomHeight,
+      'windowBackgroundColor': windowBackgroundColor,
+      'windowBackgroundImage': windowBackgroundImage,
+      'windowBackgroundImageLayout': windowBackgroundImageLayout,
+      'windowBackgroundImageAlignment': windowBackgroundImageAlignment,
+      'isWindowImageEnabled': isWindowImageEnabled,
+      'isWindowTransparent': isWindowTransparent,
       'showTitle': showTitle,
       'titleAlignment': titleAlignment,
       'titleVerticalAlignment': titleVerticalAlignment,
@@ -405,6 +568,76 @@ bool isWindowTransparent = false;
       'verseMarginBottom': verseMarginBottom,
       'verseMarginLeft': verseMarginLeft,
       'verseMarginRight': verseMarginRight,
+      'showDualChapter': showDualChapter,
+      'dualChapterAlignment': dualChapterAlignment,
+      'dualChapterVerticalAlignment': dualChapterVerticalAlignment,
+      'dualChapterFontSize': dualChapterFontSize,
+      'dualChapterFontFamily': dualChapterFontFamily,
+      'dualChapterFontColor': dualChapterFontColor,
+      'dualChapterBold': dualChapterBold,
+      'dualChapterItalic': dualChapterItalic,
+      'dualChapterUnderline': dualChapterUnderline,
+      'dualChapterHasFill': dualChapterHasFill,
+      'dualChapterFillColor': dualChapterFillColor,
+      'dualChapterHasStroke': dualChapterHasStroke,
+      'dualChapterStrokeColor': dualChapterStrokeColor,
+      'dualChapterLineHeight': dualChapterLineHeight,
+      'dualChapterStrokeWidth': dualChapterStrokeWidth,
+      'dualChapterHasShadow': dualChapterHasShadow,
+      'dualChapterShadowColor': dualChapterShadowColor,
+      'dualChapterShadowOffsetX': dualChapterShadowOffsetX,
+      'dualChapterShadowOffsetY': dualChapterShadowOffsetY,
+      'dualChapterShadowRadius': dualChapterShadowRadius,
+      'dualChapterMarginTop': dualChapterMarginTop,
+      'dualChapterMarginBottom': dualChapterMarginBottom,
+      'dualChapterMarginLeft': dualChapterMarginLeft,
+      'dualChapterMarginRight': dualChapterMarginRight,
+      'primaryVerseAlignment': primaryVerseAlignment,
+      'primaryVerseVerticalAlignment': primaryVerseVerticalAlignment,
+      'primaryVerseFontSize': primaryVerseFontSize,
+      'primaryVerseFontFamily': primaryVerseFontFamily,
+      'primaryVerseFontColor': primaryVerseFontColor,
+      'primaryVerseBold': primaryVerseBold,
+      'primaryVerseItalic': primaryVerseItalic,
+      'primaryVerseUnderline': primaryVerseUnderline,
+      'primaryVerseHasFill': primaryVerseHasFill,
+      'primaryVerseFillColor': primaryVerseFillColor,
+      'primaryVerseHasStroke': primaryVerseHasStroke,
+      'primaryVerseStrokeColor': primaryVerseStrokeColor,
+      'primaryVerseLineHeight': primaryVerseLineHeight,
+      'primaryVerseStrokeWidth': primaryVerseStrokeWidth,
+      'primaryVerseHasShadow': primaryVerseHasShadow,
+      'primaryVerseShadowColor': primaryVerseShadowColor,
+      'primaryVerseShadowOffsetX': primaryVerseShadowOffsetX,
+      'primaryVerseShadowOffsetY': primaryVerseShadowOffsetY,
+      'primaryVerseShadowRadius': primaryVerseShadowRadius,
+      'primaryVerseMarginTop': primaryVerseMarginTop,
+      'primaryVerseMarginBottom': primaryVerseMarginBottom,
+      'primaryVerseMarginLeft': primaryVerseMarginLeft,
+      'primaryVerseMarginRight': primaryVerseMarginRight,
+      'secVerseAlignment': secVerseAlignment,
+      'secVerseVerticalAlignment': secVerseVerticalAlignment,
+      'secVerseFontSize': secVerseFontSize,
+      'secVerseFontFamily': secVerseFontFamily,
+      'secVerseFontColor': secVerseFontColor,
+      'secVerseBold': secVerseBold,
+      'secVerseItalic': secVerseItalic,
+      'secVerseUnderline': secVerseUnderline,
+      'secVerseHasFill': secVerseHasFill,
+      'secVerseFillColor': secVerseFillColor,
+      'secVerseHasStroke': secVerseHasStroke,
+      'secVerseStrokeColor': secVerseStrokeColor,
+      'secVerseLineHeight': secVerseLineHeight,
+      'secVerseStrokeWidth': secVerseStrokeWidth,
+      'secVerseHasShadow': secVerseHasShadow,
+      'secVerseShadowColor': secVerseShadowColor,
+      'secVerseShadowOffsetX': secVerseShadowOffsetX,
+      'secVerseShadowOffsetY': secVerseShadowOffsetY,
+      'secVerseShadowRadius': secVerseShadowRadius,
+      'secVerseMarginTop': secVerseMarginTop,
+      'secVerseMarginBottom': secVerseMarginBottom,
+      'secVerseMarginLeft': secVerseMarginLeft,
+      'secVerseMarginRight': secVerseMarginRight,
     };
   }
 
@@ -420,6 +653,9 @@ bool isWindowTransparent = false;
       ..scriptureAspectRatio = map['scriptureAspectRatio'] as String? ?? '16:9'
       ..scriptureCustomWidth = (map['scriptureCustomWidth'] as num?)?.toDouble() ?? 1920.0
       ..scriptureCustomHeight = (map['scriptureCustomHeight'] as num?)?.toDouble() ?? 1080.0
+      ..dualScriptureAspectRatio = map['dualScriptureAspectRatio'] as String? ?? '16:9'
+      ..dualScriptureCustomWidth = (map['dualScriptureCustomWidth'] as num?)?.toDouble() ?? 1920.0
+      ..dualScriptureCustomHeight = (map['dualScriptureCustomHeight'] as num?)?.toDouble() ?? 1080.0
       ..songBackgroundColor = map['songBackgroundColor'] as int? ?? 0xFF000000
       ..songBackgroundImage = map['songBackgroundImage'] as String? ?? ''
       ..songBackgroundImageLayout = map['songBackgroundImageLayout'] as String? ?? 'stretch'
@@ -432,6 +668,15 @@ bool isWindowTransparent = false;
       ..scriptureBackgroundImageAlignment = map['scriptureBackgroundImageAlignment'] as String? ?? 'center'
       ..isScriptureImageEnabled = map['isScriptureImageEnabled'] as bool? ?? false
       ..isScriptureTransparent = map['isScriptureTransparent'] as bool? ?? false
+      ..dualScriptureBackgroundColor = map['dualScriptureBackgroundColor'] as int? ?? 0xFF000000
+      ..dualScriptureBackgroundImage = map['dualScriptureBackgroundImage'] as String? ?? ''
+      ..dualScriptureBackgroundImageLayout = map['dualScriptureBackgroundImageLayout'] as String? ?? 'stretch'
+      ..dualScriptureBackgroundImageAlignment = map['dualScriptureBackgroundImageAlignment'] as String? ?? 'center'
+      ..isDualScriptureImageEnabled = map['isDualScriptureImageEnabled'] as bool? ?? false
+      ..isDualScriptureTransparent = map['isDualScriptureTransparent'] as bool? ?? false
+      ..dualScriptureLayoutDirection = map['dualScriptureLayoutDirection'] as String? ?? 'topBottom'
+      ..dualScripturePrimaryPosition = map['dualScripturePrimaryPosition'] as String? ?? 'primaryFirst'
+      ..dualScripturePrimaryRatio = (map['dualScripturePrimaryRatio'] as num?)?.toDouble() ?? 50.0
       ..blankAspectRatio = map['blankAspectRatio'] as String? ?? '16:9'
       ..blankCustomWidth = (map['blankCustomWidth'] as num?)?.toDouble() ?? 1920.0
       ..blankCustomHeight = (map['blankCustomHeight'] as num?)?.toDouble() ?? 1080.0
@@ -442,14 +687,14 @@ bool isWindowTransparent = false;
       ..isBlankImageEnabled = map['isBlankImageEnabled'] as bool? ?? false
       ..isBlankTransparent = map['isBlankTransparent'] as bool? ?? false
       ..windowAspectRatio = map['windowAspectRatio'] as String? ?? '16:9'
-..windowCustomWidth = (map['windowCustomWidth'] as num?)?.toDouble() ?? 1920.0
-..windowCustomHeight = (map['windowCustomHeight'] as num?)?.toDouble() ?? 1080.0
-..windowBackgroundColor = map['windowBackgroundColor'] as int? ?? 0xFF000000
-..windowBackgroundImage = map['windowBackgroundImage'] as String? ?? ''
-..windowBackgroundImageLayout = map['windowBackgroundImageLayout'] as String? ?? 'stretch'
-..windowBackgroundImageAlignment = map['windowBackgroundImageAlignment'] as String? ?? 'center'
-..isWindowImageEnabled = map['isWindowImageEnabled'] as bool? ?? false
-..isWindowTransparent = map['isWindowTransparent'] as bool? ?? false
+      ..windowCustomWidth = (map['windowCustomWidth'] as num?)?.toDouble() ?? 1920.0
+      ..windowCustomHeight = (map['windowCustomHeight'] as num?)?.toDouble() ?? 1080.0
+      ..windowBackgroundColor = map['windowBackgroundColor'] as int? ?? 0xFF000000
+      ..windowBackgroundImage = map['windowBackgroundImage'] as String? ?? ''
+      ..windowBackgroundImageLayout = map['windowBackgroundImageLayout'] as String? ?? 'stretch'
+      ..windowBackgroundImageAlignment = map['windowBackgroundImageAlignment'] as String? ?? 'center'
+      ..isWindowImageEnabled = map['isWindowImageEnabled'] as bool? ?? false
+      ..isWindowTransparent = map['isWindowTransparent'] as bool? ?? false
       ..showTitle = map['showTitle'] as bool? ?? true
       ..titleAlignment = map['titleAlignment'] as String? ?? 'center'
       ..titleVerticalAlignment = map['titleVerticalAlignment'] as String? ?? 'bottom'
@@ -544,7 +789,77 @@ bool isWindowTransparent = false;
       ..verseMarginTop = (map['verseMarginTop'] as num?)?.toDouble() ?? 32.0
       ..verseMarginBottom = (map['verseMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..verseMarginLeft = (map['verseMarginLeft'] as num?)?.toDouble() ?? 32.0
-      ..verseMarginRight = (map['verseMarginRight'] as num?)?.toDouble() ?? 32.0;
+      ..verseMarginRight = (map['verseMarginRight'] as num?)?.toDouble() ?? 32.0
+      ..showDualChapter = map['showDualChapter'] as bool? ?? true
+      ..dualChapterAlignment = map['dualChapterAlignment'] as String? ?? 'center'
+      ..dualChapterVerticalAlignment = map['dualChapterVerticalAlignment'] as String? ?? 'bottom'
+      ..dualChapterFontSize = (map['dualChapterFontSize'] as num?)?.toDouble() ?? 24.0
+      ..dualChapterFontFamily = map['dualChapterFontFamily'] as String? ?? 'Arial'
+      ..dualChapterFontColor = map['dualChapterFontColor'] as int? ?? 0x8FFFFFFF
+      ..dualChapterBold = map['dualChapterBold'] as bool? ?? true
+      ..dualChapterItalic = map['dualChapterItalic'] as bool? ?? false
+      ..dualChapterUnderline = map['dualChapterUnderline'] as bool? ?? false
+      ..dualChapterHasFill = map['dualChapterHasFill'] as bool? ?? false
+      ..dualChapterFillColor = map['dualChapterFillColor'] as int? ?? 0x00000000
+      ..dualChapterHasStroke = map['dualChapterHasStroke'] as bool? ?? false
+      ..dualChapterStrokeColor = map['dualChapterStrokeColor'] as int? ?? 0xFF000000
+      ..dualChapterLineHeight = (map['dualChapterLineHeight'] as num?)?.toDouble() ?? 1.2
+      ..dualChapterStrokeWidth = (map['dualChapterStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..dualChapterHasShadow = map['dualChapterHasShadow'] as bool? ?? false
+      ..dualChapterShadowColor = map['dualChapterShadowColor'] as int? ?? 0xFF000000
+      ..dualChapterShadowOffsetX = (map['dualChapterShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..dualChapterShadowOffsetY = (map['dualChapterShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..dualChapterShadowRadius = (map['dualChapterShadowRadius'] as num?)?.toDouble() ?? 4.0
+      ..dualChapterMarginTop = (map['dualChapterMarginTop'] as num?)?.toDouble() ?? 16.0
+      ..dualChapterMarginBottom = (map['dualChapterMarginBottom'] as num?)?.toDouble() ?? 16.0
+      ..dualChapterMarginLeft = (map['dualChapterMarginLeft'] as num?)?.toDouble() ?? 16.0
+      ..dualChapterMarginRight = (map['dualChapterMarginRight'] as num?)?.toDouble() ?? 16.0
+      ..primaryVerseAlignment = map['primaryVerseAlignment'] as String? ?? 'center'
+      ..primaryVerseVerticalAlignment = map['primaryVerseVerticalAlignment'] as String? ?? 'center'
+      ..primaryVerseFontSize = (map['primaryVerseFontSize'] as num?)?.toDouble() ?? 60.0
+      ..primaryVerseFontFamily = map['primaryVerseFontFamily'] as String? ?? 'Arial'
+      ..primaryVerseFontColor = map['primaryVerseFontColor'] as int? ?? 0xFFFFFFFF
+      ..primaryVerseBold = map['primaryVerseBold'] as bool? ?? true
+      ..primaryVerseItalic = map['primaryVerseItalic'] as bool? ?? false
+      ..primaryVerseUnderline = map['primaryVerseUnderline'] as bool? ?? false
+      ..primaryVerseHasFill = map['primaryVerseHasFill'] as bool? ?? false
+      ..primaryVerseFillColor = map['primaryVerseFillColor'] as int? ?? 0x00000000
+      ..primaryVerseHasStroke = map['primaryVerseHasStroke'] as bool? ?? false
+      ..primaryVerseStrokeColor = map['primaryVerseStrokeColor'] as int? ?? 0xFF000000
+      ..primaryVerseLineHeight = (map['primaryVerseLineHeight'] as num?)?.toDouble() ?? 1.4
+      ..primaryVerseStrokeWidth = (map['primaryVerseStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..primaryVerseHasShadow = map['primaryVerseHasShadow'] as bool? ?? false
+      ..primaryVerseShadowColor = map['primaryVerseShadowColor'] as int? ?? 0xFF000000
+      ..primaryVerseShadowOffsetX = (map['primaryVerseShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..primaryVerseShadowOffsetY = (map['primaryVerseShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..primaryVerseShadowRadius = (map['primaryVerseShadowRadius'] as num?)?.toDouble() ?? 4.0
+      ..primaryVerseMarginTop = (map['primaryVerseMarginTop'] as num?)?.toDouble() ?? 16.0
+      ..primaryVerseMarginBottom = (map['primaryVerseMarginBottom'] as num?)?.toDouble() ?? 16.0
+      ..primaryVerseMarginLeft = (map['primaryVerseMarginLeft'] as num?)?.toDouble() ?? 16.0
+      ..primaryVerseMarginRight = (map['primaryVerseMarginRight'] as num?)?.toDouble() ?? 16.0
+      ..secVerseAlignment = map['secVerseAlignment'] as String? ?? 'center'
+      ..secVerseVerticalAlignment = map['secVerseVerticalAlignment'] as String? ?? 'center'
+      ..secVerseFontSize = (map['secVerseFontSize'] as num?)?.toDouble() ?? 60.0
+      ..secVerseFontFamily = map['secVerseFontFamily'] as String? ?? 'Arial'
+      ..secVerseFontColor = map['secVerseFontColor'] as int? ?? 0xFFFFFFFF
+      ..secVerseBold = map['secVerseBold'] as bool? ?? true
+      ..secVerseItalic = map['secVerseItalic'] as bool? ?? false
+      ..secVerseUnderline = map['secVerseUnderline'] as bool? ?? false
+      ..secVerseHasFill = map['secVerseHasFill'] as bool? ?? false
+      ..secVerseFillColor = map['secVerseFillColor'] as int? ?? 0x00000000
+      ..secVerseHasStroke = map['secVerseHasStroke'] as bool? ?? false
+      ..secVerseStrokeColor = map['secVerseStrokeColor'] as int? ?? 0xFF000000
+      ..secVerseLineHeight = (map['secVerseLineHeight'] as num?)?.toDouble() ?? 1.4
+      ..secVerseStrokeWidth = (map['secVerseStrokeWidth'] as num?)?.toDouble() ?? 0.08
+      ..secVerseHasShadow = map['secVerseHasShadow'] as bool? ?? false
+      ..secVerseShadowColor = map['secVerseShadowColor'] as int? ?? 0xFF000000
+      ..secVerseShadowOffsetX = (map['secVerseShadowOffsetX'] as num?)?.toDouble() ?? 2.0
+      ..secVerseShadowOffsetY = (map['secVerseShadowOffsetY'] as num?)?.toDouble() ?? 2.0
+      ..secVerseShadowRadius = (map['secVerseShadowRadius'] as num?)?.toDouble() ?? 4.0
+      ..secVerseMarginTop = (map['secVerseMarginTop'] as num?)?.toDouble() ?? 16.0
+      ..secVerseMarginBottom = (map['secVerseMarginBottom'] as num?)?.toDouble() ?? 16.0
+      ..secVerseMarginLeft = (map['secVerseMarginLeft'] as num?)?.toDouble() ?? 16.0
+      ..secVerseMarginRight = (map['secVerseMarginRight'] as num?)?.toDouble() ?? 16.0;
     return settings.sanitize();
   }
 }
