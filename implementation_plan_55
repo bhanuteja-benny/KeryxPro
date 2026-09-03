@@ -1,0 +1,131 @@
+# Implementation Plan - Phase 55: Export and Import Setlists
+
+## Overview
+Phase 55 adds setlist Export and Import capabilities to KeryxPro, allowing users to back up setlists or transfer them to another machine running KeryxPro. The existing "Manage Setlists" top menu item will be converted into a dropdown menu containing **Import**, **Export**, and **Delete History**.
+
+---
+
+## User Requirements & Flow Summary
+1. **Manage Setlist Dropdown Menu**:
+   - In `CustomTitleBar`, convert the `'Manage Setlists'` menu item into a dropdown (`SubmenuButton`).
+   - Dropdown Menu Options:
+     - **Import**: Opens a popup dialog to browse and import a setlist JSON file.
+     - **Export**: Opens a popup showing available setlists (sorted newest first, with date filter, latest setlist selected by default). Selecting setlists and clicking Export opens a folder picker to save individual `.json` files.
+     - **Delete History**: Opens the existing setlist management popup to delete old setlists.
+
+2. **Strict Constraints**:
+   - No extra UI elements or buttons beyond specified requirements.
+   - Maintain existing styling (`0xFF1E1E2E` dark theme, purple accent, standard dialog borders).
+   - No changes to existing functionality outside the specified scope.
+
+---
+
+## User Approvals & Assumptions (Explicit Presumptions)
+
+Please review and confirm the following assumptions:
+
+> [!IMPORTANT]
+> 1. **Menu Transformation**: The current single top menu item `Manage Setlists` in `custom_title_bar.dart` will become a `SubmenuButton` with 3 items: `Import`, `Export`, and `Delete History`.
+> 2. **Delete History Popup**: Clicking `Delete History` opens `ManageSetlistsDialog`, which is the existing setlist deletion dialog with date filtering.
+> 3. **Default Export Selection**: In the Export popup, setlists are sorted by `lastModified` descending (newest first), and the topmost (latest) setlist is checked/selected by default upon opening.
+> 4. **Portable Setlist Export JSON**: To ensure setlists can be imported into KeryxPro on **another machine**, the exported JSON file will include:
+>    - Setlist name, syncId, lastModified timestamp
+>    - Item sequence order (`itemOrder`), image entries (`imageEntries`), favorites status (`favorites`)
+>    - Full song data payload (syncId, title, author, lyrics, backgroundUrl) for songs included in the setlist.
+>    - When imported on another machine, any missing songs will be automatically upserted into the target machine's Isar song database so the setlist renders cleanly without missing song references.
+> 5. **Import Overwrite/Upsert**: Importing a setlist with an existing setlist name in Isar will update/upsert that setlist.
+
+---
+
+## Proposed Changes & File Operations
+
+### 1. Setlist Export & Import Service
+**File**: `lib/features/setlist/data/setlist_export_import_service.dart` (New File)
+
+- Implement `SetlistExportImportService` provider and class:
+  - `exportSetlistsToFolder(List<SavedSetlist> setlists, String targetFolderPath)`:
+    - Iterates over selected setlists.
+    - Resolves associated `Song` entities from Isar for each setlist.
+    - Serializes setlist details + song data into structured JSON map.
+    - Writes each file to `<targetFolderPath>/<sanitized_setlist_name>.json`.
+  - `importSetlistFromFile(String filePath)`:
+    - Reads and decodes JSON file.
+    - Upserts any included song payloads into Isar DB (`isar.songs.put`) if not present.
+    - Re-links song IDs to local Isar IDs.
+    - Upserts `SavedSetlist` in Isar database.
+    - Triggers `SyncService.exportSetlist` if sync is enabled.
+
+---
+
+### 2. Export Setlists Dialog
+**File**: `lib/features/setlist/presentation/export_setlists_dialog.dart` (New File)
+
+- Dark-themed dialog (`Color(0xFF1E1E2E)`), width 600, height 500.
+- State:
+  - Set of selected setlist names `_selectedNames`.
+  - Optional `_filterDate` for date filtering ("Older than...").
+  - On `initState` / data load: sort setlists by `lastModified` descending, and add `sortedSetlists.first.name` to `_selectedNames` by default.
+- UI Controls:
+  - Title: "Export Setlists" with Close button.
+  - Date Filter button ("Filter by Date..."), Clear Filter button, "Select All", "Clear".
+  - Scrollable checkbox list showing setlist name and modified date.
+  - Bottom bar: Text `${_selectedNames.length} selected` and "Export Selected (N)" button (`ElevatedButton.icon`).
+- Action:
+  - Clicking "Export Selected":
+    1. Triggers `FilePicker.getDirectoryPath()` to prompt user to choose destination directory.
+    2. Calls `SetlistExportImportService` to write individual JSON files.
+    3. Displays SnackBar success message and closes dialog.
+
+---
+
+### 3. Import Setlist Dialog
+**File**: `lib/features/setlist/presentation/import_setlist_dialog.dart` (New File)
+
+- Dark-themed dialog (`Color(0xFF1E1E2E)`), width 500, height 320.
+- State:
+  - `_selectedFilePath` (String?)
+  - `_previewSetlistName` (String?)
+  - `_previewItemCount` (int?)
+- UI Controls:
+  - Title: "Import Setlist" with Close button.
+  - File picker button "Browse JSON File" (`FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['json'])`).
+  - Container showing selected file path and setlist preview details.
+  - Bottom button: "Import Setlist" (`ElevatedButton.icon`).
+- Action:
+  - Clicking "Import Setlist":
+    1. Calls `importSetlistFromFile(_selectedFilePath)`.
+    2. Invalidates `savedSetlistNamesProvider` and `allSavedSetlistsProvider`.
+    3. Displays SnackBar e.g., `Setlist "<name>" imported successfully.` and closes dialog.
+
+---
+
+### 4. Title Bar Dropdown Menu Update
+**File**: `lib/features/dashboard/presentation/widgets/custom_title_bar.dart`
+
+- Replace single `MenuItemButton` under `'Manage Setlists'` with a `SubmenuButton`.
+- Child menu buttons:
+  1. `'Import'`: opens `ImportSetlistDialog`.
+  2. `'Export'`: opens `ExportSetlistsDialog`.
+  3. `'Delete History'`: opens `ManageSetlistsDialog`.
+
+---
+
+## Verification & Testing Plan
+
+1. **Export Workflow Verification**:
+   - Open 'Manage Setlists' -> click 'Export'.
+   - Verify that setlists are listed newest first, and the latest setlist is pre-selected by default.
+   - Test date filter ("Filter by Date...").
+   - Click "Export Selected", select a destination folder.
+   - Verify individual `.json` files are created in the selected directory with correct content structure.
+
+2. **Import Workflow Verification**:
+   - Open 'Manage Setlists' -> click 'Import'.
+   - Click "Browse JSON File", pick an exported setlist JSON file.
+   - Verify preview displays setlist name and item count.
+   - Click "Import Setlist".
+   - Confirm setlist appears in setlist drawer/search and all songs/slides load correctly.
+
+3. **Delete History Workflow Verification**:
+   - Open 'Manage Setlists' -> click 'Delete History'.
+   - Verify existing `ManageSetlistsDialog` opens as before.

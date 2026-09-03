@@ -1,0 +1,28 @@
+
+Phase 55 Plan
+
+Context: 
+- Export and Import setlists
+
+UI Requirement:
+- In "Manage Setlist" current there is delete feature
+- Now we add dropdown menu under 'Manage Setlist" 
+- - "Import" - open a popup and give option to browse for JSON file to import
+- - "Export" - open a popup similar to delete popup, show available setlists (with date filter), by default show the latest one.
+- - - once users selects required setlists, then give export option, 
+- - - once user clicks export, then open a dialog window to select destination folder
+- - - then export each setlist as separate JSON file which can be later imported (or can be imported to KeryxPro on another machine)
+- - "Delete History", when this is clicked, the current popup can be opened, to delete the old setlists
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan

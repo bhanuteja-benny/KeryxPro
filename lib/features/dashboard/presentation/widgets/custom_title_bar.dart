@@ -14,6 +14,8 @@ import '../../../../core/remote/remote_models.dart';
 import '../../../../core/remote/remote_providers.dart';
 import '../../../../core/sync/sync_service.dart';
 import '../../../setlist/presentation/manage_setlists_dialog.dart';
+import '../../../setlist/presentation/export_setlists_dialog.dart';
+import '../../../setlist/presentation/import_setlist_dialog.dart';
 import 'help_dialog.dart';
 
 class CustomTitleBar extends ConsumerWidget {
@@ -195,17 +197,44 @@ switch (remoteState) {
                 ],
                 child: const Text('Imports', style: TextStyle(fontSize: 12)),
               ),
-              MenuItemButton(
+              SubmenuButton(
                 style: const ButtonStyle(
                   minimumSize: WidgetStatePropertyAll(Size.zero),
                   padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 0)),
                 ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const ManageSetlistsDialog(),
-                  );
-                },
+                menuStyle: const MenuStyle(
+                  backgroundColor: WidgetStatePropertyAll(Color(0xFF4A4A4A)),
+                  elevation: WidgetStatePropertyAll(4),
+                ),
+                menuChildren: [
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ImportSetlistDialog(),
+                      );
+                    },
+                    child: const Text('Import'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ExportSetlistsDialog(),
+                      );
+                    },
+                    child: const Text('Export'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ManageSetlistsDialog(),
+                      );
+                    },
+                    child: const Text('Delete History'),
+                  ),
+                ],
                 child: const Text('Manage Setlists', style: TextStyle(fontSize: 12)),
               ),
               MenuItemButton(
