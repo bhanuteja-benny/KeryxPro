@@ -16,6 +16,7 @@ import '../../../../core/sync/sync_service.dart';
 import '../../../setlist/presentation/manage_setlists_dialog.dart';
 import '../../../setlist/presentation/export_setlists_dialog.dart';
 import '../../../setlist/presentation/import_setlist_dialog.dart';
+import '../../../setlist/presentation/export_powerpoint_dialog.dart';
 import 'help_dialog.dart';
 
 class CustomTitleBar extends ConsumerWidget {
@@ -115,6 +116,15 @@ switch (remoteState) {
                   elevation: WidgetStatePropertyAll(4),
                 ),
                 menuChildren: [
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ExportPowerpointDialog(),
+                      );
+                    },
+                    child: const Text('Export Slides to PowerPoint (.pptx)...'),
+                  ),
                   MenuItemButton(
                     onPressed: () => exit(0),
                     child: const Text('Exit'),
@@ -224,6 +234,15 @@ switch (remoteState) {
                       );
                     },
                     child: const Text('Export'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ExportPowerpointDialog(),
+                      );
+                    },
+                    child: const Text('Export to PowerPoint (.pptx)'),
                   ),
                   MenuItemButton(
                     onPressed: () {

@@ -7,6 +7,8 @@ import '../data/song.dart';
 import '../../dashboard/presentation/global_ui_providers.dart';
 import '../../setlist/presentation/setlist_providers.dart';
 import '../../live_controller/presentation/live_projector_providers.dart';
+import '../../live_controller/presentation/slide_utils.dart';
+import '../../setlist/presentation/export_powerpoint_dialog.dart';
 
 final librarySelectedIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -243,6 +245,29 @@ class _SongLibraryTabState extends ConsumerState<SongLibraryTab> {
                         icon: const Icon(Icons.edit, size: 14, color: Colors.blueGrey),
                         onPressed: () => _showSongEditor(context, ref, existingSong: previewSong),
                         tooltip: 'Edit Song',
+                      ),
+                      IconButton(
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        icon: const Icon(Icons.slideshow_rounded, size: 14, color: Colors.deepOrangeAccent),
+                        onPressed: () {
+                          final slides = SlideUtils.parseLyrics(
+                            previewSong.lyrics,
+                            previewSong.title,
+                            isSong: previewSong.author != 'Bible',
+                            isDualVersion: previewSong.isDualVersion,
+                            secondaryTitle: previewSong.secondaryTitle,
+                            secondaryLyrics: previewSong.secondaryLyrics,
+                          );
+                          showDialog(
+                            context: context,
+                            builder: (_) => ExportPowerpointDialog(
+                              initialSlides: slides,
+                              defaultTitle: previewSong.title,
+                            ),
+                          );
+                        },
+                        tooltip: 'Export Song to PowerPoint (.pptx)',
                       ),
                       IconButton(
                         constraints: const BoxConstraints(),

@@ -9,8 +9,8 @@ import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/presentation/image_slide_dialog.dart';
 import '../../../setlist/presentation/window_slide_dialog.dart';
 import '../global_ui_providers.dart';
-import '../../../live_controller/presentation/slide_utils.dart';
 import '../../../live_controller/presentation/live_projector_providers.dart';
+import '../../../setlist/presentation/export_powerpoint_dialog.dart';
 
 class SetlistPane extends ConsumerStatefulWidget {
   const SetlistPane({super.key});
@@ -477,53 +477,90 @@ final isSingleWindowSelected =
             Container(
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
               color: Colors.black26,
-              child: savedNamesAsync.when(
-                data: (names) => Theme(
-                  data: Theme.of(context).copyWith(
-                    iconButtonTheme: IconButtonThemeData(
-                      style: IconButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(24, 24),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: savedNamesAsync.when(
+                      data: (names) => Theme(
+                        data: Theme.of(context).copyWith(
+                          iconButtonTheme: IconButtonThemeData(
+                            style: IconButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(24, 24),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                        ),
+                        child: DropdownMenu<String>(
+                          controller: _nameCtrl,
+                          focusNode: _nameFocusNode,
+                          initialSelection: activeName,
+                          enableFilter: true,
+                          requestFocusOnTap: true,
+                          dropdownMenuEntries: names.map((n) => DropdownMenuEntry(value: n, label: n)).toList(),
+                          onSelected: (name) {
+                            if (name != null) _loadSetlist(name);
+                          },
+                          textStyle: const TextStyle(color: Colors.white, fontSize: 11),
+                          inputDecorationTheme: InputDecorationTheme(
+                            isDense: true,
+                            constraints: const BoxConstraints(maxHeight: 28),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                            filled: true,
+                            fillColor: const Color(0xFF2D2D3E),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11),
+                          ),
+                          hintText: 'SetList name…',
+                          expandedInsets: EdgeInsets.zero,
+                          menuStyle: MenuStyle(
+                            backgroundColor: WidgetStateProperty.all(const Color(0xFF2D2D3E)),
+                          ),
+                          trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white54, size: 20),
+                          selectedTrailingIcon: const Icon(Icons.arrow_drop_up, color: Colors.white54, size: 20),
+                        ),
+                      ),
+                      loading: () => const Center(child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator())),
+                      error: (e, _) => Center(child: Text('Error: $e')),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Tooltip(
+                    message: 'Export Slides to PowerPoint (.pptx)',
+                    waitDuration: const Duration(milliseconds: 500),
+                    child: InkWell(
+                      onTap: items.isEmpty
+                          ? null
+                          : () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => ExportPowerpointDialog(
+                                  defaultTitle: activeName,
+                                ),
+                              );
+                            },
+                      borderRadius: BorderRadius.circular(6),
+                      child: Container(
+                        height: 28,
+                        width: 28,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2D2D3E),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: Icon(
+                          Icons.slideshow_rounded,
+                          size: 16,
+                          color: items.isEmpty ? Colors.white24 : Colors.deepOrangeAccent,
+                        ),
                       ),
                     ),
                   ),
-                  child: DropdownMenu<String>(
-                    controller: _nameCtrl,
-                    focusNode: _nameFocusNode,
-                    initialSelection: activeName,
-                    enableFilter: true,
-                    requestFocusOnTap: true,
-                    dropdownMenuEntries: names.map((n) => DropdownMenuEntry(value: n, label: n)).toList(),
-                    onSelected: (name) {
-                      if (name != null) _loadSetlist(name);
-                    },
-                    textStyle: const TextStyle(color: Colors.white, fontSize: 11),
-                    inputDecorationTheme: InputDecorationTheme(
-                      isDense: true,
-                      constraints: const BoxConstraints(maxHeight: 28),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                      filled: true,
-                      fillColor: const Color(0xFF2D2D3E),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        borderSide: BorderSide.none,
-                      ),
-                      hintStyle: const TextStyle(color: Colors.white24, fontSize: 11),
-                    ),
-                    hintText: 'SetList name…',
-                    expandedInsets: EdgeInsets.zero,
-                    menuStyle: MenuStyle(
-                      backgroundColor: WidgetStateProperty.all(const Color(0xFF2D2D3E)),
-                    ),
-                    trailingIcon: const Icon(Icons.arrow_drop_down, color: Colors.white54, size: 20),
-                    selectedTrailingIcon: const Icon(Icons.arrow_drop_up, color: Colors.white54, size: 20),
-                  ),
-                ),
-                loading: () => const Center(child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator())),
-                error: (e, _) => Center(child: Text('Error: $e')),
+                ],
               ),
-
             ),
 
             // ── Item List ───────────────────────────────────────────────
