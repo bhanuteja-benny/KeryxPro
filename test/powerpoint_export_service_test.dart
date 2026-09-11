@@ -273,4 +273,62 @@ void main() {
     // Secondary verse line spacing (1.35 -> 135000)
     expect(slide1Content, contains('<a:lnSpc><a:spcPct val="135000"/></a:lnSpc>'));
   });
+
+  test('PowerpointExportService applies padding insets and normAutofit auto-shrink to textboxes', () {
+    final slides = [
+      PowerpointSlideData(
+        title: 'Genesis 1:1',
+        content: 'In the beginning God created the heaven and the earth.',
+        secondaryContent: 'ఆదియందు దేవుడు భూమ్యాకాశములను సృజించెను.',
+        isSong: false,
+        isDualVersion: true,
+        showTitle: true,
+        // Title padding: 16px -> 101600 EMUs
+        titlePadLeft: 16.0,
+        titlePadTop: 16.0,
+        titlePadRight: 16.0,
+        titlePadBottom: 16.0,
+        // Primary verse padding: 32px left/right -> 203200 EMUs, 16px top/bottom -> 101600 EMUs
+        padLeft: 32.0,
+        padTop: 16.0,
+        padRight: 32.0,
+        padBottom: 16.0,
+        // Secondary verse padding: 48px left/right -> 304800 EMUs, 24px top/bottom -> 152400 EMUs
+        secondaryPadLeft: 48.0,
+        secondaryPadTop: 24.0,
+        secondaryPadRight: 48.0,
+        secondaryPadBottom: 24.0,
+        autoShrinkText: true,
+      ),
+    ];
+
+    final pptxBytes = PowerpointExportService.generatePptxBytes(
+      slides: slides,
+      aspectRatio: '16:9',
+      slideWidth: 1920,
+      slideHeight: 1080,
+    );
+
+    expect(pptxBytes.isNotEmpty, isTrue);
+
+    final archive = ZipDecoder().decodeBytes(pptxBytes);
+    final slide1File = archive.findFile('ppt/slides/slide1.xml')!;
+    final slide1Content = utf8.decode(slide1File.content as List<int>);
+
+    expect(() => XmlDocument.parse(slide1Content), returnsNormally);
+
+    // Verify all textboxes have <a:normAutofit/> for text auto shrink
+    expect(slide1Content, contains('<a:normAutofit/>'));
+    // Should NOT have <a:spAutoFit/>
+    expect(slide1Content.contains('<a:spAutoFit/>'), isFalse);
+
+    // Verify Title padding insets (16px * 6350 = 101600)
+    expect(slide1Content, contains('lIns="101600" tIns="101600" rIns="101600" bIns="101600"'));
+
+    // Verify Primary verse padding insets (32px * 6350 = 203200, 16px * 6350 = 101600)
+    expect(slide1Content, contains('lIns="203200" tIns="101600" rIns="203200" bIns="101600"'));
+
+    // Verify Secondary verse padding insets (48px * 6350 = 304800, 24px * 6350 = 152400)
+    expect(slide1Content, contains('lIns="304800" tIns="152400" rIns="304800" bIns="152400"'));
+  });
 }

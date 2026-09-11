@@ -26,6 +26,12 @@ class PowerpointSlideData {
   final String verticalAlign;   // 'top', 'center', 'bottom'
   final double lineHeight;
 
+  // Primary padding / margins (in pixels/points)
+  final double padLeft;
+  final double padTop;
+  final double padRight;
+  final double padBottom;
+
   // Secondary text formatting (for dual scripture / dual version)
   final String? secondaryFontColorHex;
   final double? secondaryFontSize;
@@ -36,6 +42,10 @@ class PowerpointSlideData {
   final String? secondaryHorizontalAlign;
   final String? secondaryVerticalAlign;
   final double? secondaryLineHeight;
+  final double? secondaryPadLeft;
+  final double? secondaryPadTop;
+  final double? secondaryPadRight;
+  final double? secondaryPadBottom;
 
   // Dual layout settings
   final String dualLayoutDirection; // 'topBottom', 'sideBySide'
@@ -52,6 +62,13 @@ class PowerpointSlideData {
   final String titleAlign;
   final String titleVerticalAlign;
   final double titleLineHeight;
+  final double titlePadLeft;
+  final double titlePadTop;
+  final double titlePadRight;
+  final double titlePadBottom;
+
+  // Text Auto Shrink (shrinks font size to fit textbox without overflow)
+  final bool autoShrinkText;
 
   // Background
   final String backgroundColorHex;
@@ -80,6 +97,10 @@ class PowerpointSlideData {
     this.horizontalAlign = 'center',
     this.verticalAlign = 'center',
     this.lineHeight = 1.4,
+    this.padLeft = 32.0,
+    this.padTop = 16.0,
+    this.padRight = 32.0,
+    this.padBottom = 16.0,
     this.secondaryFontColorHex,
     this.secondaryFontSize,
     this.secondaryFontFamily,
@@ -89,6 +110,10 @@ class PowerpointSlideData {
     this.secondaryHorizontalAlign,
     this.secondaryVerticalAlign,
     this.secondaryLineHeight,
+    this.secondaryPadLeft,
+    this.secondaryPadTop,
+    this.secondaryPadRight,
+    this.secondaryPadBottom,
     this.dualLayoutDirection = 'topBottom',
     this.isPrimaryFirst = true,
     this.primaryRatio = 0.5,
@@ -101,6 +126,11 @@ class PowerpointSlideData {
     this.titleAlign = 'center',
     this.titleVerticalAlign = 'top',
     this.titleLineHeight = 1.2,
+    this.titlePadLeft = 16.0,
+    this.titlePadTop = 16.0,
+    this.titlePadRight = 16.0,
+    this.titlePadBottom = 16.0,
+    this.autoShrinkText = true,
     this.backgroundColorHex = '1E1E2E',
     this.backgroundImageBytes,
     Uint8List? imageSlideBytes,
@@ -212,6 +242,8 @@ class PowerpointExportService {
         cx: cx,
         cy: cy,
         hasMedia: mediaFileName != null,
+        slideWidth: slideWidth,
+        slideHeight: slideHeight,
       );
       _addFileToArchive(outArchive, 'ppt/slides/slide$slideIndex.xml', utf8.encode(slideXml));
 
@@ -308,6 +340,8 @@ class PowerpointExportService {
     required int cx,
     required int cy,
     required bool hasMedia,
+    double slideWidth = 1920,
+    double slideHeight = 1080,
   }) {
     final buffer = StringBuffer();
     buffer.write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n');
@@ -346,24 +380,33 @@ class PowerpointExportService {
       shapeId++;
     }
 
+    // Scaling factor from virtual canvas pixels to OpenXML EMUs (1px @ 1920x1080 = 6350 EMUs)
+    final double scaleX = cx / (slideWidth > 0 ? slideWidth : 1920.0);
+    final double scaleY = cy / (slideHeight > 0 ? slideHeight : 1080.0);
+
+    int toEmu(double px, double scale, int maxEmu) {
+      if (px <= 0) return 0;
+      final int emu = (px * scale).round();
+      final int limit = (maxEmu * 0.45).round();
+      return emu > limit ? limit : emu;
+    }
+
     // If not a full-bleed image slide and not blank, generate native text boxes
     if (slide.imageSlideBytes == null && !slide.isBlank) {
       final bool hasTitle = slide.showTitle && slide.title.trim().isNotEmpty;
       final bool isTitleBottom = slide.titleVerticalAlign.toLowerCase() == 'bottom';
 
-      // Calculate title bounds
-      final int titleX = (cx * 0.05).round();
-      final int titleY = isTitleBottom ? (cy * 0.86).round() : (cy * 0.03).round();
-      final int titleW = (cx * 0.90).round();
-      final int titleH = (cy * 0.11).round();
+      // Title bounds: full width, top 14% or bottom 14%
+      final int titleH = (cy * 0.14).round();
+      final int titleY = isTitleBottom ? (cy - titleH) : 0;
+      final int titleX = 0;
+      final int titleW = cx;
 
       // Available content area bounds
-      final double topPercent = hasTitle ? (isTitleBottom ? 0.05 : 0.15) : 0.05;
-      final double bottomPercent = hasTitle ? (isTitleBottom ? 0.85 : 0.95) : 0.95;
-      final int contentX = (cx * 0.05).round();
-      final int contentY = (cy * topPercent).round();
-      final int contentW = (cx * 0.90).round();
-      final int contentH = (cy * (bottomPercent - topPercent)).round();
+      final int contentY = hasTitle ? (isTitleBottom ? 0 : titleH) : 0;
+      final int contentH = hasTitle ? (cy - titleH) : cy;
+      final int contentX = 0;
+      final int contentW = cx;
 
       // 1. Title Text Box (Chapter reference or song title)
       if (hasTitle) {
@@ -384,6 +427,11 @@ class PowerpointExportService {
           horizontalAlign: slide.titleAlign,
           verticalAlign: slide.titleVerticalAlign,
           lineHeight: slide.titleLineHeight,
+          lIns: toEmu(slide.titlePadLeft, scaleX, titleW),
+          tIns: toEmu(slide.titlePadTop, scaleY, titleH),
+          rIns: toEmu(slide.titlePadRight, scaleX, titleW),
+          bIns: toEmu(slide.titlePadBottom, scaleY, titleH),
+          autoShrink: slide.autoShrinkText,
         );
         buffer.write(titleXml);
       }
@@ -404,7 +452,7 @@ class PowerpointExportService {
 
         if (isTopBottom) {
           // Top-to-Bottom
-          final int gapY = (contentH * 0.03).round();
+          final int gapY = (contentH * 0.02).round();
           final int netH = contentH - gapY;
           final int hPrim = (netH * primaryRatio).round();
           final int hSec = netH - hPrim;
@@ -432,7 +480,7 @@ class PowerpointExportService {
           }
         } else {
           // Side-by-Side
-          final int gapX = (contentW * 0.03).round();
+          final int gapX = (contentW * 0.02).round();
           final int netW = contentW - gapX;
           final int wPrim = (netW * primaryRatio).round();
           final int wSec = netW - wPrim;
@@ -478,6 +526,11 @@ class PowerpointExportService {
           horizontalAlign: slide.horizontalAlign,
           verticalAlign: slide.verticalAlign,
           lineHeight: slide.lineHeight,
+          lIns: toEmu(slide.padLeft, scaleX, primW),
+          tIns: toEmu(slide.padTop, scaleY, primH),
+          rIns: toEmu(slide.padRight, scaleX, primW),
+          bIns: toEmu(slide.padBottom, scaleY, primH),
+          autoShrink: slide.autoShrinkText,
         );
         buffer.write(primaryBoxXml);
 
@@ -499,6 +552,11 @@ class PowerpointExportService {
           horizontalAlign: slide.secondaryHorizontalAlign ?? slide.horizontalAlign,
           verticalAlign: slide.secondaryVerticalAlign ?? slide.verticalAlign,
           lineHeight: slide.secondaryLineHeight ?? slide.lineHeight,
+          lIns: toEmu(slide.secondaryPadLeft ?? slide.padLeft, scaleX, secW),
+          tIns: toEmu(slide.secondaryPadTop ?? slide.padTop, scaleY, secH),
+          rIns: toEmu(slide.secondaryPadRight ?? slide.padRight, scaleX, secW),
+          bIns: toEmu(slide.secondaryPadBottom ?? slide.padBottom, scaleY, secH),
+          autoShrink: slide.autoShrinkText,
         );
         buffer.write(secondaryBoxXml);
       } else if (slide.content.trim().isNotEmpty) {
@@ -520,6 +578,11 @@ class PowerpointExportService {
           horizontalAlign: slide.horizontalAlign,
           verticalAlign: slide.verticalAlign,
           lineHeight: slide.lineHeight,
+          lIns: toEmu(slide.padLeft, scaleX, contentW),
+          tIns: toEmu(slide.padTop, scaleY, contentH),
+          rIns: toEmu(slide.padRight, scaleX, contentW),
+          bIns: toEmu(slide.padBottom, scaleY, contentH),
+          autoShrink: slide.autoShrinkText,
         );
         buffer.write(contentXml);
       }
@@ -549,6 +612,11 @@ class PowerpointExportService {
     required String horizontalAlign,
     required String verticalAlign,
     double lineHeight = 1.4,
+    int lIns = 0,
+    int tIns = 0,
+    int rIns = 0,
+    int bIns = 0,
+    bool autoShrink = true,
   }) {
     // 1 pt = 100 in OpenXML sz attribute
     final int sz = (fontSizePt * 100).round();
@@ -572,6 +640,9 @@ class PowerpointExportService {
     final double effectiveLineHeight = (lineHeight <= 0 ? 1.4 : lineHeight).clamp(0.8, 3.0);
     final int lnSpcVal = (effectiveLineHeight * 100000).round();
 
+    // Autofit element: normAutofit shrinks text on overflow, spAutoFit resizes shape
+    final String autofitXml = autoShrink ? '<a:normAutofit/>' : '<a:spAutoFit/>';
+
     final buffer = StringBuffer();
     buffer.write('''      <p:sp>
         <p:nvSpPr>
@@ -585,8 +656,8 @@ class PowerpointExportService {
           <a:noFill/>
         </p:spPr>
         <p:txBody>
-          <a:bodyPr wrap="square" rtlCol="0" anchor="$pptAnchor">
-            <a:spAutoFit/>
+          <a:bodyPr vert="horz" wrap="square" lIns="$lIns" tIns="$tIns" rIns="$rIns" bIns="$bIns" rtlCol="0" anchor="$pptAnchor">
+            $autofitXml
           </a:bodyPr>
           <a:lstStyle/>\n''');
 

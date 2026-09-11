@@ -375,7 +375,7 @@ Future<void> _handleSearch(String query, WidgetRef ref) async {
           ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
 
         if (selectedVerses.isNotEmpty) {
-          _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
+          await _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
         }
       }
     }
@@ -436,7 +436,44 @@ Future<bool> _addReferenceLineToSetlist(String line, WidgetRef ref) async {
       ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
 
     if (selectedVerses.length == (q.endVerse - q.startVerse + 1)) {
-      _addToSetlist(selectedVerses, targetVersion, ref, goLive: false);
+      List<BibleVerse>? secondaryVerses;
+      BibleVersion? secondaryVersion;
+
+      if (_isDualVersionMode) {
+        BibleVersion? secVer = _secondaryBibleVersion ?? ref.read(secondaryBibleVersionProvider);
+        if (secVer == null || secVer.id == targetVersion.id) {
+          final primaryVer = ref.read(selectedBibleVersionProvider);
+          if (primaryVer != null && primaryVer.id != targetVersion.id) {
+            secVer = primaryVer;
+          } else {
+            secVer = versions.where((v) => v.id != targetVersion!.id).firstOrNull;
+          }
+        }
+
+        if (secVer != null && secVer.id != targetVersion.id) {
+          secondaryVersion = secVer;
+          final secChapterVerses = await isar.bibleVerses
+              .filter()
+              .bibleVersionIdEqualTo(secVer.id)
+              .bookNameEqualTo(q.bookName)
+              .chapterNumberEqualTo(q.chapter)
+              .findAll();
+
+          secondaryVerses = secChapterVerses
+              .where((v) => v.verseNumber >= q.startVerse && v.verseNumber <= q.endVerse)
+              .toList()
+            ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+        }
+      }
+
+      await _addToSetlist(
+        selectedVerses,
+        targetVersion,
+        ref,
+        goLive: false,
+        secondaryVerses: secondaryVerses,
+        secondaryVersion: secondaryVersion,
+      );
       addedAny = true;
     }
   }
@@ -445,9 +482,22 @@ Future<bool> _addReferenceLineToSetlist(String line, WidgetRef ref) async {
 }
 
 Future<void> _showImportVersesDialog(WidgetRef ref) async {
+  final versions = ref.read(bibleVersionsProvider).valueOrNull ?? [];
+  final primary = ref.read(selectedBibleVersionProvider) ?? versions.firstOrNull;
+  final secondary = _isDualVersionMode
+      ? (_secondaryBibleVersion ??
+          ref.read(secondaryBibleVersionProvider) ??
+          versions.where((v) => v.id != primary?.id).firstOrNull)
+      : null;
+
+  final isDual = _isDualVersionMode && secondary != null && secondary.id != primary?.id;
+
   final result = await showDialog<({int added, int notFound})>(
     context: context,
     builder: (dialogContext) => _ImportVersesDialog(
+      isDual: isDual,
+      primaryVersionAbbr: primary?.abbreviation,
+      secondaryVersionAbbr: secondary?.abbreviation,
       onAdd: (lines) async {
         int addedCount = 0;
         int notFoundCount = 0;
@@ -473,14 +523,14 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
   );
 }
   
-  void _addToSetlist(
+  Future<void> _addToSetlist(
     List<BibleVerse> verses,
     BibleVersion version,
     WidgetRef ref, {
     bool goLive = true,
     List<BibleVerse>? secondaryVerses,
     BibleVersion? secondaryVersion,
-  }) {
+  }) async {
     if (verses.isEmpty) return;
 
     final book = verses.first.bookName;
@@ -528,22 +578,26 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
 
     if (_isDualVersionMode) {
       final bibleVersions = ref.read(bibleVersionsProvider).valueOrNull ?? [];
-      secondaryVersion ??= _secondaryBibleVersion ?? bibleVersions.where((v) => v.id != version.id).firstOrNull;
+      secondaryVersion ??= _secondaryBibleVersion ??
+          ref.read(secondaryBibleVersionProvider) ??
+          bibleVersions.where((v) => v.id != version.id).firstOrNull;
 
       if (secondaryVersion != null && secondaryVersion.id != version.id) {
         if (secondaryVerses == null || secondaryVerses.isEmpty) {
-          final secSelected = ref.read(secondarySelectedVersesProvider);
-          final versesToFetch = secSelected.isNotEmpty ? secSelected : verses.map((v) => v.verseNumber).toSet();
-          final secAsync = ref.read(bibleVersesForSelectionProvider((
-            versionId: secondaryVersion.id,
-            book: book,
-            chapter: chapter,
-            verses: versesToFetch,
-          )));
-          secondaryVerses = secAsync.valueOrNull;
+          final isar = await ref.read(isarServiceProvider).db;
+          final normBook = BibleConstants.normalizeBookName(book) ?? book;
+          final versesToFetch = verses.map((v) => v.verseNumber).toList();
+          secondaryVerses = await isar.bibleVerses
+              .filter()
+              .bibleVersionIdEqualTo(secondaryVersion.id)
+              .bookNameEqualTo(normBook)
+              .chapterNumberEqualTo(chapter)
+              .anyOf(versesToFetch, (q, int v) => q.verseNumberEqualTo(v))
+              .sortByVerseNumber()
+              .findAll();
         }
 
-        if (secondaryVerses != null && secondaryVerses.isNotEmpty) {
+        if (secondaryVerses.isNotEmpty) {
           secondaryVerses.sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
           final secBook = secondaryVerses.first.bookName;
           final secChapter = secondaryVerses.first.chapterNumber;
@@ -2079,9 +2133,17 @@ final selectedVerses = ref.watch(selectedVersesProvider);
 typedef _ImportVersesCallback = Future<({int added, int notFound})> Function(List<String> lines);
 
 class _ImportVersesDialog extends StatefulWidget {
-  const _ImportVersesDialog({required this.onAdd});
+  const _ImportVersesDialog({
+    required this.onAdd,
+    this.isDual = false,
+    this.primaryVersionAbbr,
+    this.secondaryVersionAbbr,
+  });
 
   final _ImportVersesCallback onAdd;
+  final bool isDual;
+  final String? primaryVersionAbbr;
+  final String? secondaryVersionAbbr;
 
   @override
   State<_ImportVersesDialog> createState() => _ImportVersesDialogState();
@@ -2100,17 +2162,45 @@ class _ImportVersesDialogState extends State<_ImportVersesDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Import Verses'),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Import Verses'),
+          if (widget.isDual && widget.primaryVersionAbbr != null && widget.secondaryVersionAbbr != null) ...[
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.blueAccent.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.blueAccent, width: 1),
+              ),
+              child: Text(
+                'Dual: ${widget.primaryVersionAbbr} + ${widget.secondaryVersionAbbr}',
+                style: const TextStyle(fontSize: 11, color: Colors.lightBlueAccent, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ],
+      ),
       content: SizedBox(
         width: 420,
-        child: TextField(
-          controller: _controller,
-          autofocus: true,
-          minLines: 6,
-          maxLines: 10,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              minLines: 6,
+              maxLines: 10,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter references, one per line\n(e.g. John 3:16, Gen 1:1-5)',
+                hintStyle: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
+            ),
+          ],
         ),
       ),
       actions: [
@@ -2128,11 +2218,18 @@ class _ImportVersesDialogState extends State<_ImportVersesDialog> {
                       .map((l) => l.trim())
                       .where((l) => l.isNotEmpty)
                       .toList();
+                  final navigator = Navigator.of(context);
                   final result = await widget.onAdd(lines);
                   if (!mounted) return;
-                  Navigator.of(context).pop(result);
+                  navigator.pop(result);
                 },
-          child: const Text('Add'),
+          child: _isAdding
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+              : const Text('Add'),
         ),
       ],
     );
