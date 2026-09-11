@@ -127,7 +127,7 @@ void replaceAt(int index, SetlistItem item) {
 
 void insertItemAt(int index, SetlistItem item) {
   final newList = List<SetlistItem>.from(state);
-  final safeIndex = index.clamp(0, newList.length) as int;
+  final safeIndex = index.clamp(0, newList.length);
   newList.insert(safeIndex, item);
   state = newList;
 }
@@ -234,7 +234,7 @@ String generateSetlistSignature(List<SetlistItem> items) {
     switch (item) {
       case SongSetlistItem(:final song):
         if (song.author == 'Bible') {
-          buffer.write('scripture:${song.title}|');
+          buffer.write('scripture:${song.title};${song.isDualVersion ? '1' : '0'};${song.secondaryTitle ?? ''}|');
         } else {
           buffer.write('song:${song.id}|');
         }

@@ -46,7 +46,8 @@ class _ImportSetlistDialogState extends ConsumerState<ImportSetlistDialog> {
       final content = await file.readAsString();
       final data = jsonDecode(content) as Map<String, dynamic>;
 
-      if (!data.containsKey('name') || !data.containsKey('itemOrder')) {
+      if (!data.containsKey('name') ||
+          (!data.containsKey('itemOrder') && !data.containsKey('scriptures') && !data.containsKey('songs'))) {
         setState(() {
           _errorMessage = 'Invalid setlist JSON file.';
           _selectedFilePath = null;
@@ -58,11 +59,14 @@ class _ImportSetlistDialogState extends ConsumerState<ImportSetlistDialog> {
 
       final name = data['name'] as String;
       final itemOrder = data['itemOrder'] as List<dynamic>? ?? [];
+      final scriptures = data['scriptures'] as List<dynamic>? ?? [];
+      final songs = data['songs'] as List<dynamic>? ?? [];
+      final count = itemOrder.isNotEmpty ? itemOrder.length : (scriptures.length + songs.length);
 
       setState(() {
         _selectedFilePath = filePath;
         _setlistName = name;
-        _itemCount = itemOrder.length;
+        _itemCount = count;
         _errorMessage = null;
       });
     } catch (e) {

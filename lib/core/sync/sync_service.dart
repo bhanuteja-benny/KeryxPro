@@ -92,6 +92,7 @@ class SyncService {
       await _exportEvent('SETLIST_UPSERT', {
         'syncId': setlist.syncId,
         'name': setlist.name,
+        'songIds': setlist.songIds,
         'songSyncIds': setlist.songSyncIds,
         'imageEntries': setlist.imageEntries,
         'itemOrder': setlist.itemOrder,
@@ -271,18 +272,40 @@ class SyncService {
         
         // Resolve songSyncIds to local Isar IDs
         final songSyncIds = List<String>.from(payload['songSyncIds'] ?? []);
+        final rawSongIds = List<int>.from(payload['songIds'] ?? []);
         setlist.songSyncIds = songSyncIds;
         final localSongIds = <int>[];
-        for (final sId in songSyncIds) {
+        final oldIdToNewId = <int, int>{};
+
+        for (int i = 0; i < songSyncIds.length; i++) {
+          final sId = songSyncIds[i];
           final localSong = await isar.songs.filter().syncIdEqualTo(sId).findFirst();
           if (localSong != null) {
             localSongIds.add(localSong.id);
+            if (i < rawSongIds.length) {
+              oldIdToNewId[rawSongIds[i]] = localSong.id;
+            }
           }
         }
         setlist.songIds = localSongIds;
 
+        final rawItemOrder = List<String>.from(payload['itemOrder'] ?? []);
+        final mappedItemOrder = <String>[];
+        for (final entry in rawItemOrder) {
+          if (entry.startsWith('song:')) {
+            final oldId = int.tryParse(entry.substring(5));
+            if (oldId != null && oldIdToNewId.containsKey(oldId)) {
+              mappedItemOrder.add('song:${oldIdToNewId[oldId]}');
+            } else {
+              mappedItemOrder.add(entry);
+            }
+          } else {
+            mappedItemOrder.add(entry);
+          }
+        }
+
         setlist.imageEntries = List<String>.from(payload['imageEntries'] ?? []);
-        setlist.itemOrder = List<String>.from(payload['itemOrder'] ?? []);
+        setlist.itemOrder = mappedItemOrder;
         setlist.favorites = List<bool>.from(payload['favorites'] ?? []);
         setlist.lastModified = DateTime.fromMillisecondsSinceEpoch(payload['lastModified'] as int);
         await isar.savedSetlists.put(setlist);

@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import '../../../core/database/isar_service.dart';
 import '../../../core/sync/sync_service.dart';
 import '../../../main.dart';
 import '../../songs/data/song.dart';
@@ -19,6 +18,14 @@ class SetlistRepository {
   final SyncService _syncService;
   
   SetlistRepository(this._db, this._syncService);
+
+  static String _safeDecode(String s) {
+    try {
+      return Uri.decodeComponent(s);
+    } catch (_) {
+      return s;
+    }
+  }
 
   Future<List<String>> getAllNames() async {
     final isar = await _db;
@@ -74,15 +81,22 @@ class SetlistRepository {
       } else if (entry.startsWith('scripture:')) {
         final parts = entry.substring(10).split('|');
         if (parts.length >= 2) {
-          final title = Uri.decodeComponent(parts[0]);
-          final lyrics = Uri.decodeComponent(parts[1]);
+          final title = _safeDecode(parts[0]);
+          final lyrics = _safeDecode(parts[1]);
           bool isDual = false;
           String? secTitle;
           String? secLyrics;
-          if (parts.length >= 5) {
-            isDual = parts[2] == '1';
-            secTitle = parts[3].isNotEmpty ? Uri.decodeComponent(parts[3]) : null;
-            secLyrics = parts[4].isNotEmpty ? Uri.decodeComponent(parts[4]) : null;
+          if (parts.length >= 3) {
+            isDual = parts[2] == '1' || parts[2].toLowerCase() == 'true';
+          }
+          if (parts.length >= 4 && parts[3].isNotEmpty) {
+            secTitle = _safeDecode(parts[3]);
+          }
+          if (parts.length >= 5 && parts[4].isNotEmpty) {
+            secLyrics = _safeDecode(parts[4]);
+          }
+          if ((secTitle != null && secTitle.isNotEmpty) || (secLyrics != null && secLyrics.isNotEmpty)) {
+            isDual = true;
           }
           final mockSong = Song()
             ..title = title
