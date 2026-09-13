@@ -1,0 +1,23 @@
+
+Phase 56 Plan
+
+Context: 
+- Changes in export to powerpoint in setlist pane
+
+UI Requirement:
+- don't apply, top and bottom margins for chapter/title, lyrics, verse, primary verse, secondary verse textboxes in powerpoint.
+- always 'shrink text to fit' should be enabled for textboxes
+- please make sure that line height, horizontal alignment and vertical alignments are applying properly
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan

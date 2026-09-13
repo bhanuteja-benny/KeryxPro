@@ -317,18 +317,53 @@ void main() {
 
     expect(() => XmlDocument.parse(slide1Content), returnsNormally);
 
-    // Verify all textboxes have <a:normAutofit/> for text auto shrink
-    expect(slide1Content, contains('<a:normAutofit/>'));
+    // Verify all textboxes have <a:normAutofit for text auto shrink
+    expect(slide1Content, contains('<a:normAutofit'));
     // Should NOT have <a:spAutoFit/>
     expect(slide1Content.contains('<a:spAutoFit/>'), isFalse);
 
-    // Verify Title padding insets (16px * 6350 = 101600)
-    expect(slide1Content, contains('lIns="101600" tIns="101600" rIns="101600" bIns="101600"'));
+    // Verify Title padding insets (16px * 6350 = 101600, tIns/bIns = 0)
+    expect(slide1Content, contains('lIns="101600" tIns="0" rIns="101600" bIns="0"'));
 
-    // Verify Primary verse padding insets (32px * 6350 = 203200, 16px * 6350 = 101600)
-    expect(slide1Content, contains('lIns="203200" tIns="101600" rIns="203200" bIns="101600"'));
+    // Verify Primary verse padding insets (32px * 6350 = 203200, tIns/bIns = 0)
+    expect(slide1Content, contains('lIns="203200" tIns="0" rIns="203200" bIns="0"'));
 
-    // Verify Secondary verse padding insets (48px * 6350 = 304800, 24px * 6350 = 152400)
-    expect(slide1Content, contains('lIns="304800" tIns="152400" rIns="304800" bIns="152400"'));
+    // Verify Secondary verse padding insets (48px * 6350 = 304800, tIns/bIns = 0)
+    expect(slide1Content, contains('lIns="304800" tIns="0" rIns="304800" bIns="0"'));
+  });
+
+  test('PowerpointExportService calculates dynamic title height and fontScale for oversized text', () {
+    final longVerseContent = List.generate(15, (i) => 'Line $i: This is a very long line of verse text that will wrap multiple times.').join('\n');
+    final slides = [
+      PowerpointSlideData(
+        title: 'John 3:16',
+        content: longVerseContent,
+        showTitle: true,
+        titleFontSize: 20.0,
+        fontSize: 48.0, // Large initial font size for long text
+        lineHeight: 1.5,
+      ),
+    ];
+
+    final pptxBytes = PowerpointExportService.generatePptxBytes(
+      slides: slides,
+      aspectRatio: '16:9',
+      slideWidth: 1920,
+      slideHeight: 1080,
+    );
+
+    expect(pptxBytes.isNotEmpty, isTrue);
+
+    final archive = ZipDecoder().decodeBytes(pptxBytes);
+    final slide1File = archive.findFile('ppt/slides/slide1.xml')!;
+    final slide1Content = utf8.decode(slide1File.content as List<int>);
+
+    expect(() => XmlDocument.parse(slide1Content), returnsNormally);
+
+    // Title box should have height cy * 0.05 to 0.08 (342900 to 548640 EMUs), NOT hardcoded 14% (960120 EMUs)
+    expect(slide1Content.contains('cy="960120"'), isFalse, reason: 'Title height should no longer be hardcoded 14%');
+
+    // Oversized text should have fontScale attribute in normAutofit
+    expect(slide1Content, contains('fontScale="'));
   });
 }

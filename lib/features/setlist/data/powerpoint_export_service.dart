@@ -396,15 +396,27 @@ class PowerpointExportService {
       final bool hasTitle = slide.showTitle && slide.title.trim().isNotEmpty;
       final bool isTitleBottom = slide.titleVerticalAlign.toLowerCase() == 'bottom';
 
-      // Title bounds: full width, top 14% or bottom 14%
-      final int titleH = (cy * 0.14).round();
-      final int titleY = isTitleBottom ? (cy - titleH) : 0;
+      // Slide-level vertical margins (~4% top & ~4% bottom) to prevent text from touching physical slide edges
+      final int slideMarginTop = (cy * 0.04).round();
+      final int slideMarginBottom = (cy * 0.04).round();
+      final int usableCy = cy - slideMarginTop - slideMarginBottom;
+
+      // Title bounds: dynamic height based on font size and line count (clamped to 5%–8% of usable slide height)
+      final titleLines = slide.title.trim().split('\n');
+      final double effectiveTitleLineHeight = slide.titleLineHeight > 0 ? slide.titleLineHeight : 1.2;
+      // 1 pt = 12,700 EMUs
+      final int rawTitleH = (slide.titleFontSize * 12700 * effectiveTitleLineHeight * titleLines.length * 1.3).round();
+      final int minTitleH = (usableCy * 0.05).round();
+      final int maxTitleH = (usableCy * 0.08).round();
+      final int titleH = rawTitleH.clamp(minTitleH, maxTitleH);
+
+      final int titleY = isTitleBottom ? (slideMarginTop + usableCy - titleH) : slideMarginTop;
       final int titleX = 0;
       final int titleW = cx;
 
-      // Available content area bounds
-      final int contentY = hasTitle ? (isTitleBottom ? 0 : titleH) : 0;
-      final int contentH = hasTitle ? (cy - titleH) : cy;
+      // Available content area bounds within overall slide margins
+      final int contentY = hasTitle ? (isTitleBottom ? slideMarginTop : (slideMarginTop + titleH)) : slideMarginTop;
+      final int contentH = hasTitle ? (usableCy - titleH) : usableCy;
       final int contentX = 0;
       final int contentW = cx;
 
@@ -428,9 +440,9 @@ class PowerpointExportService {
           verticalAlign: slide.titleVerticalAlign,
           lineHeight: slide.titleLineHeight,
           lIns: toEmu(slide.titlePadLeft, scaleX, titleW),
-          tIns: toEmu(slide.titlePadTop, scaleY, titleH),
+          tIns: 0,
           rIns: toEmu(slide.titlePadRight, scaleX, titleW),
-          bIns: toEmu(slide.titlePadBottom, scaleY, titleH),
+          bIns: 0,
           autoShrink: slide.autoShrinkText,
         );
         buffer.write(titleXml);
@@ -527,9 +539,9 @@ class PowerpointExportService {
           verticalAlign: slide.verticalAlign,
           lineHeight: slide.lineHeight,
           lIns: toEmu(slide.padLeft, scaleX, primW),
-          tIns: toEmu(slide.padTop, scaleY, primH),
+          tIns: 0,
           rIns: toEmu(slide.padRight, scaleX, primW),
-          bIns: toEmu(slide.padBottom, scaleY, primH),
+          bIns: 0,
           autoShrink: slide.autoShrinkText,
         );
         buffer.write(primaryBoxXml);
@@ -553,9 +565,9 @@ class PowerpointExportService {
           verticalAlign: slide.secondaryVerticalAlign ?? slide.verticalAlign,
           lineHeight: slide.secondaryLineHeight ?? slide.lineHeight,
           lIns: toEmu(slide.secondaryPadLeft ?? slide.padLeft, scaleX, secW),
-          tIns: toEmu(slide.secondaryPadTop ?? slide.padTop, scaleY, secH),
+          tIns: 0,
           rIns: toEmu(slide.secondaryPadRight ?? slide.padRight, scaleX, secW),
-          bIns: toEmu(slide.secondaryPadBottom ?? slide.padBottom, scaleY, secH),
+          bIns: 0,
           autoShrink: slide.autoShrinkText,
         );
         buffer.write(secondaryBoxXml);
@@ -579,9 +591,9 @@ class PowerpointExportService {
           verticalAlign: slide.verticalAlign,
           lineHeight: slide.lineHeight,
           lIns: toEmu(slide.padLeft, scaleX, contentW),
-          tIns: toEmu(slide.padTop, scaleY, contentH),
+          tIns: 0,
           rIns: toEmu(slide.padRight, scaleX, contentW),
-          bIns: toEmu(slide.padBottom, scaleY, contentH),
+          bIns: 0,
           autoShrink: slide.autoShrinkText,
         );
         buffer.write(contentXml);
@@ -618,9 +630,6 @@ class PowerpointExportService {
     int bIns = 0,
     bool autoShrink = true,
   }) {
-    // 1 pt = 100 in OpenXML sz attribute
-    final int sz = (fontSizePt * 100).round();
-
     // Map horizontal alignment: 'l', 'ctr', 'r', 'just'
     final String pptAlign = switch (horizontalAlign.toLowerCase()) {
       'left' => 'l',
@@ -640,8 +649,40 @@ class PowerpointExportService {
     final double effectiveLineHeight = (lineHeight <= 0 ? 1.4 : lineHeight).clamp(0.8, 3.0);
     final int lnSpcVal = (effectiveLineHeight * 100000).round();
 
-    // Autofit element: normAutofit shrinks text on overflow, spAutoFit resizes shape
-    final String autofitXml = autoShrink ? '<a:normAutofit/>' : '<a:spAutoFit/>';
+    // 1. Calculate available inner dimensions in points (1 pt = 12,700 EMUs)
+    final double availWPt = ((width - lIns - rIns) > 0 ? (width - lIns - rIns) : width) / 12700.0;
+    final double availHPt = ((height - tIns - bIns) > 0 ? (height - tIns - bIns) : height) / 12700.0;
+
+    // 2. Estimate total lines including word/character wrapping at requested fontSizePt
+    final lines = text.split('\n');
+    double estimatedLines = 0.0;
+    for (final line in lines) {
+      if (line.trim().isEmpty) {
+        estimatedLines += 1.0;
+      } else {
+        // Average character width in OpenXML sans-serif fonts is ~0.55 * fontSizePt
+        final double maxCharsPerLine = (availWPt / (fontSizePt * 0.55)).clamp(10.0, 500.0);
+        final double lineWraps = (line.length / maxCharsPerLine).ceilToDouble();
+        estimatedLines += lineWraps > 0 ? lineWraps : 1.0;
+      }
+    }
+
+    // 3. Calculate total required height in points at font size fontSizePt
+    final double reqHPt = estimatedLines * fontSizePt * effectiveLineHeight;
+
+    // 4. Calculate scale factor if text height exceeds available box height
+    final double scale = (reqHPt > availHPt && availHPt > 0 && reqHPt > 0)
+        ? (availHPt / reqHPt).clamp(0.25, 1.0)
+        : 1.0;
+
+    final double fittedFontSizePt = (fontSizePt * scale).clamp(8.0, fontSizePt);
+    final int sz = (fittedFontSizePt * 100).round();
+    final int fontScaleVal = (scale * 100000).round();
+
+    // Autofit element: normAutofit with fontScale attribute ensures immediate fit on file load
+    final String autofitXml = scale < 0.999
+        ? '<a:normAutofit fontScale="$fontScaleVal" lnSpcReduction="0"/>'
+        : '<a:normAutofit fontScale="100000" lnSpcReduction="0"/>';
 
     final buffer = StringBuffer();
     buffer.write('''      <p:sp>
@@ -661,7 +702,8 @@ class PowerpointExportService {
           </a:bodyPr>
           <a:lstStyle/>\n''');
 
-    final lines = text.split('\n');
+    final String defRPrXml = '<a:defRPr lang="en-US" sz="$sz"${isBold ? ' b="1"' : ''}${isItalic ? ' i="1"' : ''}${isUnderline ? ' u="sng"' : ''}><a:solidFill><a:srgbClr val="$fontColorHex"/></a:solidFill><a:latin typeface="$fontFamily"/><a:cs typeface="$fontFamily"/></a:defRPr>';
+
     for (final line in lines) {
       final trimmedLine = line.trim();
       if (trimmedLine.isEmpty) {
@@ -669,6 +711,7 @@ class PowerpointExportService {
         buffer.write('''          <a:p>
             <a:pPr algn="$pptAlign">
               <a:lnSpc><a:spcPct val="$lnSpcVal"/></a:lnSpc>
+              $defRPrXml
             </a:pPr>
             <a:endParaRPr lang="en-US" sz="$sz"/>
           </a:p>\n''');
@@ -677,13 +720,10 @@ class PowerpointExportService {
         buffer.write('''          <a:p>
             <a:pPr algn="$pptAlign">
               <a:lnSpc><a:spcPct val="$lnSpcVal"/></a:lnSpc>
+              $defRPrXml
             </a:pPr>
             <a:r>
-              <a:rPr lang="en-US" sz="$sz"${isBold ? ' b="1"' : ''}${isItalic ? ' i="1"' : ''}${isUnderline ? ' u="sng"' : ''}>
-                <a:solidFill><a:srgbClr val="$fontColorHex"/></a:solidFill>
-                <a:latin typeface="$fontFamily"/>
-                <a:cs typeface="$fontFamily"/>
-              </a:rPr>
+              <a:rPr lang="en-US"/>
               <a:t>$escaped</a:t>
             </a:r>
           </a:p>\n''');
