@@ -13,6 +13,47 @@ class MainFlutterWindow: NSWindow {
 
     FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
       RegisterGeneratedPlugins(registry: controller)
+
+      // KeryxPro: native window-control channel for sub-windows
+      let subChannel = FlutterMethodChannel(name: "keryx/window", binaryMessenger: controller.engine.binaryMessenger)
+      subChannel.setMethodCallHandler { [weak controller] (call, result) in
+        guard let subWindow = controller?.view.window else {
+          result(FlutterError(code: "NO_WINDOW", message: "No subwindow attached to controller", details: nil))
+          return
+        }
+
+        let args = call.arguments as? [String: Any]
+        switch call.method {
+        case "configure_current_window":
+          let w = args?["w"] as? Double ?? 1280
+          let h = args?["h"] as? Double ?? 720
+          let monitorIndex = args?["monitorIndex"] as? Int ?? 2
+          let transparent = args?["transparent"] as? Bool ?? true
+
+          var frame = subWindow.frame
+          frame.origin.y = frame.origin.y + frame.size.height - CGFloat(h)
+          frame.size = CGSize(width: CGFloat(w), height: CGFloat(h))
+          subWindow.setFrame(frame, display: true)
+
+          if transparent {
+            subWindow.isOpaque = false
+            subWindow.backgroundColor = .clear
+          } else {
+            subWindow.isOpaque = true
+            subWindow.backgroundColor = .black
+          }
+          subWindow.hasShadow = false
+          subWindow.level = (monitorIndex == 1) ? .floating : .normal
+          result(nil)
+
+        case "close_current_window":
+          subWindow.close()
+          result(nil)
+
+        default:
+          result(FlutterMethodNotImplemented)
+        }
+      }
     }
 
     // KeryxPro: native window-control channel
@@ -26,7 +67,7 @@ class MainFlutterWindow: NSWindow {
         if let title = title, !title.isEmpty {
           if let w = windows.first(where: { $0.title == title }) { return w }
         }
-        return windows.last(where: { $0 != self && $0.title.isEmpty })
+        return windows.last(where: { $0 != self && $0.contentViewController is FlutterViewController && $0.title.isEmpty })
       }
       
       switch call.method {
@@ -51,18 +92,27 @@ class MainFlutterWindow: NSWindow {
         let h = args?["h"] as? Double ?? 720
         let newTitle = args?["title"] as? String ?? ""
         let monitorIndex = args?["monitorIndex"] as? Int ?? 1
+        let noMove = args?["noMove"] as? Bool ?? false
         
         guard let target = findSubWindow(title: newTitle) else {
           result(FlutterError(code: "NOT_FOUND", message: "No sub-window found", details: nil))
           return
         }
         
+        let isInitialPlacement = target.title.isEmpty || target.title != newTitle
         if !newTitle.isEmpty {
           target.title = newTitle
         }
         
         var frame = target.frame
-        frame.origin.y = frame.origin.y + frame.size.height - CGFloat(h)
+        if isInitialPlacement && !noMove, let x = args?["x"] as? Double, let y = args?["y"] as? Double {
+          let screen = self.screen ?? NSScreen.screens.first
+          let screenHeight = screen?.frame.height ?? 900
+          frame.origin.x = CGFloat(x)
+          frame.origin.y = screenHeight - CGFloat(y) - CGFloat(h)
+        } else {
+          frame.origin.y = frame.origin.y + frame.size.height - CGFloat(h)
+        }
         frame.size = CGSize(width: CGFloat(w), height: CGFloat(h))
         target.setFrame(frame, display: true)
         

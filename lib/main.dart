@@ -208,9 +208,9 @@ Future<void> _applyCurrentWindowSizeIfNeeded({
       return;
     } catch (_) {
       if (i == attempts - 1) {
-        try {
-          await windowManager.setSize(size);
-        } catch (_) {}
+        // Sub-windows must not invoke windowManager methods because
+        // window_manager is intentionally not initialized in sub-windows
+        // and would trigger a fatal EXC_BREAKPOINT (SIGTRAP) on macOS.
         return;
       }
       await Future.delayed(retryDelay);
