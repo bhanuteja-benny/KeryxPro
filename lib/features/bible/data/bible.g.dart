@@ -22,23 +22,28 @@ const BibleVersionSchema = CollectionSchema(
       name: r'abbreviation',
       type: IsarType.string,
     ),
-    r'hashCode': PropertySchema(
+    r'bookNameMappingsJson': PropertySchema(
       id: 1,
+      name: r'bookNameMappingsJson',
+      type: IsarType.string,
+    ),
+    r'hashCode': PropertySchema(
+      id: 2,
       name: r'hashCode',
       type: IsarType.long,
     ),
     r'language': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'language',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
     r'syncId': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'syncId',
       type: IsarType.string,
     )
@@ -91,6 +96,12 @@ int _bibleVersionEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.abbreviation.length * 3;
+  {
+    final value = object.bookNameMappingsJson;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.language.length * 3;
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.syncId.length * 3;
@@ -104,10 +115,11 @@ void _bibleVersionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.abbreviation);
-  writer.writeLong(offsets[1], object.hashCode);
-  writer.writeString(offsets[2], object.language);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.syncId);
+  writer.writeString(offsets[1], object.bookNameMappingsJson);
+  writer.writeLong(offsets[2], object.hashCode);
+  writer.writeString(offsets[3], object.language);
+  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[5], object.syncId);
 }
 
 BibleVersion _bibleVersionDeserialize(
@@ -118,10 +130,11 @@ BibleVersion _bibleVersionDeserialize(
 ) {
   final object = BibleVersion();
   object.abbreviation = reader.readString(offsets[0]);
+  object.bookNameMappingsJson = reader.readStringOrNull(offsets[1]);
   object.id = id;
-  object.language = reader.readString(offsets[2]);
-  object.name = reader.readString(offsets[3]);
-  object.syncId = reader.readString(offsets[4]);
+  object.language = reader.readString(offsets[3]);
+  object.name = reader.readString(offsets[4]);
+  object.syncId = reader.readString(offsets[5]);
   return object;
 }
 
@@ -135,12 +148,14 @@ P _bibleVersionDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -572,6 +587,160 @@ extension BibleVersionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'abbreviation',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'bookNameMappingsJson',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'bookNameMappingsJson',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'bookNameMappingsJson',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'bookNameMappingsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'bookNameMappingsJson',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'bookNameMappingsJson',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterFilterCondition>
+      bookNameMappingsJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'bookNameMappingsJson',
         value: '',
       ));
     });
@@ -1113,6 +1282,20 @@ extension BibleVersionQuerySortBy
     });
   }
 
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy>
+      sortByBookNameMappingsJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bookNameMappingsJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy>
+      sortByBookNameMappingsJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bookNameMappingsJson', Sort.desc);
+    });
+  }
+
   QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy> sortByHashCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hashCode', Sort.asc);
@@ -1174,6 +1357,20 @@ extension BibleVersionQuerySortThenBy
       thenByAbbreviationDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'abbreviation', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy>
+      thenByBookNameMappingsJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bookNameMappingsJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BibleVersion, BibleVersion, QAfterSortBy>
+      thenByBookNameMappingsJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bookNameMappingsJson', Sort.desc);
     });
   }
 
@@ -1247,6 +1444,14 @@ extension BibleVersionQueryWhereDistinct
     });
   }
 
+  QueryBuilder<BibleVersion, BibleVersion, QDistinct>
+      distinctByBookNameMappingsJson({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'bookNameMappingsJson',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<BibleVersion, BibleVersion, QDistinct> distinctByHashCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hashCode');
@@ -1286,6 +1491,13 @@ extension BibleVersionQueryProperty
   QueryBuilder<BibleVersion, String, QQueryOperations> abbreviationProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'abbreviation');
+    });
+  }
+
+  QueryBuilder<BibleVersion, String?, QQueryOperations>
+      bookNameMappingsJsonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'bookNameMappingsJson');
     });
   }
 

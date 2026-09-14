@@ -2,6 +2,7 @@ enum SlideType { verse, chorus, bridge, tag, blank, other }
 
 class Slide {
   final String title;      // Song Title or Bible Reference
+  final String? displayTitle; // Display title header (e.g. using imported alias book name)
   final String shortcut;   // "V1", "C", "B"
   final String content;    // Full lyrics/verse text
   final SlideType type;
@@ -10,10 +11,12 @@ class Slide {
   final bool isFavorite;
   final bool isDualVersion;
   final String? secondaryTitle;
+  final String? secondaryDisplayTitle;
   final String? secondaryContent;
 
   Slide({
     required this.title,
+    this.displayTitle,
     required this.shortcut,
     required this.content,
     required this.type,
@@ -22,13 +25,20 @@ class Slide {
     this.isFavorite = false,
     this.isDualVersion = false,
     this.secondaryTitle,
+    this.secondaryDisplayTitle,
     this.secondaryContent,
   });
 
   // Factory for blank slides
-  factory Slide.blank({required String title, bool isSong = true, bool isFavorite = false}) {
+  factory Slide.blank({
+    required String title,
+    String? displayTitle,
+    bool isSong = true,
+    bool isFavorite = false,
+  }) {
     return Slide(
       title: title,
+      displayTitle: displayTitle,
       shortcut: "BK", // Blank
       content: "",
       type: SlideType.blank,

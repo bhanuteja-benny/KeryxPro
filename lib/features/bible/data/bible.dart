@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,6 +17,24 @@ class BibleVersion {
   
   late String name;         // e.g., "King James Version"
   late String language;
+
+  String? bookNameMappingsJson;
+
+  @ignore
+  Map<String, String> get bookNameMappings {
+    if (bookNameMappingsJson == null || bookNameMappingsJson!.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(bookNameMappingsJson!);
+      if (decoded is Map) {
+        return decoded.map((k, v) => MapEntry(k.toString(), v.toString()));
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  set bookNameMappings(Map<String, String> map) {
+    bookNameMappingsJson = jsonEncode(map);
+  }
 
   @override
   bool operator ==(Object other) =>

@@ -32,4 +32,10 @@ class Song {
 
   @ignore
   String? secondaryLyrics;
+
+  @ignore
+  String? bookAlias;
+
+  @ignore
+  String? secondaryBookAlias;
 }

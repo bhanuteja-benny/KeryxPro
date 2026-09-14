@@ -26,6 +26,17 @@ class SlideUtils {
         .join('\n');
   }
 
+  static String? _computeDisplayTitle(String? originalTitle, String? bookAlias) {
+    if (originalTitle == null || originalTitle.isEmpty) return null;
+    if (bookAlias == null || bookAlias.trim().isEmpty) return originalTitle;
+
+    final match = RegExp(r'^(.+?)(\s+\d+:.*)$').firstMatch(originalTitle.trim());
+    if (match != null) {
+      return '$bookAlias${match.group(2)}';
+    }
+    return originalTitle;
+  }
+
   static List<Slide> parseLyrics(
     String lyrics,
     String songTitle, {
@@ -34,9 +45,21 @@ class SlideUtils {
     bool isDualVersion = false,
     String? secondaryTitle,
     String? secondaryLyrics,
+    String? bookAlias,
+    String? secondaryBookAlias,
   }) {
+    final computedDisplayTitle = !isSong ? _computeDisplayTitle(songTitle, bookAlias) : songTitle;
+    final computedSecDisplayTitle = !isSong ? _computeDisplayTitle(secondaryTitle, secondaryBookAlias) : secondaryTitle;
+
     if (lyrics.trim().isEmpty && (secondaryLyrics == null || secondaryLyrics.trim().isEmpty)) {
-      return [Slide.blank(title: songTitle, isSong: isSong, isFavorite: isFavorite)];
+      return [
+        Slide.blank(
+          title: songTitle,
+          displayTitle: computedDisplayTitle,
+          isSong: isSong,
+          isFavorite: isFavorite,
+        )
+      ];
     }
 
     final stanzas = lyrics.split(RegExp(r'\n\s*\n')).where((s) => s.trim().isNotEmpty).toList();
@@ -148,6 +171,7 @@ class SlideUtils {
 
       slides.add(Slide(
         title: songTitle,
+        displayTitle: computedDisplayTitle,
         shortcut: shortcut,
         content: content,
         type: type,
@@ -155,12 +179,18 @@ class SlideUtils {
         isFavorite: isFavorite,
         isDualVersion: isDualVersion,
         secondaryTitle: secondaryTitle,
+        secondaryDisplayTitle: computedSecDisplayTitle,
         secondaryContent: secContent,
       ));
     }
 
     // Add blank slide at the end
-    slides.add(Slide.blank(title: songTitle, isSong: isSong, isFavorite: isFavorite));
+    slides.add(Slide.blank(
+      title: songTitle,
+      displayTitle: computedDisplayTitle,
+      isSong: isSong,
+      isFavorite: isFavorite,
+    ));
 
     return slides;
   }

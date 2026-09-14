@@ -10,6 +10,7 @@ import '../../../settings/presentation/widgets/remote_mode_dialog.dart';
 import '../../../songs/presentation/song_providers.dart';
 import '../../../songs/data/song_import_service.dart';
 import '../../../bible/presentation/widgets/bible_import_dialog.dart';
+import '../../../bible/presentation/widgets/bible_book_names_import_dialog.dart';
 import '../../../../core/remote/remote_models.dart';
 import '../../../../core/remote/remote_providers.dart';
 import '../../../../core/sync/sync_service.dart';
@@ -203,6 +204,15 @@ switch (remoteState) {
                       );
                     },
                     child: const Text('Import Bible'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const BibleBookNamesImportDialog(),
+                      );
+                    },
+                    child: const Text('Import Book Names'),
                   ),
                 ],
                 child: const Text('Imports', style: TextStyle(fontSize: 12)),

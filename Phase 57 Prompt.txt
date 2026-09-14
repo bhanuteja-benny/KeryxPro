@@ -1,0 +1,49 @@
+
+Phase 57 Plan
+
+Context: 
+- supporting other language Book names in title headers (for Telugu, Hindi etc)
+
+UI Requirement:
+- In imports, along with 'Import Songs' and 'Import Bible' need one more option 'Import Book Names'
+- when 'Import Book Names' is clicked then a popup should displayed
+- In that popup
+- - a dropdown with existing Bible versions should be displayed
+- - and a multiline textbox (similar to import verses textbox) show be there
+- - users can enter values like English Book Name - Other Language Book Name (multiple entries in new lines)
+- - - for example 
+- - - Genesis - ఆదికాండము
+- - - 1 John - 1 యోహాను
+- - user should have save option, once users save's the mappings should be saved into database
+- - please note that some conflicts or ambiguities should be handled, like users may enter psalms or psalm as Book name, these should be handled.
+
+UI Functionality:
+- In Bible search pane
+- - if user has selected a version which has imported Book names
+- - then in books listbox, the imported names should be displayed
+- - also in button view mode as well, the book buttons text should be displayed the imported names
+- - but only the display name should be changed, not the actual value of items (listbox item or button value)
+- - because the backend search functionality is dependent on actual Book names
+- In Preview pane
+- - show both actual book name and imported book name as well if any 
+- - like Genesis (ఆదికాండము)
+- In Setlist pane
+- - don't change the item name display (let it display actual book name)
+- - but in its packet it should maintain what is the imported name (or alias name) as well, so that it can pass to slides
+- In Slides pane
+- - in chapter/title column, display the alias name. but it should not disturb the existing functionalities like selecting setlist item will highlight the corresponding slides, ctrl/cmd + s, next verse, previous verse etc.
+- In live projection (both Monitor 1 and Monitor 2), in both preview panes and live projection windows
+- - display the alias name in chapter/title lable. 
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan

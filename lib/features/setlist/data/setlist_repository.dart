@@ -86,6 +86,8 @@ class SetlistRepository {
           bool isDual = false;
           String? secTitle;
           String? secLyrics;
+          String? bkAlias;
+          String? secBkAlias;
           if (parts.length >= 3) {
             isDual = parts[2] == '1' || parts[2].toLowerCase() == 'true';
           }
@@ -94,6 +96,12 @@ class SetlistRepository {
           }
           if (parts.length >= 5 && parts[4].isNotEmpty) {
             secLyrics = _safeDecode(parts[4]);
+          }
+          if (parts.length >= 6 && parts[5].isNotEmpty) {
+            bkAlias = _safeDecode(parts[5]);
+          }
+          if (parts.length >= 7 && parts[6].isNotEmpty) {
+            secBkAlias = _safeDecode(parts[6]);
           }
           if ((secTitle != null && secTitle.isNotEmpty) || (secLyrics != null && secLyrics.isNotEmpty)) {
             isDual = true;
@@ -104,7 +112,9 @@ class SetlistRepository {
             ..lyrics = lyrics
             ..isDualVersion = isDual
             ..secondaryTitle = secTitle
-            ..secondaryLyrics = secLyrics;
+            ..secondaryLyrics = secLyrics
+            ..bookAlias = bkAlias
+            ..secondaryBookAlias = secBkAlias;
           items.add(SongSetlistItem(mockSong, isFavorite: isFav));
         }
       } else if (entry.startsWith('image:')) {
@@ -135,7 +145,9 @@ class SetlistRepository {
             final isDual = song.isDualVersion ? '1' : '0';
             final encodedSecTitle = Uri.encodeComponent(song.secondaryTitle ?? '');
             final encodedSecLyrics = Uri.encodeComponent(song.secondaryLyrics ?? '');
-            itemOrder.add('scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics');
+            final encodedBkAlias = Uri.encodeComponent(song.bookAlias ?? '');
+            final encodedSecBkAlias = Uri.encodeComponent(song.secondaryBookAlias ?? '');
+            itemOrder.add('scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics|$encodedBkAlias|$encodedSecBkAlias');
           } else {
             songIds.add(song.id);
             itemOrder.add('song:${song.id}');

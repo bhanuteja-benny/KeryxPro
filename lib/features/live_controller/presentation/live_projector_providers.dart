@@ -26,6 +26,8 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
           isDualVersion: song.isDualVersion,
           secondaryTitle: song.secondaryTitle,
           secondaryLyrics: song.secondaryLyrics,
+          bookAlias: song.bookAlias,
+          secondaryBookAlias: song.secondaryBookAlias,
         ));
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         // Image items produce one special "image" slide
@@ -264,11 +266,14 @@ final activeTitleProvider = Provider<String?>((ref) {
 
   final slide = slides[index];
 
-  if (slide.isDualVersion && slide.secondaryTitle != null && slide.secondaryTitle!.isNotEmpty) {
-    return _formatDualTitle(slide.title, slide.secondaryTitle!);
+  final titleToUse = slide.displayTitle ?? slide.title;
+  final secTitleToUse = slide.secondaryDisplayTitle ?? slide.secondaryTitle;
+
+  if (slide.isDualVersion && secTitleToUse != null && secTitleToUse.isNotEmpty) {
+    return _formatDualTitle(titleToUse, secTitleToUse);
   }
 
-  return slide.title;
+  return titleToUse;
 });
 
 /// Indicates if the currently projected slide is from a song.

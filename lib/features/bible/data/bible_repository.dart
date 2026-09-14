@@ -50,6 +50,17 @@ class BibleRepository {
     return await isar.bibleVersions.where().findAll();
   }
 
+  Future<void> saveBookNameMappings(int versionId, Map<String, String> mappings) async {
+    final isar = await _isarService.db;
+    await isar.writeTxn(() async {
+      final version = await isar.bibleVersions.get(versionId);
+      if (version != null) {
+        version.bookNameMappings = mappings;
+        await isar.bibleVersions.put(version);
+      }
+    });
+  }
+
   Future<void> fixLegacyBookNames() async {
     final isar = await _isarService.db;
     final legacyPsalms = await isar.bibleVerses.filter().bookNameEqualTo('Psalm').findAll();

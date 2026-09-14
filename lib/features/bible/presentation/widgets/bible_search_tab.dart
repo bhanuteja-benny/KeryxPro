@@ -617,13 +617,25 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
       }
     }
 
+    final normBookName = BibleConstants.normalizeBookName(book) ?? book;
+    final primaryMappings = version.bookNameMappings;
+    final bkAlias = primaryMappings[normBookName];
+
+    String? secBkAlias;
+    if (isDual && secondaryVersion != null) {
+      final secMappings = secondaryVersion.bookNameMappings;
+      secBkAlias = secMappings[normBookName];
+    }
+
     final mockSong = Song()
       ..title = title
       ..author = 'Bible'
       ..lyrics = lyrics
       ..isDualVersion = isDual
       ..secondaryTitle = isDual ? secTitle : null
-      ..secondaryLyrics = isDual ? secLyrics : null;
+      ..secondaryLyrics = isDual ? secLyrics : null
+      ..bookAlias = bkAlias
+      ..secondaryBookAlias = secBkAlias;
 
     final insertAt = ref.read(setlistProvider.notifier).insertSong(
       mockSong,
@@ -877,6 +889,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       _addToSetlist(preview, version, ref, goLive: true);
                     }
                   },
+                  bookNameMappings: selectedVersion?.bookNameMappings,
                 ),
               ),
               const VerticalDivider(width: 1, color: Colors.black),
@@ -905,6 +918,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       _addToSetlist(preview, version, ref, goLive: true);
                     }
                   },
+                  bookNameMappings: selectedVersion?.bookNameMappings,
                 ),
               ),
               const VerticalDivider(width: 1, color: Colors.black),
@@ -1015,6 +1029,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
     required FocusNode focusNode,
     ScrollController? scrollController,
     VoidCallback? onEnter,
+    Map<String, String>? bookNameMappings,
   }) {
     return Column(
       children: [
@@ -1063,6 +1078,10 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
               itemBuilder: (context, index) {
                 final item = items[index];
                 final isSelected = item == selectedValue;
+                final itemStr = item.toString();
+                final displayText = (bookNameMappings != null && bookNameMappings.containsKey(itemStr))
+                    ? bookNameMappings[itemStr]!
+                    : itemStr;
                 return InkWell(
                   onTap: () {
                     onSelected(item);
@@ -1071,7 +1090,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                   child: Container(
                     color: isSelected ? Colors.blueAccent.withValues(alpha: 0.3) : Colors.transparent,
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: Text(item.toString(), style: const TextStyle(fontSize: 11)),
+                    child: Text(displayText, style: const TextStyle(fontSize: 11)),
                   ),
                 );
               },
@@ -1319,8 +1338,12 @@ final selectedVerses = ref.watch(selectedVersesProvider);
                       
                       final book = verses.first.bookName;
                       final chapter = verses.first.chapterNumber;
+                      final mappings = selectedVersion?.bookNameMappings ?? {};
+                      final normBk = BibleConstants.normalizeBookName(book) ?? book;
+                      final alias = mappings[normBk];
+                      final bookDisplay = (alias != null && alias.isNotEmpty) ? '$book ($alias)' : book;
                       return Text(
-                        '$book $chapter',
+                        '$bookDisplay $chapter',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blueAccent),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1702,6 +1725,9 @@ final selectedVerses = ref.watch(selectedVersesProvider);
   }
 
   Widget _buildBookButtonRow(List<String> books, String? selectedBook, WidgetRef ref, {required bool isOT}) {
+    final selectedVersion = ref.watch(selectedBibleVersionProvider);
+    final mappings = selectedVersion?.bookNameMappings ?? {};
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -1709,11 +1735,15 @@ final selectedVerses = ref.watch(selectedVersesProvider);
           final canonical = _buttonBookToCanonical[abbrev];
           final isSelected = canonical != null && canonical == selectedBook;
           final selectedColor = isOT ? const Color(0xFF88C025) : const Color(0xFF4FB5D7);
+          final displayText = (canonical != null && mappings.containsKey(canonical))
+              ? mappings[canonical]!
+              : abbrev;
+
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2.0),
               child: _buildTactilePillButton(
-                text: abbrev,
+                text: displayText,
                 isSelected: isSelected,
                 selectedColor: selectedColor,
                 onTap: () {

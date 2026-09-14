@@ -1,0 +1,113 @@
+# Phase 57 Implementation Plan - Support Other Language Book Names in Title Headers
+
+Context:
+Supporting other language Book names in title headers (for Telugu, Hindi, etc.). This plan outlines the technical design for importing book name translations, storing them per Bible version in Isar database, and displaying the alias book names in the Bible Search pane, Preview pane, Slides pane, and Live Projection (Monitor 1 & Monitor 2) without altering core search logic or setlist display names.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Database Schema Update**: `BibleVersion` Isar model will be updated with an optional field `bookNameMappingsJson` to persist JSON-encoded book name alias mappings (`Map<String, String>`).
+> 
+> **Setlist Persistence Encoding**: `SavedSetlist` repository serialization format for `scripture:` items will be extended to encode `bookAlias` and `secondaryBookAlias` so that saved setlists retain imported book alias names when reloaded.
+
+---
+
+## Open Questions & Assumptions
+
+> [!NOTE]
+> 1. **Normalization & Conflict Handling**: Input lines in the "Import Book Names" popup will be parsed line by line. The left side (English/input book name) will be passed through `BibleConstants.normalizeBookName(...)` to convert inputs like `psalm`, `psalms`, `gen`, or `1jn` into standard canonical keys (`Psalms`, `Genesis`, `1 John`).
+> 
+> 2. **Setlist Display vs Slide Display**:
+>    - **Setlist Pane**: Displays actual canonical book name (e.g. `Genesis 1:1-5 KJV`).
+>    - **Slides Pane Title Column**: Displays alias book name (e.g. `ఆదికాండము 1:1-5 KJV`).
+>    - **Preview Pane Header in Bible Search**: Displays `Genesis (ఆదికాండము) 1:1-5`.
+>    - **Live Projection Headers (Monitor 1 & 2)**: Displays alias book name (e.g. `ఆదికాండము 1:1-5 KJV`).
+
+---
+
+## Proposed Changes
+
+### Core Models & Database
+
+#### [MODIFY] [bible.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/data/bible.dart)
+- Add optional `String? bookNameMappingsJson` field to `BibleVersion` Isar `@collection`.
+- Add helper getters/setters `Map<String, String> get bookNameMappings` and `set bookNameMappings(Map<String, String> map)` for JSON encoding/decoding.
+
+#### [MODIFY] [bible_repository.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/data/bible_repository.dart)
+- Add method `saveBookNameMappings(int versionId, Map<String, String> mappings)` to update and persist book name mappings for a Bible version in Isar database.
+
+#### [MODIFY] [song.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/songs/data/song.dart)
+- Add `@ignore String? bookAlias;` and `@ignore String? secondaryBookAlias;` to `Song` model for scripture items.
+
+---
+
+### Import Feature & Menu
+
+#### [NEW] [bible_book_names_import_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_book_names_import_dialog.dart)
+- Create a dialog widget containing:
+  - Bible Version dropdown (selecting target version).
+  - Multiline text field accepting lines like `English Book Name - Other Language Book Name` (e.g. `Genesis - ఆదికాండము`).
+  - Input normalizer using `BibleConstants.normalizeBookName` to handle ambiguities (`psalm`/`psalms` -> `Psalms`).
+  - Save button that writes mappings to the database via `BibleRepository` and refreshes `bibleVersionsProvider`.
+
+#### [MODIFY] [custom_title_bar.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/custom_title_bar.dart)
+- Add `'Import Book Names'` menu option under the `Imports` submenu, opening `BibleBookNamesImportDialog`.
+
+---
+
+### Bible Search & Preview Pane
+
+#### [MODIFY] [bible_search_tab.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/bible/presentation/widgets/bible_search_tab.dart)
+- **Books ListBox**: When `selectedVersion` has imported book names, display the alias name in the OT and NT listboxes while retaining the canonical book name for item selection value.
+- **Button View Mode**: Display alias book names on book buttons when available while keeping button click actions mapped to canonical book names.
+- **Preview Section Header**: Display both actual book name and imported book name if present, e.g. `Genesis (ఆదికాండము) 1`.
+- **Setlist Packet Construction**: When adding verses to setlist via `_addToSetlist`, set `mockSong.bookAlias` and `mockSong.secondaryBookAlias` from selected Bible version mappings.
+
+---
+
+### Setlist & Slides Integration
+
+#### [MODIFY] [setlist_repository.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_repository.dart)
+- Update `saveByName` and `loadByName` to encode/decode `bookAlias` and `secondaryBookAlias` in `scripture:` entries so that setlist persistence maintains imported book alias names.
+
+#### [MODIFY] [slide.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/domain/slide.dart)
+- Add `displayTitle` and `secondaryDisplayTitle` fields to `Slide`.
+
+#### [MODIFY] [slide_utils.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/slide_utils.dart)
+- Accept `bookAlias` and `secondaryBookAlias` in `parseLyrics`. Construct `displayTitle` and `secondaryDisplayTitle` by replacing canonical book names with alias book names.
+
+#### [MODIFY] [slide_item_widget.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/slide_item_widget.dart)
+- Update Title column in Slides pane to render `slide.displayTitle ?? slide.title`.
+
+#### [MODIFY] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)
+- Update `currentSlidesProvider` to pass `bookAlias` and `secondaryBookAlias` to `SlideUtils.parseLyrics`.
+- Update `activeTitleProvider` to return formatted titles using `displayTitle` / `secondaryDisplayTitle` for Monitor 1 and Monitor 2 live projection windows and preview surfaces.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Run `flutter analyze` to ensure code compiles cleanly with zero static errors or type mismatches.
+
+### Manual Verification
+1. **Import Book Names Dialog**:
+   - Navigate to `Imports -> Import Book Names`.
+   - Select a Bible version (e.g. Telugu / KJV).
+   - Enter mappings (`Genesis - ఆదికాండము`, `psalm - కీర్తనలు`, `1 John - 1 యోహాను`).
+   - Click Save and verify toast/confirmation.
+2. **Bible Search Pane**:
+   - In Listbox view, verify OT/NT book list displays `ఆదికాండము`, `కీర్తనలు`, `1 యోహాను`.
+   - Switch to Button View mode, verify book buttons display imported alias names.
+   - Verify selecting books, chapters, and verses operates normally using canonical search backend.
+3. **Preview Pane (Bible Search Tab)**:
+   - Verify header shows `Genesis (ఆదికాండము) 1`.
+4. **Setlist Pane**:
+   - Add verse to setlist. Verify setlist item display name remains actual canonical book name (`Genesis 1:1-5 KJV`).
+5. **Slides Pane**:
+   - Check slides column. Verify title column displays alias name (`ఆదికాండము 1:1-5 KJV`).
+   - Test `Ctrl + S`, `Ctrl + Right` (next verse), `Ctrl + Left` (prev verse), and clicking setlist items to verify keyboard shortcuts and highlighting are unaffected.
+6. **Live Projection**:
+   - Verify Monitor 1 and Monitor 2 preview surfaces and projection windows display alias title header (`ఆదికాండము 1:1-5 KJV`).

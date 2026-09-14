@@ -67,7 +67,7 @@ class SlideItemWidget extends StatelessWidget {
                         ),
                       Expanded(
                         child: Text(
-                          slide.title,
+                          slide.displayTitle ?? slide.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
