@@ -6,7 +6,10 @@ import '../../setlist/presentation/setlist_providers.dart';
 import '../domain/slide.dart';
 import 'slide_utils.dart';
 
+import '../../bible/domain/bible_constants.dart';
+import '../../settings/data/presentation_settings.dart';
 import '../../settings/presentation/projection_provider.dart';
+import '../../settings/presentation/presentation_settings_provider.dart';
 
 /// Holds the list of parsed slides for all items in the setlist.
 final currentSlidesProvider = Provider<List<Slide>>((ref) {
@@ -257,23 +260,173 @@ final m2ActiveSlideProvider = Provider<String?>((ref) {
   return primaryText;
 });
 
-/// Holds the title of the currently projected slide.
-final activeTitleProvider = Provider<String?>((ref) {
-  final slides = ref.watch(currentSlidesProvider);
-  final index = ref.watch(activeSlideIndexProvider);
+/// Returns PresentationSettings assigned to Monitor 1
+final monitor1SettingsProvider = Provider<PresentationSettings>((ref) {
+  final projectionState = ref.watch(projectionProvider);
+  final presets = ref.watch(presetsListProvider).valueOrNull ?? [];
+  final selectedPresetId = projectionState.config.monitor1PresetId;
+  final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+  return presets.firstWhere(
+    (p) => p.id == currentId,
+    orElse: () => ref.watch(presentationSettingsProvider),
+  );
+});
 
-  if (slides.isEmpty || index < 0 || index >= slides.length) return null;
+/// Returns PresentationSettings assigned to Monitor 2
+final monitor2SettingsProvider = Provider<PresentationSettings>((ref) {
+  final projectionState = ref.watch(projectionProvider);
+  final presets = ref.watch(presetsListProvider).valueOrNull ?? [];
+  final selectedPresetId = projectionState.config.monitor2PresetId;
+  final currentId = selectedPresetId ?? presets.firstOrNull?.id;
+  return presets.firstWhere(
+    (p) => p.id == currentId,
+    orElse: () => ref.watch(presentationSettingsProvider),
+  );
+});
 
-  final slide = slides[index];
+/// Helper to format scripture book titles based on presentation settings options (Actual, Alias, None)
+String _formatScriptureTitle({
+  required String rawTitle,
+  String? displayTitle,
+  required bool showActual,
+  required bool showAlias,
+  required bool showNone,
+}) {
+  if (rawTitle.isEmpty) return "";
 
-  final titleToUse = slide.displayTitle ?? slide.title;
-  final secTitleToUse = slide.secondaryDisplayTitle ?? slide.secondaryTitle;
+  bool effActual = showActual;
+  bool effAlias = showAlias;
+  bool effNone = showNone;
 
-  if (slide.isDualVersion && secTitleToUse != null && secTitleToUse.isNotEmpty) {
-    return _formatDualTitle(titleToUse, secTitleToUse);
+  if (!effActual && !effAlias && !effNone) {
+    effActual = true;
   }
 
-  return titleToUse;
+  if (effNone) return "";
+
+  final titleToUse = displayTitle ?? rawTitle;
+  final matchActual = RegExp(r'^(.+?)(\s+\d+.*)$').firstMatch(rawTitle.trim());
+  final matchAlias = RegExp(r'^(.+?)(\s+\d+.*)$').firstMatch(titleToUse.trim());
+
+  if (matchActual == null) return titleToUse;
+
+  final actualBookName = matchActual.group(1)!;
+  final suffix = matchActual.group(2)!;
+  var aliasBookName = matchAlias?.group(1);
+
+  final bool hasAlias = aliasBookName != null &&
+      aliasBookName.trim().isNotEmpty &&
+      aliasBookName.trim() != actualBookName.trim();
+
+  if (effActual && effAlias) {
+    if (hasAlias) {
+      return '$actualBookName ($aliasBookName)$suffix';
+    }
+    return '$actualBookName$suffix';
+  } else if (effAlias) {
+    if (hasAlias) {
+      return '$aliasBookName$suffix';
+    }
+    return '$actualBookName$suffix';
+  } else if (effActual) {
+    return '$actualBookName$suffix';
+  }
+
+  return "";
+}
+
+String? _buildTitleForSlide(Slide? slide, PresentationSettings settings) {
+  if (slide == null || slide.isBlank) return "";
+
+  if (slide.isSong) {
+    final titleToUse = slide.displayTitle ?? slide.title;
+    final secTitleToUse = slide.secondaryDisplayTitle ?? slide.secondaryTitle;
+
+    if (slide.isDualVersion && secTitleToUse != null && secTitleToUse.isNotEmpty) {
+      return _formatDualTitle(titleToUse, secTitleToUse);
+    }
+    return titleToUse;
+  }
+
+  // Scripture & Dual Scripture
+  if (slide.isDualVersion) {
+    bool showActual = settings.dualChapterShowActual;
+    bool showAlias = settings.dualChapterShowAlias;
+    bool showNone = settings.dualChapterShowNone;
+
+    if (!showActual && !showAlias && !showNone) {
+      showActual = true;
+    }
+
+    if (showNone) return "";
+
+    final primaryFormatted = _formatScriptureTitle(
+      rawTitle: slide.title,
+      displayTitle: slide.displayTitle,
+      showActual: showActual,
+      showAlias: showAlias,
+      showNone: showNone,
+    );
+
+    final secRawTitle = slide.secondaryTitle;
+    if (secRawTitle != null && secRawTitle.isNotEmpty) {
+      final secFormatted = _formatScriptureTitle(
+        rawTitle: secRawTitle,
+        displayTitle: slide.secondaryDisplayTitle,
+        showActual: showActual,
+        showAlias: showAlias,
+        showNone: showNone,
+      );
+      return _formatDualTitle(primaryFormatted, secFormatted);
+    }
+
+    return primaryFormatted;
+  } else {
+    bool showActual = settings.chapterShowActual;
+    bool showAlias = settings.chapterShowAlias;
+    bool showNone = settings.chapterShowNone;
+
+    if (!showActual && !showAlias && !showNone) {
+      showActual = true;
+    }
+
+    if (showNone) return "";
+
+    return _formatScriptureTitle(
+      rawTitle: slide.title,
+      displayTitle: slide.displayTitle,
+      showActual: showActual,
+      showAlias: showAlias,
+      showNone: showNone,
+    );
+  }
+}
+
+/// Holds the title of the currently projected slide on Monitor 1.
+final m1ActiveTitleProvider = Provider<String?>((ref) {
+  final slides = ref.watch(currentSlidesProvider);
+  final indices = ref.watch(m1ActiveSlideIndicesProvider);
+  final settings = ref.watch(monitor1SettingsProvider);
+
+  if (indices.isEmpty || slides.isEmpty) return null;
+  final firstSlide = slides[indices.first];
+  return _buildTitleForSlide(firstSlide, settings);
+});
+
+/// Holds the title of the currently projected slide on Monitor 2.
+final m2ActiveTitleProvider = Provider<String?>((ref) {
+  final slides = ref.watch(currentSlidesProvider);
+  final indices = ref.watch(m2ActiveSlideIndicesProvider);
+  final settings = ref.watch(monitor2SettingsProvider);
+
+  if (indices.isEmpty || slides.isEmpty) return null;
+  final firstSlide = slides[indices.first];
+  return _buildTitleForSlide(firstSlide, settings);
+});
+
+/// Holds the title of the currently projected slide.
+final activeTitleProvider = Provider<String?>((ref) {
+  return ref.watch(m1ActiveTitleProvider) ?? ref.watch(m2ActiveTitleProvider);
 });
 
 /// Indicates if the currently projected slide is from a song.

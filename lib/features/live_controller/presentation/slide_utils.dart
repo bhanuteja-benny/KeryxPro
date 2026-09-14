@@ -30,7 +30,7 @@ class SlideUtils {
     if (originalTitle == null || originalTitle.isEmpty) return null;
     if (bookAlias == null || bookAlias.trim().isEmpty) return originalTitle;
 
-    final match = RegExp(r'^(.+?)(\s+\d+:.*)$').firstMatch(originalTitle.trim());
+    final match = RegExp(r'^(.+?)(\s+\d+.*)$').firstMatch(originalTitle.trim());
     if (match != null) {
       return '$bookAlias${match.group(2)}';
     }

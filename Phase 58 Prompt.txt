@@ -2,20 +2,24 @@
 Phase 58 Plan
 
 Context: 
-- enhancements in presentation settings - dual scripture - show chapter options
+- enhancements in presentation settings - scripture and dual scripture - show chapter options
 
 UI Requirement:
-- In Dual Scripture presentation settings, there is one checkbox 'Show Chapter'
-- Instead of that single checkbox, need three checkboxes 'Primary', 'Secondary' and 'None'
-- when 'None' is checked then Primary and Secondary should be deselected and disabled
-- But Primary and Secondary can both be selected 
+- In Scripture and Dual Scripture presentation settings, there is one checkbox 'Show Chapter'
+- Instead of that single checkbox, need three checkboxes 'Actual', 'Alias' and 'None'
+- when 'None' is checked then Actual and Alias should be deselected and disabled
+- But Actual and Alias can both be selected 
 - All the above new options should be saved to into database when user saves it
 
 UI Functionality:
-- This functionality is for Dual Scripture only
-- the verse number logic remains same, please don't change
+- This functionality is for Scripture and Dual Scripture only, and only in Monitor 1 and Monitor 2 previews and live projection windows
+- the verse number logic in dual scripture remains same, please don't change
 - -  that is, when primary and secondary verses are same then one verse number will be displayed but when both are different then [primary verse number]/[secondary verse number] are displayed. there is no change in it.
 - now the change should be in chapter name display
+- - when Actual is selected then display the Actual book name
+- - when Alias is selected then display the Alias book name, if there are no imported book names available for that version then just show the Actual book name
+- - when both are selected then display Actual book name (Alias book name), if there are no imported book names for that version then just show the actual book name alone.
+- - when None is selected, then chapter name is not displayed (as per previous logic)
 
 Constraints:
 - DO NOT make any UI or functionality changes except the mentioned ones.

@@ -6,20 +6,20 @@ import '../../settings/presentation/projection_provider.dart';
 import '../../dashboard/presentation/global_ui_providers.dart';
 
 final projectionBroadcasterProvider = Provider<void>((ref) {
-  // Listen for slide changes
+  // Listen for slide or title changes on Monitor 1
   ref.listen(m1ActiveSlideProvider, (previous, next) {
     _broadcastContentM1(ref, next);
   });
-
-  // Listen for title changes
-  ref.listen(activeTitleProvider, (previous, next) {
+  ref.listen(m1ActiveTitleProvider, (previous, next) {
     _broadcastContentM1(ref, ref.read(m1ActiveSlideProvider));
-    _broadcastContentM2(ref, ref.read(m2ActiveSlideProvider));
   });
 
-  // Listen for Monitor 2 slide changes
+  // Listen for slide or title changes on Monitor 2
   ref.listen(m2ActiveSlideProvider, (previous, next) {
     _broadcastContentM2(ref, next);
+  });
+  ref.listen(m2ActiveTitleProvider, (previous, next) {
+    _broadcastContentM2(ref, ref.read(m2ActiveSlideProvider));
   });
 
   // Listen for unfreeze to sync live windows
@@ -34,7 +34,7 @@ final projectionBroadcasterProvider = Provider<void>((ref) {
 void _broadcastContentM1(Ref ref, String? text) {
   if (ref.read(isLiveScreenFrozenProvider)) return;
 
-  final title = ref.read(activeTitleProvider);
+  final title = ref.read(m1ActiveTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
   final isDualVersion = ref.read(isDualVersionActiveProvider);
   final state = ref.read(projectionProvider);
@@ -57,7 +57,7 @@ void _broadcastContentM1(Ref ref, String? text) {
 void _broadcastContentM2(Ref ref, String? text) {
   if (ref.read(isLiveScreenFrozenProvider)) return;
 
-  final title = ref.read(activeTitleProvider);
+  final title = ref.read(m2ActiveTitleProvider);
   final isSong = ref.read(isSongActiveProvider);
   final isDualVersion = ref.read(isDualVersionActiveProvider);
   final state = ref.read(projectionProvider);

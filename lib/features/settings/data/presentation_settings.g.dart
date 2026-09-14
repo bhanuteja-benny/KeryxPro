@@ -148,953 +148,973 @@ const PresentationSettingsSchema = CollectionSchema(
       name: r'chapterShadowRadius',
       type: IsarType.double,
     ),
-    r'chapterStrokeColor': PropertySchema(
+    r'chapterShowActual': PropertySchema(
       id: 26,
+      name: r'chapterShowActual',
+      type: IsarType.bool,
+    ),
+    r'chapterShowAlias': PropertySchema(
+      id: 27,
+      name: r'chapterShowAlias',
+      type: IsarType.bool,
+    ),
+    r'chapterShowNone': PropertySchema(
+      id: 28,
+      name: r'chapterShowNone',
+      type: IsarType.bool,
+    ),
+    r'chapterStrokeColor': PropertySchema(
+      id: 29,
       name: r'chapterStrokeColor',
       type: IsarType.long,
     ),
     r'chapterStrokeWidth': PropertySchema(
-      id: 27,
+      id: 30,
       name: r'chapterStrokeWidth',
       type: IsarType.double,
     ),
     r'chapterUnderline': PropertySchema(
-      id: 28,
+      id: 31,
       name: r'chapterUnderline',
       type: IsarType.bool,
     ),
     r'chapterVerticalAlignment': PropertySchema(
-      id: 29,
+      id: 32,
       name: r'chapterVerticalAlignment',
       type: IsarType.string,
     ),
     r'dualChapterAlignment': PropertySchema(
-      id: 30,
+      id: 33,
       name: r'dualChapterAlignment',
       type: IsarType.string,
     ),
     r'dualChapterBold': PropertySchema(
-      id: 31,
+      id: 34,
       name: r'dualChapterBold',
       type: IsarType.bool,
     ),
     r'dualChapterFillColor': PropertySchema(
-      id: 32,
+      id: 35,
       name: r'dualChapterFillColor',
       type: IsarType.long,
     ),
     r'dualChapterFontColor': PropertySchema(
-      id: 33,
+      id: 36,
       name: r'dualChapterFontColor',
       type: IsarType.long,
     ),
     r'dualChapterFontFamily': PropertySchema(
-      id: 34,
+      id: 37,
       name: r'dualChapterFontFamily',
       type: IsarType.string,
     ),
     r'dualChapterFontSize': PropertySchema(
-      id: 35,
+      id: 38,
       name: r'dualChapterFontSize',
       type: IsarType.double,
     ),
     r'dualChapterHasFill': PropertySchema(
-      id: 36,
+      id: 39,
       name: r'dualChapterHasFill',
       type: IsarType.bool,
     ),
     r'dualChapterHasShadow': PropertySchema(
-      id: 37,
+      id: 40,
       name: r'dualChapterHasShadow',
       type: IsarType.bool,
     ),
     r'dualChapterHasStroke': PropertySchema(
-      id: 38,
+      id: 41,
       name: r'dualChapterHasStroke',
       type: IsarType.bool,
     ),
     r'dualChapterItalic': PropertySchema(
-      id: 39,
+      id: 42,
       name: r'dualChapterItalic',
       type: IsarType.bool,
     ),
     r'dualChapterLineHeight': PropertySchema(
-      id: 40,
+      id: 43,
       name: r'dualChapterLineHeight',
       type: IsarType.double,
     ),
     r'dualChapterMarginBottom': PropertySchema(
-      id: 41,
+      id: 44,
       name: r'dualChapterMarginBottom',
       type: IsarType.double,
     ),
     r'dualChapterMarginLeft': PropertySchema(
-      id: 42,
+      id: 45,
       name: r'dualChapterMarginLeft',
       type: IsarType.double,
     ),
     r'dualChapterMarginRight': PropertySchema(
-      id: 43,
+      id: 46,
       name: r'dualChapterMarginRight',
       type: IsarType.double,
     ),
     r'dualChapterMarginTop': PropertySchema(
-      id: 44,
+      id: 47,
       name: r'dualChapterMarginTop',
       type: IsarType.double,
     ),
     r'dualChapterShadowColor': PropertySchema(
-      id: 45,
+      id: 48,
       name: r'dualChapterShadowColor',
       type: IsarType.long,
     ),
     r'dualChapterShadowOffsetX': PropertySchema(
-      id: 46,
+      id: 49,
       name: r'dualChapterShadowOffsetX',
       type: IsarType.double,
     ),
     r'dualChapterShadowOffsetY': PropertySchema(
-      id: 47,
+      id: 50,
       name: r'dualChapterShadowOffsetY',
       type: IsarType.double,
     ),
     r'dualChapterShadowRadius': PropertySchema(
-      id: 48,
+      id: 51,
       name: r'dualChapterShadowRadius',
       type: IsarType.double,
     ),
+    r'dualChapterShowActual': PropertySchema(
+      id: 52,
+      name: r'dualChapterShowActual',
+      type: IsarType.bool,
+    ),
+    r'dualChapterShowAlias': PropertySchema(
+      id: 53,
+      name: r'dualChapterShowAlias',
+      type: IsarType.bool,
+    ),
+    r'dualChapterShowNone': PropertySchema(
+      id: 54,
+      name: r'dualChapterShowNone',
+      type: IsarType.bool,
+    ),
     r'dualChapterStrokeColor': PropertySchema(
-      id: 49,
+      id: 55,
       name: r'dualChapterStrokeColor',
       type: IsarType.long,
     ),
     r'dualChapterStrokeWidth': PropertySchema(
-      id: 50,
+      id: 56,
       name: r'dualChapterStrokeWidth',
       type: IsarType.double,
     ),
     r'dualChapterUnderline': PropertySchema(
-      id: 51,
+      id: 57,
       name: r'dualChapterUnderline',
       type: IsarType.bool,
     ),
     r'dualChapterVerticalAlignment': PropertySchema(
-      id: 52,
+      id: 58,
       name: r'dualChapterVerticalAlignment',
       type: IsarType.string,
     ),
     r'dualScriptureAspectRatio': PropertySchema(
-      id: 53,
+      id: 59,
       name: r'dualScriptureAspectRatio',
       type: IsarType.string,
     ),
     r'dualScriptureBackgroundColor': PropertySchema(
-      id: 54,
+      id: 60,
       name: r'dualScriptureBackgroundColor',
       type: IsarType.long,
     ),
     r'dualScriptureBackgroundImage': PropertySchema(
-      id: 55,
+      id: 61,
       name: r'dualScriptureBackgroundImage',
       type: IsarType.string,
     ),
     r'dualScriptureBackgroundImageAlignment': PropertySchema(
-      id: 56,
+      id: 62,
       name: r'dualScriptureBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'dualScriptureBackgroundImageLayout': PropertySchema(
-      id: 57,
+      id: 63,
       name: r'dualScriptureBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'dualScriptureCustomHeight': PropertySchema(
-      id: 58,
+      id: 64,
       name: r'dualScriptureCustomHeight',
       type: IsarType.double,
     ),
     r'dualScriptureCustomWidth': PropertySchema(
-      id: 59,
+      id: 65,
       name: r'dualScriptureCustomWidth',
       type: IsarType.double,
     ),
     r'dualScriptureLayoutDirection': PropertySchema(
-      id: 60,
+      id: 66,
       name: r'dualScriptureLayoutDirection',
       type: IsarType.string,
     ),
     r'dualScripturePrimaryPosition': PropertySchema(
-      id: 61,
+      id: 67,
       name: r'dualScripturePrimaryPosition',
       type: IsarType.string,
     ),
     r'dualScripturePrimaryRatio': PropertySchema(
-      id: 62,
+      id: 68,
       name: r'dualScripturePrimaryRatio',
       type: IsarType.double,
     ),
     r'isBlankImageEnabled': PropertySchema(
-      id: 63,
+      id: 69,
       name: r'isBlankImageEnabled',
       type: IsarType.bool,
     ),
     r'isBlankTransparent': PropertySchema(
-      id: 64,
+      id: 70,
       name: r'isBlankTransparent',
       type: IsarType.bool,
     ),
     r'isDefault': PropertySchema(
-      id: 65,
+      id: 71,
       name: r'isDefault',
       type: IsarType.bool,
     ),
     r'isDualScriptureImageEnabled': PropertySchema(
-      id: 66,
+      id: 72,
       name: r'isDualScriptureImageEnabled',
       type: IsarType.bool,
     ),
     r'isDualScriptureTransparent': PropertySchema(
-      id: 67,
+      id: 73,
       name: r'isDualScriptureTransparent',
       type: IsarType.bool,
     ),
     r'isScriptureImageEnabled': PropertySchema(
-      id: 68,
+      id: 74,
       name: r'isScriptureImageEnabled',
       type: IsarType.bool,
     ),
     r'isScriptureTransparent': PropertySchema(
-      id: 69,
+      id: 75,
       name: r'isScriptureTransparent',
       type: IsarType.bool,
     ),
     r'isSongImageEnabled': PropertySchema(
-      id: 70,
+      id: 76,
       name: r'isSongImageEnabled',
       type: IsarType.bool,
     ),
     r'isSongTransparent': PropertySchema(
-      id: 71,
+      id: 77,
       name: r'isSongTransparent',
       type: IsarType.bool,
     ),
     r'isWindowImageEnabled': PropertySchema(
-      id: 72,
+      id: 78,
       name: r'isWindowImageEnabled',
       type: IsarType.bool,
     ),
     r'isWindowTransparent': PropertySchema(
-      id: 73,
+      id: 79,
       name: r'isWindowTransparent',
       type: IsarType.bool,
     ),
     r'lyricsAlignment': PropertySchema(
-      id: 74,
+      id: 80,
       name: r'lyricsAlignment',
       type: IsarType.string,
     ),
     r'lyricsBold': PropertySchema(
-      id: 75,
+      id: 81,
       name: r'lyricsBold',
       type: IsarType.bool,
     ),
     r'lyricsFillColor': PropertySchema(
-      id: 76,
+      id: 82,
       name: r'lyricsFillColor',
       type: IsarType.long,
     ),
     r'lyricsFontColor': PropertySchema(
-      id: 77,
+      id: 83,
       name: r'lyricsFontColor',
       type: IsarType.long,
     ),
     r'lyricsFontFamily': PropertySchema(
-      id: 78,
+      id: 84,
       name: r'lyricsFontFamily',
       type: IsarType.string,
     ),
     r'lyricsFontSize': PropertySchema(
-      id: 79,
+      id: 85,
       name: r'lyricsFontSize',
       type: IsarType.double,
     ),
     r'lyricsHasFill': PropertySchema(
-      id: 80,
+      id: 86,
       name: r'lyricsHasFill',
       type: IsarType.bool,
     ),
     r'lyricsHasShadow': PropertySchema(
-      id: 81,
+      id: 87,
       name: r'lyricsHasShadow',
       type: IsarType.bool,
     ),
     r'lyricsHasStroke': PropertySchema(
-      id: 82,
+      id: 88,
       name: r'lyricsHasStroke',
       type: IsarType.bool,
     ),
     r'lyricsItalic': PropertySchema(
-      id: 83,
+      id: 89,
       name: r'lyricsItalic',
       type: IsarType.bool,
     ),
     r'lyricsLineBreak': PropertySchema(
-      id: 84,
+      id: 90,
       name: r'lyricsLineBreak',
       type: IsarType.bool,
     ),
     r'lyricsLineHeight': PropertySchema(
-      id: 85,
+      id: 91,
       name: r'lyricsLineHeight',
       type: IsarType.double,
     ),
     r'lyricsMarginBottom': PropertySchema(
-      id: 86,
+      id: 92,
       name: r'lyricsMarginBottom',
       type: IsarType.double,
     ),
     r'lyricsMarginLeft': PropertySchema(
-      id: 87,
+      id: 93,
       name: r'lyricsMarginLeft',
       type: IsarType.double,
     ),
     r'lyricsMarginRight': PropertySchema(
-      id: 88,
+      id: 94,
       name: r'lyricsMarginRight',
       type: IsarType.double,
     ),
     r'lyricsMarginTop': PropertySchema(
-      id: 89,
+      id: 95,
       name: r'lyricsMarginTop',
       type: IsarType.double,
     ),
     r'lyricsShadowColor': PropertySchema(
-      id: 90,
+      id: 96,
       name: r'lyricsShadowColor',
       type: IsarType.long,
     ),
     r'lyricsShadowOffsetX': PropertySchema(
-      id: 91,
+      id: 97,
       name: r'lyricsShadowOffsetX',
       type: IsarType.double,
     ),
     r'lyricsShadowOffsetY': PropertySchema(
-      id: 92,
+      id: 98,
       name: r'lyricsShadowOffsetY',
       type: IsarType.double,
     ),
     r'lyricsShadowRadius': PropertySchema(
-      id: 93,
+      id: 99,
       name: r'lyricsShadowRadius',
       type: IsarType.double,
     ),
     r'lyricsStrokeColor': PropertySchema(
-      id: 94,
+      id: 100,
       name: r'lyricsStrokeColor',
       type: IsarType.long,
     ),
     r'lyricsStrokeWidth': PropertySchema(
-      id: 95,
+      id: 101,
       name: r'lyricsStrokeWidth',
       type: IsarType.double,
     ),
     r'lyricsUnderline': PropertySchema(
-      id: 96,
+      id: 102,
       name: r'lyricsUnderline',
       type: IsarType.bool,
     ),
     r'lyricsVerticalAlignment': PropertySchema(
-      id: 97,
+      id: 103,
       name: r'lyricsVerticalAlignment',
       type: IsarType.string,
     ),
     r'presetName': PropertySchema(
-      id: 98,
+      id: 104,
       name: r'presetName',
       type: IsarType.string,
     ),
     r'primaryVerseAlignment': PropertySchema(
-      id: 99,
+      id: 105,
       name: r'primaryVerseAlignment',
       type: IsarType.string,
     ),
     r'primaryVerseBold': PropertySchema(
-      id: 100,
+      id: 106,
       name: r'primaryVerseBold',
       type: IsarType.bool,
     ),
     r'primaryVerseFillColor': PropertySchema(
-      id: 101,
+      id: 107,
       name: r'primaryVerseFillColor',
       type: IsarType.long,
     ),
     r'primaryVerseFontColor': PropertySchema(
-      id: 102,
+      id: 108,
       name: r'primaryVerseFontColor',
       type: IsarType.long,
     ),
     r'primaryVerseFontFamily': PropertySchema(
-      id: 103,
+      id: 109,
       name: r'primaryVerseFontFamily',
       type: IsarType.string,
     ),
     r'primaryVerseFontSize': PropertySchema(
-      id: 104,
+      id: 110,
       name: r'primaryVerseFontSize',
       type: IsarType.double,
     ),
     r'primaryVerseHasFill': PropertySchema(
-      id: 105,
+      id: 111,
       name: r'primaryVerseHasFill',
       type: IsarType.bool,
     ),
     r'primaryVerseHasShadow': PropertySchema(
-      id: 106,
+      id: 112,
       name: r'primaryVerseHasShadow',
       type: IsarType.bool,
     ),
     r'primaryVerseHasStroke': PropertySchema(
-      id: 107,
+      id: 113,
       name: r'primaryVerseHasStroke',
       type: IsarType.bool,
     ),
     r'primaryVerseItalic': PropertySchema(
-      id: 108,
+      id: 114,
       name: r'primaryVerseItalic',
       type: IsarType.bool,
     ),
     r'primaryVerseLineHeight': PropertySchema(
-      id: 109,
+      id: 115,
       name: r'primaryVerseLineHeight',
       type: IsarType.double,
     ),
     r'primaryVerseMarginBottom': PropertySchema(
-      id: 110,
+      id: 116,
       name: r'primaryVerseMarginBottom',
       type: IsarType.double,
     ),
     r'primaryVerseMarginLeft': PropertySchema(
-      id: 111,
+      id: 117,
       name: r'primaryVerseMarginLeft',
       type: IsarType.double,
     ),
     r'primaryVerseMarginRight': PropertySchema(
-      id: 112,
+      id: 118,
       name: r'primaryVerseMarginRight',
       type: IsarType.double,
     ),
     r'primaryVerseMarginTop': PropertySchema(
-      id: 113,
+      id: 119,
       name: r'primaryVerseMarginTop',
       type: IsarType.double,
     ),
     r'primaryVerseShadowColor': PropertySchema(
-      id: 114,
+      id: 120,
       name: r'primaryVerseShadowColor',
       type: IsarType.long,
     ),
     r'primaryVerseShadowOffsetX': PropertySchema(
-      id: 115,
+      id: 121,
       name: r'primaryVerseShadowOffsetX',
       type: IsarType.double,
     ),
     r'primaryVerseShadowOffsetY': PropertySchema(
-      id: 116,
+      id: 122,
       name: r'primaryVerseShadowOffsetY',
       type: IsarType.double,
     ),
     r'primaryVerseShadowRadius': PropertySchema(
-      id: 117,
+      id: 123,
       name: r'primaryVerseShadowRadius',
       type: IsarType.double,
     ),
     r'primaryVerseStrokeColor': PropertySchema(
-      id: 118,
+      id: 124,
       name: r'primaryVerseStrokeColor',
       type: IsarType.long,
     ),
     r'primaryVerseStrokeWidth': PropertySchema(
-      id: 119,
+      id: 125,
       name: r'primaryVerseStrokeWidth',
       type: IsarType.double,
     ),
     r'primaryVerseUnderline': PropertySchema(
-      id: 120,
+      id: 126,
       name: r'primaryVerseUnderline',
       type: IsarType.bool,
     ),
     r'primaryVerseVerticalAlignment': PropertySchema(
-      id: 121,
+      id: 127,
       name: r'primaryVerseVerticalAlignment',
       type: IsarType.string,
     ),
     r'scriptureAspectRatio': PropertySchema(
-      id: 122,
+      id: 128,
       name: r'scriptureAspectRatio',
       type: IsarType.string,
     ),
     r'scriptureBackgroundColor': PropertySchema(
-      id: 123,
+      id: 129,
       name: r'scriptureBackgroundColor',
       type: IsarType.long,
     ),
     r'scriptureBackgroundImage': PropertySchema(
-      id: 124,
+      id: 130,
       name: r'scriptureBackgroundImage',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageAlignment': PropertySchema(
-      id: 125,
+      id: 131,
       name: r'scriptureBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'scriptureBackgroundImageLayout': PropertySchema(
-      id: 126,
+      id: 132,
       name: r'scriptureBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'scriptureCustomHeight': PropertySchema(
-      id: 127,
+      id: 133,
       name: r'scriptureCustomHeight',
       type: IsarType.double,
     ),
     r'scriptureCustomWidth': PropertySchema(
-      id: 128,
+      id: 134,
       name: r'scriptureCustomWidth',
       type: IsarType.double,
     ),
     r'secVerseAlignment': PropertySchema(
-      id: 129,
+      id: 135,
       name: r'secVerseAlignment',
       type: IsarType.string,
     ),
     r'secVerseBold': PropertySchema(
-      id: 130,
+      id: 136,
       name: r'secVerseBold',
       type: IsarType.bool,
     ),
     r'secVerseFillColor': PropertySchema(
-      id: 131,
+      id: 137,
       name: r'secVerseFillColor',
       type: IsarType.long,
     ),
     r'secVerseFontColor': PropertySchema(
-      id: 132,
+      id: 138,
       name: r'secVerseFontColor',
       type: IsarType.long,
     ),
     r'secVerseFontFamily': PropertySchema(
-      id: 133,
+      id: 139,
       name: r'secVerseFontFamily',
       type: IsarType.string,
     ),
     r'secVerseFontSize': PropertySchema(
-      id: 134,
+      id: 140,
       name: r'secVerseFontSize',
       type: IsarType.double,
     ),
     r'secVerseHasFill': PropertySchema(
-      id: 135,
+      id: 141,
       name: r'secVerseHasFill',
       type: IsarType.bool,
     ),
     r'secVerseHasShadow': PropertySchema(
-      id: 136,
+      id: 142,
       name: r'secVerseHasShadow',
       type: IsarType.bool,
     ),
     r'secVerseHasStroke': PropertySchema(
-      id: 137,
+      id: 143,
       name: r'secVerseHasStroke',
       type: IsarType.bool,
     ),
     r'secVerseItalic': PropertySchema(
-      id: 138,
+      id: 144,
       name: r'secVerseItalic',
       type: IsarType.bool,
     ),
     r'secVerseLineHeight': PropertySchema(
-      id: 139,
+      id: 145,
       name: r'secVerseLineHeight',
       type: IsarType.double,
     ),
     r'secVerseMarginBottom': PropertySchema(
-      id: 140,
+      id: 146,
       name: r'secVerseMarginBottom',
       type: IsarType.double,
     ),
     r'secVerseMarginLeft': PropertySchema(
-      id: 141,
+      id: 147,
       name: r'secVerseMarginLeft',
       type: IsarType.double,
     ),
     r'secVerseMarginRight': PropertySchema(
-      id: 142,
+      id: 148,
       name: r'secVerseMarginRight',
       type: IsarType.double,
     ),
     r'secVerseMarginTop': PropertySchema(
-      id: 143,
+      id: 149,
       name: r'secVerseMarginTop',
       type: IsarType.double,
     ),
     r'secVerseShadowColor': PropertySchema(
-      id: 144,
+      id: 150,
       name: r'secVerseShadowColor',
       type: IsarType.long,
     ),
     r'secVerseShadowOffsetX': PropertySchema(
-      id: 145,
+      id: 151,
       name: r'secVerseShadowOffsetX',
       type: IsarType.double,
     ),
     r'secVerseShadowOffsetY': PropertySchema(
-      id: 146,
+      id: 152,
       name: r'secVerseShadowOffsetY',
       type: IsarType.double,
     ),
     r'secVerseShadowRadius': PropertySchema(
-      id: 147,
+      id: 153,
       name: r'secVerseShadowRadius',
       type: IsarType.double,
     ),
     r'secVerseStrokeColor': PropertySchema(
-      id: 148,
+      id: 154,
       name: r'secVerseStrokeColor',
       type: IsarType.long,
     ),
     r'secVerseStrokeWidth': PropertySchema(
-      id: 149,
+      id: 155,
       name: r'secVerseStrokeWidth',
       type: IsarType.double,
     ),
     r'secVerseUnderline': PropertySchema(
-      id: 150,
+      id: 156,
       name: r'secVerseUnderline',
       type: IsarType.bool,
     ),
     r'secVerseVerticalAlignment': PropertySchema(
-      id: 151,
+      id: 157,
       name: r'secVerseVerticalAlignment',
       type: IsarType.string,
     ),
-    r'showChapter': PropertySchema(
-      id: 152,
-      name: r'showChapter',
-      type: IsarType.bool,
-    ),
-    r'showDualChapter': PropertySchema(
-      id: 153,
-      name: r'showDualChapter',
-      type: IsarType.bool,
-    ),
     r'showTitle': PropertySchema(
-      id: 154,
+      id: 158,
       name: r'showTitle',
       type: IsarType.bool,
     ),
     r'songAspectRatio': PropertySchema(
-      id: 155,
+      id: 159,
       name: r'songAspectRatio',
       type: IsarType.string,
     ),
     r'songBackgroundColor': PropertySchema(
-      id: 156,
+      id: 160,
       name: r'songBackgroundColor',
       type: IsarType.long,
     ),
     r'songBackgroundImage': PropertySchema(
-      id: 157,
+      id: 161,
       name: r'songBackgroundImage',
       type: IsarType.string,
     ),
     r'songBackgroundImageAlignment': PropertySchema(
-      id: 158,
+      id: 162,
       name: r'songBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'songBackgroundImageLayout': PropertySchema(
-      id: 159,
+      id: 163,
       name: r'songBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'songCustomHeight': PropertySchema(
-      id: 160,
+      id: 164,
       name: r'songCustomHeight',
       type: IsarType.double,
     ),
     r'songCustomWidth': PropertySchema(
-      id: 161,
+      id: 165,
       name: r'songCustomWidth',
       type: IsarType.double,
     ),
     r'syncId': PropertySchema(
-      id: 162,
+      id: 166,
       name: r'syncId',
       type: IsarType.string,
     ),
     r'titleAlignment': PropertySchema(
-      id: 163,
+      id: 167,
       name: r'titleAlignment',
       type: IsarType.string,
     ),
     r'titleBold': PropertySchema(
-      id: 164,
+      id: 168,
       name: r'titleBold',
       type: IsarType.bool,
     ),
     r'titleFillColor': PropertySchema(
-      id: 165,
+      id: 169,
       name: r'titleFillColor',
       type: IsarType.long,
     ),
     r'titleFontColor': PropertySchema(
-      id: 166,
+      id: 170,
       name: r'titleFontColor',
       type: IsarType.long,
     ),
     r'titleFontFamily': PropertySchema(
-      id: 167,
+      id: 171,
       name: r'titleFontFamily',
       type: IsarType.string,
     ),
     r'titleFontSize': PropertySchema(
-      id: 168,
+      id: 172,
       name: r'titleFontSize',
       type: IsarType.double,
     ),
     r'titleHasFill': PropertySchema(
-      id: 169,
+      id: 173,
       name: r'titleHasFill',
       type: IsarType.bool,
     ),
     r'titleHasShadow': PropertySchema(
-      id: 170,
+      id: 174,
       name: r'titleHasShadow',
       type: IsarType.bool,
     ),
     r'titleHasStroke': PropertySchema(
-      id: 171,
+      id: 175,
       name: r'titleHasStroke',
       type: IsarType.bool,
     ),
     r'titleItalic': PropertySchema(
-      id: 172,
+      id: 176,
       name: r'titleItalic',
       type: IsarType.bool,
     ),
     r'titleLineHeight': PropertySchema(
-      id: 173,
+      id: 177,
       name: r'titleLineHeight',
       type: IsarType.double,
     ),
     r'titleMarginBottom': PropertySchema(
-      id: 174,
+      id: 178,
       name: r'titleMarginBottom',
       type: IsarType.double,
     ),
     r'titleMarginLeft': PropertySchema(
-      id: 175,
+      id: 179,
       name: r'titleMarginLeft',
       type: IsarType.double,
     ),
     r'titleMarginRight': PropertySchema(
-      id: 176,
+      id: 180,
       name: r'titleMarginRight',
       type: IsarType.double,
     ),
     r'titleMarginTop': PropertySchema(
-      id: 177,
+      id: 181,
       name: r'titleMarginTop',
       type: IsarType.double,
     ),
     r'titleShadowColor': PropertySchema(
-      id: 178,
+      id: 182,
       name: r'titleShadowColor',
       type: IsarType.long,
     ),
     r'titleShadowOffsetX': PropertySchema(
-      id: 179,
+      id: 183,
       name: r'titleShadowOffsetX',
       type: IsarType.double,
     ),
     r'titleShadowOffsetY': PropertySchema(
-      id: 180,
+      id: 184,
       name: r'titleShadowOffsetY',
       type: IsarType.double,
     ),
     r'titleShadowRadius': PropertySchema(
-      id: 181,
+      id: 185,
       name: r'titleShadowRadius',
       type: IsarType.double,
     ),
     r'titleStrokeColor': PropertySchema(
-      id: 182,
+      id: 186,
       name: r'titleStrokeColor',
       type: IsarType.long,
     ),
     r'titleStrokeWidth': PropertySchema(
-      id: 183,
+      id: 187,
       name: r'titleStrokeWidth',
       type: IsarType.double,
     ),
     r'titleUnderline': PropertySchema(
-      id: 184,
+      id: 188,
       name: r'titleUnderline',
       type: IsarType.bool,
     ),
     r'titleVerticalAlignment': PropertySchema(
-      id: 185,
+      id: 189,
       name: r'titleVerticalAlignment',
       type: IsarType.string,
     ),
     r'verseAlignment': PropertySchema(
-      id: 186,
+      id: 190,
       name: r'verseAlignment',
       type: IsarType.string,
     ),
     r'verseBold': PropertySchema(
-      id: 187,
+      id: 191,
       name: r'verseBold',
       type: IsarType.bool,
     ),
     r'verseFillColor': PropertySchema(
-      id: 188,
+      id: 192,
       name: r'verseFillColor',
       type: IsarType.long,
     ),
     r'verseFontColor': PropertySchema(
-      id: 189,
+      id: 193,
       name: r'verseFontColor',
       type: IsarType.long,
     ),
     r'verseFontFamily': PropertySchema(
-      id: 190,
+      id: 194,
       name: r'verseFontFamily',
       type: IsarType.string,
     ),
     r'verseFontSize': PropertySchema(
-      id: 191,
+      id: 195,
       name: r'verseFontSize',
       type: IsarType.double,
     ),
     r'verseHasFill': PropertySchema(
-      id: 192,
+      id: 196,
       name: r'verseHasFill',
       type: IsarType.bool,
     ),
     r'verseHasShadow': PropertySchema(
-      id: 193,
+      id: 197,
       name: r'verseHasShadow',
       type: IsarType.bool,
     ),
     r'verseHasStroke': PropertySchema(
-      id: 194,
+      id: 198,
       name: r'verseHasStroke',
       type: IsarType.bool,
     ),
     r'verseItalic': PropertySchema(
-      id: 195,
+      id: 199,
       name: r'verseItalic',
       type: IsarType.bool,
     ),
     r'verseLineHeight': PropertySchema(
-      id: 196,
+      id: 200,
       name: r'verseLineHeight',
       type: IsarType.double,
     ),
     r'verseMarginBottom': PropertySchema(
-      id: 197,
+      id: 201,
       name: r'verseMarginBottom',
       type: IsarType.double,
     ),
     r'verseMarginLeft': PropertySchema(
-      id: 198,
+      id: 202,
       name: r'verseMarginLeft',
       type: IsarType.double,
     ),
     r'verseMarginRight': PropertySchema(
-      id: 199,
+      id: 203,
       name: r'verseMarginRight',
       type: IsarType.double,
     ),
     r'verseMarginTop': PropertySchema(
-      id: 200,
+      id: 204,
       name: r'verseMarginTop',
       type: IsarType.double,
     ),
     r'verseShadowColor': PropertySchema(
-      id: 201,
+      id: 205,
       name: r'verseShadowColor',
       type: IsarType.long,
     ),
     r'verseShadowOffsetX': PropertySchema(
-      id: 202,
+      id: 206,
       name: r'verseShadowOffsetX',
       type: IsarType.double,
     ),
     r'verseShadowOffsetY': PropertySchema(
-      id: 203,
+      id: 207,
       name: r'verseShadowOffsetY',
       type: IsarType.double,
     ),
     r'verseShadowRadius': PropertySchema(
-      id: 204,
+      id: 208,
       name: r'verseShadowRadius',
       type: IsarType.double,
     ),
     r'verseStrokeColor': PropertySchema(
-      id: 205,
+      id: 209,
       name: r'verseStrokeColor',
       type: IsarType.long,
     ),
     r'verseStrokeWidth': PropertySchema(
-      id: 206,
+      id: 210,
       name: r'verseStrokeWidth',
       type: IsarType.double,
     ),
     r'verseUnderline': PropertySchema(
-      id: 207,
+      id: 211,
       name: r'verseUnderline',
       type: IsarType.bool,
     ),
     r'verseVerticalAlignment': PropertySchema(
-      id: 208,
+      id: 212,
       name: r'verseVerticalAlignment',
       type: IsarType.string,
     ),
     r'windowAspectRatio': PropertySchema(
-      id: 209,
+      id: 213,
       name: r'windowAspectRatio',
       type: IsarType.string,
     ),
     r'windowBackgroundColor': PropertySchema(
-      id: 210,
+      id: 214,
       name: r'windowBackgroundColor',
       type: IsarType.long,
     ),
     r'windowBackgroundImage': PropertySchema(
-      id: 211,
+      id: 215,
       name: r'windowBackgroundImage',
       type: IsarType.string,
     ),
     r'windowBackgroundImageAlignment': PropertySchema(
-      id: 212,
+      id: 216,
       name: r'windowBackgroundImageAlignment',
       type: IsarType.string,
     ),
     r'windowBackgroundImageLayout': PropertySchema(
-      id: 213,
+      id: 217,
       name: r'windowBackgroundImageLayout',
       type: IsarType.string,
     ),
     r'windowCustomHeight': PropertySchema(
-      id: 214,
+      id: 218,
       name: r'windowCustomHeight',
       type: IsarType.double,
     ),
     r'windowCustomWidth': PropertySchema(
-      id: 215,
+      id: 219,
       name: r'windowCustomWidth',
       type: IsarType.double,
     )
@@ -1213,196 +1233,200 @@ void _presentationSettingsSerialize(
   writer.writeDouble(offsets[23], object.chapterShadowOffsetX);
   writer.writeDouble(offsets[24], object.chapterShadowOffsetY);
   writer.writeDouble(offsets[25], object.chapterShadowRadius);
-  writer.writeLong(offsets[26], object.chapterStrokeColor);
-  writer.writeDouble(offsets[27], object.chapterStrokeWidth);
-  writer.writeBool(offsets[28], object.chapterUnderline);
-  writer.writeString(offsets[29], object.chapterVerticalAlignment);
-  writer.writeString(offsets[30], object.dualChapterAlignment);
-  writer.writeBool(offsets[31], object.dualChapterBold);
-  writer.writeLong(offsets[32], object.dualChapterFillColor);
-  writer.writeLong(offsets[33], object.dualChapterFontColor);
-  writer.writeString(offsets[34], object.dualChapterFontFamily);
-  writer.writeDouble(offsets[35], object.dualChapterFontSize);
-  writer.writeBool(offsets[36], object.dualChapterHasFill);
-  writer.writeBool(offsets[37], object.dualChapterHasShadow);
-  writer.writeBool(offsets[38], object.dualChapterHasStroke);
-  writer.writeBool(offsets[39], object.dualChapterItalic);
-  writer.writeDouble(offsets[40], object.dualChapterLineHeight);
-  writer.writeDouble(offsets[41], object.dualChapterMarginBottom);
-  writer.writeDouble(offsets[42], object.dualChapterMarginLeft);
-  writer.writeDouble(offsets[43], object.dualChapterMarginRight);
-  writer.writeDouble(offsets[44], object.dualChapterMarginTop);
-  writer.writeLong(offsets[45], object.dualChapterShadowColor);
-  writer.writeDouble(offsets[46], object.dualChapterShadowOffsetX);
-  writer.writeDouble(offsets[47], object.dualChapterShadowOffsetY);
-  writer.writeDouble(offsets[48], object.dualChapterShadowRadius);
-  writer.writeLong(offsets[49], object.dualChapterStrokeColor);
-  writer.writeDouble(offsets[50], object.dualChapterStrokeWidth);
-  writer.writeBool(offsets[51], object.dualChapterUnderline);
-  writer.writeString(offsets[52], object.dualChapterVerticalAlignment);
-  writer.writeString(offsets[53], object.dualScriptureAspectRatio);
-  writer.writeLong(offsets[54], object.dualScriptureBackgroundColor);
-  writer.writeString(offsets[55], object.dualScriptureBackgroundImage);
-  writer.writeString(offsets[56], object.dualScriptureBackgroundImageAlignment);
-  writer.writeString(offsets[57], object.dualScriptureBackgroundImageLayout);
-  writer.writeDouble(offsets[58], object.dualScriptureCustomHeight);
-  writer.writeDouble(offsets[59], object.dualScriptureCustomWidth);
-  writer.writeString(offsets[60], object.dualScriptureLayoutDirection);
-  writer.writeString(offsets[61], object.dualScripturePrimaryPosition);
-  writer.writeDouble(offsets[62], object.dualScripturePrimaryRatio);
-  writer.writeBool(offsets[63], object.isBlankImageEnabled);
-  writer.writeBool(offsets[64], object.isBlankTransparent);
-  writer.writeBool(offsets[65], object.isDefault);
-  writer.writeBool(offsets[66], object.isDualScriptureImageEnabled);
-  writer.writeBool(offsets[67], object.isDualScriptureTransparent);
-  writer.writeBool(offsets[68], object.isScriptureImageEnabled);
-  writer.writeBool(offsets[69], object.isScriptureTransparent);
-  writer.writeBool(offsets[70], object.isSongImageEnabled);
-  writer.writeBool(offsets[71], object.isSongTransparent);
-  writer.writeBool(offsets[72], object.isWindowImageEnabled);
-  writer.writeBool(offsets[73], object.isWindowTransparent);
-  writer.writeString(offsets[74], object.lyricsAlignment);
-  writer.writeBool(offsets[75], object.lyricsBold);
-  writer.writeLong(offsets[76], object.lyricsFillColor);
-  writer.writeLong(offsets[77], object.lyricsFontColor);
-  writer.writeString(offsets[78], object.lyricsFontFamily);
-  writer.writeDouble(offsets[79], object.lyricsFontSize);
-  writer.writeBool(offsets[80], object.lyricsHasFill);
-  writer.writeBool(offsets[81], object.lyricsHasShadow);
-  writer.writeBool(offsets[82], object.lyricsHasStroke);
-  writer.writeBool(offsets[83], object.lyricsItalic);
-  writer.writeBool(offsets[84], object.lyricsLineBreak);
-  writer.writeDouble(offsets[85], object.lyricsLineHeight);
-  writer.writeDouble(offsets[86], object.lyricsMarginBottom);
-  writer.writeDouble(offsets[87], object.lyricsMarginLeft);
-  writer.writeDouble(offsets[88], object.lyricsMarginRight);
-  writer.writeDouble(offsets[89], object.lyricsMarginTop);
-  writer.writeLong(offsets[90], object.lyricsShadowColor);
-  writer.writeDouble(offsets[91], object.lyricsShadowOffsetX);
-  writer.writeDouble(offsets[92], object.lyricsShadowOffsetY);
-  writer.writeDouble(offsets[93], object.lyricsShadowRadius);
-  writer.writeLong(offsets[94], object.lyricsStrokeColor);
-  writer.writeDouble(offsets[95], object.lyricsStrokeWidth);
-  writer.writeBool(offsets[96], object.lyricsUnderline);
-  writer.writeString(offsets[97], object.lyricsVerticalAlignment);
-  writer.writeString(offsets[98], object.presetName);
-  writer.writeString(offsets[99], object.primaryVerseAlignment);
-  writer.writeBool(offsets[100], object.primaryVerseBold);
-  writer.writeLong(offsets[101], object.primaryVerseFillColor);
-  writer.writeLong(offsets[102], object.primaryVerseFontColor);
-  writer.writeString(offsets[103], object.primaryVerseFontFamily);
-  writer.writeDouble(offsets[104], object.primaryVerseFontSize);
-  writer.writeBool(offsets[105], object.primaryVerseHasFill);
-  writer.writeBool(offsets[106], object.primaryVerseHasShadow);
-  writer.writeBool(offsets[107], object.primaryVerseHasStroke);
-  writer.writeBool(offsets[108], object.primaryVerseItalic);
-  writer.writeDouble(offsets[109], object.primaryVerseLineHeight);
-  writer.writeDouble(offsets[110], object.primaryVerseMarginBottom);
-  writer.writeDouble(offsets[111], object.primaryVerseMarginLeft);
-  writer.writeDouble(offsets[112], object.primaryVerseMarginRight);
-  writer.writeDouble(offsets[113], object.primaryVerseMarginTop);
-  writer.writeLong(offsets[114], object.primaryVerseShadowColor);
-  writer.writeDouble(offsets[115], object.primaryVerseShadowOffsetX);
-  writer.writeDouble(offsets[116], object.primaryVerseShadowOffsetY);
-  writer.writeDouble(offsets[117], object.primaryVerseShadowRadius);
-  writer.writeLong(offsets[118], object.primaryVerseStrokeColor);
-  writer.writeDouble(offsets[119], object.primaryVerseStrokeWidth);
-  writer.writeBool(offsets[120], object.primaryVerseUnderline);
-  writer.writeString(offsets[121], object.primaryVerseVerticalAlignment);
-  writer.writeString(offsets[122], object.scriptureAspectRatio);
-  writer.writeLong(offsets[123], object.scriptureBackgroundColor);
-  writer.writeString(offsets[124], object.scriptureBackgroundImage);
-  writer.writeString(offsets[125], object.scriptureBackgroundImageAlignment);
-  writer.writeString(offsets[126], object.scriptureBackgroundImageLayout);
-  writer.writeDouble(offsets[127], object.scriptureCustomHeight);
-  writer.writeDouble(offsets[128], object.scriptureCustomWidth);
-  writer.writeString(offsets[129], object.secVerseAlignment);
-  writer.writeBool(offsets[130], object.secVerseBold);
-  writer.writeLong(offsets[131], object.secVerseFillColor);
-  writer.writeLong(offsets[132], object.secVerseFontColor);
-  writer.writeString(offsets[133], object.secVerseFontFamily);
-  writer.writeDouble(offsets[134], object.secVerseFontSize);
-  writer.writeBool(offsets[135], object.secVerseHasFill);
-  writer.writeBool(offsets[136], object.secVerseHasShadow);
-  writer.writeBool(offsets[137], object.secVerseHasStroke);
-  writer.writeBool(offsets[138], object.secVerseItalic);
-  writer.writeDouble(offsets[139], object.secVerseLineHeight);
-  writer.writeDouble(offsets[140], object.secVerseMarginBottom);
-  writer.writeDouble(offsets[141], object.secVerseMarginLeft);
-  writer.writeDouble(offsets[142], object.secVerseMarginRight);
-  writer.writeDouble(offsets[143], object.secVerseMarginTop);
-  writer.writeLong(offsets[144], object.secVerseShadowColor);
-  writer.writeDouble(offsets[145], object.secVerseShadowOffsetX);
-  writer.writeDouble(offsets[146], object.secVerseShadowOffsetY);
-  writer.writeDouble(offsets[147], object.secVerseShadowRadius);
-  writer.writeLong(offsets[148], object.secVerseStrokeColor);
-  writer.writeDouble(offsets[149], object.secVerseStrokeWidth);
-  writer.writeBool(offsets[150], object.secVerseUnderline);
-  writer.writeString(offsets[151], object.secVerseVerticalAlignment);
-  writer.writeBool(offsets[152], object.showChapter);
-  writer.writeBool(offsets[153], object.showDualChapter);
-  writer.writeBool(offsets[154], object.showTitle);
-  writer.writeString(offsets[155], object.songAspectRatio);
-  writer.writeLong(offsets[156], object.songBackgroundColor);
-  writer.writeString(offsets[157], object.songBackgroundImage);
-  writer.writeString(offsets[158], object.songBackgroundImageAlignment);
-  writer.writeString(offsets[159], object.songBackgroundImageLayout);
-  writer.writeDouble(offsets[160], object.songCustomHeight);
-  writer.writeDouble(offsets[161], object.songCustomWidth);
-  writer.writeString(offsets[162], object.syncId);
-  writer.writeString(offsets[163], object.titleAlignment);
-  writer.writeBool(offsets[164], object.titleBold);
-  writer.writeLong(offsets[165], object.titleFillColor);
-  writer.writeLong(offsets[166], object.titleFontColor);
-  writer.writeString(offsets[167], object.titleFontFamily);
-  writer.writeDouble(offsets[168], object.titleFontSize);
-  writer.writeBool(offsets[169], object.titleHasFill);
-  writer.writeBool(offsets[170], object.titleHasShadow);
-  writer.writeBool(offsets[171], object.titleHasStroke);
-  writer.writeBool(offsets[172], object.titleItalic);
-  writer.writeDouble(offsets[173], object.titleLineHeight);
-  writer.writeDouble(offsets[174], object.titleMarginBottom);
-  writer.writeDouble(offsets[175], object.titleMarginLeft);
-  writer.writeDouble(offsets[176], object.titleMarginRight);
-  writer.writeDouble(offsets[177], object.titleMarginTop);
-  writer.writeLong(offsets[178], object.titleShadowColor);
-  writer.writeDouble(offsets[179], object.titleShadowOffsetX);
-  writer.writeDouble(offsets[180], object.titleShadowOffsetY);
-  writer.writeDouble(offsets[181], object.titleShadowRadius);
-  writer.writeLong(offsets[182], object.titleStrokeColor);
-  writer.writeDouble(offsets[183], object.titleStrokeWidth);
-  writer.writeBool(offsets[184], object.titleUnderline);
-  writer.writeString(offsets[185], object.titleVerticalAlignment);
-  writer.writeString(offsets[186], object.verseAlignment);
-  writer.writeBool(offsets[187], object.verseBold);
-  writer.writeLong(offsets[188], object.verseFillColor);
-  writer.writeLong(offsets[189], object.verseFontColor);
-  writer.writeString(offsets[190], object.verseFontFamily);
-  writer.writeDouble(offsets[191], object.verseFontSize);
-  writer.writeBool(offsets[192], object.verseHasFill);
-  writer.writeBool(offsets[193], object.verseHasShadow);
-  writer.writeBool(offsets[194], object.verseHasStroke);
-  writer.writeBool(offsets[195], object.verseItalic);
-  writer.writeDouble(offsets[196], object.verseLineHeight);
-  writer.writeDouble(offsets[197], object.verseMarginBottom);
-  writer.writeDouble(offsets[198], object.verseMarginLeft);
-  writer.writeDouble(offsets[199], object.verseMarginRight);
-  writer.writeDouble(offsets[200], object.verseMarginTop);
-  writer.writeLong(offsets[201], object.verseShadowColor);
-  writer.writeDouble(offsets[202], object.verseShadowOffsetX);
-  writer.writeDouble(offsets[203], object.verseShadowOffsetY);
-  writer.writeDouble(offsets[204], object.verseShadowRadius);
-  writer.writeLong(offsets[205], object.verseStrokeColor);
-  writer.writeDouble(offsets[206], object.verseStrokeWidth);
-  writer.writeBool(offsets[207], object.verseUnderline);
-  writer.writeString(offsets[208], object.verseVerticalAlignment);
-  writer.writeString(offsets[209], object.windowAspectRatio);
-  writer.writeLong(offsets[210], object.windowBackgroundColor);
-  writer.writeString(offsets[211], object.windowBackgroundImage);
-  writer.writeString(offsets[212], object.windowBackgroundImageAlignment);
-  writer.writeString(offsets[213], object.windowBackgroundImageLayout);
-  writer.writeDouble(offsets[214], object.windowCustomHeight);
-  writer.writeDouble(offsets[215], object.windowCustomWidth);
+  writer.writeBool(offsets[26], object.chapterShowActual);
+  writer.writeBool(offsets[27], object.chapterShowAlias);
+  writer.writeBool(offsets[28], object.chapterShowNone);
+  writer.writeLong(offsets[29], object.chapterStrokeColor);
+  writer.writeDouble(offsets[30], object.chapterStrokeWidth);
+  writer.writeBool(offsets[31], object.chapterUnderline);
+  writer.writeString(offsets[32], object.chapterVerticalAlignment);
+  writer.writeString(offsets[33], object.dualChapterAlignment);
+  writer.writeBool(offsets[34], object.dualChapterBold);
+  writer.writeLong(offsets[35], object.dualChapterFillColor);
+  writer.writeLong(offsets[36], object.dualChapterFontColor);
+  writer.writeString(offsets[37], object.dualChapterFontFamily);
+  writer.writeDouble(offsets[38], object.dualChapterFontSize);
+  writer.writeBool(offsets[39], object.dualChapterHasFill);
+  writer.writeBool(offsets[40], object.dualChapterHasShadow);
+  writer.writeBool(offsets[41], object.dualChapterHasStroke);
+  writer.writeBool(offsets[42], object.dualChapterItalic);
+  writer.writeDouble(offsets[43], object.dualChapterLineHeight);
+  writer.writeDouble(offsets[44], object.dualChapterMarginBottom);
+  writer.writeDouble(offsets[45], object.dualChapterMarginLeft);
+  writer.writeDouble(offsets[46], object.dualChapterMarginRight);
+  writer.writeDouble(offsets[47], object.dualChapterMarginTop);
+  writer.writeLong(offsets[48], object.dualChapterShadowColor);
+  writer.writeDouble(offsets[49], object.dualChapterShadowOffsetX);
+  writer.writeDouble(offsets[50], object.dualChapterShadowOffsetY);
+  writer.writeDouble(offsets[51], object.dualChapterShadowRadius);
+  writer.writeBool(offsets[52], object.dualChapterShowActual);
+  writer.writeBool(offsets[53], object.dualChapterShowAlias);
+  writer.writeBool(offsets[54], object.dualChapterShowNone);
+  writer.writeLong(offsets[55], object.dualChapterStrokeColor);
+  writer.writeDouble(offsets[56], object.dualChapterStrokeWidth);
+  writer.writeBool(offsets[57], object.dualChapterUnderline);
+  writer.writeString(offsets[58], object.dualChapterVerticalAlignment);
+  writer.writeString(offsets[59], object.dualScriptureAspectRatio);
+  writer.writeLong(offsets[60], object.dualScriptureBackgroundColor);
+  writer.writeString(offsets[61], object.dualScriptureBackgroundImage);
+  writer.writeString(offsets[62], object.dualScriptureBackgroundImageAlignment);
+  writer.writeString(offsets[63], object.dualScriptureBackgroundImageLayout);
+  writer.writeDouble(offsets[64], object.dualScriptureCustomHeight);
+  writer.writeDouble(offsets[65], object.dualScriptureCustomWidth);
+  writer.writeString(offsets[66], object.dualScriptureLayoutDirection);
+  writer.writeString(offsets[67], object.dualScripturePrimaryPosition);
+  writer.writeDouble(offsets[68], object.dualScripturePrimaryRatio);
+  writer.writeBool(offsets[69], object.isBlankImageEnabled);
+  writer.writeBool(offsets[70], object.isBlankTransparent);
+  writer.writeBool(offsets[71], object.isDefault);
+  writer.writeBool(offsets[72], object.isDualScriptureImageEnabled);
+  writer.writeBool(offsets[73], object.isDualScriptureTransparent);
+  writer.writeBool(offsets[74], object.isScriptureImageEnabled);
+  writer.writeBool(offsets[75], object.isScriptureTransparent);
+  writer.writeBool(offsets[76], object.isSongImageEnabled);
+  writer.writeBool(offsets[77], object.isSongTransparent);
+  writer.writeBool(offsets[78], object.isWindowImageEnabled);
+  writer.writeBool(offsets[79], object.isWindowTransparent);
+  writer.writeString(offsets[80], object.lyricsAlignment);
+  writer.writeBool(offsets[81], object.lyricsBold);
+  writer.writeLong(offsets[82], object.lyricsFillColor);
+  writer.writeLong(offsets[83], object.lyricsFontColor);
+  writer.writeString(offsets[84], object.lyricsFontFamily);
+  writer.writeDouble(offsets[85], object.lyricsFontSize);
+  writer.writeBool(offsets[86], object.lyricsHasFill);
+  writer.writeBool(offsets[87], object.lyricsHasShadow);
+  writer.writeBool(offsets[88], object.lyricsHasStroke);
+  writer.writeBool(offsets[89], object.lyricsItalic);
+  writer.writeBool(offsets[90], object.lyricsLineBreak);
+  writer.writeDouble(offsets[91], object.lyricsLineHeight);
+  writer.writeDouble(offsets[92], object.lyricsMarginBottom);
+  writer.writeDouble(offsets[93], object.lyricsMarginLeft);
+  writer.writeDouble(offsets[94], object.lyricsMarginRight);
+  writer.writeDouble(offsets[95], object.lyricsMarginTop);
+  writer.writeLong(offsets[96], object.lyricsShadowColor);
+  writer.writeDouble(offsets[97], object.lyricsShadowOffsetX);
+  writer.writeDouble(offsets[98], object.lyricsShadowOffsetY);
+  writer.writeDouble(offsets[99], object.lyricsShadowRadius);
+  writer.writeLong(offsets[100], object.lyricsStrokeColor);
+  writer.writeDouble(offsets[101], object.lyricsStrokeWidth);
+  writer.writeBool(offsets[102], object.lyricsUnderline);
+  writer.writeString(offsets[103], object.lyricsVerticalAlignment);
+  writer.writeString(offsets[104], object.presetName);
+  writer.writeString(offsets[105], object.primaryVerseAlignment);
+  writer.writeBool(offsets[106], object.primaryVerseBold);
+  writer.writeLong(offsets[107], object.primaryVerseFillColor);
+  writer.writeLong(offsets[108], object.primaryVerseFontColor);
+  writer.writeString(offsets[109], object.primaryVerseFontFamily);
+  writer.writeDouble(offsets[110], object.primaryVerseFontSize);
+  writer.writeBool(offsets[111], object.primaryVerseHasFill);
+  writer.writeBool(offsets[112], object.primaryVerseHasShadow);
+  writer.writeBool(offsets[113], object.primaryVerseHasStroke);
+  writer.writeBool(offsets[114], object.primaryVerseItalic);
+  writer.writeDouble(offsets[115], object.primaryVerseLineHeight);
+  writer.writeDouble(offsets[116], object.primaryVerseMarginBottom);
+  writer.writeDouble(offsets[117], object.primaryVerseMarginLeft);
+  writer.writeDouble(offsets[118], object.primaryVerseMarginRight);
+  writer.writeDouble(offsets[119], object.primaryVerseMarginTop);
+  writer.writeLong(offsets[120], object.primaryVerseShadowColor);
+  writer.writeDouble(offsets[121], object.primaryVerseShadowOffsetX);
+  writer.writeDouble(offsets[122], object.primaryVerseShadowOffsetY);
+  writer.writeDouble(offsets[123], object.primaryVerseShadowRadius);
+  writer.writeLong(offsets[124], object.primaryVerseStrokeColor);
+  writer.writeDouble(offsets[125], object.primaryVerseStrokeWidth);
+  writer.writeBool(offsets[126], object.primaryVerseUnderline);
+  writer.writeString(offsets[127], object.primaryVerseVerticalAlignment);
+  writer.writeString(offsets[128], object.scriptureAspectRatio);
+  writer.writeLong(offsets[129], object.scriptureBackgroundColor);
+  writer.writeString(offsets[130], object.scriptureBackgroundImage);
+  writer.writeString(offsets[131], object.scriptureBackgroundImageAlignment);
+  writer.writeString(offsets[132], object.scriptureBackgroundImageLayout);
+  writer.writeDouble(offsets[133], object.scriptureCustomHeight);
+  writer.writeDouble(offsets[134], object.scriptureCustomWidth);
+  writer.writeString(offsets[135], object.secVerseAlignment);
+  writer.writeBool(offsets[136], object.secVerseBold);
+  writer.writeLong(offsets[137], object.secVerseFillColor);
+  writer.writeLong(offsets[138], object.secVerseFontColor);
+  writer.writeString(offsets[139], object.secVerseFontFamily);
+  writer.writeDouble(offsets[140], object.secVerseFontSize);
+  writer.writeBool(offsets[141], object.secVerseHasFill);
+  writer.writeBool(offsets[142], object.secVerseHasShadow);
+  writer.writeBool(offsets[143], object.secVerseHasStroke);
+  writer.writeBool(offsets[144], object.secVerseItalic);
+  writer.writeDouble(offsets[145], object.secVerseLineHeight);
+  writer.writeDouble(offsets[146], object.secVerseMarginBottom);
+  writer.writeDouble(offsets[147], object.secVerseMarginLeft);
+  writer.writeDouble(offsets[148], object.secVerseMarginRight);
+  writer.writeDouble(offsets[149], object.secVerseMarginTop);
+  writer.writeLong(offsets[150], object.secVerseShadowColor);
+  writer.writeDouble(offsets[151], object.secVerseShadowOffsetX);
+  writer.writeDouble(offsets[152], object.secVerseShadowOffsetY);
+  writer.writeDouble(offsets[153], object.secVerseShadowRadius);
+  writer.writeLong(offsets[154], object.secVerseStrokeColor);
+  writer.writeDouble(offsets[155], object.secVerseStrokeWidth);
+  writer.writeBool(offsets[156], object.secVerseUnderline);
+  writer.writeString(offsets[157], object.secVerseVerticalAlignment);
+  writer.writeBool(offsets[158], object.showTitle);
+  writer.writeString(offsets[159], object.songAspectRatio);
+  writer.writeLong(offsets[160], object.songBackgroundColor);
+  writer.writeString(offsets[161], object.songBackgroundImage);
+  writer.writeString(offsets[162], object.songBackgroundImageAlignment);
+  writer.writeString(offsets[163], object.songBackgroundImageLayout);
+  writer.writeDouble(offsets[164], object.songCustomHeight);
+  writer.writeDouble(offsets[165], object.songCustomWidth);
+  writer.writeString(offsets[166], object.syncId);
+  writer.writeString(offsets[167], object.titleAlignment);
+  writer.writeBool(offsets[168], object.titleBold);
+  writer.writeLong(offsets[169], object.titleFillColor);
+  writer.writeLong(offsets[170], object.titleFontColor);
+  writer.writeString(offsets[171], object.titleFontFamily);
+  writer.writeDouble(offsets[172], object.titleFontSize);
+  writer.writeBool(offsets[173], object.titleHasFill);
+  writer.writeBool(offsets[174], object.titleHasShadow);
+  writer.writeBool(offsets[175], object.titleHasStroke);
+  writer.writeBool(offsets[176], object.titleItalic);
+  writer.writeDouble(offsets[177], object.titleLineHeight);
+  writer.writeDouble(offsets[178], object.titleMarginBottom);
+  writer.writeDouble(offsets[179], object.titleMarginLeft);
+  writer.writeDouble(offsets[180], object.titleMarginRight);
+  writer.writeDouble(offsets[181], object.titleMarginTop);
+  writer.writeLong(offsets[182], object.titleShadowColor);
+  writer.writeDouble(offsets[183], object.titleShadowOffsetX);
+  writer.writeDouble(offsets[184], object.titleShadowOffsetY);
+  writer.writeDouble(offsets[185], object.titleShadowRadius);
+  writer.writeLong(offsets[186], object.titleStrokeColor);
+  writer.writeDouble(offsets[187], object.titleStrokeWidth);
+  writer.writeBool(offsets[188], object.titleUnderline);
+  writer.writeString(offsets[189], object.titleVerticalAlignment);
+  writer.writeString(offsets[190], object.verseAlignment);
+  writer.writeBool(offsets[191], object.verseBold);
+  writer.writeLong(offsets[192], object.verseFillColor);
+  writer.writeLong(offsets[193], object.verseFontColor);
+  writer.writeString(offsets[194], object.verseFontFamily);
+  writer.writeDouble(offsets[195], object.verseFontSize);
+  writer.writeBool(offsets[196], object.verseHasFill);
+  writer.writeBool(offsets[197], object.verseHasShadow);
+  writer.writeBool(offsets[198], object.verseHasStroke);
+  writer.writeBool(offsets[199], object.verseItalic);
+  writer.writeDouble(offsets[200], object.verseLineHeight);
+  writer.writeDouble(offsets[201], object.verseMarginBottom);
+  writer.writeDouble(offsets[202], object.verseMarginLeft);
+  writer.writeDouble(offsets[203], object.verseMarginRight);
+  writer.writeDouble(offsets[204], object.verseMarginTop);
+  writer.writeLong(offsets[205], object.verseShadowColor);
+  writer.writeDouble(offsets[206], object.verseShadowOffsetX);
+  writer.writeDouble(offsets[207], object.verseShadowOffsetY);
+  writer.writeDouble(offsets[208], object.verseShadowRadius);
+  writer.writeLong(offsets[209], object.verseStrokeColor);
+  writer.writeDouble(offsets[210], object.verseStrokeWidth);
+  writer.writeBool(offsets[211], object.verseUnderline);
+  writer.writeString(offsets[212], object.verseVerticalAlignment);
+  writer.writeString(offsets[213], object.windowAspectRatio);
+  writer.writeLong(offsets[214], object.windowBackgroundColor);
+  writer.writeString(offsets[215], object.windowBackgroundImage);
+  writer.writeString(offsets[216], object.windowBackgroundImageAlignment);
+  writer.writeString(offsets[217], object.windowBackgroundImageLayout);
+  writer.writeDouble(offsets[218], object.windowCustomHeight);
+  writer.writeDouble(offsets[219], object.windowCustomWidth);
 }
 
 PresentationSettings _presentationSettingsDeserialize(
@@ -1438,197 +1462,201 @@ PresentationSettings _presentationSettingsDeserialize(
   object.chapterShadowOffsetX = reader.readDouble(offsets[23]);
   object.chapterShadowOffsetY = reader.readDouble(offsets[24]);
   object.chapterShadowRadius = reader.readDouble(offsets[25]);
-  object.chapterStrokeColor = reader.readLong(offsets[26]);
-  object.chapterStrokeWidth = reader.readDouble(offsets[27]);
-  object.chapterUnderline = reader.readBool(offsets[28]);
-  object.chapterVerticalAlignment = reader.readString(offsets[29]);
-  object.dualChapterAlignment = reader.readString(offsets[30]);
-  object.dualChapterBold = reader.readBool(offsets[31]);
-  object.dualChapterFillColor = reader.readLong(offsets[32]);
-  object.dualChapterFontColor = reader.readLong(offsets[33]);
-  object.dualChapterFontFamily = reader.readString(offsets[34]);
-  object.dualChapterFontSize = reader.readDouble(offsets[35]);
-  object.dualChapterHasFill = reader.readBool(offsets[36]);
-  object.dualChapterHasShadow = reader.readBool(offsets[37]);
-  object.dualChapterHasStroke = reader.readBool(offsets[38]);
-  object.dualChapterItalic = reader.readBool(offsets[39]);
-  object.dualChapterLineHeight = reader.readDouble(offsets[40]);
-  object.dualChapterMarginBottom = reader.readDouble(offsets[41]);
-  object.dualChapterMarginLeft = reader.readDouble(offsets[42]);
-  object.dualChapterMarginRight = reader.readDouble(offsets[43]);
-  object.dualChapterMarginTop = reader.readDouble(offsets[44]);
-  object.dualChapterShadowColor = reader.readLong(offsets[45]);
-  object.dualChapterShadowOffsetX = reader.readDouble(offsets[46]);
-  object.dualChapterShadowOffsetY = reader.readDouble(offsets[47]);
-  object.dualChapterShadowRadius = reader.readDouble(offsets[48]);
-  object.dualChapterStrokeColor = reader.readLong(offsets[49]);
-  object.dualChapterStrokeWidth = reader.readDouble(offsets[50]);
-  object.dualChapterUnderline = reader.readBool(offsets[51]);
-  object.dualChapterVerticalAlignment = reader.readString(offsets[52]);
-  object.dualScriptureAspectRatio = reader.readString(offsets[53]);
-  object.dualScriptureBackgroundColor = reader.readLong(offsets[54]);
-  object.dualScriptureBackgroundImage = reader.readString(offsets[55]);
-  object.dualScriptureBackgroundImageAlignment = reader.readString(offsets[56]);
-  object.dualScriptureBackgroundImageLayout = reader.readString(offsets[57]);
-  object.dualScriptureCustomHeight = reader.readDouble(offsets[58]);
-  object.dualScriptureCustomWidth = reader.readDouble(offsets[59]);
-  object.dualScriptureLayoutDirection = reader.readString(offsets[60]);
-  object.dualScripturePrimaryPosition = reader.readString(offsets[61]);
-  object.dualScripturePrimaryRatio = reader.readDouble(offsets[62]);
+  object.chapterShowActual = reader.readBool(offsets[26]);
+  object.chapterShowAlias = reader.readBool(offsets[27]);
+  object.chapterShowNone = reader.readBool(offsets[28]);
+  object.chapterStrokeColor = reader.readLong(offsets[29]);
+  object.chapterStrokeWidth = reader.readDouble(offsets[30]);
+  object.chapterUnderline = reader.readBool(offsets[31]);
+  object.chapterVerticalAlignment = reader.readString(offsets[32]);
+  object.dualChapterAlignment = reader.readString(offsets[33]);
+  object.dualChapterBold = reader.readBool(offsets[34]);
+  object.dualChapterFillColor = reader.readLong(offsets[35]);
+  object.dualChapterFontColor = reader.readLong(offsets[36]);
+  object.dualChapterFontFamily = reader.readString(offsets[37]);
+  object.dualChapterFontSize = reader.readDouble(offsets[38]);
+  object.dualChapterHasFill = reader.readBool(offsets[39]);
+  object.dualChapterHasShadow = reader.readBool(offsets[40]);
+  object.dualChapterHasStroke = reader.readBool(offsets[41]);
+  object.dualChapterItalic = reader.readBool(offsets[42]);
+  object.dualChapterLineHeight = reader.readDouble(offsets[43]);
+  object.dualChapterMarginBottom = reader.readDouble(offsets[44]);
+  object.dualChapterMarginLeft = reader.readDouble(offsets[45]);
+  object.dualChapterMarginRight = reader.readDouble(offsets[46]);
+  object.dualChapterMarginTop = reader.readDouble(offsets[47]);
+  object.dualChapterShadowColor = reader.readLong(offsets[48]);
+  object.dualChapterShadowOffsetX = reader.readDouble(offsets[49]);
+  object.dualChapterShadowOffsetY = reader.readDouble(offsets[50]);
+  object.dualChapterShadowRadius = reader.readDouble(offsets[51]);
+  object.dualChapterShowActual = reader.readBool(offsets[52]);
+  object.dualChapterShowAlias = reader.readBool(offsets[53]);
+  object.dualChapterShowNone = reader.readBool(offsets[54]);
+  object.dualChapterStrokeColor = reader.readLong(offsets[55]);
+  object.dualChapterStrokeWidth = reader.readDouble(offsets[56]);
+  object.dualChapterUnderline = reader.readBool(offsets[57]);
+  object.dualChapterVerticalAlignment = reader.readString(offsets[58]);
+  object.dualScriptureAspectRatio = reader.readString(offsets[59]);
+  object.dualScriptureBackgroundColor = reader.readLong(offsets[60]);
+  object.dualScriptureBackgroundImage = reader.readString(offsets[61]);
+  object.dualScriptureBackgroundImageAlignment = reader.readString(offsets[62]);
+  object.dualScriptureBackgroundImageLayout = reader.readString(offsets[63]);
+  object.dualScriptureCustomHeight = reader.readDouble(offsets[64]);
+  object.dualScriptureCustomWidth = reader.readDouble(offsets[65]);
+  object.dualScriptureLayoutDirection = reader.readString(offsets[66]);
+  object.dualScripturePrimaryPosition = reader.readString(offsets[67]);
+  object.dualScripturePrimaryRatio = reader.readDouble(offsets[68]);
   object.id = id;
-  object.isBlankImageEnabled = reader.readBool(offsets[63]);
-  object.isBlankTransparent = reader.readBool(offsets[64]);
-  object.isDefault = reader.readBool(offsets[65]);
-  object.isDualScriptureImageEnabled = reader.readBool(offsets[66]);
-  object.isDualScriptureTransparent = reader.readBool(offsets[67]);
-  object.isScriptureImageEnabled = reader.readBool(offsets[68]);
-  object.isScriptureTransparent = reader.readBool(offsets[69]);
-  object.isSongImageEnabled = reader.readBool(offsets[70]);
-  object.isSongTransparent = reader.readBool(offsets[71]);
-  object.isWindowImageEnabled = reader.readBool(offsets[72]);
-  object.isWindowTransparent = reader.readBool(offsets[73]);
-  object.lyricsAlignment = reader.readString(offsets[74]);
-  object.lyricsBold = reader.readBool(offsets[75]);
-  object.lyricsFillColor = reader.readLong(offsets[76]);
-  object.lyricsFontColor = reader.readLong(offsets[77]);
-  object.lyricsFontFamily = reader.readString(offsets[78]);
-  object.lyricsFontSize = reader.readDouble(offsets[79]);
-  object.lyricsHasFill = reader.readBool(offsets[80]);
-  object.lyricsHasShadow = reader.readBool(offsets[81]);
-  object.lyricsHasStroke = reader.readBool(offsets[82]);
-  object.lyricsItalic = reader.readBool(offsets[83]);
-  object.lyricsLineBreak = reader.readBool(offsets[84]);
-  object.lyricsLineHeight = reader.readDouble(offsets[85]);
-  object.lyricsMarginBottom = reader.readDouble(offsets[86]);
-  object.lyricsMarginLeft = reader.readDouble(offsets[87]);
-  object.lyricsMarginRight = reader.readDouble(offsets[88]);
-  object.lyricsMarginTop = reader.readDouble(offsets[89]);
-  object.lyricsShadowColor = reader.readLong(offsets[90]);
-  object.lyricsShadowOffsetX = reader.readDouble(offsets[91]);
-  object.lyricsShadowOffsetY = reader.readDouble(offsets[92]);
-  object.lyricsShadowRadius = reader.readDouble(offsets[93]);
-  object.lyricsStrokeColor = reader.readLong(offsets[94]);
-  object.lyricsStrokeWidth = reader.readDouble(offsets[95]);
-  object.lyricsUnderline = reader.readBool(offsets[96]);
-  object.lyricsVerticalAlignment = reader.readString(offsets[97]);
-  object.presetName = reader.readString(offsets[98]);
-  object.primaryVerseAlignment = reader.readString(offsets[99]);
-  object.primaryVerseBold = reader.readBool(offsets[100]);
-  object.primaryVerseFillColor = reader.readLong(offsets[101]);
-  object.primaryVerseFontColor = reader.readLong(offsets[102]);
-  object.primaryVerseFontFamily = reader.readString(offsets[103]);
-  object.primaryVerseFontSize = reader.readDouble(offsets[104]);
-  object.primaryVerseHasFill = reader.readBool(offsets[105]);
-  object.primaryVerseHasShadow = reader.readBool(offsets[106]);
-  object.primaryVerseHasStroke = reader.readBool(offsets[107]);
-  object.primaryVerseItalic = reader.readBool(offsets[108]);
-  object.primaryVerseLineHeight = reader.readDouble(offsets[109]);
-  object.primaryVerseMarginBottom = reader.readDouble(offsets[110]);
-  object.primaryVerseMarginLeft = reader.readDouble(offsets[111]);
-  object.primaryVerseMarginRight = reader.readDouble(offsets[112]);
-  object.primaryVerseMarginTop = reader.readDouble(offsets[113]);
-  object.primaryVerseShadowColor = reader.readLong(offsets[114]);
-  object.primaryVerseShadowOffsetX = reader.readDouble(offsets[115]);
-  object.primaryVerseShadowOffsetY = reader.readDouble(offsets[116]);
-  object.primaryVerseShadowRadius = reader.readDouble(offsets[117]);
-  object.primaryVerseStrokeColor = reader.readLong(offsets[118]);
-  object.primaryVerseStrokeWidth = reader.readDouble(offsets[119]);
-  object.primaryVerseUnderline = reader.readBool(offsets[120]);
-  object.primaryVerseVerticalAlignment = reader.readString(offsets[121]);
-  object.scriptureAspectRatio = reader.readString(offsets[122]);
-  object.scriptureBackgroundColor = reader.readLong(offsets[123]);
-  object.scriptureBackgroundImage = reader.readString(offsets[124]);
-  object.scriptureBackgroundImageAlignment = reader.readString(offsets[125]);
-  object.scriptureBackgroundImageLayout = reader.readString(offsets[126]);
-  object.scriptureCustomHeight = reader.readDouble(offsets[127]);
-  object.scriptureCustomWidth = reader.readDouble(offsets[128]);
-  object.secVerseAlignment = reader.readString(offsets[129]);
-  object.secVerseBold = reader.readBool(offsets[130]);
-  object.secVerseFillColor = reader.readLong(offsets[131]);
-  object.secVerseFontColor = reader.readLong(offsets[132]);
-  object.secVerseFontFamily = reader.readString(offsets[133]);
-  object.secVerseFontSize = reader.readDouble(offsets[134]);
-  object.secVerseHasFill = reader.readBool(offsets[135]);
-  object.secVerseHasShadow = reader.readBool(offsets[136]);
-  object.secVerseHasStroke = reader.readBool(offsets[137]);
-  object.secVerseItalic = reader.readBool(offsets[138]);
-  object.secVerseLineHeight = reader.readDouble(offsets[139]);
-  object.secVerseMarginBottom = reader.readDouble(offsets[140]);
-  object.secVerseMarginLeft = reader.readDouble(offsets[141]);
-  object.secVerseMarginRight = reader.readDouble(offsets[142]);
-  object.secVerseMarginTop = reader.readDouble(offsets[143]);
-  object.secVerseShadowColor = reader.readLong(offsets[144]);
-  object.secVerseShadowOffsetX = reader.readDouble(offsets[145]);
-  object.secVerseShadowOffsetY = reader.readDouble(offsets[146]);
-  object.secVerseShadowRadius = reader.readDouble(offsets[147]);
-  object.secVerseStrokeColor = reader.readLong(offsets[148]);
-  object.secVerseStrokeWidth = reader.readDouble(offsets[149]);
-  object.secVerseUnderline = reader.readBool(offsets[150]);
-  object.secVerseVerticalAlignment = reader.readString(offsets[151]);
-  object.showChapter = reader.readBool(offsets[152]);
-  object.showDualChapter = reader.readBool(offsets[153]);
-  object.showTitle = reader.readBool(offsets[154]);
-  object.songAspectRatio = reader.readString(offsets[155]);
-  object.songBackgroundColor = reader.readLong(offsets[156]);
-  object.songBackgroundImage = reader.readString(offsets[157]);
-  object.songBackgroundImageAlignment = reader.readString(offsets[158]);
-  object.songBackgroundImageLayout = reader.readString(offsets[159]);
-  object.songCustomHeight = reader.readDouble(offsets[160]);
-  object.songCustomWidth = reader.readDouble(offsets[161]);
-  object.syncId = reader.readString(offsets[162]);
-  object.titleAlignment = reader.readString(offsets[163]);
-  object.titleBold = reader.readBool(offsets[164]);
-  object.titleFillColor = reader.readLong(offsets[165]);
-  object.titleFontColor = reader.readLong(offsets[166]);
-  object.titleFontFamily = reader.readString(offsets[167]);
-  object.titleFontSize = reader.readDouble(offsets[168]);
-  object.titleHasFill = reader.readBool(offsets[169]);
-  object.titleHasShadow = reader.readBool(offsets[170]);
-  object.titleHasStroke = reader.readBool(offsets[171]);
-  object.titleItalic = reader.readBool(offsets[172]);
-  object.titleLineHeight = reader.readDouble(offsets[173]);
-  object.titleMarginBottom = reader.readDouble(offsets[174]);
-  object.titleMarginLeft = reader.readDouble(offsets[175]);
-  object.titleMarginRight = reader.readDouble(offsets[176]);
-  object.titleMarginTop = reader.readDouble(offsets[177]);
-  object.titleShadowColor = reader.readLong(offsets[178]);
-  object.titleShadowOffsetX = reader.readDouble(offsets[179]);
-  object.titleShadowOffsetY = reader.readDouble(offsets[180]);
-  object.titleShadowRadius = reader.readDouble(offsets[181]);
-  object.titleStrokeColor = reader.readLong(offsets[182]);
-  object.titleStrokeWidth = reader.readDouble(offsets[183]);
-  object.titleUnderline = reader.readBool(offsets[184]);
-  object.titleVerticalAlignment = reader.readString(offsets[185]);
-  object.verseAlignment = reader.readString(offsets[186]);
-  object.verseBold = reader.readBool(offsets[187]);
-  object.verseFillColor = reader.readLong(offsets[188]);
-  object.verseFontColor = reader.readLong(offsets[189]);
-  object.verseFontFamily = reader.readString(offsets[190]);
-  object.verseFontSize = reader.readDouble(offsets[191]);
-  object.verseHasFill = reader.readBool(offsets[192]);
-  object.verseHasShadow = reader.readBool(offsets[193]);
-  object.verseHasStroke = reader.readBool(offsets[194]);
-  object.verseItalic = reader.readBool(offsets[195]);
-  object.verseLineHeight = reader.readDouble(offsets[196]);
-  object.verseMarginBottom = reader.readDouble(offsets[197]);
-  object.verseMarginLeft = reader.readDouble(offsets[198]);
-  object.verseMarginRight = reader.readDouble(offsets[199]);
-  object.verseMarginTop = reader.readDouble(offsets[200]);
-  object.verseShadowColor = reader.readLong(offsets[201]);
-  object.verseShadowOffsetX = reader.readDouble(offsets[202]);
-  object.verseShadowOffsetY = reader.readDouble(offsets[203]);
-  object.verseShadowRadius = reader.readDouble(offsets[204]);
-  object.verseStrokeColor = reader.readLong(offsets[205]);
-  object.verseStrokeWidth = reader.readDouble(offsets[206]);
-  object.verseUnderline = reader.readBool(offsets[207]);
-  object.verseVerticalAlignment = reader.readString(offsets[208]);
-  object.windowAspectRatio = reader.readString(offsets[209]);
-  object.windowBackgroundColor = reader.readLong(offsets[210]);
-  object.windowBackgroundImage = reader.readString(offsets[211]);
-  object.windowBackgroundImageAlignment = reader.readString(offsets[212]);
-  object.windowBackgroundImageLayout = reader.readString(offsets[213]);
-  object.windowCustomHeight = reader.readDouble(offsets[214]);
-  object.windowCustomWidth = reader.readDouble(offsets[215]);
+  object.isBlankImageEnabled = reader.readBool(offsets[69]);
+  object.isBlankTransparent = reader.readBool(offsets[70]);
+  object.isDefault = reader.readBool(offsets[71]);
+  object.isDualScriptureImageEnabled = reader.readBool(offsets[72]);
+  object.isDualScriptureTransparent = reader.readBool(offsets[73]);
+  object.isScriptureImageEnabled = reader.readBool(offsets[74]);
+  object.isScriptureTransparent = reader.readBool(offsets[75]);
+  object.isSongImageEnabled = reader.readBool(offsets[76]);
+  object.isSongTransparent = reader.readBool(offsets[77]);
+  object.isWindowImageEnabled = reader.readBool(offsets[78]);
+  object.isWindowTransparent = reader.readBool(offsets[79]);
+  object.lyricsAlignment = reader.readString(offsets[80]);
+  object.lyricsBold = reader.readBool(offsets[81]);
+  object.lyricsFillColor = reader.readLong(offsets[82]);
+  object.lyricsFontColor = reader.readLong(offsets[83]);
+  object.lyricsFontFamily = reader.readString(offsets[84]);
+  object.lyricsFontSize = reader.readDouble(offsets[85]);
+  object.lyricsHasFill = reader.readBool(offsets[86]);
+  object.lyricsHasShadow = reader.readBool(offsets[87]);
+  object.lyricsHasStroke = reader.readBool(offsets[88]);
+  object.lyricsItalic = reader.readBool(offsets[89]);
+  object.lyricsLineBreak = reader.readBool(offsets[90]);
+  object.lyricsLineHeight = reader.readDouble(offsets[91]);
+  object.lyricsMarginBottom = reader.readDouble(offsets[92]);
+  object.lyricsMarginLeft = reader.readDouble(offsets[93]);
+  object.lyricsMarginRight = reader.readDouble(offsets[94]);
+  object.lyricsMarginTop = reader.readDouble(offsets[95]);
+  object.lyricsShadowColor = reader.readLong(offsets[96]);
+  object.lyricsShadowOffsetX = reader.readDouble(offsets[97]);
+  object.lyricsShadowOffsetY = reader.readDouble(offsets[98]);
+  object.lyricsShadowRadius = reader.readDouble(offsets[99]);
+  object.lyricsStrokeColor = reader.readLong(offsets[100]);
+  object.lyricsStrokeWidth = reader.readDouble(offsets[101]);
+  object.lyricsUnderline = reader.readBool(offsets[102]);
+  object.lyricsVerticalAlignment = reader.readString(offsets[103]);
+  object.presetName = reader.readString(offsets[104]);
+  object.primaryVerseAlignment = reader.readString(offsets[105]);
+  object.primaryVerseBold = reader.readBool(offsets[106]);
+  object.primaryVerseFillColor = reader.readLong(offsets[107]);
+  object.primaryVerseFontColor = reader.readLong(offsets[108]);
+  object.primaryVerseFontFamily = reader.readString(offsets[109]);
+  object.primaryVerseFontSize = reader.readDouble(offsets[110]);
+  object.primaryVerseHasFill = reader.readBool(offsets[111]);
+  object.primaryVerseHasShadow = reader.readBool(offsets[112]);
+  object.primaryVerseHasStroke = reader.readBool(offsets[113]);
+  object.primaryVerseItalic = reader.readBool(offsets[114]);
+  object.primaryVerseLineHeight = reader.readDouble(offsets[115]);
+  object.primaryVerseMarginBottom = reader.readDouble(offsets[116]);
+  object.primaryVerseMarginLeft = reader.readDouble(offsets[117]);
+  object.primaryVerseMarginRight = reader.readDouble(offsets[118]);
+  object.primaryVerseMarginTop = reader.readDouble(offsets[119]);
+  object.primaryVerseShadowColor = reader.readLong(offsets[120]);
+  object.primaryVerseShadowOffsetX = reader.readDouble(offsets[121]);
+  object.primaryVerseShadowOffsetY = reader.readDouble(offsets[122]);
+  object.primaryVerseShadowRadius = reader.readDouble(offsets[123]);
+  object.primaryVerseStrokeColor = reader.readLong(offsets[124]);
+  object.primaryVerseStrokeWidth = reader.readDouble(offsets[125]);
+  object.primaryVerseUnderline = reader.readBool(offsets[126]);
+  object.primaryVerseVerticalAlignment = reader.readString(offsets[127]);
+  object.scriptureAspectRatio = reader.readString(offsets[128]);
+  object.scriptureBackgroundColor = reader.readLong(offsets[129]);
+  object.scriptureBackgroundImage = reader.readString(offsets[130]);
+  object.scriptureBackgroundImageAlignment = reader.readString(offsets[131]);
+  object.scriptureBackgroundImageLayout = reader.readString(offsets[132]);
+  object.scriptureCustomHeight = reader.readDouble(offsets[133]);
+  object.scriptureCustomWidth = reader.readDouble(offsets[134]);
+  object.secVerseAlignment = reader.readString(offsets[135]);
+  object.secVerseBold = reader.readBool(offsets[136]);
+  object.secVerseFillColor = reader.readLong(offsets[137]);
+  object.secVerseFontColor = reader.readLong(offsets[138]);
+  object.secVerseFontFamily = reader.readString(offsets[139]);
+  object.secVerseFontSize = reader.readDouble(offsets[140]);
+  object.secVerseHasFill = reader.readBool(offsets[141]);
+  object.secVerseHasShadow = reader.readBool(offsets[142]);
+  object.secVerseHasStroke = reader.readBool(offsets[143]);
+  object.secVerseItalic = reader.readBool(offsets[144]);
+  object.secVerseLineHeight = reader.readDouble(offsets[145]);
+  object.secVerseMarginBottom = reader.readDouble(offsets[146]);
+  object.secVerseMarginLeft = reader.readDouble(offsets[147]);
+  object.secVerseMarginRight = reader.readDouble(offsets[148]);
+  object.secVerseMarginTop = reader.readDouble(offsets[149]);
+  object.secVerseShadowColor = reader.readLong(offsets[150]);
+  object.secVerseShadowOffsetX = reader.readDouble(offsets[151]);
+  object.secVerseShadowOffsetY = reader.readDouble(offsets[152]);
+  object.secVerseShadowRadius = reader.readDouble(offsets[153]);
+  object.secVerseStrokeColor = reader.readLong(offsets[154]);
+  object.secVerseStrokeWidth = reader.readDouble(offsets[155]);
+  object.secVerseUnderline = reader.readBool(offsets[156]);
+  object.secVerseVerticalAlignment = reader.readString(offsets[157]);
+  object.showTitle = reader.readBool(offsets[158]);
+  object.songAspectRatio = reader.readString(offsets[159]);
+  object.songBackgroundColor = reader.readLong(offsets[160]);
+  object.songBackgroundImage = reader.readString(offsets[161]);
+  object.songBackgroundImageAlignment = reader.readString(offsets[162]);
+  object.songBackgroundImageLayout = reader.readString(offsets[163]);
+  object.songCustomHeight = reader.readDouble(offsets[164]);
+  object.songCustomWidth = reader.readDouble(offsets[165]);
+  object.syncId = reader.readString(offsets[166]);
+  object.titleAlignment = reader.readString(offsets[167]);
+  object.titleBold = reader.readBool(offsets[168]);
+  object.titleFillColor = reader.readLong(offsets[169]);
+  object.titleFontColor = reader.readLong(offsets[170]);
+  object.titleFontFamily = reader.readString(offsets[171]);
+  object.titleFontSize = reader.readDouble(offsets[172]);
+  object.titleHasFill = reader.readBool(offsets[173]);
+  object.titleHasShadow = reader.readBool(offsets[174]);
+  object.titleHasStroke = reader.readBool(offsets[175]);
+  object.titleItalic = reader.readBool(offsets[176]);
+  object.titleLineHeight = reader.readDouble(offsets[177]);
+  object.titleMarginBottom = reader.readDouble(offsets[178]);
+  object.titleMarginLeft = reader.readDouble(offsets[179]);
+  object.titleMarginRight = reader.readDouble(offsets[180]);
+  object.titleMarginTop = reader.readDouble(offsets[181]);
+  object.titleShadowColor = reader.readLong(offsets[182]);
+  object.titleShadowOffsetX = reader.readDouble(offsets[183]);
+  object.titleShadowOffsetY = reader.readDouble(offsets[184]);
+  object.titleShadowRadius = reader.readDouble(offsets[185]);
+  object.titleStrokeColor = reader.readLong(offsets[186]);
+  object.titleStrokeWidth = reader.readDouble(offsets[187]);
+  object.titleUnderline = reader.readBool(offsets[188]);
+  object.titleVerticalAlignment = reader.readString(offsets[189]);
+  object.verseAlignment = reader.readString(offsets[190]);
+  object.verseBold = reader.readBool(offsets[191]);
+  object.verseFillColor = reader.readLong(offsets[192]);
+  object.verseFontColor = reader.readLong(offsets[193]);
+  object.verseFontFamily = reader.readString(offsets[194]);
+  object.verseFontSize = reader.readDouble(offsets[195]);
+  object.verseHasFill = reader.readBool(offsets[196]);
+  object.verseHasShadow = reader.readBool(offsets[197]);
+  object.verseHasStroke = reader.readBool(offsets[198]);
+  object.verseItalic = reader.readBool(offsets[199]);
+  object.verseLineHeight = reader.readDouble(offsets[200]);
+  object.verseMarginBottom = reader.readDouble(offsets[201]);
+  object.verseMarginLeft = reader.readDouble(offsets[202]);
+  object.verseMarginRight = reader.readDouble(offsets[203]);
+  object.verseMarginTop = reader.readDouble(offsets[204]);
+  object.verseShadowColor = reader.readLong(offsets[205]);
+  object.verseShadowOffsetX = reader.readDouble(offsets[206]);
+  object.verseShadowOffsetY = reader.readDouble(offsets[207]);
+  object.verseShadowRadius = reader.readDouble(offsets[208]);
+  object.verseStrokeColor = reader.readLong(offsets[209]);
+  object.verseStrokeWidth = reader.readDouble(offsets[210]);
+  object.verseUnderline = reader.readBool(offsets[211]);
+  object.verseVerticalAlignment = reader.readString(offsets[212]);
+  object.windowAspectRatio = reader.readString(offsets[213]);
+  object.windowBackgroundColor = reader.readLong(offsets[214]);
+  object.windowBackgroundImage = reader.readString(offsets[215]);
+  object.windowBackgroundImageAlignment = reader.readString(offsets[216]);
+  object.windowBackgroundImageLayout = reader.readString(offsets[217]);
+  object.windowCustomHeight = reader.readDouble(offsets[218]);
+  object.windowCustomWidth = reader.readDouble(offsets[219]);
   return object;
 }
 
@@ -1692,91 +1720,91 @@ P _presentationSettingsDeserializeProp<P>(
     case 25:
       return (reader.readDouble(offset)) as P;
     case 26:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 27:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 28:
       return (reader.readBool(offset)) as P;
     case 29:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 30:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 31:
       return (reader.readBool(offset)) as P;
     case 32:
-      return (reader.readLong(offset)) as P;
-    case 33:
-      return (reader.readLong(offset)) as P;
-    case 34:
       return (reader.readString(offset)) as P;
+    case 33:
+      return (reader.readString(offset)) as P;
+    case 34:
+      return (reader.readBool(offset)) as P;
     case 35:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 36:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 37:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 38:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 39:
       return (reader.readBool(offset)) as P;
     case 40:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 41:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 42:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 43:
       return (reader.readDouble(offset)) as P;
     case 44:
       return (reader.readDouble(offset)) as P;
     case 45:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 46:
       return (reader.readDouble(offset)) as P;
     case 47:
       return (reader.readDouble(offset)) as P;
     case 48:
-      return (reader.readDouble(offset)) as P;
-    case 49:
       return (reader.readLong(offset)) as P;
+    case 49:
+      return (reader.readDouble(offset)) as P;
     case 50:
       return (reader.readDouble(offset)) as P;
     case 51:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 52:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 53:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 54:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 55:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 56:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 57:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 58:
-      return (reader.readDouble(offset)) as P;
-    case 59:
-      return (reader.readDouble(offset)) as P;
-    case 60:
       return (reader.readString(offset)) as P;
+    case 59:
+      return (reader.readString(offset)) as P;
+    case 60:
+      return (reader.readLong(offset)) as P;
     case 61:
       return (reader.readString(offset)) as P;
     case 62:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 63:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 64:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 65:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 66:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 67:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 68:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 69:
       return (reader.readBool(offset)) as P;
     case 70:
@@ -1788,39 +1816,39 @@ P _presentationSettingsDeserializeProp<P>(
     case 73:
       return (reader.readBool(offset)) as P;
     case 74:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 75:
       return (reader.readBool(offset)) as P;
     case 76:
-      return (reader.readLong(offset)) as P;
-    case 77:
-      return (reader.readLong(offset)) as P;
-    case 78:
-      return (reader.readString(offset)) as P;
-    case 79:
-      return (reader.readDouble(offset)) as P;
-    case 80:
       return (reader.readBool(offset)) as P;
+    case 77:
+      return (reader.readBool(offset)) as P;
+    case 78:
+      return (reader.readBool(offset)) as P;
+    case 79:
+      return (reader.readBool(offset)) as P;
+    case 80:
+      return (reader.readString(offset)) as P;
     case 81:
       return (reader.readBool(offset)) as P;
     case 82:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 83:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 84:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 85:
       return (reader.readDouble(offset)) as P;
     case 86:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 87:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 88:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 89:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 90:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 91:
       return (reader.readDouble(offset)) as P;
     case 92:
@@ -1828,47 +1856,47 @@ P _presentationSettingsDeserializeProp<P>(
     case 93:
       return (reader.readDouble(offset)) as P;
     case 94:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 95:
       return (reader.readDouble(offset)) as P;
     case 96:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 97:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 98:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 99:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 100:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 101:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 102:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 103:
       return (reader.readString(offset)) as P;
     case 104:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 105:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 106:
       return (reader.readBool(offset)) as P;
     case 107:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 108:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 109:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 110:
       return (reader.readDouble(offset)) as P;
     case 111:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 112:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 113:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 114:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 115:
       return (reader.readDouble(offset)) as P;
     case 116:
@@ -1876,59 +1904,59 @@ P _presentationSettingsDeserializeProp<P>(
     case 117:
       return (reader.readDouble(offset)) as P;
     case 118:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 119:
       return (reader.readDouble(offset)) as P;
     case 120:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 121:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 122:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 123:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 124:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 125:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 126:
-      return (reader.readString(offset)) as P;
-    case 127:
-      return (reader.readDouble(offset)) as P;
-    case 128:
-      return (reader.readDouble(offset)) as P;
-    case 129:
-      return (reader.readString(offset)) as P;
-    case 130:
       return (reader.readBool(offset)) as P;
-    case 131:
-      return (reader.readLong(offset)) as P;
-    case 132:
-      return (reader.readLong(offset)) as P;
-    case 133:
+    case 127:
       return (reader.readString(offset)) as P;
+    case 128:
+      return (reader.readString(offset)) as P;
+    case 129:
+      return (reader.readLong(offset)) as P;
+    case 130:
+      return (reader.readString(offset)) as P;
+    case 131:
+      return (reader.readString(offset)) as P;
+    case 132:
+      return (reader.readString(offset)) as P;
+    case 133:
+      return (reader.readDouble(offset)) as P;
     case 134:
       return (reader.readDouble(offset)) as P;
     case 135:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 136:
       return (reader.readBool(offset)) as P;
     case 137:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 138:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 139:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 140:
       return (reader.readDouble(offset)) as P;
     case 141:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 142:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 143:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 144:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 145:
       return (reader.readDouble(offset)) as P;
     case 146:
@@ -1936,67 +1964,67 @@ P _presentationSettingsDeserializeProp<P>(
     case 147:
       return (reader.readDouble(offset)) as P;
     case 148:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 149:
       return (reader.readDouble(offset)) as P;
     case 150:
-      return (reader.readBool(offset)) as P;
-    case 151:
-      return (reader.readString(offset)) as P;
-    case 152:
-      return (reader.readBool(offset)) as P;
-    case 153:
-      return (reader.readBool(offset)) as P;
-    case 154:
-      return (reader.readBool(offset)) as P;
-    case 155:
-      return (reader.readString(offset)) as P;
-    case 156:
       return (reader.readLong(offset)) as P;
+    case 151:
+      return (reader.readDouble(offset)) as P;
+    case 152:
+      return (reader.readDouble(offset)) as P;
+    case 153:
+      return (reader.readDouble(offset)) as P;
+    case 154:
+      return (reader.readLong(offset)) as P;
+    case 155:
+      return (reader.readDouble(offset)) as P;
+    case 156:
+      return (reader.readBool(offset)) as P;
     case 157:
       return (reader.readString(offset)) as P;
     case 158:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 159:
       return (reader.readString(offset)) as P;
     case 160:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 161:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 162:
       return (reader.readString(offset)) as P;
     case 163:
       return (reader.readString(offset)) as P;
     case 164:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 165:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 166:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 167:
       return (reader.readString(offset)) as P;
     case 168:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 169:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 170:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 171:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 172:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 173:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 174:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 175:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 176:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 177:
       return (reader.readDouble(offset)) as P;
     case 178:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 179:
       return (reader.readDouble(offset)) as P;
     case 180:
@@ -2008,41 +2036,41 @@ P _presentationSettingsDeserializeProp<P>(
     case 183:
       return (reader.readDouble(offset)) as P;
     case 184:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 185:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 186:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 187:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 188:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 189:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 190:
       return (reader.readString(offset)) as P;
     case 191:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 192:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 193:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 194:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 195:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 196:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 197:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 198:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 199:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 200:
       return (reader.readDouble(offset)) as P;
     case 201:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 202:
       return (reader.readDouble(offset)) as P;
     case 203:
@@ -2054,22 +2082,30 @@ P _presentationSettingsDeserializeProp<P>(
     case 206:
       return (reader.readDouble(offset)) as P;
     case 207:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 208:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 209:
-      return (reader.readString(offset)) as P;
-    case 210:
       return (reader.readLong(offset)) as P;
+    case 210:
+      return (reader.readDouble(offset)) as P;
     case 211:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 212:
       return (reader.readString(offset)) as P;
     case 213:
       return (reader.readString(offset)) as P;
     case 214:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 215:
+      return (reader.readString(offset)) as P;
+    case 216:
+      return (reader.readString(offset)) as P;
+    case 217:
+      return (reader.readString(offset)) as P;
+    case 218:
+      return (reader.readDouble(offset)) as P;
+    case 219:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -4107,6 +4143,36 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShowActualEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShowActual',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShowAliasEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShowAlias',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> chapterShowNoneEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chapterShowNone',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> chapterStrokeColorEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -5463,6 +5529,36 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> dualChapterShowActualEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dualChapterShowActual',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> dualChapterShowAliasEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dualChapterShowAlias',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings,
+      QAfterFilterCondition> dualChapterShowNoneEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dualChapterShowNone',
+        value: value,
       ));
     });
   }
@@ -11977,26 +12073,6 @@ extension PresentationSettingsQueryFilter on QueryBuilder<PresentationSettings,
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings,
-      QAfterFilterCondition> showChapterEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'showChapter',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings,
-      QAfterFilterCondition> showDualChapterEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'showDualChapter',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings,
       QAfterFilterCondition> showTitleEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -16727,6 +16803,48 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowActual', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowActualDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowActual', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowAlias', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowAliasDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowAlias', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowNone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByChapterShowNoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowNone', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.asc);
@@ -17045,6 +17163,48 @@ extension PresentationSettingsQuerySortBy
       sortByDualChapterShadowRadiusDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dualChapterShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowActual', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowActualDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowActual', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowAlias', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowAliasDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowAlias', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowNone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      sortByDualChapterShowNoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowNone', Sort.desc);
     });
   }
 
@@ -18493,34 +18653,6 @@ extension PresentationSettingsQuerySortBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      sortByShowChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showChapter', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      sortByShowChapterDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showChapter', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      sortByShowDualChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showDualChapter', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      sortByShowDualChapterDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showDualChapter', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       sortByShowTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'showTitle', Sort.asc);
@@ -19756,6 +19888,48 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowActual', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowActualDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowActual', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowAlias', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowAliasDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowAlias', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowNone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByChapterShowNoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chapterShowNone', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'chapterStrokeColor', Sort.asc);
@@ -20074,6 +20248,48 @@ extension PresentationSettingsQuerySortThenBy
       thenByDualChapterShadowRadiusDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dualChapterShadowRadius', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowActual', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowActualDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowActual', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowAlias', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowAliasDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowAlias', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowNone', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
+      thenByDualChapterShowNoneDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dualChapterShowNone', Sort.desc);
     });
   }
 
@@ -21536,34 +21752,6 @@ extension PresentationSettingsQuerySortThenBy
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      thenByShowChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showChapter', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      thenByShowChapterDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showChapter', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      thenByShowDualChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showDualChapter', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
-      thenByShowDualChapterDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showDualChapter', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QAfterSortBy>
       thenByShowTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'showTitle', Sort.asc);
@@ -22623,6 +22811,27 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShowActual');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShowAlias');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chapterShowNone');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByChapterStrokeColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'chapterStrokeColor');
@@ -22783,6 +22992,27 @@ extension PresentationSettingsQueryWhereDistinct
       distinctByDualChapterShadowRadius() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dualChapterShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByDualChapterShowActual() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dualChapterShowActual');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByDualChapterShowAlias() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dualChapterShowAlias');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
+      distinctByDualChapterShowNone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dualChapterShowNone');
     });
   }
 
@@ -23530,20 +23760,6 @@ extension PresentationSettingsQueryWhereDistinct
   }
 
   QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
-      distinctByShowChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'showChapter');
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
-      distinctByShowDualChapter() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'showDualChapter');
-    });
-  }
-
-  QueryBuilder<PresentationSettings, PresentationSettings, QDistinct>
       distinctByShowTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'showTitle');
@@ -24182,6 +24398,27 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      chapterShowActualProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShowActual');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      chapterShowAliasProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShowAlias');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      chapterShowNoneProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chapterShowNone');
+    });
+  }
+
   QueryBuilder<PresentationSettings, int, QQueryOperations>
       chapterStrokeColorProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -24340,6 +24577,27 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       dualChapterShadowRadiusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dualChapterShadowRadius');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      dualChapterShowActualProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dualChapterShowActual');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      dualChapterShowAliasProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dualChapterShowAlias');
+    });
+  }
+
+  QueryBuilder<PresentationSettings, bool, QQueryOperations>
+      dualChapterShowNoneProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dualChapterShowNone');
     });
   }
 
@@ -25061,20 +25319,6 @@ extension PresentationSettingsQueryProperty on QueryBuilder<
       secVerseVerticalAlignmentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'secVerseVerticalAlignment');
-    });
-  }
-
-  QueryBuilder<PresentationSettings, bool, QQueryOperations>
-      showChapterProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'showChapter');
-    });
-  }
-
-  QueryBuilder<PresentationSettings, bool, QQueryOperations>
-      showDualChapterProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'showDualChapter');
     });
   }
 

@@ -263,6 +263,9 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final targetChapter = targetVerses.first.chapterNumber;
     final newTitle = '$targetBook $targetChapter:$verseRange ${version.abbreviation}';
 
+    final normBookName = BibleConstants.normalizeBookName(targetBook) ?? targetBook;
+    final bkAlias = version.bookNameMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
+
     final lyricsBuffer = StringBuffer();
     for (final v in targetVerses) {
       lyricsBuffer.writeln('[${v.verseNumber}]');
@@ -273,7 +276,8 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final mockSong = Song()
       ..title = newTitle
       ..author = 'Bible'
-      ..lyrics = lyricsBuffer.toString().trim();
+      ..lyrics = lyricsBuffer.toString().trim()
+      ..bookAlias = bkAlias;
 
     final insertAt = ref.read(setlistProvider.notifier).insertSong(
       mockSong,

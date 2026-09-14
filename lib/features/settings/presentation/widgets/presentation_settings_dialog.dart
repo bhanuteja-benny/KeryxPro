@@ -718,10 +718,22 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                       const Text('Chapter Header', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                       const Spacer(),
                       Checkbox(
-                        value: settings.showDualChapter,
-                        onChanged: (v) => notifier.updateShowDualChapter(v ?? true),
+                        value: !settings.dualChapterShowNone && settings.dualChapterShowActual,
+                        onChanged: settings.dualChapterShowNone ? null : (v) => notifier.updateDualScriptureChapterOptions(actual: v ?? false),
                       ),
-                      const Text('Show Chapter'),
+                      const Text('Actual'),
+                      const SizedBox(width: 4),
+                      Checkbox(
+                        value: !settings.dualChapterShowNone && settings.dualChapterShowAlias,
+                        onChanged: settings.dualChapterShowNone ? null : (v) => notifier.updateDualScriptureChapterOptions(alias: v ?? false),
+                      ),
+                      const Text('Alias'),
+                      const SizedBox(width: 4),
+                      Checkbox(
+                        value: settings.dualChapterShowNone,
+                        onChanged: (v) => notifier.updateDualScriptureChapterOptions(none: v ?? false),
+                      ),
+                      const Text('None'),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -987,7 +999,6 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final notifier = ref.read(editingPresetProvider.notifier);
     final isSong = _editTabIndex == 0;
     
-    final showTitle = isSong ? settings.showTitle : settings.showChapter;
     final alignment = isSong ? settings.titleAlignment : settings.chapterAlignment;
     final valignment = isSong ? settings.titleVerticalAlignment : settings.chapterVerticalAlignment;
     
@@ -1018,6 +1029,32 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (!isSong) ...[
+          Row(
+            children: [
+              const Text('Show Chapter:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              const Spacer(),
+              Checkbox(
+                value: !settings.chapterShowNone && settings.chapterShowActual,
+                onChanged: settings.chapterShowNone ? null : (v) => notifier.updateScriptureChapterOptions(actual: v ?? false),
+              ),
+              const Text('Actual'),
+              const SizedBox(width: 4),
+              Checkbox(
+                value: !settings.chapterShowNone && settings.chapterShowAlias,
+                onChanged: settings.chapterShowNone ? null : (v) => notifier.updateScriptureChapterOptions(alias: v ?? false),
+              ),
+              const Text('Alias'),
+              const SizedBox(width: 4),
+              Checkbox(
+                value: settings.chapterShowNone,
+                onChanged: (v) => notifier.updateScriptureChapterOptions(none: v ?? false),
+              ),
+              const Text('None'),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
         Expanded(
           child: InkWell(
             onTap: () {
@@ -1106,20 +1143,20 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
                 notifier.updateChapterMargins(top: t, bottom: b, left: l, right: r);
               }
             }),
-            const Spacer(),
-            Row(
-              children: [
-                Checkbox(
-                  value: showTitle,
-                  onChanged: (v) {
-                    if (v != null) {
-                      if (isSong) notifier.updateShowTitle(v); else notifier.updateShowChapter(v);
-                    }
-                  },
-                ),
-                Text(isSong ? 'Title' : 'Chapter'),
-              ],
-            ),
+            if (isSong) ...[
+              const Spacer(),
+              Row(
+                children: [
+                  Checkbox(
+                    value: settings.showTitle,
+                    onChanged: (v) {
+                      if (v != null) notifier.updateShowTitle(v);
+                    },
+                  ),
+                  const Text('Title'),
+                ],
+              ),
+            ],
           ],
         ),
       ],
@@ -1955,7 +1992,23 @@ class _PresentationSettingsDialogState extends ConsumerState<PresentationSetting
     final isBlank = _editTabIndex == 3;
     final isWindow = _editTabIndex == 4;
 
-    final previewTitle = isSong ? "Amazing Grace" : "John 3:16";
+    final String previewTitle;
+    if (isSong) {
+      previewTitle = "Amazing Grace";
+    } else {
+      final showActual = isDual ? settings.dualChapterShowActual : settings.chapterShowActual;
+      final showAlias = isDual ? settings.dualChapterShowAlias : settings.chapterShowAlias;
+      final showNone = isDual ? settings.dualChapterShowNone : settings.chapterShowNone;
+      if (showNone) {
+        previewTitle = "";
+      } else if (showActual && showAlias) {
+        previewTitle = "John (యోహాను) 3:16";
+      } else if (showAlias) {
+        previewTitle = "యోహాను 3:16";
+      } else {
+        previewTitle = "John 3:16";
+      }
+    }
     final previewText = isBlank
         ? ""
         : (isWindow

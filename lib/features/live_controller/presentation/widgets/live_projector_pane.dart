@@ -128,7 +128,7 @@ class _Monitor1View extends ConsumerWidget {
     final projectionState = ref.watch(projectionProvider);
     final presetsAsync = ref.watch(presetsListProvider);
     final activeSlideText = ref.watch(m1ActiveSlideProvider);
-    final activeTitle = ref.watch(activeTitleProvider);
+    final activeTitle = ref.watch(m1ActiveTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
     final isDualVersion = ref.watch(isDualVersionActiveProvider);
     final isFrozen = ref.watch(isLiveScreenFrozenProvider);
@@ -293,7 +293,7 @@ class _Monitor2View extends ConsumerWidget {
     final projectionState = ref.watch(projectionProvider);
     final presetsAsync = ref.watch(presetsListProvider);
     final activeSlideText = ref.watch(m2ActiveSlideProvider);
-    final activeTitle = ref.watch(activeTitleProvider);
+    final activeTitle = ref.watch(m2ActiveTitleProvider);
     final isSong = ref.watch(isSongActiveProvider);
     final isDualVersion = ref.watch(isDualVersionActiveProvider);
     final isFrozen = ref.watch(isLiveScreenFrozenProvider);

@@ -211,7 +211,7 @@ class ProjectorView extends ConsumerWidget {
           ]
         : null;
 
-    final showTitle = isSong ? settings.showTitle : settings.showChapter;
+    final showTitle = isSong ? settings.showTitle : !settings.chapterShowNone;
     final titleHorizontalStr = isSong ? settings.titleAlignment : settings.chapterAlignment;
     final titleVerticalStr = isSong ? settings.titleVerticalAlignment : settings.chapterVerticalAlignment;
     
@@ -395,7 +395,7 @@ class ProjectorView extends ConsumerWidget {
                 ),
 
               // Title Layer
-              if (showTitle && titleText != null && !isImageSlide && !isWindowSlide)
+              if ((isSong ? (showTitle && titleText != null && titleText!.isNotEmpty) : (titleText != null && titleText!.isNotEmpty)) && !isImageSlide && !isWindowSlide)
                 Align(
                   alignment: _getAlignmentGeometry(titleHorizontalStr, titleVerticalStr),
                   child: Padding(
@@ -575,7 +575,7 @@ class ProjectorView extends ConsumerWidget {
               ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)
               : Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
         ),
-        if (settings.showDualChapter && titleText != null && titleText!.isNotEmpty)
+        if (titleText != null && titleText!.isNotEmpty && !settings.dualChapterShowNone)
           Align(
             alignment: _getAlignmentGeometry(settings.dualChapterAlignment, settings.dualChapterVerticalAlignment),
             child: Container(

@@ -116,6 +116,7 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
 
   Future<void> saveSettings() async {
     final isar = await _dbFuture;
+    state.sanitize();
     await isar.writeTxn(() async {
       await isar.presentationSettings.put(state);
     });
@@ -124,7 +125,7 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
     _ref.invalidate(presetsListProvider);
     
     final currentActive = _ref.read(presentationSettingsProvider);
-    if (currentActive.id == state.id) {
+    if (currentActive.id == state.id || currentActive.id == 0 || currentActive.id == 1) {
        _ref.read(presentationSettingsProvider.notifier).setActivePreset(state);
     }
   }
@@ -328,6 +329,30 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
 
   // Chapter Updates
   void updateShowChapter(bool show) => state = cloneState(state)..showChapter = show;
+  void updateScriptureChapterOptions({bool? actual, bool? alias, bool? none}) {
+    final s = cloneState(state);
+    if (none != null && none) {
+      s.chapterShowNone = true;
+      s.chapterShowActual = false;
+      s.chapterShowAlias = false;
+    } else if (none != null && !none) {
+      s.chapterShowNone = false;
+      if (actual != null) s.chapterShowActual = actual;
+      if (alias != null) s.chapterShowAlias = alias;
+      if (!s.chapterShowActual && !s.chapterShowAlias) {
+        s.chapterShowActual = true;
+      }
+    } else {
+      if (actual != null) s.chapterShowActual = actual;
+      if (alias != null) s.chapterShowAlias = alias;
+      if (!s.chapterShowActual && !s.chapterShowAlias) {
+        s.chapterShowNone = true;
+      } else {
+        s.chapterShowNone = false;
+      }
+    }
+    state = s;
+  }
   void updateChapterAlignment(String horizontal) => state = cloneState(state)..chapterAlignment = horizontal;
   void updateChapterVerticalAlignment(String vertical) => state = cloneState(state)..chapterVerticalAlignment = vertical;
   void updateChapterFontSize(double size) => state = cloneState(state)..chapterFontSize = size;
@@ -360,6 +385,30 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
 
   // Dual Chapter Updates
   void updateShowDualChapter(bool show) => state = cloneState(state)..showDualChapter = show;
+  void updateDualScriptureChapterOptions({bool? actual, bool? alias, bool? none}) {
+    final s = cloneState(state);
+    if (none != null && none) {
+      s.dualChapterShowNone = true;
+      s.dualChapterShowActual = false;
+      s.dualChapterShowAlias = false;
+    } else if (none != null && !none) {
+      s.dualChapterShowNone = false;
+      if (actual != null) s.dualChapterShowActual = actual;
+      if (alias != null) s.dualChapterShowAlias = alias;
+      if (!s.dualChapterShowActual && !s.dualChapterShowAlias) {
+        s.dualChapterShowActual = true;
+      }
+    } else {
+      if (actual != null) s.dualChapterShowActual = actual;
+      if (alias != null) s.dualChapterShowAlias = alias;
+      if (!s.dualChapterShowActual && !s.dualChapterShowAlias) {
+        s.dualChapterShowNone = true;
+      } else {
+        s.dualChapterShowNone = false;
+      }
+    }
+    state = s;
+  }
   void updateDualChapterAlignment(String horizontal) => state = cloneState(state)..dualChapterAlignment = horizontal;
   void updateDualChapterVerticalAlignment(String vertical) => state = cloneState(state)..dualChapterVerticalAlignment = vertical;
   void updateDualChapterFontSize(double size) => state = cloneState(state)..dualChapterFontSize = size;
@@ -584,7 +633,9 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..lyricsMarginLeft = src.lyricsMarginLeft
       ..lyricsMarginRight = src.lyricsMarginRight
       ..lyricsLineBreak = src.lyricsLineBreak
-      ..showChapter = src.showChapter
+      ..chapterShowActual = src.chapterShowActual
+      ..chapterShowAlias = src.chapterShowAlias
+      ..chapterShowNone = src.chapterShowNone
       ..chapterAlignment = src.chapterAlignment
       ..chapterVerticalAlignment = src.chapterVerticalAlignment
       ..chapterFontSize = src.chapterFontSize
@@ -631,7 +682,9 @@ class EditingPresetNotifier extends StateNotifier<PresentationSettings> {
       ..verseMarginBottom = src.verseMarginBottom
       ..verseMarginLeft = src.verseMarginLeft
       ..verseMarginRight = src.verseMarginRight
-      ..showDualChapter = src.showDualChapter
+      ..dualChapterShowActual = src.dualChapterShowActual
+      ..dualChapterShowAlias = src.dualChapterShowAlias
+      ..dualChapterShowNone = src.dualChapterShowNone
       ..dualChapterAlignment = src.dualChapterAlignment
       ..dualChapterVerticalAlignment = src.dualChapterVerticalAlignment
       ..dualChapterFontSize = src.dualChapterFontSize

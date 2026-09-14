@@ -35,6 +35,25 @@ class BibleConstants {
     'rev': 'Revelation',
   };
 
+  static const Map<String, String> defaultBookAliases = {
+    // OT
+    'Genesis': 'ఆదికాండము', 'Exodus': 'నిర్గమకాండము', 'Leviticus': 'లేవీయకాండము', 'Numbers': 'సంఖ్యాకాండము', 'Deuteronomy': 'ద్వితీయోపదేశకాండము',
+    'Joshua': 'యెహోషువ', 'Judges': 'న్యాయాధిపతులు', 'Ruth': 'రూతు', '1 Samuel': '1 సమూయేలు', '2 Samuel': '2 సమూయేలు',
+    '1 Kings': '1 రాజులు', '2 Kings': '2 రాజులు', '1 Chronicles': '1 దినవృత్తాంతములు', '2 Chronicles': '2 దినవృత్తాంతములు', 'Ezra': 'ఎజ్రా',
+    'Nehemiah': 'నెహెమ్యా', 'Esther': 'ఎస్తెరు', 'Job': 'యోబు', 'Psalms': 'కీర్తనలు', 'Proverbs': 'సామెతలు',
+    'Ecclesiastes': 'ప్రసంగి', 'Song of Solomon': 'పరమగీతము', 'Isaiah': 'యెషయా', 'Jeremiah': 'యిర్మియా', 'Lamentations': 'విలాపవాక్యములు',
+    'Ezekiel': 'యెహెజ్కేలు', 'Daniel': 'దానియేలు', 'Hosea': 'హోషేయ', 'Joel': 'యోవేలు', 'Amos': 'ఆమోసు',
+    'Obadiah': 'ఓబద్యా', 'Jonah': 'యోనా', 'Micah': 'మీకా', 'Nahum': 'నహూము', 'Habakkuk': 'హబక్కూకు',
+    'Zephaniah': 'జెఫన్యా', 'Haggai': 'హగ్గయి', 'Zechariah': 'జెకర్యా', 'Malachi': 'మలాకీ',
+    // NT
+    'Matthew': 'మత్తయి', 'Mark': 'మార్కు', 'Luke': 'లూకా', 'John': 'యోహాను', 'Acts': 'అపొస్తలుల కార్యములు',
+    'Romans': 'రోమీయులకు', '1 Corinthians': '1 కొరింథీయులకు', '2 Corinthians': '2 కొరింథీయులకు', 'Galatians': 'గలతీయులకు', 'Ephesians': 'ఎఫెసీయులకు',
+    'Philippians': 'ఫిలిప్పీయులకు', 'Colossians': 'కొలొస్సయులకు', '1 Thessalonians': '1 థెస్సలొనీకయులకు', '2 Thessalonians': '2 థెస్సలొనీకయులకు',
+    '1 Timothy': '1 తిమోతికి', '2 Timothy': '2 తిమోతికి', 'Titus': 'తీతుకు', 'Philemon': 'ఫిలేమోనుకు', 'Hebrews': 'హెబ్రీయులకు',
+    'James': 'యాకోబు', '1 Peter': '1 పేతురు', '2 Peter': '2 పేతురు', '1 John': '1 యోహాను', '2 John': '2 యోహాను',
+    '3 John': '3 యోహాను', 'Jude': 'యూదా', 'Revelation': 'ప్రకటన గ్రంథము',
+  };
+
   static String? normalizeBookName(String input) {
     String lower = input.toLowerCase().trim();
     String lowerNoSpace = lower.replaceAll(' ', '');
@@ -47,7 +66,14 @@ class BibleConstants {
       if (book.toLowerCase().replaceAll(' ', '') == lowerNoSpace) return book;
     }
 
-    // 2. Abbreviations map
+    // 2. Default book alias match (reverse lookup)
+    for (final entry in defaultBookAliases.entries) {
+      if (entry.value.toLowerCase().replaceAll(' ', '') == lowerNoSpace) {
+        return entry.key;
+      }
+    }
+
+    // 3. Abbreviations map
     if (bookAbbreviations.containsKey(lower)) {
       return bookAbbreviations[lower];
     }
@@ -57,7 +83,7 @@ class BibleConstants {
       }
     }
 
-    // 3. Prefix match
+    // 4. Prefix match
     for (String book in oldTestamentBooks) {
       if (book.toLowerCase().replaceAll(' ', '').startsWith(lowerNoSpace)) return book;
     }

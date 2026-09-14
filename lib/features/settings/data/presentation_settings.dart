@@ -81,7 +81,25 @@ bool isWindowTransparent = false;
   double dualScripturePrimaryRatio = 0.5; // 0.2 to 0.8
 
   // Chapter Settings (Dual Scripture)
-  bool showDualChapter = true;
+  bool dualChapterShowActual = true;
+  bool dualChapterShowAlias = false;
+  bool dualChapterShowNone = false;
+
+  @ignore
+  bool get showDualChapter => !dualChapterShowNone;
+  set showDualChapter(bool v) {
+    if (!v) {
+      dualChapterShowNone = true;
+      dualChapterShowActual = false;
+      dualChapterShowAlias = false;
+    } else {
+      dualChapterShowNone = false;
+      if (!dualChapterShowActual && !dualChapterShowAlias) {
+        dualChapterShowActual = true;
+      }
+    }
+  }
+
   String dualChapterAlignment = 'center';
   String dualChapterVerticalAlignment = 'bottom';
   double dualChapterFontSize = 24.0;
@@ -209,7 +227,25 @@ bool isWindowTransparent = false;
   double lyricsShadowRadius = 4.0;
 
   // Chapter Settings (Bible)
-  bool showChapter = true;
+  bool chapterShowActual = true;
+  bool chapterShowAlias = false;
+  bool chapterShowNone = false;
+
+  @ignore
+  bool get showChapter => !chapterShowNone;
+  set showChapter(bool v) {
+    if (!v) {
+      chapterShowNone = true;
+      chapterShowActual = false;
+      chapterShowAlias = false;
+    } else {
+      chapterShowNone = false;
+      if (!chapterShowActual && !chapterShowAlias) {
+        chapterShowActual = true;
+      }
+    }
+  }
+
   String chapterAlignment = 'center';
   String chapterVerticalAlignment = 'bottom';
   double chapterFontSize = 24.0;
@@ -363,6 +399,13 @@ bool isWindowTransparent = false;
     }
     if (presetName == 'Default') {
       isDefault = true;
+    }
+
+    if (!chapterShowActual && !chapterShowAlias && !chapterShowNone) {
+      chapterShowActual = true;
+    }
+    if (!dualChapterShowActual && !dualChapterShowAlias && !dualChapterShowNone) {
+      dualChapterShowActual = true;
     }
 
     if (songAspectRatio.isEmpty) songAspectRatio = '16:9';
@@ -525,6 +568,9 @@ bool isWindowTransparent = false;
       'lyricsMarginLeft': lyricsMarginLeft,
       'lyricsMarginRight': lyricsMarginRight,
       'lyricsLineBreak': lyricsLineBreak,
+      'chapterShowActual': chapterShowActual,
+      'chapterShowAlias': chapterShowAlias,
+      'chapterShowNone': chapterShowNone,
       'showChapter': showChapter,
       'chapterAlignment': chapterAlignment,
       'chapterVerticalAlignment': chapterVerticalAlignment,
@@ -572,6 +618,9 @@ bool isWindowTransparent = false;
       'verseMarginBottom': verseMarginBottom,
       'verseMarginLeft': verseMarginLeft,
       'verseMarginRight': verseMarginRight,
+      'dualChapterShowActual': dualChapterShowActual,
+      'dualChapterShowAlias': dualChapterShowAlias,
+      'dualChapterShowNone': dualChapterShowNone,
       'showDualChapter': showDualChapter,
       'dualChapterAlignment': dualChapterAlignment,
       'dualChapterVerticalAlignment': dualChapterVerticalAlignment,
@@ -747,7 +796,9 @@ bool isWindowTransparent = false;
       ..lyricsMarginLeft = (map['lyricsMarginLeft'] as num?)?.toDouble() ?? 32.0
       ..lyricsMarginRight = (map['lyricsMarginRight'] as num?)?.toDouble() ?? 32.0
       ..lyricsLineBreak = map['lyricsLineBreak'] as bool? ?? false
-      ..showChapter = map['showChapter'] as bool? ?? true
+      ..chapterShowActual = map['chapterShowActual'] as bool? ?? (map['showChapter'] as bool? ?? true)
+      ..chapterShowAlias = map['chapterShowAlias'] as bool? ?? false
+      ..chapterShowNone = map['chapterShowNone'] as bool? ?? !(map['showChapter'] as bool? ?? true)
       ..chapterAlignment = map['chapterAlignment'] as String? ?? 'center'
       ..chapterVerticalAlignment = map['chapterVerticalAlignment'] as String? ?? 'bottom'
       ..chapterFontSize = (map['chapterFontSize'] as num?)?.toDouble() ?? 24.0
@@ -794,7 +845,9 @@ bool isWindowTransparent = false;
       ..verseMarginBottom = (map['verseMarginBottom'] as num?)?.toDouble() ?? 32.0
       ..verseMarginLeft = (map['verseMarginLeft'] as num?)?.toDouble() ?? 32.0
       ..verseMarginRight = (map['verseMarginRight'] as num?)?.toDouble() ?? 32.0
-      ..showDualChapter = map['showDualChapter'] as bool? ?? true
+      ..dualChapterShowActual = map['dualChapterShowActual'] as bool? ?? (map['showDualChapter'] as bool? ?? true)
+      ..dualChapterShowAlias = map['dualChapterShowAlias'] as bool? ?? false
+      ..dualChapterShowNone = map['dualChapterShowNone'] as bool? ?? !(map['showDualChapter'] as bool? ?? true)
       ..dualChapterAlignment = map['dualChapterAlignment'] as String? ?? 'center'
       ..dualChapterVerticalAlignment = map['dualChapterVerticalAlignment'] as String? ?? 'bottom'
       ..dualChapterFontSize = (map['dualChapterFontSize'] as num?)?.toDouble() ?? 24.0

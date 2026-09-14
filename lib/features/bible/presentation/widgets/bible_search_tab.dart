@@ -619,12 +619,12 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
 
     final normBookName = BibleConstants.normalizeBookName(book) ?? book;
     final primaryMappings = version.bookNameMappings;
-    final bkAlias = primaryMappings[normBookName];
+    final bkAlias = primaryMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
 
     String? secBkAlias;
     if (isDual && secondaryVersion != null) {
       final secMappings = secondaryVersion.bookNameMappings;
-      secBkAlias = secMappings[normBookName];
+      secBkAlias = secMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
     }
 
     final mockSong = Song()
