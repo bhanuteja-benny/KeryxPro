@@ -232,11 +232,11 @@ String generateSetlistSignature(List<SetlistItem> items) {
   for (final item in items) {
     buffer.write(item.isFavorite ? '1' : '0');
     switch (item) {
-      case SongSetlistItem(:final song):
+      case SongSetlistItem(:final song, :final isEdited, :final customReference):
         if (song.author == 'Bible') {
-          buffer.write('scripture:${song.title};${song.isDualVersion ? '1' : '0'};${song.secondaryTitle ?? ''}|');
+          buffer.write('scripture:${song.title};${song.isDualVersion ? '1' : '0'};${song.secondaryTitle ?? ''};${song.lyrics};${song.secondaryLyrics ?? ''};$isEdited;${customReference ?? ''}|');
         } else {
-          buffer.write('song:${song.id}|');
+          buffer.write('song:${song.id};${song.title};${song.lyrics};$isEdited|');
         }
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
         buffer.write('img:$imagePath;$layout;$alignment|');

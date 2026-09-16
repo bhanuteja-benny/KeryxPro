@@ -22,7 +22,7 @@ class Song {
 
   String? backgroundUrl;
 
-  late DateTime lastModified;
+  DateTime lastModified = DateTime.now();
 
   @ignore
   bool isDualVersion = false;

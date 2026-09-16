@@ -1,0 +1,33 @@
+
+Phase 59 Plan
+
+Context: 
+- edit setlist items texts
+
+UI Requirement:
+- when right click on the setlist item, a context menu with one option 'edit' should be displayed
+- when user clicks on edit, it should open for edit
+- - for image item, open the 'add image' popup for editing
+- - for window slide item, open the 'add/edit window' popup for editing
+- - for song, open a popup with title and lyrics textboxes, and user should be able to edit and save
+- - for scripture, open a popup with reference (book chapter and verse number) and verse textboxes, and user should be able to edit and save
+- - for dual scripture, open a popup with reference (book chapter and verse number, here the presentation logic for chapter should be applied, i.e., Actual, Alias and None) and primary verse and secondary textboxes, and user should be able to edit and save
+- - these are only for setlist saving, those should not effect actual song or Bible.
+- - but those should be applied for slides, previews and live projections.
+
+UI Functionality:
+- Apply the edited texts to slides, previews and live projections.
+- in this case we can override the Actual, Alias or None chapter presentation settings, in slides, previews and live projections.
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+
+Deliverables:
+- Implementation Plan

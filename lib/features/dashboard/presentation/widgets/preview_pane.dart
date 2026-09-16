@@ -264,7 +264,7 @@ class _PreviewPaneState extends ConsumerState<PreviewPane> {
     final newTitle = '$targetBook $targetChapter:$verseRange ${version.abbreviation}';
 
     final normBookName = BibleConstants.normalizeBookName(targetBook) ?? targetBook;
-    final bkAlias = version.bookNameMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
+    final bkAlias = version.bookNameMappings[normBookName];
 
     final lyricsBuffer = StringBuffer();
     for (final v in targetVerses) {

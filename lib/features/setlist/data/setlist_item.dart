@@ -14,14 +14,30 @@ sealed class SetlistItem {
 
 class SongSetlistItem extends SetlistItem {
   final Song song;
-  SongSetlistItem(this.song, {super.uniqueId, super.isFavorite});
+  final bool isEdited;
+  final String? customReference;
+
+  SongSetlistItem(
+    this.song, {
+    super.uniqueId,
+    super.isFavorite,
+    this.isEdited = false,
+    this.customReference,
+  });
 
   @override
-  SongSetlistItem copyWith({bool? isFavorite}) {
+  SongSetlistItem copyWith({
+    bool? isFavorite,
+    bool? isEdited,
+    Song? song,
+    String? customReference,
+  }) {
     return SongSetlistItem(
-      song,
+      song ?? this.song,
       uniqueId: uniqueId,
       isFavorite: isFavorite ?? this.isFavorite,
+      isEdited: isEdited ?? this.isEdited,
+      customReference: customReference ?? this.customReference,
     );
   }
 }

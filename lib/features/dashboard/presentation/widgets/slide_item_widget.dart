@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../live_controller/domain/slide.dart';
+import '../../../live_controller/presentation/slide_utils.dart';
 
 class SlideItemWidget extends StatelessWidget {
   final Slide slide;
@@ -67,7 +68,7 @@ class SlideItemWidget extends StatelessWidget {
                         ),
                       Expanded(
                         child: Text(
-                          slide.displayTitle ?? slide.title,
+                          SlideUtils.formatSlideItemTitle(slide),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

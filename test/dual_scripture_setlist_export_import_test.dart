@@ -338,7 +338,7 @@ void main() {
       final sigDual = generateSetlistSignature([SongSetlistItem(dualSong)]);
 
       expect(sigSingle != sigDual, isTrue);
-      expect(sigDual.contains('scripture:Genesis 1:1;1;ఆదికాండము 1:1|'), isTrue);
+      expect(sigDual.contains('scripture:Genesis 1:1;1;ఆదికాండము 1:1'), isTrue);
     });
   });
 }

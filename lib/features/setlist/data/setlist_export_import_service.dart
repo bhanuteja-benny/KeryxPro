@@ -70,6 +70,10 @@ class SetlistExportImportService {
             bool isDual = false;
             String? secTitle;
             String? secLyrics;
+            String? bkAlias;
+            String? secBkAlias;
+            bool isEdited = false;
+            String? customReference;
             if (parts.length >= 3) {
               isDual = parts[2] == '1' || parts[2].toLowerCase() == 'true';
             }
@@ -78,6 +82,18 @@ class SetlistExportImportService {
             }
             if (parts.length >= 5 && parts[4].isNotEmpty) {
               secLyrics = _safeDecode(parts[4]);
+            }
+            if (parts.length >= 6 && parts[5].isNotEmpty) {
+              bkAlias = _safeDecode(parts[5]);
+            }
+            if (parts.length >= 7 && parts[6].isNotEmpty) {
+              secBkAlias = _safeDecode(parts[6]);
+            }
+            if (parts.length >= 8 && parts[7].isNotEmpty) {
+              isEdited = parts[7] == '1' || parts[7].toLowerCase() == 'true';
+            }
+            if (parts.length >= 9 && parts[8].isNotEmpty) {
+              customReference = _safeDecode(parts[8]);
             }
             if ((secTitle != null && secTitle.isNotEmpty) || (secLyrics != null && secLyrics.isNotEmpty)) {
               isDual = true;
@@ -88,6 +104,10 @@ class SetlistExportImportService {
               'isDualVersion': isDual,
               'secondaryTitle': secTitle,
               'secondaryLyrics': secLyrics,
+              'bookAlias': bkAlias,
+              'secondaryBookAlias': secBkAlias,
+              'isEdited': isEdited,
+              'customReference': customReference,
             });
           }
         }
@@ -216,7 +236,14 @@ class SetlistExportImportService {
     int scriptureCounter = 0;
 
     for (final entry in rawItemOrder) {
-      if (entry.startsWith('song:')) {
+      if (entry.startsWith('custom_song:')) {
+        final raw = entry.substring(12);
+        final parts = raw.split('|');
+        final oldId = int.tryParse(parts[0]);
+        final newId = (oldId != null && oldSongIdToNewSongId.containsKey(oldId)) ? oldSongIdToNewSongId[oldId] : oldId;
+        final rest = parts.sublist(1).join('|');
+        processedItemOrder.add('custom_song:$newId|$rest');
+      } else if (entry.startsWith('song:')) {
         final oldId = int.tryParse(entry.substring(5));
         if (oldId != null && oldSongIdToNewSongId.containsKey(oldId)) {
           processedItemOrder.add('song:${oldSongIdToNewSongId[oldId]}');
@@ -237,9 +264,13 @@ class SetlistExportImportService {
             final isDual = sc['isDualVersion'] == true;
             final secTitle = sc['secondaryTitle'] as String? ?? '';
             final secLyrics = sc['secondaryLyrics'] as String? ?? '';
+            final bkAlias = sc['bookAlias'] as String? ?? '';
+            final secBkAlias = sc['secondaryBookAlias'] as String? ?? '';
+            final isEdited = sc['isEdited'] == true;
+            final customRef = sc['customReference'] as String? ?? '';
             final hasSec = secTitle.isNotEmpty || secLyrics.isNotEmpty;
             processedItemOrder.add(
-              'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${(isDual || hasSec) ? '1' : '0'}|${Uri.encodeComponent(secTitle)}|${Uri.encodeComponent(secLyrics)}',
+              'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${(isDual || hasSec) ? '1' : '0'}|${Uri.encodeComponent(secTitle)}|${Uri.encodeComponent(secLyrics)}|${Uri.encodeComponent(bkAlias)}|${Uri.encodeComponent(secBkAlias)}|${isEdited ? '1' : '0'}|${Uri.encodeComponent(customRef)}',
             );
             continue;
           }
@@ -252,6 +283,10 @@ class SetlistExportImportService {
           bool isDual = false;
           String? secTitle;
           String? secLyrics;
+          String? bkAlias;
+          String? secBkAlias;
+          bool isEdited = false;
+          String? customReference;
 
           if (parts.length >= 3) {
             isDual = parts[2] == '1' || parts[2].toLowerCase() == 'true';
@@ -262,9 +297,21 @@ class SetlistExportImportService {
           if (parts.length >= 5 && parts[4].isNotEmpty) {
             secLyrics = _safeDecode(parts[4]);
           }
+          if (parts.length >= 6 && parts[5].isNotEmpty) {
+            bkAlias = _safeDecode(parts[5]);
+          }
+          if (parts.length >= 7 && parts[6].isNotEmpty) {
+            secBkAlias = _safeDecode(parts[6]);
+          }
+          if (parts.length >= 8 && parts[7].isNotEmpty) {
+            isEdited = parts[7] == '1' || parts[7].toLowerCase() == 'true';
+          }
+          if (parts.length >= 9 && parts[8].isNotEmpty) {
+            customReference = _safeDecode(parts[8]);
+          }
 
           // Check if scriptures array in JSON has richer dual version data for this entry
-          if ((!isDual || secTitle == null || secLyrics == null) && scriptureCounter < scripturesData.length) {
+          if (scriptureCounter < scripturesData.length) {
             final sc = scripturesData[scriptureCounter] is Map<String, dynamic>
                 ? scripturesData[scriptureCounter] as Map<String, dynamic>
                 : null;
@@ -276,6 +323,18 @@ class SetlistExportImportService {
               if ((secLyrics == null || secLyrics.isEmpty) && sc['secondaryLyrics'] != null) {
                 secLyrics = sc['secondaryLyrics'] as String;
               }
+              if (bkAlias == null && sc['bookAlias'] != null) {
+                bkAlias = sc['bookAlias'] as String;
+              }
+              if (secBkAlias == null && sc['secondaryBookAlias'] != null) {
+                secBkAlias = sc['secondaryBookAlias'] as String;
+              }
+              if (!isEdited && sc['isEdited'] == true) {
+                isEdited = true;
+              }
+              if (customReference == null && sc['customReference'] != null) {
+                customReference = sc['customReference'] as String;
+              }
             }
           }
           scriptureCounter++;
@@ -285,7 +344,7 @@ class SetlistExportImportService {
           }
 
           processedItemOrder.add(
-            'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${isDual ? '1' : '0'}|${Uri.encodeComponent(secTitle ?? '')}|${Uri.encodeComponent(secLyrics ?? '')}',
+            'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${isDual ? '1' : '0'}|${Uri.encodeComponent(secTitle ?? '')}|${Uri.encodeComponent(secLyrics ?? '')}|${Uri.encodeComponent(bkAlias ?? '')}|${Uri.encodeComponent(secBkAlias ?? '')}|${isEdited ? '1' : '0'}|${Uri.encodeComponent(customReference ?? '')}',
           );
         } else {
           processedItemOrder.add(entry);
@@ -304,9 +363,13 @@ class SetlistExportImportService {
           final isDual = rawSc['isDualVersion'] == true;
           final secTitle = rawSc['secondaryTitle'] as String? ?? '';
           final secLyrics = rawSc['secondaryLyrics'] as String? ?? '';
+          final bkAlias = rawSc['bookAlias'] as String? ?? '';
+          final secBkAlias = rawSc['secondaryBookAlias'] as String? ?? '';
+          final isEdited = rawSc['isEdited'] == true;
+          final customRef = rawSc['customReference'] as String? ?? '';
           final hasSec = secTitle.isNotEmpty || secLyrics.isNotEmpty;
           processedItemOrder.add(
-            'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${(isDual || hasSec) ? '1' : '0'}|${Uri.encodeComponent(secTitle)}|${Uri.encodeComponent(secLyrics)}',
+            'scripture:${Uri.encodeComponent(title)}|${Uri.encodeComponent(lyrics)}|${(isDual || hasSec) ? '1' : '0'}|${Uri.encodeComponent(secTitle)}|${Uri.encodeComponent(secLyrics)}|${Uri.encodeComponent(bkAlias)}|${Uri.encodeComponent(secBkAlias)}|${isEdited ? '1' : '0'}|${Uri.encodeComponent(customRef)}',
           );
         }
       }

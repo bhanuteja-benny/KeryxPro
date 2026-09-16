@@ -1,6 +1,96 @@
 import '../domain/slide.dart';
 
+class DualScriptureBookInfo {
+  final String actualBookName;
+  final String? aliasBookName;
+  const DualScriptureBookInfo({required this.actualBookName, this.aliasBookName});
+}
+
 class SlideUtils {
+  static bool isTextEnglish(String? text) {
+    if (text == null || text.trim().isEmpty) return true;
+    return RegExp(r'^[\x00-\x7F]+$').hasMatch(text.trim());
+  }
+
+  static DualScriptureBookInfo resolveDualBookNames({
+    required String primaryTitle,
+    String? primaryAlias,
+    String? secondaryTitle,
+    String? secondaryAlias,
+  }) {
+    final match1 = RegExp(r'^(.+?)(\s+\d+.*)$').firstMatch(primaryTitle.trim());
+    final primaryActual = match1 != null ? match1.group(1)! : primaryTitle.trim();
+
+    String? secondaryActual;
+    if (secondaryTitle != null && secondaryTitle.trim().isNotEmpty) {
+      final match2 = RegExp(r'^(.+?)(\s+\d+.*)$').firstMatch(secondaryTitle.trim());
+      secondaryActual = match2 != null ? match2.group(1)! : secondaryTitle.trim();
+    }
+
+    final pAlias = (primaryAlias != null && primaryAlias.trim().isNotEmpty) ? primaryAlias.trim() : null;
+    final sAlias = (secondaryAlias != null && secondaryAlias.trim().isNotEmpty) ? secondaryAlias.trim() : null;
+
+    // Case A: Neither has alias
+    if (pAlias == null && sAlias == null) {
+      return DualScriptureBookInfo(actualBookName: primaryActual, aliasBookName: null);
+    }
+
+    // Case B: Only one has alias (Probability 1)
+    if (pAlias != null && sAlias == null) {
+      return DualScriptureBookInfo(actualBookName: primaryActual, aliasBookName: pAlias);
+    }
+    if (pAlias == null && sAlias != null) {
+      return DualScriptureBookInfo(actualBookName: primaryActual, aliasBookName: sAlias);
+    }
+
+    // Case C: Both have alias
+    final bool isPEnglish = isTextEnglish(pAlias);
+    final bool isSEnglish = isTextEnglish(sAlias);
+
+    if (isPEnglish && isSEnglish) {
+      // Probability 2: Both English -> primary actual and primary alias
+      return DualScriptureBookInfo(actualBookName: primaryActual, aliasBookName: pAlias);
+    } else if (isPEnglish && !isSEnglish) {
+      // Probability 3: English actual and non-English alias
+      return DualScriptureBookInfo(actualBookName: primaryActual, aliasBookName: sAlias);
+    } else if (!isPEnglish && isSEnglish) {
+      // Probability 3: English actual and non-English alias
+      return DualScriptureBookInfo(actualBookName: secondaryActual ?? primaryActual, aliasBookName: pAlias);
+    } else {
+      // Probability 4: Both non-English -> primary alias as actual, secondary alias as alias
+      return DualScriptureBookInfo(actualBookName: pAlias ?? primaryActual, aliasBookName: sAlias);
+    }
+  }
+
+  static String formatDualTitle(String primaryTitle, String secondaryTitle) {
+    final regex = RegExp(r'^(.+?\s+\d+:)([^\s]+)\s*(.*)$');
+    final match1 = regex.firstMatch(primaryTitle.trim());
+    final match2 = regex.firstMatch(secondaryTitle.trim());
+
+    if (match1 != null && match2 != null) {
+      final prefix1 = match1.group(1)!;
+      final verse1 = match1.group(2)!;
+      final version1 = match1.group(3)!;
+      final verse2 = match2.group(2)!;
+
+      if (verse1 != verse2) {
+        final space = version1.isNotEmpty ? ' ' : '';
+        return '$prefix1$verse1/$verse2$space$version1';
+      }
+    }
+
+    return primaryTitle;
+  }
+
+  static String formatSlideItemTitle(Slide slide) {
+    final primary = slide.displayTitle ?? slide.title;
+    if (slide.isDualVersion && !slide.isSong && slide.secondaryTitle != null) {
+      final secondary = slide.secondaryDisplayTitle ?? slide.secondaryTitle!;
+      return formatDualTitle(primary, secondary);
+    }
+    return primary;
+  }
+
   static String _cleanStanzaContent(String stanza) {
     final trimmed = stanza.trim();
     if (trimmed.isEmpty) return "";
@@ -47,17 +137,44 @@ class SlideUtils {
     String? secondaryLyrics,
     String? bookAlias,
     String? secondaryBookAlias,
+    bool isEdited = false,
+    String? customReference,
   }) {
-    final computedDisplayTitle = !isSong ? _computeDisplayTitle(songTitle, bookAlias) : songTitle;
-    final computedSecDisplayTitle = !isSong ? _computeDisplayTitle(secondaryTitle, secondaryBookAlias) : secondaryTitle;
+    String effectiveTitle = songTitle;
+    String? computedDisplayTitle;
+    String? computedSecDisplayTitle;
+
+    if (isSong) {
+      computedDisplayTitle = songTitle;
+      computedSecDisplayTitle = secondaryTitle;
+    } else if (isDualVersion) {
+      final info = resolveDualBookNames(
+        primaryTitle: songTitle,
+        primaryAlias: bookAlias,
+        secondaryTitle: secondaryTitle,
+        secondaryAlias: secondaryBookAlias,
+      );
+      effectiveTitle = _computeDisplayTitle(songTitle, info.actualBookName) ?? songTitle;
+      if (info.aliasBookName != null) {
+        computedDisplayTitle = _computeDisplayTitle(songTitle, info.aliasBookName);
+      } else {
+        computedDisplayTitle = effectiveTitle;
+      }
+      computedSecDisplayTitle = _computeDisplayTitle(secondaryTitle, secondaryBookAlias);
+    } else {
+      computedDisplayTitle = _computeDisplayTitle(songTitle, bookAlias);
+      computedSecDisplayTitle = _computeDisplayTitle(secondaryTitle, secondaryBookAlias);
+    }
 
     if (lyrics.trim().isEmpty && (secondaryLyrics == null || secondaryLyrics.trim().isEmpty)) {
       return [
         Slide.blank(
-          title: songTitle,
+          title: effectiveTitle,
           displayTitle: computedDisplayTitle,
           isSong: isSong,
           isFavorite: isFavorite,
+          isEdited: isEdited,
+          customReference: customReference,
         )
       ];
     }
@@ -170,7 +287,7 @@ class SlideUtils {
       }
 
       slides.add(Slide(
-        title: songTitle,
+        title: effectiveTitle,
         displayTitle: computedDisplayTitle,
         shortcut: shortcut,
         content: content,
@@ -181,15 +298,19 @@ class SlideUtils {
         secondaryTitle: secondaryTitle,
         secondaryDisplayTitle: computedSecDisplayTitle,
         secondaryContent: secContent,
+        isEdited: isEdited,
+        customReference: customReference,
       ));
     }
 
     // Add blank slide at the end
     slides.add(Slide.blank(
-      title: songTitle,
+      title: effectiveTitle,
       displayTitle: computedDisplayTitle,
       isSong: isSong,
       isFavorite: isFavorite,
+      isEdited: isEdited,
+      customReference: customReference,
     ));
 
     return slides;

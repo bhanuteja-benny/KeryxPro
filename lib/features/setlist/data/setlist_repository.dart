@@ -73,10 +73,41 @@ class SetlistRepository {
         isFav = i < saved.favorites.length ? saved.favorites[i] : false;
       } catch (_) {}
 
-      if (entry.startsWith('song:')) {
-        final id = int.tryParse(entry.substring(5));
-        if (id != null && songMap.containsKey(id)) {
-          items.add(SongSetlistItem(songMap[id]!, isFavorite: isFav));
+      if (entry.startsWith('custom_song:')) {
+        final parts = entry.substring(12).split('|');
+        final id = int.tryParse(parts[0]);
+        final title = parts.length >= 2 ? _safeDecode(parts[1]) : (id != null && songMap.containsKey(id) ? songMap[id]!.title : 'Untitled');
+        final lyrics = parts.length >= 3 ? _safeDecode(parts[2]) : (id != null && songMap.containsKey(id) ? songMap[id]!.lyrics : '');
+        final baseSong = (id != null && songMap.containsKey(id)) ? songMap[id]! : Song();
+        final editedSong = Song()
+          ..id = baseSong.id
+          ..syncId = baseSong.syncId
+          ..title = title
+          ..author = baseSong.author
+          ..lyrics = lyrics
+          ..backgroundUrl = baseSong.backgroundUrl;
+        items.add(SongSetlistItem(editedSong, isFavorite: isFav, isEdited: true));
+      } else if (entry.startsWith('song:')) {
+        final raw = entry.substring(5);
+        if (raw.contains('|')) {
+          final parts = raw.split('|');
+          final id = int.tryParse(parts[0]);
+          final title = parts.length >= 2 ? _safeDecode(parts[1]) : (id != null && songMap.containsKey(id) ? songMap[id]!.title : 'Untitled');
+          final lyrics = parts.length >= 3 ? _safeDecode(parts[2]) : (id != null && songMap.containsKey(id) ? songMap[id]!.lyrics : '');
+          final baseSong = (id != null && songMap.containsKey(id)) ? songMap[id]! : Song();
+          final editedSong = Song()
+            ..id = baseSong.id
+            ..syncId = baseSong.syncId
+            ..title = title
+            ..author = baseSong.author
+            ..lyrics = lyrics
+            ..backgroundUrl = baseSong.backgroundUrl;
+          items.add(SongSetlistItem(editedSong, isFavorite: isFav, isEdited: true));
+        } else {
+          final id = int.tryParse(raw);
+          if (id != null && songMap.containsKey(id)) {
+            items.add(SongSetlistItem(songMap[id]!, isFavorite: isFav, isEdited: false));
+          }
         }
       } else if (entry.startsWith('scripture:')) {
         final parts = entry.substring(10).split('|');
@@ -88,6 +119,8 @@ class SetlistRepository {
           String? secLyrics;
           String? bkAlias;
           String? secBkAlias;
+          bool isEdited = false;
+          String? customReference;
           if (parts.length >= 3) {
             isDual = parts[2] == '1' || parts[2].toLowerCase() == 'true';
           }
@@ -103,6 +136,12 @@ class SetlistRepository {
           if (parts.length >= 7 && parts[6].isNotEmpty) {
             secBkAlias = _safeDecode(parts[6]);
           }
+          if (parts.length >= 8 && parts[7].isNotEmpty) {
+            isEdited = parts[7] == '1' || parts[7].toLowerCase() == 'true';
+          }
+          if (parts.length >= 9 && parts[8].isNotEmpty) {
+            customReference = _safeDecode(parts[8]);
+          }
           if ((secTitle != null && secTitle.isNotEmpty) || (secLyrics != null && secLyrics.isNotEmpty)) {
             isDual = true;
           }
@@ -115,7 +154,7 @@ class SetlistRepository {
             ..secondaryLyrics = secLyrics
             ..bookAlias = bkAlias
             ..secondaryBookAlias = secBkAlias;
-          items.add(SongSetlistItem(mockSong, isFavorite: isFav));
+          items.add(SongSetlistItem(mockSong, isFavorite: isFav, isEdited: isEdited, customReference: customReference));
         }
       } else if (entry.startsWith('image:')) {
         final idx = int.tryParse(entry.substring(6));
@@ -137,7 +176,7 @@ class SetlistRepository {
 
     for (final item in items) {
       switch (item) {
-        case SongSetlistItem(:final song):
+        case SongSetlistItem(:final song, :final isEdited, :final customReference):
           favorites.add(item.isFavorite);
           if (song.author == 'Bible') {
             final encodedTitle = Uri.encodeComponent(song.title);
@@ -147,10 +186,18 @@ class SetlistRepository {
             final encodedSecLyrics = Uri.encodeComponent(song.secondaryLyrics ?? '');
             final encodedBkAlias = Uri.encodeComponent(song.bookAlias ?? '');
             final encodedSecBkAlias = Uri.encodeComponent(song.secondaryBookAlias ?? '');
-            itemOrder.add('scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics|$encodedBkAlias|$encodedSecBkAlias');
+            final editedFlag = isEdited ? '1' : '0';
+            final encodedCustomRef = Uri.encodeComponent(customReference ?? '');
+            itemOrder.add('scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics|$encodedBkAlias|$encodedSecBkAlias|$editedFlag|$encodedCustomRef');
           } else {
             songIds.add(song.id);
-            itemOrder.add('song:${song.id}');
+            if (isEdited) {
+              final encodedTitle = Uri.encodeComponent(song.title);
+              final encodedLyrics = Uri.encodeComponent(song.lyrics);
+              itemOrder.add('custom_song:${song.id}|$encodedTitle|$encodedLyrics');
+            } else {
+              itemOrder.add('song:${song.id}');
+            }
           }
         case ImageSetlistItem(:final imagePath, :final layout, :final alignment):
           favorites.add(item.isFavorite);
@@ -158,8 +205,6 @@ class SetlistRepository {
           imageEntries.add('$imagePath|$layout|$alignment');
           itemOrder.add('image:$idx');
         case WindowSetlistItem():
-
-
           break;
       }
     }

@@ -13,6 +13,8 @@ class Slide {
   final String? secondaryTitle;
   final String? secondaryDisplayTitle;
   final String? secondaryContent;
+  final bool isEdited;
+  final String? customReference;
 
   Slide({
     required this.title,
@@ -27,6 +29,8 @@ class Slide {
     this.secondaryTitle,
     this.secondaryDisplayTitle,
     this.secondaryContent,
+    this.isEdited = false,
+    this.customReference,
   });
 
   // Factory for blank slides
@@ -35,6 +39,8 @@ class Slide {
     String? displayTitle,
     bool isSong = true,
     bool isFavorite = false,
+    bool isEdited = false,
+    String? customReference,
   }) {
     return Slide(
       title: title,
@@ -45,6 +51,8 @@ class Slide {
       isBlank: true,
       isSong: isSong,
       isFavorite: isFavorite,
+      isEdited: isEdited,
+      customReference: customReference,
     );
   }
 }

@@ -1,0 +1,133 @@
+# Phase 59 Plan: Edit Setlist Items Texts
+
+## Overview
+Phase 59 introduces the ability to edit text and properties of setlist items directly from the setlist pane via a right-click context menu. The edits are saved exclusively within the setlist and do not alter the underlying Songs database or Bible database. Edited texts and references are applied across slides, preview pane, and live projections (overriding global chapter presentation options when edited).
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Key Design Points for Review:**
+> 1. **Right-Click Context Menu**: Right-clicking any setlist item displays a sleek context menu with exactly one option: **'Edit'**.
+> 2. **Edit Dialogs by Item Type**:
+>    - **Image Slide**: Reuses existing `ImageSlideDialog` in edit mode.
+>    - **Window Slide**: Reuses existing `WindowSlideDialog` in edit mode.
+>    - **Song**: Opens `EditSongDialog` containing **Title** (single-line) and **Lyrics** (multi-line) textboxes with Cancel and Save buttons.
+>    - **Scripture**: Opens `EditScriptureDialog` containing **Reference** (single-line) and **Verse** (multi-line) textboxes with Cancel and Save buttons.
+>    - **Dual Scripture**: Opens `EditDualScriptureDialog` containing **Reference** (single-line, pre-filled with the current chapter presentation options Actual/Alias/None applied), **Primary Verse** (multi-line), and **Secondary Verse** (multi-line) textboxes with Cancel and Save buttons.
+> 3. **Non-destructive Setlist Overrides**:
+>    - Changes are persisted within the setlist only (using `SavedSetlist` / `itemOrder` serialization).
+>    - The original database records for Songs and Bible chapters/verses remain completely untouched.
+> 4. **Live Projection & Preview Override**:
+>    - Edited scripture items have an `isEdited` flag that overrides global chapter presentation settings (`Actual`, `Alias`, `None`) on slides, preview pane, and live monitors (Monitor 1 and Monitor 2), displaying the user's custom reference directly.
+
+---
+
+## Proposed Changes
+
+### 1. Domain & Data Models
+
+#### [MODIFY] [setlist_item.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_item.dart)
+- Add `final bool isEdited;` to `SongSetlistItem` (default `false`).
+- Update `SongSetlistItem.copyWith` to support `isEdited` and `song`.
+
+#### [MODIFY] [song.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/songs/data/song.dart)
+- Add `@ignore bool isEdited = false;` to `Song` model to track when a song in memory has overridden setlist text.
+
+#### [MODIFY] [slide.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/domain/slide.dart)
+- Add `final bool isEdited;` to `Slide` class (default `false`) and `Slide.blank` factory.
+
+---
+
+### 2. Slide Generation & Live Projection Providers
+
+#### [MODIFY] [slide_utils.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/slide_utils.dart)
+- Update `SlideUtils.parseLyrics` to accept `bool isEdited = false`.
+- When `isEdited` is true, set `computedDisplayTitle = songTitle` and `computedSecDisplayTitle = secondaryTitle` directly without parsing aliases, and pass `isEdited: true` to all generated `Slide` instances.
+
+#### [MODIFY] [live_projector_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/live_controller/presentation/live_projector_providers.dart)
+- In `currentSlidesProvider`, pass `isEdited: item.isEdited || item.song.isEdited` to `SlideUtils.parseLyrics`.
+- In `_buildTitleForSlide`, if `slide.isEdited == true`, bypass `_formatScriptureTitle` and return `slide.displayTitle ?? slide.title` directly (or `_formatDualTitle` for dual scripture), allowing the user's edited reference to override chapter presentation settings.
+
+---
+
+### 3. Persistence & Serialization
+
+#### [MODIFY] [setlist_repository.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/data/setlist_repository.dart)
+- In `saveByName`:
+  - For `SongSetlistItem` where `song.author != 'Bible'`:
+    - If `song.isEdited` or `item.isEdited`: serialize as `custom_song:$encodedTitle|$encodedLyrics` or `song:${song.id}|$encodedTitle|$encodedLyrics`.
+    - Else: serialize as standard `song:${song.id}`.
+  - For `SongSetlistItem` where `song.author == 'Bible'`:
+    - Append `isEdited` flag (8th parameter) to `scripture:$encodedTitle|$encodedLyrics|$isDual|$encodedSecTitle|$encodedSecLyrics|$encodedBkAlias|$encodedSecBkAlias|$isEdited`.
+- In `loadByName`:
+  - Support restoring custom/edited songs and scripture items with `isEdited: true`.
+
+#### [MODIFY] [setlist_providers.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/setlist_providers.dart)
+- Ensure `generateSetlistSignature` incorporates `isEdited` to properly track unsaved changes.
+
+---
+
+### 4. Edit Dialog UI Components
+
+#### [NEW] [edit_song_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/edit_song_dialog.dart)
+- Popup dialog to edit song title and lyrics.
+- Fields:
+  - **Title**: Text field pre-populated with current title.
+  - **Lyrics**: Multiline text area pre-populated with current lyrics.
+- Actions: **Cancel** and **Save**.
+- Dark theme styling matching KeryxPro design system (`Color(0xFF2D2D3E)`, rounded inputs, clean typography).
+
+#### [NEW] [edit_scripture_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/edit_scripture_dialog.dart)
+- Popup dialog to edit scripture reference and verse text.
+- Fields:
+  - **Reference**: Text field pre-populated with current reference (book, chapter, verse).
+  - **Verse**: Multiline text area pre-populated with current verse text.
+- Actions: **Cancel** and **Save**.
+
+#### [NEW] [edit_dual_scripture_dialog.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/setlist/presentation/edit_dual_scripture_dialog.dart)
+- Popup dialog to edit dual scripture reference, primary verse, and secondary verse.
+- Fields:
+  - **Reference**: Text field pre-populated with reference with chapter presentation logic applied (Actual, Alias, None).
+  - **Primary Verse**: Multiline text area pre-populated with primary verse text.
+  - **Secondary Verse**: Multiline text area pre-populated with secondary verse text.
+- Actions: **Cancel** and **Save**.
+
+---
+
+### 5. Setlist Pane Context Menu Integration
+
+#### [MODIFY] [setlist_pane.dart](file:///c:/Users/bhanu/projects/KeryxPro/lib/features/dashboard/presentation/widgets/setlist_pane.dart)
+- Add `onSecondaryTapDown` on setlist item `GestureDetector`.
+- Show context menu with exactly one option: **'Edit'**.
+- Add `_editItem(int index)` method that opens the appropriate dialog based on item type:
+  - `ImageSetlistItem` $\rightarrow$ `ImageSlideDialog(isEditing: true, ...)`
+  - `WindowSetlistItem` $\rightarrow$ `WindowSlideDialog(existing: item)`
+  - `SongSetlistItem` (Song) $\rightarrow$ `EditSongDialog(...)`
+  - `SongSetlistItem` (Scripture) $\rightarrow$ `EditScriptureDialog(...)`
+  - `SongSetlistItem` (Dual Scripture) $\rightarrow$ `EditDualScriptureDialog(...)`
+- On dialog save: call `ref.read(setlistProvider.notifier).replaceAt(index, updatedItem)` to update the item in place.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Create unit tests in `test/edit_setlist_items_test.dart`:
+  - Test editing song title and lyrics updates `SongSetlistItem` without mutating Isar song database.
+  - Test editing single scripture reference and verse updates slides and marks `isEdited: true`.
+  - Test editing dual scripture reference, primary verse, and secondary verse generates slides with overridden text.
+  - Test `_buildTitleForSlide` returns custom reference when `isEdited` is true regardless of `chapterShowActual`/`chapterShowAlias`/`chapterShowNone` settings.
+  - Test serialization and deserialization in `SetlistRepository` of edited songs and scriptures.
+  - Run `flutter test` to ensure all existing and new tests pass.
+
+### Manual Verification
+1. Launch Windows app: `flutter run -d windows`.
+2. Add a Song, Scripture, Dual Scripture, Image, and Window Slide to Setlist.
+3. Right-click on each item in the setlist and verify the context menu with 'Edit' appears.
+4. Edit Song: change title & lyrics $\rightarrow$ verify slides and preview update immediately; verify songs database is unchanged.
+5. Edit Scripture: change reference & verse $\rightarrow$ verify preview and live projection reflect the new text.
+6. Edit Dual Scripture: change reference, primary verse, and secondary verse $\rightarrow$ verify preview and live projection reflect the new text.
+7. Verify presentation settings changes do not overwrite manually edited scripture references.
+8. Save setlist, reload, and verify all edited texts persist.

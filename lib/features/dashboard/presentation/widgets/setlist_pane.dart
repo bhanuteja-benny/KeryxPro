@@ -8,6 +8,11 @@ import '../../../setlist/data/setlist_repository.dart';
 import '../../../setlist/presentation/setlist_providers.dart';
 import '../../../setlist/presentation/image_slide_dialog.dart';
 import '../../../setlist/presentation/window_slide_dialog.dart';
+import '../../../setlist/presentation/edit_song_dialog.dart';
+import '../../../setlist/presentation/edit_scripture_dialog.dart';
+import '../../../setlist/presentation/edit_dual_scripture_dialog.dart';
+import '../../../live_controller/domain/slide.dart';
+import '../../../live_controller/presentation/slide_utils.dart';
 import '../global_ui_providers.dart';
 import '../../../live_controller/presentation/live_projector_providers.dart';
 import '../../../setlist/presentation/export_powerpoint_dialog.dart';
@@ -293,35 +298,158 @@ if (isSingleImageSelected) {
 // ── Add / Edit window slide ────────────────────────────────────────────────────
   Future<void> _addWindow() async {
     final items = ref.read(setlistProvider);
-final selection = ref.read(setlistSelectionProvider);
-final isSingleWindowSelected = selection.length == 1 &&
-    items[selection.first] is WindowSetlistItem;
+    final selection = ref.read(setlistSelectionProvider);
+    final isSingleWindowSelected = selection.length == 1 &&
+        items[selection.first] is WindowSetlistItem;
 
-if (isSingleWindowSelected) {
-  // Edit existing window slide
-  final idx = selection.first;
-  final existing = items[idx] as WindowSetlistItem;
-  final result = await showDialog<WindowSetlistItem>(
-    context: context,
-    builder: (context) => WindowSlideDialog(existing: existing),
-  );
-  if (result != null) {
-    ref.read(setlistProvider.notifier).replaceAt(idx, result);
-  }
-} else {
-  // Add new window slide
-    final result = await showDialog<WindowSetlistItem>(
-      context: context,
-      builder: (context) => const WindowSlideDialog(),
-    );
-    if (result != null) {
-      ref.read(setlistProvider.notifier).insertWindow(
-        result,
-        selectedIndices: ref.read(setlistSelectionProvider),
-        currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+    if (isSingleWindowSelected) {
+      // Edit existing window slide
+      final idx = selection.first;
+      final existing = items[idx] as WindowSetlistItem;
+      final result = await showDialog<WindowSetlistItem>(
+        context: context,
+        builder: (context) => WindowSlideDialog(existing: existing),
       );
+      if (result != null) {
+        ref.read(setlistProvider.notifier).replaceAt(idx, result);
+      }
+    } else {
+      // Add new window slide
+      final result = await showDialog<WindowSetlistItem>(
+        context: context,
+        builder: (context) => const WindowSlideDialog(),
+      );
+      if (result != null) {
+        ref.read(setlistProvider.notifier).insertWindow(
+          result,
+          selectedIndices: ref.read(setlistSelectionProvider),
+          currentDisplayItemIndex: ref.read(currentDisplayItemIndexProvider),
+        );
+      }
     }
-}
+  }
+
+  // ── Edit setlist item ──────────────────────────────────────────────────
+  Future<void> _editItem(int index) async {
+    final items = ref.read(setlistProvider);
+    if (index < 0 || index >= items.length) return;
+    final item = items[index];
+
+    switch (item) {
+      case ImageSetlistItem():
+        final result = await showDialog<ImageSetlistItem>(
+          context: context,
+          builder: (context) => ImageSlideDialog(
+            isEditing: true,
+            initialImagePath: item.imagePath,
+            initialLayout: item.layout,
+            initialAlignment: item.alignment,
+            existingUniqueId: item.uniqueId,
+            existingIsFavorite: item.isFavorite,
+          ),
+        );
+        if (result != null) {
+          ref.read(setlistProvider.notifier).replaceAt(index, result);
+        }
+      case WindowSetlistItem():
+        final result = await showDialog<WindowSetlistItem>(
+          context: context,
+          builder: (context) => WindowSlideDialog(existing: item),
+        );
+        if (result != null) {
+          ref.read(setlistProvider.notifier).replaceAt(index, result);
+        }
+      case SongSetlistItem():
+        if (item.song.author == 'Bible') {
+          final settings = ref.read(monitor1SettingsProvider);
+          final sampleSlides = SlideUtils.parseLyrics(
+            item.song.lyrics,
+            item.song.title,
+            isSong: false,
+            isDualVersion: item.song.isDualVersion,
+            secondaryTitle: item.song.secondaryTitle,
+            secondaryLyrics: item.song.secondaryLyrics,
+            bookAlias: item.song.bookAlias,
+            secondaryBookAlias: item.song.secondaryBookAlias,
+            isEdited: false,
+          );
+          final sampleSlide = sampleSlides.first;
+          final formattedRef = item.customReference ?? (buildTitleForSlide(sampleSlide, settings) ?? '');
+
+          if (item.song.isDualVersion) {
+            final result = await showDialog<SongSetlistItem>(
+              context: context,
+              builder: (context) => EditDualScriptureDialog(
+                item: item,
+                initialFormattedReference: formattedRef,
+              ),
+            );
+            if (result != null) {
+              ref.read(setlistProvider.notifier).replaceAt(index, result);
+            }
+          } else {
+            final result = await showDialog<SongSetlistItem>(
+              context: context,
+              builder: (context) => EditScriptureDialog(
+                item: item,
+                initialFormattedReference: formattedRef,
+              ),
+            );
+            if (result != null) {
+              ref.read(setlistProvider.notifier).replaceAt(index, result);
+            }
+          }
+        } else {
+          final result = await showDialog<SongSetlistItem>(
+            context: context,
+            builder: (context) => EditSongDialog(item: item),
+          );
+          if (result != null) {
+            ref.read(setlistProvider.notifier).replaceAt(index, result);
+          }
+        }
+    }
+  }
+
+  void _showContextMenu(BuildContext context, Offset position, int index) async {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+
+    final selected = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        position & const Size(40, 40),
+        Offset.zero & overlay.size,
+      ),
+      color: const Color(0xFF2D2D3E),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.white12),
+      ),
+      items: [
+        const PopupMenuItem<String>(
+          value: 'edit',
+          height: 32,
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.edit_rounded, size: 14, color: Colors.white70),
+              SizedBox(width: 8),
+              Text(
+                'Edit',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (selected == 'edit') {
+      _editItem(index);
+    }
   }
 
   // ── Clear all items ────────────────────────────────────────────────────
@@ -604,6 +732,9 @@ final isSingleWindowSelected =
                             final isCtrl = HardwareKeyboard.instance.isControlPressed;
                             final isShift = HardwareKeyboard.instance.isShiftPressed;
                             _onItemTap(index, isCtrl, isShift);
+                          },
+                          onSecondaryTapDown: (details) {
+                            _showContextMenu(context, details.globalPosition, index);
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 120),

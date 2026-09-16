@@ -7,6 +7,7 @@ import '../bible_search_providers.dart';
 import '../../data/bible.dart';
 import '../../../dashboard/presentation/global_ui_providers.dart';
 import '../../../live_controller/presentation/live_projector_providers.dart';
+import '../../../live_controller/presentation/slide_utils.dart';
 import '../../../songs/data/song.dart';
 import '../../../songs/presentation/song_selection_providers.dart';
 import '../../../setlist/presentation/setlist_providers.dart';
@@ -619,12 +620,12 @@ Future<void> _showImportVersesDialog(WidgetRef ref) async {
 
     final normBookName = BibleConstants.normalizeBookName(book) ?? book;
     final primaryMappings = version.bookNameMappings;
-    final bkAlias = primaryMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
+    final bkAlias = primaryMappings[normBookName];
 
     String? secBkAlias;
     if (isDual && secondaryVersion != null) {
       final secMappings = secondaryVersion.bookNameMappings;
-      secBkAlias = secMappings[normBookName] ?? BibleConstants.defaultBookAliases[normBookName];
+      secBkAlias = secMappings[normBookName];
     }
 
     final mockSong = Song()
@@ -889,7 +890,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       _addToSetlist(preview, version, ref, goLive: true);
                     }
                   },
-                  bookNameMappings: selectedVersion?.bookNameMappings,
+                  bookNameMappings: _isDualVersionMode ? null : selectedVersion?.bookNameMappings,
                 ),
               ),
               const VerticalDivider(width: 1, color: Colors.black),
@@ -918,7 +919,7 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
                       _addToSetlist(preview, version, ref, goLive: true);
                     }
                   },
-                  bookNameMappings: selectedVersion?.bookNameMappings,
+                  bookNameMappings: _isDualVersionMode ? null : selectedVersion?.bookNameMappings,
                 ),
               ),
               const VerticalDivider(width: 1, color: Colors.black),
@@ -1338,10 +1339,32 @@ final selectedVerses = ref.watch(selectedVersesProvider);
                       
                       final book = verses.first.bookName;
                       final chapter = verses.first.chapterNumber;
-                      final mappings = selectedVersion?.bookNameMappings ?? {};
                       final normBk = BibleConstants.normalizeBookName(book) ?? book;
-                      final alias = mappings[normBk];
-                      final bookDisplay = (alias != null && alias.isNotEmpty) ? '$book ($alias)' : book;
+                      String bookDisplay = book;
+                      if (_isDualVersionMode) {
+                        final primaryAlias = selectedVersion?.bookNameMappings[normBk];
+                        final secVer = _secondaryBibleVersion ?? ref.read(secondaryBibleVersionProvider);
+                        final secondaryAlias = secVer?.bookNameMappings[normBk];
+                        final info = SlideUtils.resolveDualBookNames(
+                          primaryTitle: book,
+                          primaryAlias: primaryAlias,
+                          secondaryTitle: book,
+                          secondaryAlias: secondaryAlias,
+                        );
+                        if (info.aliasBookName != null &&
+                            info.aliasBookName!.isNotEmpty &&
+                            info.aliasBookName != info.actualBookName) {
+                          bookDisplay = '${info.actualBookName} (${info.aliasBookName})';
+                        } else {
+                          bookDisplay = info.actualBookName;
+                        }
+                      } else {
+                        final mappings = selectedVersion?.bookNameMappings ?? {};
+                        final alias = mappings[normBk];
+                        if (alias != null && alias.isNotEmpty && alias != book) {
+                          bookDisplay = '$book ($alias)';
+                        }
+                      }
                       return Text(
                         '$bookDisplay $chapter',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blueAccent),
@@ -1726,7 +1749,7 @@ final selectedVerses = ref.watch(selectedVersesProvider);
 
   Widget _buildBookButtonRow(List<String> books, String? selectedBook, WidgetRef ref, {required bool isOT}) {
     final selectedVersion = ref.watch(selectedBibleVersionProvider);
-    final mappings = selectedVersion?.bookNameMappings ?? {};
+    final mappings = _isDualVersionMode ? <String, String>{} : (selectedVersion?.bookNameMappings ?? {});
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),

@@ -1,0 +1,111 @@
+ok understood. now let me give every logic without missing and apply the same
+
+# Scripture (presentation settings)
+
+## when only single version is selected 
+
+### when alias names are not there for that selected version
+
+then there is no change in logic
+
+- in listboxes (book names), actual names will be displayed
+- in preview pane also actual name is displayed
+- in setlist item also reference with actual name is displayed
+- in slide title column, reference with actual name is displayed
+- in previews and live projections, reference with actual name is displayed according to presentation settings
+
+- when setlist item is edited
+- - in setlist item display text, no change (reference with actual name is displayed)
+- - in slide title column, no change (reference with actual name is displayed)
+- - in previews and live projections, apply the edited title/chapter changes here (in spite of presentation settings, if user has given title/reference without living it blank) 
+- - but the verse text changes should reflect in all (setlist item, slide lyrics column and previews and projections)
+- - the verse text changes should reflect in setlist item as well, because when setlist item is exported and imported then edited texts should come. same in case of title/chapter as well, then you may have to maintain the values before edit and after edit as well.
+
+
+### when alias names are there for selected version
+
+then the logic is 
+
+- in listboxes (book names), alias names will be displayed
+- in button view mode (book names), alias names will be displayed
+- in preview pane, actual name (alias name) is displayed
+- in setlist item, reference with actual name is displayed
+- in slide title column, reference with alias name is displayed
+- in previews and live projections, based on the presentation settings, actual or alias or both or none are displayed (but actual and alias should be passed down from setlist items)
+
+- when setlist item is edited
+- - in edit popup the title/chapter should be displayed as per presentation settings,  actual or alias or both or none are displayed
+- - in setlist item display text, no change (reference with actual name is displayed)
+- - in slide title column, no change (reference with alias name is displayed)
+- - in previews and live projections, apply the edited title/chapter changes here (presentation settings actual alias or none should not be applied)
+- - but the verse text changes should reflect in all (setlist item, slide lyrics column and previews and projections)
+- - the verse text changes should reflect in setlist item as well, because when setlist item is exported and imported then edited texts should come. same in case of title/chapter as well, then you may have to maintain the values before edit and after edit as well.
+
+
+
+## when dual version is selected 
+
+### when alias names are not there for any of the selected versions
+
+then there is no change in logic
+
+- in listboxes (book names), actual names will be displayed
+- in preview pane also actual name is displayed
+- in setlist item also reference with actual name is displayed
+- in slide title column, reference with actual name is displayed
+- in previews and live projections, reference with actual name is displayed according to presentation settings
+
+- when setlist item is edited
+- - in setlist item display text, no change (reference with actual name is displayed)
+- - in slide title column, no change (reference with actual name is displayed)
+- - in previews and live projections, apply the edited title/chapter changes here (in spite of presentation settings, if user has given title/reference without living it blank) 
+- - but the verse text changes should reflect in all (setlist item, slide lyrics column and previews and projections)
+- - the verse text changes should reflect in setlist item as well, because when setlist item is exported and imported then edited texts should come. same in case of title/chapter as well, then you may have to maintain the values before edit and after edit as well.
+
+
+### when alias names are there for selected versions
+
+probability 1: when one of the version has alias names then consider that alias name as alias name and consider primary version's actual name as actual name
+probability 2: when both versions have alias names and both are English then consider primary versions actual name and alias name
+probability 3: when both versions have alias name and one of them is not English, then take English version's actual name as actual name and non-English version's alias name as alias name.
+probability 4: when both versions have alias name and both are non-English, then consider primary version's alias name as actual name and secondary version's alias name as alias name
+
+then the logic is 
+
+- in listboxes (book names), actual names will be displayed
+- in button view mode (book names), actual names will be displayed
+- in preview pane, actual name (alias name) is displayed
+- in setlist item, reference with actual name is displayed
+- in slide title column, reference with alias name is displayed
+- in previews and live projections, based on the presentation settings, actual or alias or both or none are displayed (but actual and alias should be passed down from setlist items)
+
+- when setlist item is edited
+- - in edit popup the title/chapter should be displayed as per presentation settings,  actual or alias or both or none are displayed
+- - in setlist item display text, no change (reference with actual name is displayed)
+- - in slide title column, no change (reference with alias name is displayed)
+- - in previews and live projections, apply the edited title/chapter changes here (presentation settings actual alias or none should not be applied)
+- - but the verse text changes should reflect in all (setlist item, slide lyrics column and previews and projections)
+- - the verse text changes should reflect in setlist item as well, because when setlist item is exported and imported then edited texts should come. same in case of title/chapter as well, then you may have to maintain the values before edit and after edit as well.
+
+Constraints:
+- DO NOT make any UI or functionality changes except the mentioned ones.
+- DO NOT disturb the existing design or functionality except the mentioned ones.
+- DO NOT change UI or functionality, which is not mentioned in the implementation plan
+- In case a mandatory UI or functionality change is required due to the changes suggested, mention the same in implementation PLAN and TAKE APPROVAL.
+- NO HIDDEN ASSUMPTIONS, every assumption or presumption should be mentioned in implementation plan and TAKE APPROVAL.
+- DO NOT add extra fields or buttons.
+- DO NOT improvise additional UI elements
+
+Note:
+- change only scripture and dual scripture logic, don't touch the song title/lyrics logic
+- Please let me know if anything is missing
+
+
+Deliverables:
+- Implementation Plan
+
+
+
+
+
+

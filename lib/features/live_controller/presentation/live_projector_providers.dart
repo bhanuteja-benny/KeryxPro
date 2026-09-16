@@ -19,7 +19,7 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
   final List<Slide> allSlides = [];
   for (final item in setlist) {
     switch (item) {
-      case SongSetlistItem(:final song, :final isFavorite):
+      case SongSetlistItem(:final song, :final isFavorite, :final isEdited, :final customReference):
         final isSong = song.author != 'Bible';
         allSlides.addAll(SlideUtils.parseLyrics(
           song.lyrics,
@@ -31,6 +31,8 @@ final currentSlidesProvider = Provider<List<Slide>>((ref) {
           secondaryLyrics: song.secondaryLyrics,
           bookAlias: song.bookAlias,
           secondaryBookAlias: song.secondaryBookAlias,
+          isEdited: isEdited,
+          customReference: customReference,
         ));
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         // Image items produce one special "image" slide
@@ -63,26 +65,7 @@ case WindowSetlistItem(:final windowHandle, :final windowTitle, :final layout, :
   return allSlides;
 });
 
-/// Helper function to format monitor titles when dual version is enabled and verse numbers differ
-String _formatDualTitle(String primaryTitle, String secondaryTitle) {
-  final regex = RegExp(r'^(.+?\s+\d+:)([^\s]+)\s*(.*)$');
-  final match1 = regex.firstMatch(primaryTitle.trim());
-  final match2 = regex.firstMatch(secondaryTitle.trim());
 
-  if (match1 != null && match2 != null) {
-    final prefix1 = match1.group(1)!;
-    final verse1 = match1.group(2)!;
-    final version1 = match1.group(3)!;
-    final verse2 = match2.group(2)!;
-
-    if (verse1 != verse2) {
-      final space = version1.isNotEmpty ? ' ' : '';
-      return '$prefix1$verse1/$verse2$space$version1';
-    }
-  }
-
-  return primaryTitle;
-}
 
 /// Holds the index of the currently active slide.
 final activeSlideIndexProvider = StateProvider<int>((ref) => 0);
@@ -335,7 +318,7 @@ String _formatScriptureTitle({
   return "";
 }
 
-String? _buildTitleForSlide(Slide? slide, PresentationSettings settings) {
+String? buildTitleForSlide(Slide? slide, PresentationSettings settings) {
   if (slide == null || slide.isBlank) return "";
 
   if (slide.isSong) {
@@ -343,9 +326,13 @@ String? _buildTitleForSlide(Slide? slide, PresentationSettings settings) {
     final secTitleToUse = slide.secondaryDisplayTitle ?? slide.secondaryTitle;
 
     if (slide.isDualVersion && secTitleToUse != null && secTitleToUse.isNotEmpty) {
-      return _formatDualTitle(titleToUse, secTitleToUse);
+      return SlideUtils.formatDualTitle(titleToUse, secTitleToUse);
     }
     return titleToUse;
+  }
+
+  if (slide.isEdited && slide.customReference != null && slide.customReference!.trim().isNotEmpty) {
+    return slide.customReference!;
   }
 
   // Scripture & Dual Scripture
@@ -377,7 +364,7 @@ String? _buildTitleForSlide(Slide? slide, PresentationSettings settings) {
         showAlias: showAlias,
         showNone: showNone,
       );
-      return _formatDualTitle(primaryFormatted, secFormatted);
+      return SlideUtils.formatDualTitle(primaryFormatted, secFormatted);
     }
 
     return primaryFormatted;
@@ -410,7 +397,7 @@ final m1ActiveTitleProvider = Provider<String?>((ref) {
 
   if (indices.isEmpty || slides.isEmpty) return null;
   final firstSlide = slides[indices.first];
-  return _buildTitleForSlide(firstSlide, settings);
+  return buildTitleForSlide(firstSlide, settings);
 });
 
 /// Holds the title of the currently projected slide on Monitor 2.
@@ -421,7 +408,7 @@ final m2ActiveTitleProvider = Provider<String?>((ref) {
 
   if (indices.isEmpty || slides.isEmpty) return null;
   final firstSlide = slides[indices.first];
-  return _buildTitleForSlide(firstSlide, settings);
+  return buildTitleForSlide(firstSlide, settings);
 });
 
 /// Holds the title of the currently projected slide.
