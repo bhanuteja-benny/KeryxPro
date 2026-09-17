@@ -1290,13 +1290,171 @@ suffixIconConstraints: const BoxConstraints.tightFor(width: 56, height: 28),
     );
   }
 
+  void _showScriptureContextMenu(
+    BuildContext context,
+    Offset position, {
+    required String fullText,
+    required String textOnly,
+  }) async {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+
+    final selected = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        position & const Size(40, 40),
+        Offset.zero & overlay.size,
+      ),
+      color: const Color(0xFF2D2D3E),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.white12),
+      ),
+      items: [
+        const PopupMenuItem<String>(
+          value: 'copy',
+          height: 32,
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.copy_rounded, size: 14, color: Colors.white70),
+              SizedBox(width: 8),
+              Text(
+                'Copy',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuItem<String>(
+          value: 'copy_text_only',
+          height: 32,
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.text_fields_rounded, size: 14, color: Colors.white70),
+              SizedBox(width: 8),
+              Text(
+                'Copy text only',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (selected == 'copy') {
+      await Clipboard.setData(ClipboardData(text: fullText));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 2)),
+      );
+    } else if (selected == 'copy_text_only') {
+      await Clipboard.setData(ClipboardData(text: textOnly));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 2)),
+      );
+    }
+  }
+
+  ({String fullText, String textOnly}) _formatVersesForCopy({
+    required List<BibleVerse> primaryVerses,
+    required BibleVersion? primaryVersion,
+    List<BibleVerse>? secondaryVerses,
+    BibleVersion? secondaryVersion,
+    bool isDual = false,
+  }) {
+    if (primaryVerses.isEmpty && (secondaryVerses == null || secondaryVerses.isEmpty)) {
+      return (fullText: '', textOnly: '');
+    }
+
+    final sortedPrimary = List<BibleVerse>.from(primaryVerses)
+      ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+    final sortedSecondary = secondaryVerses != null
+        ? (List<BibleVerse>.from(secondaryVerses)..sort((a, b) => a.verseNumber.compareTo(b.verseNumber)))
+        : <BibleVerse>[];
+
+    final sampleVerse = sortedPrimary.isNotEmpty ? sortedPrimary.first : sortedSecondary.first;
+    final book = sampleVerse.bookName;
+    final chapter = sampleVerse.chapterNumber;
+
+    String formatVerseRange(List<BibleVerse> vList) {
+      if (vList.isEmpty) return '';
+      if (vList.length == 1) return vList.first.verseNumber.toString();
+      bool contiguous = true;
+      for (int i = 1; i < vList.length; i++) {
+        if (vList[i].verseNumber != vList[i - 1].verseNumber + 1) {
+          contiguous = false;
+          break;
+        }
+      }
+      return contiguous
+          ? '${vList.first.verseNumber}-${vList.last.verseNumber}'
+          : vList.map((v) => v.verseNumber).join(',');
+    }
+
+    final pRange = formatVerseRange(sortedPrimary);
+    final pAbbr = primaryVersion?.abbreviation ?? '';
+    final sAbbr = secondaryVersion?.abbreviation ?? '';
+
+    final fullBuffer = StringBuffer();
+    final textOnlyBuffer = StringBuffer();
+
+    if (isDual && sortedSecondary.isNotEmpty && secondaryVersion != null) {
+      final sRange = formatVerseRange(sortedSecondary);
+      final rangeStr = pRange == sRange ? pRange : (pRange.isNotEmpty ? pRange : sRange);
+      final headerVersion = (pAbbr.isNotEmpty && sAbbr.isNotEmpty)
+          ? '($pAbbr / $sAbbr)'
+          : (pAbbr.isNotEmpty ? pAbbr : sAbbr);
+      fullBuffer.writeln('$book $chapter:$rangeStr $headerVersion'.trim());
+
+      final primaryMap = {for (final v in sortedPrimary) v.verseNumber: v};
+      final secondaryMap = {for (final v in sortedSecondary) v.verseNumber: v};
+      final allNumbers = {...primaryMap.keys, ...secondaryMap.keys}.toList()..sort();
+
+      for (final num in allNumbers) {
+        final pV = primaryMap[num];
+        if (pV != null && pV.text.trim().isNotEmpty) {
+          final prefix = pAbbr.isNotEmpty ? '[$pAbbr] ' : '';
+          fullBuffer.writeln('$num $prefix${pV.text.trim()}');
+          textOnlyBuffer.writeln(pV.text.trim());
+        }
+        final sV = secondaryMap[num];
+        if (sV != null && sV.text.trim().isNotEmpty) {
+          final prefix = sAbbr.isNotEmpty ? '[$sAbbr] ' : '';
+          fullBuffer.writeln('$num $prefix${sV.text.trim()}');
+          textOnlyBuffer.writeln(sV.text.trim());
+        }
+      }
+    } else {
+      final rangeStr = pRange;
+      final headerVersion = pAbbr.isNotEmpty ? ' $pAbbr' : '';
+      fullBuffer.writeln('$book $chapter:$rangeStr$headerVersion'.trim());
+
+      for (final v in sortedPrimary) {
+        if (v.text.trim().isEmpty) continue;
+        fullBuffer.writeln('${v.verseNumber} ${v.text.trim()}');
+        textOnlyBuffer.writeln(v.text.trim());
+      }
+    }
+
+    return (
+      fullText: fullBuffer.toString().trim(),
+      textOnly: textOnlyBuffer.toString().trim(),
+    );
+  }
+
   Widget _buildPreviewPane(WidgetRef ref) {
     final previewAsync = ref.watch(biblePreviewVersesProvider);
     final selectedVersion = ref.watch(selectedBibleVersionProvider);
     final bibleVersions = ref.watch(bibleVersionsProvider).valueOrNull ?? [];
-final selectedBook = ref.watch(selectedBookProvider);
-final selectedChapter = ref.watch(selectedChapterProvider);
-final selectedVerses = ref.watch(selectedVersesProvider);
+    final selectedBook = ref.watch(selectedBookProvider);
+    final selectedChapter = ref.watch(selectedChapterProvider);
     final secondarySelectedVerses = ref.watch(secondarySelectedVersesProvider);
     final secondaryVersion = _isDualVersionMode
         ? _secondaryBibleVersion ?? bibleVersions.where((version) => version.id != selectedVersion?.id).firstOrNull
@@ -1451,30 +1609,54 @@ final selectedVerses = ref.watch(selectedVersesProvider);
           Expanded(
             child: _isButtonViewMode
                 ? _buildButtonViewPane(ref)
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(12),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: previewAsync.when(
-                        data: (verses) {
-                          if (verses.isEmpty) return const Text('Select a verse to preview', style: TextStyle(color: Colors.white54, fontSize: 12));
-                          
-                          return secondaryPreviewAsync.when(
-                            data: (secondaryVerses) => _buildPreviewVerses(
-                              verses,
-                              canShowSecondary ? selectedVersion : null,
-                              secondaryVerses,
-                              canShowSecondary ? secondaryVersion : null,
-                            ),
-                            loading: () => const Center(child: CircularProgressIndicator()),
-                            error: (e, __) => Text(
-                              'Error loading secondary verses: $e',
-                              style: const TextStyle(color: Colors.redAccent),
-                            ),
-                          );
-                        },
-                        loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (e, __) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
+                : GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onSecondaryTapDown: (details) {
+                      final verses = previewAsync.valueOrNull;
+                      if (verses == null || verses.isEmpty) return;
+                      final secVerses = canShowSecondary ? secondaryPreviewAsync.valueOrNull : null;
+                      final secVer = canShowSecondary ? secondaryVersion : null;
+                      final formatted = _formatVersesForCopy(
+                        primaryVerses: verses,
+                        primaryVersion: selectedVersion,
+                        secondaryVerses: secVerses,
+                        secondaryVersion: secVer,
+                        isDual: canShowSecondary,
+                      );
+                      if (formatted.fullText.isNotEmpty) {
+                        _showScriptureContextMenu(
+                          context,
+                          details.globalPosition,
+                          fullText: formatted.fullText,
+                          textOnly: formatted.textOnly,
+                        );
+                      }
+                    },
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: previewAsync.when(
+                          data: (verses) {
+                            if (verses.isEmpty) return const Text('Select a verse to preview', style: TextStyle(color: Colors.white54, fontSize: 12));
+                            
+                            return secondaryPreviewAsync.when(
+                              data: (secondaryVerses) => _buildPreviewVerses(
+                                verses,
+                                canShowSecondary ? selectedVersion : null,
+                                secondaryVerses,
+                                canShowSecondary ? secondaryVersion : null,
+                              ),
+                              loading: () => const Center(child: CircularProgressIndicator()),
+                              error: (e, __) => Text(
+                                'Error loading secondary verses: $e',
+                                style: const TextStyle(color: Colors.redAccent),
+                              ),
+                            );
+                          },
+                          loading: () => const Center(child: CircularProgressIndicator()),
+                          error: (e, __) => Text('Error loading verses: $e', style: const TextStyle(color: Colors.redAccent)),
+                        ),
                       ),
                     ),
                   ),
@@ -1987,89 +2169,161 @@ final selectedVerses = ref.watch(selectedVersesProvider);
         }
         return KeyEventResult.ignored;
       },
-      child: ListView.separated(
-        controller: _buttonVerseTextScrollController,
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-        itemCount: flatVerseItems.length,
-        separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.white12),
-        itemBuilder: (context, index) {
-          final rowItem = flatVerseItems[index];
-          final vsNum = rowItem.verseNumber;
-          final isSelected = rowItem.isSecondary
-              ? secondarySelectedVerses.contains(vsNum)
-              : selectedVerses.contains(vsNum);
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onSecondaryTapDown: (details) {
+          final selSet = ref.read(selectedVersesProvider);
+          final secSelSet = ref.read(secondarySelectedVersesProvider);
 
-          _buttonVerseKeys.putIfAbsent(vsNum, () => GlobalKey());
-          final isFirstOfVerseNumber = !rowItem.isSecondary || primaryMap[vsNum] == null;
+          final currentPrimaryVerses = primaryVerses
+              .where((v) => selSet.contains(v.verseNumber))
+              .toList()
+            ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
 
-          return InkWell(
-            key: isFirstOfVerseNumber ? _buttonVerseKeys[vsNum] : null,
-            onTap: () {
-              _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
-            },
-            onDoubleTap: () {
-              _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
-              final selectedSet = ref.read(selectedVersesProvider);
-              final currentPrimaryVerses = primaryVerses
-                  .where((v) => selectedSet.contains(v.verseNumber))
-                  .toList()
-                ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+          final currentSecVerses = secondaryVerses
+              .where((v) => secSelSet.contains(v.verseNumber))
+              .toList()
+            ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
 
-              final secSelectedSet = ref.read(secondarySelectedVersesProvider);
-              final currentSecVerses = secondaryVerses
-                  .where((v) => secSelectedSet.contains(v.verseNumber))
-                  .toList()
-                ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+          final formatted = _formatVersesForCopy(
+            primaryVerses: currentPrimaryVerses,
+            primaryVersion: selectedVersion,
+            secondaryVerses: canShowSecondary ? currentSecVerses : null,
+            secondaryVersion: canShowSecondary ? secondaryVersion : null,
+            isDual: canShowSecondary,
+          );
 
-              final version = ref.read(selectedBibleVersionProvider);
-              if (currentPrimaryVerses.isNotEmpty && version != null) {
-                _addToSetlist(
-                  currentPrimaryVerses,
-                  version,
-                  ref,
-                  goLive: true,
+          if (formatted.fullText.isNotEmpty) {
+            _showScriptureContextMenu(
+              context,
+              details.globalPosition,
+              fullText: formatted.fullText,
+              textOnly: formatted.textOnly,
+            );
+          }
+        },
+        child: ListView.separated(
+          controller: _buttonVerseTextScrollController,
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          itemCount: flatVerseItems.length,
+          separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.white12),
+          itemBuilder: (context, index) {
+            final rowItem = flatVerseItems[index];
+            final vsNum = rowItem.verseNumber;
+            final isSelected = rowItem.isSecondary
+                ? secondarySelectedVerses.contains(vsNum)
+                : selectedVerses.contains(vsNum);
+
+            _buttonVerseKeys.putIfAbsent(vsNum, () => GlobalKey());
+            final isFirstOfVerseNumber = !rowItem.isSecondary || primaryMap[vsNum] == null;
+
+            return InkWell(
+              key: isFirstOfVerseNumber ? _buttonVerseKeys[vsNum] : null,
+              onTap: () {
+                _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
+              },
+              onDoubleTap: () {
+                _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
+                final selectedSet = ref.read(selectedVersesProvider);
+                final currentPrimaryVerses = primaryVerses
+                    .where((v) => selectedSet.contains(v.verseNumber))
+                    .toList()
+                  ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+                final secSelectedSet = ref.read(secondarySelectedVersesProvider);
+                final currentSecVerses = secondaryVerses
+                    .where((v) => secSelectedSet.contains(v.verseNumber))
+                    .toList()
+                  ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+                final version = ref.read(selectedBibleVersionProvider);
+                if (currentPrimaryVerses.isNotEmpty && version != null) {
+                  _addToSetlist(
+                    currentPrimaryVerses,
+                    version,
+                    ref,
+                    goLive: true,
+                    secondaryVerses: canShowSecondary ? currentSecVerses : null,
+                    secondaryVersion: canShowSecondary ? secondaryVersion : null,
+                  );
+                }
+              },
+              onSecondaryTapDown: (details) {
+                final isRowSelected = rowItem.isSecondary
+                    ? secondarySelectedVerses.contains(vsNum)
+                    : selectedVerses.contains(vsNum);
+                if (!isRowSelected) {
+                  _handleButtonVerseTextSelection(vsNum, allVerseNumbers, isSecondary: rowItem.isSecondary);
+                }
+
+                final selSet = ref.read(selectedVersesProvider);
+                final secSelSet = ref.read(secondarySelectedVersesProvider);
+
+                final currentPrimaryVerses = primaryVerses
+                    .where((v) => selSet.contains(v.verseNumber))
+                    .toList()
+                  ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+                final currentSecVerses = secondaryVerses
+                    .where((v) => secSelSet.contains(v.verseNumber))
+                    .toList()
+                  ..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+
+                final formatted = _formatVersesForCopy(
+                  primaryVerses: currentPrimaryVerses,
+                  primaryVersion: selectedVersion,
                   secondaryVerses: canShowSecondary ? currentSecVerses : null,
                   secondaryVersion: canShowSecondary ? secondaryVersion : null,
+                  isDual: canShowSecondary,
                 );
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-              decoration: isSelected
-                  ? BoxDecoration(
-                      color: Colors.blueAccent.withValues(alpha: 0.35),
-                      border: Border.all(color: Colors.blueAccent, width: 1),
-                      borderRadius: BorderRadius.circular(4),
-                    )
-                  : const BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 12, height: 1.4),
-                  children: [
-                    TextSpan(
-                      text: '${rowItem.verse.verseNumber} ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.lightBlueAccent : Colors.blueAccent,
+
+                if (formatted.fullText.isNotEmpty) {
+                  _showScriptureContextMenu(
+                    context,
+                    details.globalPosition,
+                    fullText: formatted.fullText,
+                    textOnly: formatted.textOnly,
+                  );
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                decoration: isSelected
+                    ? BoxDecoration(
+                        color: Colors.blueAccent.withValues(alpha: 0.35),
+                        border: Border.all(color: Colors.blueAccent, width: 1),
+                        borderRadius: BorderRadius.circular(4),
+                      )
+                    : const BoxDecoration(
+                        color: Colors.transparent,
                       ),
-                    ),
-                    TextSpan(
-                      text: rowItem.verse.text.trim(),
-                      style: TextStyle(
-                        color: rowItem.isSecondary
-                            ? const Color.fromARGB(255, 205, 181, 143)
-                            : (isSelected ? Colors.white : Colors.white70),
-                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 12, height: 1.4),
+                    children: [
+                      TextSpan(
+                        text: '${rowItem.verse.verseNumber} ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? Colors.lightBlueAccent : Colors.blueAccent,
+                        ),
                       ),
-                    ),
-                  ],
+                      TextSpan(
+                        text: rowItem.verse.text.trim(),
+                        style: TextStyle(
+                          color: rowItem.isSecondary
+                              ? const Color.fromARGB(255, 205, 181, 143)
+                              : (isSelected ? Colors.white : Colors.white70),
+                          fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
