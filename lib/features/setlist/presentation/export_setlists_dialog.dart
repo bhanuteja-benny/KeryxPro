@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../data/saved_setlist.dart';
 import '../data/setlist_export_import_service.dart';
+import '../../settings/presentation/presentation_settings_provider.dart';
 import 'manage_setlists_providers.dart';
 
 class ExportSetlistsDialog extends ConsumerStatefulWidget {
@@ -100,7 +101,8 @@ class _ExportSetlistsDialogState extends ConsumerState<ExportSetlistsDialog> {
 
     try {
       final exportService = ref.read(setlistExportImportServiceProvider);
-      final count = await exportService.exportSetlistsToFolder(selectedSetlists, targetFolderPath);
+      final settings = ref.read(presentationSettingsProvider);
+      final count = await exportService.exportSetlistsToFolder(selectedSetlists, targetFolderPath, settings: settings);
 
       if (mounted) {
         Navigator.pop(context);

@@ -7,6 +7,9 @@ import 'package:uuid/uuid.dart';
 import '../../../core/sync/sync_service.dart';
 import '../../../main.dart';
 import '../../songs/data/song.dart';
+import '../../settings/data/presentation_settings.dart';
+import '../../live_controller/presentation/live_projector_providers.dart';
+import '../../live_controller/presentation/slide_utils.dart';
 import 'saved_setlist.dart';
 
 final setlistExportImportServiceProvider = Provider<SetlistExportImportService>((ref) {
@@ -36,8 +39,16 @@ class SetlistExportImportService {
   }
 
   /// Exports selected setlists to separate JSON files in the target directory.
-  Future<int> exportSetlistsToFolder(List<SavedSetlist> setlists, String targetFolderPath) async {
+  Future<int> exportSetlistsToFolder(
+    List<SavedSetlist> setlists,
+    String targetFolderPath, {
+    PresentationSettings? settings,
+  }) async {
     final isar = await _db;
+    final effectiveSettings = settings ??
+        (await isar.presentationSettings.where().filter().isDefaultEqualTo(true).findFirst()) ??
+        (await isar.presentationSettings.where().findFirst()) ??
+        PresentationSettings();
     int count = 0;
 
     for (final setlist in setlists) {
@@ -98,8 +109,29 @@ class SetlistExportImportService {
             if ((secTitle != null && secTitle.isNotEmpty) || (secLyrics != null && secLyrics.isNotEmpty)) {
               isDual = true;
             }
+
+            final parsedSlides = SlideUtils.parseLyrics(
+              lyrics,
+              title,
+              isSong: false,
+              isDualVersion: isDual,
+              secondaryTitle: secTitle,
+              secondaryLyrics: secLyrics,
+              bookAlias: bkAlias,
+              secondaryBookAlias: secBkAlias,
+              isEdited: isEdited,
+              customReference: customReference,
+            );
+            final sampleSlide = parsedSlides.isNotEmpty ? parsedSlides.first : null;
+            final exportTitle = (sampleSlide != null
+                    ? buildTitleForSlide(sampleSlide, effectiveSettings)
+                    : null);
+            final finalTitle = (exportTitle != null && exportTitle.trim().isNotEmpty)
+                ? exportTitle
+                : title;
+
             scriptureList.add({
-              'title': title,
+              'title': finalTitle,
               'lyrics': lyrics,
               'isDualVersion': isDual,
               'secondaryTitle': secTitle,

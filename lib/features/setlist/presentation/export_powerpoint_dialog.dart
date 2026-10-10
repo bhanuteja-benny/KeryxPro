@@ -92,7 +92,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
 
   List<Slide> _extractSlidesFromItem(SetlistItem item) {
     switch (item) {
-      case SongSetlistItem(:final song, :final isFavorite):
+      case SongSetlistItem(:final song, :final isFavorite, :final isEdited, :final customReference):
         final isSong = song.author != 'Bible';
         return SlideUtils.parseLyrics(
           song.lyrics,
@@ -102,6 +102,10 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
           isDualVersion: song.isDualVersion,
           secondaryTitle: song.secondaryTitle,
           secondaryLyrics: song.secondaryLyrics,
+          bookAlias: song.bookAlias,
+          secondaryBookAlias: song.secondaryBookAlias,
+          isEdited: isEdited,
+          customReference: customReference,
         );
       case ImageSetlistItem(:final imagePath, :final layout, :final alignment, :final isFavorite):
         final title = imagePath.split(RegExp(r'[/\\]')).last;
@@ -239,10 +243,11 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
         for (int i = 0; i < slidesToExport.length; i++) {
           if (_isCancelled) return;
           final slide = slidesToExport[i];
+          final titleToUse = buildTitleForSlide(slide, settings) ?? slide.title;
 
           setState(() {
             _currentSlideIndex = i + 1;
-            _currentSlideTitle = slide.title;
+            _currentSlideTitle = titleToUse;
             _renderingSlide = slide;
           });
 
@@ -251,7 +256,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
             final rawPath = slide.content.split('|')[0].substring(6);
             final imgBytes = await loadImage(rawPath);
             generatedSlides.add(PowerpointSlideData(
-              title: slide.title,
+              title: titleToUse,
               imageSlideBytes: imgBytes,
             ));
             continue;
@@ -259,7 +264,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
 
           if (slide.isBlank) {
             generatedSlides.add(PowerpointSlideData(
-              title: slide.title,
+              title: titleToUse,
               isBlank: true,
               backgroundColorHex: _intToHex(settings.blankBackgroundColor),
               backgroundImageBytes: blankBgBytes,
@@ -285,7 +290,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
                 : (settings.dualScripturePrimaryPosition == 'left' || settings.dualScripturePrimaryPosition == 'primaryFirst');
 
             generatedSlides.add(PowerpointSlideData(
-              title: slide.title,
+              title: titleToUse,
               content: primaryText,
               isSong: false,
               isDualVersion: true,
@@ -344,7 +349,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
             ));
           } else if (slide.isSong) {
             generatedSlides.add(PowerpointSlideData(
-              title: slide.title,
+              title: titleToUse,
               content: slide.content,
               isSong: true,
               isDualVersion: slide.isDualVersion,
@@ -397,7 +402,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
           } else {
             // Standard Single-Version Scripture
             generatedSlides.add(PowerpointSlideData(
-              title: slide.title,
+              title: titleToUse,
               content: slide.content,
               isSong: false,
               isDualVersion: false,
@@ -449,10 +454,11 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
         for (int i = 0; i < slidesToExport.length; i++) {
           if (_isCancelled) return;
           final slide = slidesToExport[i];
+          final titleToUse = buildTitleForSlide(slide, settings) ?? slide.title;
 
           setState(() {
             _currentSlideIndex = i + 1;
-            _currentSlideTitle = slide.title;
+            _currentSlideTitle = titleToUse;
             _renderingSlide = slide;
           });
 
@@ -476,7 +482,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
 
           generatedSlides.add(PowerpointSlideData(
             imageSlideBytes: pngBytes,
-            title: slide.title,
+            title: titleToUse,
           ));
         }
       }
@@ -1006,7 +1012,7 @@ class _ExportPowerpointDialogState extends ConsumerState<ExportPowerpointDialog>
                               settings: settings,
                               activeSlideText: isBlank ? "" : _renderingSlide!.content,
                               secondarySlideText: _renderingSlide!.secondaryContent,
-                              titleText: _renderingSlide!.title,
+                              titleText: buildTitleForSlide(_renderingSlide, settings) ?? _renderingSlide!.title,
                               isSong: _renderingSlide!.isSong,
                               isDualVersion: _renderingSlide!.isDualVersion,
                               isPreviewMode: true,

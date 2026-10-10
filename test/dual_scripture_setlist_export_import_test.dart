@@ -4,6 +4,9 @@ import 'package:keryxpro/features/songs/data/song.dart';
 import 'package:keryxpro/features/setlist/data/setlist_item.dart';
 import 'package:keryxpro/features/setlist/presentation/setlist_providers.dart';
 import 'package:keryxpro/features/live_controller/presentation/slide_utils.dart';
+import 'package:keryxpro/features/live_controller/presentation/live_projector_providers.dart';
+import 'package:keryxpro/features/settings/data/presentation_settings.dart';
+import 'package:keryxpro/features/setlist/data/powerpoint_export_service.dart';
 
 void main() {
   group('Dual Scripture Setlist Export & Import Tests', () {
@@ -339,6 +342,114 @@ void main() {
 
       expect(sigSingle != sigDual, isTrue);
       expect(sigDual.contains('scripture:Genesis 1:1;1;ఆదికాండము 1:1'), isTrue);
+    });
+
+    test('JSON export builds dual scripture title with Telugu alias as per slide and presentation settings', () {
+      final settings = PresentationSettings()
+        ..dualChapterShowActual = true
+        ..dualChapterShowAlias = true
+        ..dualChapterShowNone = false;
+
+      final parsedSlides = SlideUtils.parseLyrics(
+        primaryLyrics,
+        primaryTitle,
+        isSong: false,
+        isDualVersion: true,
+        secondaryTitle: secondaryTitle,
+        secondaryLyrics: secondaryLyrics,
+        bookAlias: null,
+        secondaryBookAlias: 'యోహాను',
+      );
+      expect(parsedSlides.isNotEmpty, isTrue);
+      final exportTitle = buildTitleForSlide(parsedSlides.first, settings);
+      expect(exportTitle, equals('John (యోహాను) 2:2/3 NKJV'));
+    });
+
+    test('JSON export uses edited customReference for dual scripture title when edited', () {
+      final settings = PresentationSettings()
+        ..dualChapterShowActual = true
+        ..dualChapterShowAlias = true;
+
+      final parsedSlides = SlideUtils.parseLyrics(
+        primaryLyrics,
+        primaryTitle,
+        isSong: false,
+        isDualVersion: true,
+        secondaryTitle: secondaryTitle,
+        secondaryLyrics: secondaryLyrics,
+        bookAlias: null,
+        secondaryBookAlias: 'యోహాను',
+        isEdited: true,
+        customReference: 'John 2:2 Custom Edited Reference',
+      );
+      expect(parsedSlides.isNotEmpty, isTrue);
+      final exportTitle = buildTitleForSlide(parsedSlides.first, settings);
+      expect(exportTitle, equals('John 2:2 Custom Edited Reference'));
+    });
+
+    test('PowerPoint export builds dual scripture slide title using buildTitleForSlide', () {
+      final settings = PresentationSettings()
+        ..dualChapterShowActual = true
+        ..dualChapterShowAlias = true
+        ..dualChapterShowNone = false;
+
+      final parsedSlides = SlideUtils.parseLyrics(
+        primaryLyrics,
+        primaryTitle,
+        isSong: false,
+        isDualVersion: true,
+        secondaryTitle: secondaryTitle,
+        secondaryLyrics: secondaryLyrics,
+        bookAlias: null,
+        secondaryBookAlias: 'యోహాను',
+      );
+
+      final slide = parsedSlides.first;
+      final titleToUse = buildTitleForSlide(slide, settings) ?? slide.title;
+      expect(titleToUse, equals('John (యోహాను) 2:2/3 NKJV'));
+
+      final pptSlideData = PowerpointSlideData(
+        title: titleToUse,
+        content: slide.content,
+        isSong: false,
+        isDualVersion: true,
+        secondaryTitle: slide.secondaryTitle,
+        secondaryContent: slide.secondaryContent,
+      );
+
+      expect(pptSlideData.title, equals('John (యోహాను) 2:2/3 NKJV'));
+    });
+
+    test('PowerPoint export uses customReference for edited dual scripture slide title', () {
+      final settings = PresentationSettings()
+        ..dualChapterShowActual = true
+        ..dualChapterShowAlias = true;
+
+      final parsedSlides = SlideUtils.parseLyrics(
+        primaryLyrics,
+        primaryTitle,
+        isSong: false,
+        isDualVersion: true,
+        secondaryTitle: secondaryTitle,
+        secondaryLyrics: secondaryLyrics,
+        bookAlias: null,
+        secondaryBookAlias: 'యోహాను',
+        isEdited: true,
+        customReference: 'Edited PPTX Dual Scripture Title',
+      );
+
+      final slide = parsedSlides.first;
+      final titleToUse = buildTitleForSlide(slide, settings) ?? slide.title;
+      expect(titleToUse, equals('Edited PPTX Dual Scripture Title'));
+
+      final pptSlideData = PowerpointSlideData(
+        title: titleToUse,
+        content: slide.content,
+        isSong: false,
+        isDualVersion: true,
+      );
+
+      expect(pptSlideData.title, equals('Edited PPTX Dual Scripture Title'));
     });
   });
 }
